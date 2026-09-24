@@ -184,34 +184,52 @@ async function exportPdf(forceTemplatePick = false) {
 }
 
 function dragonbaneToolbar() {
-  const copy = Array.from(document.querySelectorAll('button')).find(b => visible(b) && /copiar ficha/i.test(b.textContent || ''));
+  // O detector anterior dependia de três textos exatos do layout. Como o visual do
+  // Dragonbane mudou, um desses textos deixou de existir e o botão nunca era criado.
+  // A ficha já possui um marcador estrutural próprio e estável: .db-sheet.
+  const dragonbaneSheet = Array.from(document.querySelectorAll('.db-sheet')).find(visible);
+  if (!dragonbaneSheet) return null;
+
+  const copy = Array.from(document.querySelectorAll('button')).find(
+    b => visible(b) && /copiar\s*ficha/i.test((b.textContent || '').replace(/\s+/g, ' ').trim()),
+  );
   if (!copy) return null;
-  const text = document.body.innerText || '';
-  return text.includes('DANO BÔNUS FOR') && text.includes('ARMAS • PERÍCIAS') && text.includes('HABILIDADES E MAGIAS') ? copy : null;
+
+  const toolbar = copy.parentElement;
+  if (!toolbar) return null;
+
+  // Confirma que encontramos a barra principal da ficha, e não algum texto dos guias.
+  const buttons = Array.from(toolbar.querySelectorAll('button'));
+  const hasZip = buttons.some(b => /^ZIP$/i.test((b.textContent || '').trim()));
+  const hasSave = buttons.some(b => /salvar/i.test(b.textContent || ''));
+  return hasZip && hasSave ? { copy, toolbar } : null;
 }
 
 function ensureButton() {
-  const copy = dragonbaneToolbar();
+  const found = dragonbaneToolbar();
   let button = document.getElementById(BUTTON_ID);
-  if (!copy) {
+  if (!found) {
     button?.remove();
     return;
   }
+
+  const { copy, toolbar } = found;
 
   if (!button) {
     button = document.createElement('button');
     button.id = BUTTON_ID;
     button.type = 'button';
     button.className = copy.className;
-    button.textContent = '📄 PDF';
-    button.title = 'Baixar PDF editável. Shift+clique para trocar o PDF-base salvo.';
+    button.textContent = '📄 Baixar PDF';
+    button.title = 'Baixar esta ficha de Dragonbane em PDF editável. Shift+clique para trocar o PDF-base salvo.';
     button.style.background = 'rgba(4,120,87,.84)';
+    button.style.whiteSpace = 'nowrap';
     button.onclick = async event => {
       if (button.dataset.busy === '1') return;
       const original = button.textContent;
       button.dataset.busy = '1';
       button.disabled = true;
-      button.textContent = '⏳ PDF...';
+      button.textContent = '⏳ Gerando PDF...';
       try {
         const item = await exportPdf(!!event.shiftKey);
         toast(`PDF editável de ${item?.bio?.nome || 'Dragonbane'} baixado.`, 'success');
@@ -227,10 +245,9 @@ function ensureButton() {
     };
   }
 
-  const parent = copy.parentElement;
-  if (parent && button.parentElement !== parent) {
-    const zip = Array.from(parent.querySelectorAll('button')).find(b => /^ZIP$/i.test((b.textContent || '').trim()));
-    parent.insertBefore(button, zip || copy.nextSibling);
+  if (button.parentElement !== toolbar) {
+    const zip = Array.from(toolbar.querySelectorAll('button')).find(b => /^ZIP$/i.test((b.textContent || '').trim()));
+    toolbar.insertBefore(button, zip || copy.nextSibling);
   }
 }
 
