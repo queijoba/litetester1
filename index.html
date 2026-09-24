@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PJ Lite — Fichas de RPG | v0.7.0v Alpha</title>
+    <meta name="description" content="PJ Lite v0.7.0v Alpha é uma ferramenta leve para criar, organizar e compartilhar fichas de RPG. Dragonbane, D&amp;D 5e, Fabula Ultima e O Som das Seis com fichas visuais, guias ampliados e recursos modulares.">
+    <meta name="application-name" content="PJ Lite">
+    <meta name="theme-color" content="#111827">
+
+    <!-- Prévia ao compartilhar o link -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="PJ Lite">
+    <meta property="og:title" content="PJ Lite — Fichas de RPG | v0.7.0v Alpha">
+    <meta property="og:description" content="PJ Lite v0.7.0v Alpha: fichas de Dragonbane, D&amp;D 5e, Fabula Ultima e O Som das Seis, com interface leve, guias completos e recursos modulares.">
+    <meta property="og:locale" content="pt_BR">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="PJ Lite — Fichas de RPG | v0.7.0v Alpha">
+    <meta name="twitter:description" content="Crie, organize e compartilhe fichas de RPG de forma simples e leve.">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+<!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Lato:ital,wght@0,400;0,700;1,400&family=Cardo:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'title': ['Cinzel', 'serif'],
+                        'body': ['Lato', 'sans-serif'],
+                        'dnd': ['Cardo', 'serif'],
+                    },
+                    colors: {
+                        dragon: {
+                            dark: '#1a1a1a',
+                            light: '#f4f4f5',
+                            accent: '#8b0000',
+                            border: '#3f3f46'
+                        },
+                        dnd: {
+                            red: '#922610',
+                            tan: '#fdf1dc',
+                            border: '#e5d4b5',
+                            dark: '#272525'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="font-body text-gray-800 antialiased p-4 md:p-8">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+</body>
+</html>
