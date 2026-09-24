@@ -15,5 +15,13 @@ import f7 from './dragonbaneFields7.js';
 import f8 from './dragonbaneFields8.js';
 
 export const DRAGONBANE_PDF_PAGE = { width: 595.2756, height: 841.8898 };
-export const DRAGONBANE_PDF_BACKGROUNDS = [p11 + p12 + p13, p21 + p22 + p23 + p24];
+
+// Os fundos são mantidos em partes independentes. Cada parte pode possuir
+// padding Base64 próprio (=). Concatenar as strings antes de decodificar faz
+// alguns navegadores móveis rejeitarem o conteúdo no atob().
+export const DRAGONBANE_PDF_BACKGROUNDS = [
+  [p11, p12, p13],
+  [p21, p22, p23, p24]
+];
+
 export const DRAGONBANE_PDF_FIELDS = [...f1, ...f2, ...f3, ...f4, ...f5, ...f6, ...f7, ...f8];
