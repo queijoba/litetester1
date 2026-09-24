@@ -5,6 +5,7 @@ on:
     branches: [ main ]
     paths:
       - '.github/workflows/migrate-react-stage1.yml'
+      - 'scripts/migrate_stage1.py'
 
 permissions:
   contents: write
