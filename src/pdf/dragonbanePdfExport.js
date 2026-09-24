@@ -74,6 +74,11 @@ function normalizeBase64(value) {
     .replace(/-/g, '+')
     .replace(/_/g, '/');
 
+  // Os recursos internos podem estar divididos em arquivos no meio de um
+  // bloco Base64. Por isso, padding só pode ser calculado DEPOIS de todas as
+  // partes terem sido remontadas.
+  clean = clean.replace(/=+$/g, '');
+
   const remainder = clean.length % 4;
   if (remainder === 1) throw new Error('Dados Base64 inválidos.');
   if (remainder) clean += '='.repeat(4 - remainder);
@@ -98,15 +103,14 @@ function base64Bytes(value) {
   return bytes;
 }
 
-function concatBytes(parts) {
-  const total = parts.reduce((sum, bytes) => sum + bytes.length, 0);
-  const output = new Uint8Array(total);
-  let offset = 0;
-  for (const bytes of parts) {
-    output.set(bytes, offset);
-    offset += bytes.length;
-  }
-  return output;
+function backgroundBytes(parts) {
+  // Os arquivos p1_*.js e p2_*.js são pedaços consecutivos da MESMA string
+  // Base64, não imagens Base64 independentes. Decodificar cada pedaço antes de
+  // remontá-los quebra quando a divisão cai no meio de um grupo de 4 caracteres.
+  const joined = (Array.isArray(parts) ? parts : [parts])
+    .map(part => String(part ?? '').replace(/\s+/g, ''))
+    .join('');
+  return base64Bytes(joined);
 }
 
 async function buildEmbeddedTemplate(PDFLib) {
@@ -119,10 +123,7 @@ async function buildEmbeddedTemplate(PDFLib) {
 
   for (let i = 0; i < DRAGONBANE_PDF_BACKGROUNDS.length; i++) {
     const page = doc.addPage([DRAGONBANE_PDF_PAGE.width, DRAGONBANE_PDF_PAGE.height]);
-    const chunks = Array.isArray(DRAGONBANE_PDF_BACKGROUNDS[i])
-      ? DRAGONBANE_PDF_BACKGROUNDS[i]
-      : [DRAGONBANE_PDF_BACKGROUNDS[i]];
-    const imageBytes = concatBytes(chunks.map(base64Bytes));
+    const imageBytes = backgroundBytes(DRAGONBANE_PDF_BACKGROUNDS[i]);
     const image = await doc.embedJpg(imageBytes);
     page.drawImage(image, { x: 0, y: 0, width: DRAGONBANE_PDF_PAGE.width, height: DRAGONBANE_PDF_PAGE.height });
     pages.push(page);
@@ -195,19 +196,38 @@ function download(bytes, item) {
   setTimeout(() => URL.revokeObjectURL(url), 5000);
 }
 
+function decodeImageDataUrl(value) {
+  const commaIndex = value.indexOf(',');
+  if (commaIndex < 0) return null;
+  const header = value.slice(0, commaIndex);
+  const body = value.slice(commaIndex + 1);
+
+  if (/;base64/i.test(header)) {
+    return {
+      bytes: base64Bytes(body),
+      kind: /image\/png/i.test(header) ? 'png' : 'jpg'
+    };
+  }
+
+  // Data URLs também podem usar percent-encoding em vez de Base64.
+  try {
+    const decoded = decodeURIComponent(body);
+    const bytes = new TextEncoder().encode(decoded);
+    return { bytes, kind: /image\/png/i.test(header) ? 'png' : 'jpg' };
+  } catch {
+    return null;
+  }
+}
+
 async function imageFromSource(source) {
   if (!source || typeof source !== 'string') return null;
   const value = source.trim();
 
   if (/^data:image\/(png|jpeg|jpg)/i.test(value)) {
     try {
-      const header = value.slice(0, value.indexOf(','));
-      return {
-        bytes: base64Bytes(value),
-        kind: /png/i.test(header) ? 'png' : 'jpg'
-      };
+      return decodeImageDataUrl(value);
     } catch (error) {
-      console.warn('[PJ Lite PDF] Retrato Base64 inválido; PDF será gerado sem a imagem.', error);
+      console.warn('[PJ Lite PDF] Retrato inválido; PDF será gerado sem a imagem.', error);
       return null;
     }
   }
