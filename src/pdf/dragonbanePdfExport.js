@@ -4,15 +4,15 @@ const STORAGE_KEY = 'dragonbane_saved_characters';
 const PDFLIB_CDN = 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js';
 const BUTTON_ID = 'pjlite-dragonbane-pdf-export';
 const CACHE_NAME = 'pjlite-pdf-templates-v1';
-const TEMPLATE_URL = '/__pjlite_pdf_templates/dragonbane-khat-v1.pdf';
+const TEMPLATE_URL = '/__pjlite_pdf_templates/dragonbane-pjlite-v1.pdf';
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 function visible(el) {
   if (!el) return false;
-  const s = getComputedStyle(el);
-  const r = el.getBoundingClientRect();
-  return s.display !== 'none' && s.visibility !== 'hidden' && r.width > 0 && r.height > 0;
+  const style = getComputedStyle(el);
+  const rect = el.getBoundingClientRect();
+  return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
 }
 
 function toast(message, type = 'info') {
@@ -39,6 +39,12 @@ function loadPdfLib() {
   if (window.PDFLib?.PDFDocument) return Promise.resolve(window.PDFLib);
   if (loadPdfLib.promise) return loadPdfLib.promise;
   loadPdfLib.promise = new Promise((resolve, reject) => {
+    const existing = document.querySelector('script[data-pjlite-pdflib="1"]');
+    if (existing) {
+      existing.addEventListener('load', () => resolve(window.PDFLib), { once: true });
+      existing.addEventListener('error', () => reject(new Error('Não foi possível carregar o gerador de PDF.')), { once: true });
+      return;
+    }
     const script = document.createElement('script');
     script.src = PDFLIB_CDN;
     script.async = true;
@@ -112,12 +118,10 @@ async function templateBytes(PDFLib, forcePick = false) {
       return cached;
     } catch { await clearTemplate(); }
   }
-  toast('Na primeira exportação, selecione Dragonbane_PJlite_Previa_Editavel. Ele ficará salvo neste navegador.');
+  toast('Na primeira exportação, selecione o PDF editável Dragonbane do PJ Lite. Ele ficará salvo neste navegador.');
   const picked = await pickTemplate();
   try { await validateTemplate(picked, PDFLib); }
-  catch {
-    throw new Error('Este não parece ser o PDF editável Dragonbane do PJ Lite.');
-  }
+  catch { throw new Error('Este não parece ser o PDF editável Dragonbane do PJ Lite.'); }
   await storeTemplate(picked);
   return picked;
 }
@@ -134,11 +138,12 @@ function time(item) {
   return Number.isFinite(t) ? t : 0;
 }
 
-function currentDragonbane() {
+function currentDragonbane(requireVisibleMatch = false) {
   const chars = readCharacters().filter(x => (x?.system || 'dragonbane') === 'dragonbane' && (x?.type || 'pc') === 'pc');
   if (!chars.length) return null;
   const values = new Set(Array.from(document.querySelectorAll('input,textarea')).filter(visible).map(x => String(x.value || '').trim()).filter(Boolean));
   const matches = chars.filter(x => x?.bio?.nome && values.has(String(x.bio.nome).trim()));
+  if (requireVisibleMatch && !matches.length) return null;
   return [...(matches.length ? matches : chars)].sort((a, b) => time(b) - time(a))[0] || null;
 }
 
@@ -162,10 +167,9 @@ function download(bytes, item) {
 
 async function exportPdf(forceTemplatePick = false) {
   document.activeElement?.blur?.();
-  // O PJ Lite usa autosave com debounce de 1,4 s.
   await sleep(1650);
-  const item = currentDragonbane();
-  if (!item) throw new Error('Não encontrei a ficha Dragonbane atual. Salve e tente novamente.');
+  const item = currentDragonbane(false);
+  if (!item) throw new Error('Não encontrei a ficha Dragonbane atual. Salve a ficha e tente novamente.');
 
   const PDFLib = await loadPdfLib();
   const base = await templateBytes(PDFLib, forceTemplatePick);
@@ -183,22 +187,31 @@ async function exportPdf(forceTemplatePick = false) {
   return item;
 }
 
-function dragonbaneToolbar() {
-  // O detector anterior dependia de três textos exatos do layout. Como o visual do
-  // Dragonbane mudou, um desses textos deixou de existir e o botão nunca era criado.
-  // A ficha já possui um marcador estrutural próprio e estável: .db-sheet.
-  const dragonbaneSheet = Array.from(document.querySelectorAll('.db-sheet')).find(visible);
-  if (!dragonbaneSheet) return null;
+function isDragonbaneEditorOpen() {
+  // Marcadores reais do layout Dragonbane atual. O detector antigo dependia de textos
+  // exatos e podia falhar depois de uma pequena mudança visual.
+  const structural = [
+    document.querySelector('.db-sheet'),
+    document.querySelector('.db-logo'),
+    document.querySelector('.db-brand'),
+    document.querySelector('.db-layout')
+  ].filter(Boolean);
 
+  if (structural.some(visible)) return true;
+
+  // Fallback: se o nome da ficha Dragonbane salva aparece nos campos visíveis, estamos
+  // dentro dessa ficha mesmo que as classes CSS mudem no futuro.
+  return !!currentDragonbane(true);
+}
+
+function findToolbar() {
   const copy = Array.from(document.querySelectorAll('button')).find(
-    b => visible(b) && /copiar\s*ficha/i.test((b.textContent || '').replace(/\s+/g, ' ').trim()),
+    b => visible(b) && /copiar\s*ficha/i.test((b.textContent || '').replace(/\s+/g, ' ').trim())
   );
   if (!copy) return null;
 
   const toolbar = copy.parentElement;
   if (!toolbar) return null;
-
-  // Confirma que encontramos a barra principal da ficha, e não algum texto dos guias.
   const buttons = Array.from(toolbar.querySelectorAll('button'));
   const hasZip = buttons.some(b => /^ZIP$/i.test((b.textContent || '').trim()));
   const hasSave = buttons.some(b => /salvar/i.test(b.textContent || ''));
@@ -206,24 +219,28 @@ function dragonbaneToolbar() {
 }
 
 function ensureButton() {
-  const found = dragonbaneToolbar();
   let button = document.getElementById(BUTTON_ID);
-  if (!found) {
+
+  if (!isDragonbaneEditorOpen()) {
     button?.remove();
     return;
   }
 
+  const found = findToolbar();
+  if (!found) return;
   const { copy, toolbar } = found;
 
   if (!button) {
     button = document.createElement('button');
     button.id = BUTTON_ID;
+    button.dataset.pjlitePdf = 'dragonbane';
     button.type = 'button';
     button.className = copy.className;
     button.textContent = '📄 Baixar PDF';
-    button.title = 'Baixar esta ficha de Dragonbane em PDF editável. Shift+clique para trocar o PDF-base salvo.';
-    button.style.background = 'rgba(4,120,87,.84)';
+    button.title = 'Baixar esta ficha Dragonbane em PDF editável. Shift+clique troca o PDF-base salvo.';
+    button.style.background = 'rgba(4,120,87,.92)';
     button.style.whiteSpace = 'nowrap';
+    button.style.border = '1px solid rgba(255,255,255,.28)';
     button.onclick = async event => {
       if (button.dataset.busy === '1') return;
       const original = button.textContent;
@@ -245,22 +262,35 @@ function ensureButton() {
     };
   }
 
-  if (button.parentElement !== toolbar) {
-    const zip = Array.from(toolbar.querySelectorAll('button')).find(b => /^ZIP$/i.test((b.textContent || '').trim()));
-    toolbar.insertBefore(button, zip || copy.nextSibling);
+  // Reinsere depois do botão Copiar Ficha. Isso também recupera o botão caso o React
+  // reconstrua a barra durante um autosave/re-render.
+  if (button.parentElement !== toolbar || button.previousElementSibling !== copy) {
+    toolbar.insertBefore(button, copy.nextSibling);
   }
 }
 
 export function installDragonbanePdfExport() {
   if (window.__pjliteDragonbanePdfExportInstalled) return;
   window.__pjliteDragonbanePdfExportInstalled = true;
+
   let pending = false;
   const schedule = () => {
     if (pending) return;
     pending = true;
-    requestAnimationFrame(() => { pending = false; ensureButton(); });
+    requestAnimationFrame(() => {
+      pending = false;
+      ensureButton();
+    });
   };
+
   new MutationObserver(schedule).observe(document.documentElement, { childList: true, subtree: true });
   addEventListener('resize', schedule, { passive: true });
-  schedule();
+  addEventListener('focus', schedule, { passive: true });
+
+  // Fallback contra reconciliações do React e dispositivos móveis que não gerem uma
+  // mutação observável na barra. O custo é mínimo: apenas uma busca curta a cada 750 ms.
+  setInterval(ensureButton, 750);
+  setTimeout(ensureButton, 0);
+  setTimeout(ensureButton, 250);
+  setTimeout(ensureButton, 1000);
 }
