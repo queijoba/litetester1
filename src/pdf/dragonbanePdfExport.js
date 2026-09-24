@@ -1,10 +1,13 @@
 import { fillDragonbanePdf } from './dragonbanePdfMap.js';
+import {
+  DRAGONBANE_PDF_PAGE,
+  DRAGONBANE_PDF_BACKGROUNDS,
+  DRAGONBANE_PDF_FIELDS
+} from './dragonbaneTemplateData.js';
 
 const STORAGE_KEY = 'dragonbane_saved_characters';
 const PDFLIB_CDN = 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js';
 const BUTTON_ID = 'pjlite-dragonbane-pdf-export';
-const CACHE_NAME = 'pjlite-pdf-templates-v1';
-const TEMPLATE_URL = '/__pjlite_pdf_templates/dragonbane-pjlite-v1.pdf';
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -56,74 +59,54 @@ function loadPdfLib() {
   return loadPdfLib.promise;
 }
 
-async function cachedTemplate() {
-  if (!('caches' in window)) return null;
-  try {
-    const cache = await caches.open(CACHE_NAME);
-    const response = await cache.match(TEMPLATE_URL);
-    return response ? await response.arrayBuffer() : null;
-  } catch { return null; }
+function base64Bytes(value) {
+  const binary = atob(value);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
 }
 
-async function storeTemplate(bytes) {
-  if (!('caches' in window)) return;
-  try {
-    const cache = await caches.open(CACHE_NAME);
-    await cache.put(TEMPLATE_URL, new Response(bytes, { headers: { 'Content-Type': 'application/pdf' } }));
-  } catch {}
-}
-
-async function clearTemplate() {
-  if (!('caches' in window)) return;
-  try {
-    const cache = await caches.open(CACHE_NAME);
-    await cache.delete(TEMPLATE_URL);
-  } catch {}
-}
-
-function pickTemplate() {
-  return new Promise((resolve, reject) => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'application/pdf,.pdf';
-    input.style.display = 'none';
-    input.onchange = async () => {
-      const file = input.files?.[0];
-      input.remove();
-      if (!file) return reject(new Error('Seleção cancelada.'));
-      try { resolve(await file.arrayBuffer()); }
-      catch (error) { reject(error); }
-    };
-    document.body.appendChild(input);
-    input.click();
-  });
-}
-
-async function validateTemplate(bytes, PDFLib) {
-  const doc = await PDFLib.PDFDocument.load(bytes, { ignoreEncryption: true });
+async function buildEmbeddedTemplate(PDFLib) {
+  const doc = await PDFLib.PDFDocument.create();
   const form = doc.getForm();
-  form.getTextField('nome');
-  form.getTextField('pv_atual');
-  form.getTextField('nome_pagina_2');
-  form.getTextField('cartao_01_nome');
-  if (doc.getPageCount() < 2) throw new Error('O PDF-base Dragonbane precisa ter 2 páginas.');
-}
+  const font = await doc.embedFont(PDFLib.StandardFonts.Helvetica);
+  const textColor = PDFLib.rgb(0.168627, 0.145098, 0.117647);
+  const checkColor = PDFLib.rgb(0.121569, 0.364706, 0.321569);
+  const pages = [];
 
-async function templateBytes(PDFLib, forcePick = false) {
-  if (forcePick) await clearTemplate();
-  const cached = forcePick ? null : await cachedTemplate();
-  if (cached) {
-    try {
-      await validateTemplate(cached, PDFLib);
-      return cached;
-    } catch { await clearTemplate(); }
+  for (let i = 0; i < DRAGONBANE_PDF_BACKGROUNDS.length; i++) {
+    const page = doc.addPage([DRAGONBANE_PDF_PAGE.width, DRAGONBANE_PDF_PAGE.height]);
+    const image = await doc.embedJpg(base64Bytes(DRAGONBANE_PDF_BACKGROUNDS[i]));
+    page.drawImage(image, { x: 0, y: 0, width: DRAGONBANE_PDF_PAGE.width, height: DRAGONBANE_PDF_PAGE.height });
+    pages.push(page);
   }
-  toast('Na primeira exportação, selecione o PDF editável Dragonbane do PJ Lite. Ele ficará salvo neste navegador.');
-  const picked = await pickTemplate();
-  try { await validateTemplate(picked, PDFLib); }
-  catch { throw new Error('Este não parece ser o PDF editável Dragonbane do PJ Lite.'); }
-  await storeTemplate(picked);
-  return picked;
+
+  for (const def of DRAGONBANE_PDF_FIELDS) {
+    const page = pages[def.page];
+    if (!page) continue;
+
+    if (def.type === 'checkbox') {
+      const field = form.createCheckBox(def.name);
+      field.addToPage(page, {
+        x: def.x, y: def.y, width: def.width, height: def.height,
+        borderWidth: 0,
+        textColor: checkColor
+      });
+      continue;
+    }
+
+    const field = form.createTextField(def.name);
+    if (def.multiline) field.enableMultiline();
+    field.setFontSize(def.fontSize || 8);
+    field.addToPage(page, {
+      x: def.x, y: def.y, width: def.width, height: def.height,
+      borderWidth: 0,
+      textColor,
+      font
+    });
+  }
+
+  return doc;
 }
 
 function readCharacters() {
@@ -165,17 +148,71 @@ function download(bytes, item) {
   setTimeout(() => URL.revokeObjectURL(url), 3000);
 }
 
-async function exportPdf(forceTemplatePick = false) {
+async function imageFromSource(source) {
+  if (!source || typeof source !== 'string') return null;
+
+  if (/^data:image\/(png|jpeg|jpg);base64,/i.test(source)) {
+    const [header, body] = source.split(',', 2);
+    return { bytes: base64Bytes(body || ''), kind: /png/i.test(header) ? 'png' : 'jpg' };
+  }
+
+  if (/^https?:\/\//i.test(source)) {
+    try {
+      const response = await fetch(source, { mode: 'cors' });
+      if (!response.ok) return null;
+      const type = response.headers.get('content-type') || '';
+      if (!/image\/(png|jpeg|jpg)/i.test(type)) return null;
+      return { bytes: new Uint8Array(await response.arrayBuffer()), kind: /png/i.test(type) ? 'png' : 'jpg' };
+    } catch {
+      return null;
+    }
+  }
+
+  return null;
+}
+
+async function addPortrait(doc, item, PDFLib) {
+  const loaded = await imageFromSource(item?.bio?.imagem);
+  if (!loaded) return false;
+
+  try {
+    const image = loaded.kind === 'png' ? await doc.embedPng(loaded.bytes) : await doc.embedJpg(loaded.bytes);
+    const page = doc.getPages()[0];
+
+    const box = { x: 36.5, y: 656.5, width: 76, height: 90 };
+    page.drawRectangle({
+      x: box.x, y: box.y, width: box.width, height: box.height,
+      color: PDFLib.rgb(0.965, 0.945, 0.86)
+    });
+
+    const scale = Math.min(box.width / image.width, box.height / image.height);
+    const width = image.width * scale;
+    const height = image.height * scale;
+    page.drawImage(image, {
+      x: box.x + (box.width - width) / 2,
+      y: box.y + (box.height - height) / 2,
+      width,
+      height
+    });
+    return true;
+  } catch (error) {
+    console.warn('[PJ Lite PDF] Não foi possível inserir o retrato:', error);
+    return false;
+  }
+}
+
+async function exportPdf() {
   document.activeElement?.blur?.();
   await sleep(1650);
   const item = currentDragonbane(false);
   if (!item) throw new Error('Não encontrei a ficha Dragonbane atual. Salve a ficha e tente novamente.');
 
   const PDFLib = await loadPdfLib();
-  const base = await templateBytes(PDFLib, forceTemplatePick);
-  const doc = await PDFLib.PDFDocument.load(base, { ignoreEncryption: true });
+  const doc = await buildEmbeddedTemplate(PDFLib);
   const form = doc.getForm();
+
   fillDragonbanePdf(form, item);
+  const portraitAdded = await addPortrait(doc, item, PDFLib);
 
   try {
     const font = await doc.embedFont(PDFLib.StandardFonts.Helvetica);
@@ -184,23 +221,17 @@ async function exportPdf(forceTemplatePick = false) {
 
   const bytes = await doc.save({ useObjectStreams: false, updateFieldAppearances: false });
   download(bytes, item);
-  return item;
+  return { item, portraitAdded };
 }
 
 function isDragonbaneEditorOpen() {
-  // Marcadores reais do layout Dragonbane atual. O detector antigo dependia de textos
-  // exatos e podia falhar depois de uma pequena mudança visual.
   const structural = [
     document.querySelector('.db-sheet'),
     document.querySelector('.db-logo'),
     document.querySelector('.db-brand'),
     document.querySelector('.db-layout')
   ].filter(Boolean);
-
   if (structural.some(visible)) return true;
-
-  // Fallback: se o nome da ficha Dragonbane salva aparece nos campos visíveis, estamos
-  // dentro dessa ficha mesmo que as classes CSS mudem no futuro.
   return !!currentDragonbane(true);
 }
 
@@ -209,7 +240,6 @@ function findToolbar() {
     b => visible(b) && /copiar\s*ficha/i.test((b.textContent || '').replace(/\s+/g, ' ').trim())
   );
   if (!copy) return null;
-
   const toolbar = copy.parentElement;
   if (!toolbar) return null;
   const buttons = Array.from(toolbar.querySelectorAll('button'));
@@ -237,23 +267,27 @@ function ensureButton() {
     button.type = 'button';
     button.className = copy.className;
     button.textContent = '📄 Baixar PDF';
-    button.title = 'Baixar esta ficha Dragonbane em PDF editável. Shift+clique troca o PDF-base salvo.';
+    button.title = 'Baixar esta ficha Dragonbane em PDF editável já preenchido.';
     button.style.background = 'rgba(4,120,87,.92)';
     button.style.whiteSpace = 'nowrap';
     button.style.border = '1px solid rgba(255,255,255,.28)';
-    button.onclick = async event => {
+    button.onclick = async () => {
       if (button.dataset.busy === '1') return;
       const original = button.textContent;
       button.dataset.busy = '1';
       button.disabled = true;
       button.textContent = '⏳ Gerando PDF...';
       try {
-        const item = await exportPdf(!!event.shiftKey);
-        toast(`PDF editável de ${item?.bio?.nome || 'Dragonbane'} baixado.`, 'success');
+        const { item, portraitAdded } = await exportPdf();
+        toast(
+          portraitAdded
+            ? `PDF editável de ${item?.bio?.nome || 'Dragonbane'} baixado com retrato.`
+            : `PDF editável de ${item?.bio?.nome || 'Dragonbane'} baixado.`,
+          'success'
+        );
       } catch (error) {
-        const msg = String(error?.message || 'Não foi possível gerar o PDF.');
-        if (!/cancelada/i.test(msg)) console.error('[PJ Lite PDF]', error);
-        toast(msg, /cancelada/i.test(msg) ? 'info' : 'error');
+        console.error('[PJ Lite PDF]', error);
+        toast(String(error?.message || 'Não foi possível gerar o PDF.'), 'error');
       } finally {
         button.dataset.busy = '0';
         button.disabled = false;
@@ -262,8 +296,6 @@ function ensureButton() {
     };
   }
 
-  // Reinsere depois do botão Copiar Ficha. Isso também recupera o botão caso o React
-  // reconstrua a barra durante um autosave/re-render.
   if (button.parentElement !== toolbar || button.previousElementSibling !== copy) {
     toolbar.insertBefore(button, copy.nextSibling);
   }
@@ -286,9 +318,6 @@ export function installDragonbanePdfExport() {
   new MutationObserver(schedule).observe(document.documentElement, { childList: true, subtree: true });
   addEventListener('resize', schedule, { passive: true });
   addEventListener('focus', schedule, { passive: true });
-
-  // Fallback contra reconciliações do React e dispositivos móveis que não gerem uma
-  // mutação observável na barra. O custo é mínimo: apenas uma busca curta a cada 750 ms.
   setInterval(ensureButton, 750);
   setTimeout(ensureButton, 0);
   setTimeout(ensureButton, 250);
