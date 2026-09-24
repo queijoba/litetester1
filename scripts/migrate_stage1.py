@@ -19,6 +19,9 @@ if not all([style_match, script_match, head_match, body_match]):
     raise SystemExit('Não foi possível localizar <style>, script Babel, <head> ou <body>.')
 
 css = style_match.group(1).strip() + '\n'
+# O CSS inline antigo continha um seletor de classe Tailwind arbitrária sem escapes.
+# Navegadores eram tolerantes ao bloco, mas o minificador CSS do Vite o rejeita.
+css = css.replace('.bg-[#922610]', '.bg-\\[\\#922610\\]')
 legacy_jsx = script_match.group(1)
 
 legacy_jsx = re.sub(
