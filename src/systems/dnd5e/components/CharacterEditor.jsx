@@ -1,4 +1,4 @@
-import '../dnd-sheet-v3.css';
+import '../dnd-sheet-v4.css';
 
 // Editor modular de personagem D&D 5.5e / regras 2024.
 // A ficha prioriza leitura rápida em jogo, compatibilidade com dados antigos
@@ -34,10 +34,7 @@ export default function DndCharacterEditor({ scope }) {
 
   if (!isDnd || data.type !== 'pc') return null;
 
-  const activeMainTab = mobileTab === 'recursos' ? 'recursos' : 'status';
-  const activeResourceTab = ['caracteristicas', 'talentos', 'magias'].includes(dndPcTab)
-    ? dndPcTab
-    : 'caracteristicas';
+  const activeMainTab = ['status', 'recursos', 'magias'].includes(mobileTab) ? mobileTab : 'status';
 
   const abilities = [
     ['for', 'Força'], ['des', 'Destreza'], ['con', 'Constituição'],
@@ -187,12 +184,13 @@ export default function DndCharacterEditor({ scope }) {
 
   return (
     <div className="dnd-paper dnd-v3 font-dnd">
-      <div className="dnd-v3-main-tabs sticky top-0 z-20">
+      <div className="dnd-v3-main-tabs dnd-v4-main-tabs sticky top-0 z-20">
         <button type="button" onClick={() => setMobileTab('status')} className={activeMainTab === 'status' ? 'active' : ''}>Ficha & Combate</button>
-        <button type="button" onClick={() => setMobileTab('recursos')} className={activeMainTab === 'recursos' ? 'active' : ''}>Recursos & Magias</button>
+        <button type="button" onClick={() => setMobileTab('recursos')} className={activeMainTab === 'recursos' ? 'active' : ''}>Recursos</button>
+        <button type="button" onClick={() => setMobileTab('magias')} className={activeMainTab === 'magias' ? 'active' : ''}>Magias</button>
       </div>
 
-      {activeMainTab === 'recursos' && (
+      {activeMainTab !== 'status' && (
         <div className="dnd-v3-context">
           <div className="min-w-0">
             <strong>{data.bio?.nome || 'Personagem sem nome'}</strong>
@@ -362,87 +360,111 @@ export default function DndCharacterEditor({ scope }) {
         )}
 
         {activeMainTab === 'recursos' && (
-          <div className="dnd-v3-pane">
+          <div className="dnd-v3-pane dnd-v4-resources-page">
             <section className="dnd-v3-roleplay-grid">
               <label><span>Aparência</span><textarea rows="3" value={data.bio?.aparencia || ''} onChange={e => updateField('bio.aparencia', e.target.value)} placeholder="Descrição visual, marcas, roupas, símbolos..." /></label>
               <label><span>História & Personalidade</span><textarea rows="3" value={data.bio?.historiaPersonalidade || ''} onChange={e => updateField('bio.historiaPersonalidade', e.target.value)} placeholder="Passado, motivações, hábitos e interpretação..." /></label>
             </section>
 
-            <div className="dnd-v3-resource-mobile-tabs">
-              <button type="button" onClick={() => setDndPcTab('caracteristicas')} className={activeResourceTab === 'caracteristicas' ? 'active' : ''}>Características</button>
-              <button type="button" onClick={() => setDndPcTab('talentos')} className={activeResourceTab === 'talentos' ? 'active' : ''}>Talentos</button>
-              <button type="button" onClick={() => setDndPcTab('magias')} className={activeResourceTab === 'magias' ? 'active' : ''}>Magias</button>
-            </div>
-
-            <div className="dnd-v3-resource-board">
-              <section className={`dnd-v3-resource-column ${activeResourceTab === 'caracteristicas' ? 'mobile-active' : ''}`}>
-                <div className="dnd-v3-column-head"><div><b>Características</b><small>Classe, espécie e outros recursos</small></div><button type="button" onClick={() => addToArray('caracteristicas', { tipo: 'classe', nome: '', desc: '' })}>+ Adicionar</button></div>
-                {['classe','especie','outro'].map(type => {
-                  const label = type === 'classe' ? 'Classe' : type === 'especie' ? 'Espécie' : 'Outros';
-                  const entries = features.map((entry, index) => ({ entry, index })).filter(item => (item.entry?.tipo || 'classe') === type);
-                  return <div key={type} className="dnd-v3-feature-group"><h4>{label}</h4>{entries.length === 0 ? <p>Nenhum recurso.</p> : entries.map(item => renderFeatureCard(item.entry, item.index, true))}</div>;
-                })}
+            <div className="dnd-v4-resource-grid">
+              <section className="dnd-v4-resource-card class-card">
+                <div className="dnd-v3-column-head"><div><b>Características de Classe</b><small>Recursos concedidos pela classe e subclasse</small></div><button type="button" onClick={() => addToArray('caracteristicas', { tipo: 'classe', nome: '', desc: '' })}>+ Classe</button></div>
+                <div className="dnd-v4-resource-list">
+                  {features.map((entry, index) => ({ entry, index })).filter(item => (item.entry?.tipo || 'classe') === 'classe').length === 0
+                    ? <p className="dnd-v4-empty">Nenhuma característica de classe cadastrada.</p>
+                    : features.map((entry, index) => ({ entry, index })).filter(item => (item.entry?.tipo || 'classe') === 'classe').map(item => renderFeatureCard(item.entry, item.index, false))}
+                </div>
               </section>
 
-              <section className={`dnd-v3-resource-column ${activeResourceTab === 'talentos' ? 'mobile-active' : ''}`}>
-                <div className="dnd-v3-column-head"><div><b>Talentos</b><small>Talentos de origem, gerais e épicos</small></div><button type="button" onClick={() => addToArray('caracteristicas', { tipo: 'talento', nome: '', desc: '' })}>+ Talento</button></div>
-                <div className="dnd-v3-feature-group talents">
+              <section className="dnd-v4-resource-card species-card">
+                <div className="dnd-v3-column-head"><div><b>Características de Espécie</b><small>Traços, sentidos, deslocamentos e capacidades</small></div><button type="button" onClick={() => addToArray('caracteristicas', { tipo: 'especie', nome: '', desc: '' })}>+ Espécie</button></div>
+                <div className="dnd-v4-resource-list">
+                  {features.map((entry, index) => ({ entry, index })).filter(item => item.entry?.tipo === 'especie').length === 0
+                    ? <p className="dnd-v4-empty">Nenhuma característica de espécie cadastrada.</p>
+                    : features.map((entry, index) => ({ entry, index })).filter(item => item.entry?.tipo === 'especie').map(item => renderFeatureCard(item.entry, item.index, false))}
+                </div>
+              </section>
+
+              <section className="dnd-v4-resource-card extras-card">
+                <div className="dnd-v3-column-head"><div><b>Talentos & Outros</b><small>Talentos de origem, gerais, épicos e recursos extras</small></div></div>
+                <div className="dnd-v4-split-head"><h4>Talentos</h4><button type="button" onClick={() => addToArray('caracteristicas', { tipo: 'talento', nome: '', desc: '' })}>+ Talento</button></div>
+                <div className="dnd-v4-resource-list compact">
                   {features.map((entry, index) => ({ entry, index })).filter(item => item.entry?.tipo === 'talento').length === 0
-                    ? <p>Nenhum talento cadastrado.</p>
+                    ? <p className="dnd-v4-empty">Nenhum talento cadastrado.</p>
                     : features.map((entry, index) => ({ entry, index })).filter(item => item.entry?.tipo === 'talento').map(item => renderFeatureCard(item.entry, item.index, false))}
                 </div>
-                <div className="dnd-v3-side-card">
-                  <h4>Treino & Proficiências</h4>
-                  <div className="dnd-v3-training-grid">
-                    {[['leve','Leve'],['media','Média'],['pesada','Pesada'],['escudos','Escudos']].map(([key,label]) => <label key={key}><input type="checkbox" checked={!!data.treinoArmadura?.[key]} onChange={e => updateField(`treinoArmadura.${key}`, e.target.checked)} /><span>{label}</span></label>)}
-                  </div>
-                  <label><span>Armas</span><textarea rows="2" value={data.armasProficiencias || ''} onChange={e => updateField('armasProficiencias', e.target.value)} /></label>
-                  <label><span>Ferramentas</span><textarea rows="2" value={data.ferramentas || ''} onChange={e => updateField('ferramentas', e.target.value)} /></label>
-                  <label><span>Idiomas</span><textarea rows="2" value={data.idiomas || ''} onChange={e => updateField('idiomas', e.target.value)} /></label>
-                </div>
-                <div className="dnd-v3-side-card">
-                  <h4>Sintonização</h4>
-                  {attunements.map((item, index) => <label key={index} className="dnd-v3-attune"><span>✦</span><input value={item} onChange={e => { const list = [...attunements]; list[index] = e.target.value; updateField('sintonizacao', list); }} placeholder={`Item ${index + 1}`} /></label>)}
-                </div>
-              </section>
-
-              <section className={`dnd-v3-resource-column spells ${activeResourceTab === 'magias' ? 'mobile-active' : ''}`}>
-                <div className="dnd-v3-column-head"><div><b>Magias</b><small>Organizadas automaticamente por círculo</small></div></div>
-                <div className="dnd-v3-casting-grid">
-                  <label><span>Habilidade</span><input value={data.magias?.conjuracao?.habilidade || ''} onChange={e => updateField('magias.conjuracao.habilidade', e.target.value)} placeholder="INT/SAB/CAR" /></label>
-                  <label><span>CD</span><input value={data.magias?.conjuracao?.cd || ''} onChange={e => updateField('magias.conjuracao.cd', e.target.value)} placeholder="13" /></label>
-                  <label><span>Ataque</span><input value={data.magias?.conjuracao?.ataque || ''} onChange={e => updateField('magias.conjuracao.ataque', e.target.value)} placeholder="+5" /></label>
-                </div>
-                <div className="dnd-v3-circles">
-                  {Array.from({ length: 10 }, (_, level) => {
-                    const circleSpells = spells.map((spell, index) => ({ spell, index })).filter(item => spellLevel(item.spell) === level);
-                    const slot = data.magias?.slots?.[level] || { atual: 0, max: 0 };
-                    return (
-                      <details key={level} className="dnd-v3-circle" open={circleSpells.length > 0 || level === 0}>
-                        <summary>
-                          <div><b>{circleName(level)}</b><span>{circleSpells.length} magia{circleSpells.length === 1 ? '' : 's'}</span></div>
-                          {level > 0 && <div className="dnd-v3-slot-mini" onClick={e => e.stopPropagation()}><span>Espaços</span><input type="number" min="0" value={slot.atual ?? 0} onChange={e => updateField(`magias.slots.${level}.atual`, Number(e.target.value) || 0)} /><i>/</i><input type="number" min="0" value={slot.max ?? 0} onChange={e => updateField(`magias.slots.${level}.max`, Number(e.target.value) || 0)} /></div>}
-                          <div className="dnd-v3-circle-actions" onClick={e => e.stopPropagation()}><button type="button" onClick={() => sortCircleAlphabetically(level)} disabled={circleSpells.length < 2}>A–Z</button><button type="button" onClick={() => addSpell(level)}>+ Magia</button></div>
-                        </summary>
-                        <div className="dnd-v3-circle-body">
-                          {circleSpells.length === 0 ? <p>Nenhuma magia neste círculo.</p> : circleSpells.map(item => renderSpellCard(item.spell, item.index, level))}
-                        </div>
-                      </details>
-                    );
-                  })}
+                <div className="dnd-v4-split-head other"><h4>Outras Habilidades</h4><button type="button" onClick={() => addToArray('caracteristicas', { tipo: 'outro', nome: '', desc: '' })}>+ Outra</button></div>
+                <div className="dnd-v4-resource-list compact">
+                  {features.map((entry, index) => ({ entry, index })).filter(item => item.entry?.tipo === 'outro').length === 0
+                    ? <p className="dnd-v4-empty">Nenhuma habilidade adicional cadastrada.</p>
+                    : features.map((entry, index) => ({ entry, index })).filter(item => item.entry?.tipo === 'outro').map(item => renderFeatureCard(item.entry, item.index, false))}
                 </div>
               </section>
             </div>
 
-            <details className="dnd-v3-classic-roleplay">
-              <summary>Detalhes clássicos de interpretação</summary>
-              <div>
-                <label><span>Traços de Personalidade</span><textarea rows="2" value={data.tracosPersonalidade || ''} onChange={e => updateField('tracosPersonalidade', e.target.value)} /></label>
-                <label><span>Ideais</span><textarea rows="2" value={data.ideais || ''} onChange={e => updateField('ideais', e.target.value)} /></label>
-                <label><span>Vínculos</span><textarea rows="2" value={data.vinculos || ''} onChange={e => updateField('vinculos', e.target.value)} /></label>
-                <label><span>Defeitos</span><textarea rows="2" value={data.defeitos || ''} onChange={e => updateField('defeitos', e.target.value)} /></label>
+            <div className="dnd-v4-support-grid">
+              <section className="dnd-v3-side-card dnd-v4-support-card">
+                <h4>Treino & Proficiências</h4>
+                <div className="dnd-v3-training-grid">
+                  {[['leve','Leve'],['media','Média'],['pesada','Pesada'],['escudos','Escudos']].map(([key,label]) => <label key={key}><input type="checkbox" checked={!!data.treinoArmadura?.[key]} onChange={e => updateField(`treinoArmadura.${key}`, e.target.checked)} /><span>{label}</span></label>)}
+                </div>
+                <div className="dnd-v4-proficiency-grid">
+                  <label><span>Armas</span><textarea rows="2" value={data.armasProficiencias || ''} onChange={e => updateField('armasProficiencias', e.target.value)} placeholder="Simples, marciais e específicas..." /></label>
+                  <label><span>Ferramentas</span><textarea rows="2" value={data.ferramentas || ''} onChange={e => updateField('ferramentas', e.target.value)} placeholder="Kits, instrumentos, veículos..." /></label>
+                  <label><span>Idiomas</span><textarea rows="2" value={data.idiomas || ''} onChange={e => updateField('idiomas', e.target.value)} placeholder="Comum, Élfico, Dracônico..." /></label>
+                </div>
+              </section>
+              <section className="dnd-v3-side-card dnd-v4-support-card">
+                <h4>Sintonização & Interpretação</h4>
+                <div className="dnd-v4-attunement-grid">
+                  {attunements.map((item, index) => <label key={index} className="dnd-v3-attune"><span>✦</span><input value={item} onChange={e => { const list = [...attunements]; list[index] = e.target.value; updateField('sintonizacao', list); }} placeholder={`Item sintonizado ${index + 1}`} /></label>)}
+                </div>
+                <details className="dnd-v3-classic-roleplay dnd-v4-classic-roleplay">
+                  <summary>Detalhes clássicos de interpretação</summary>
+                  <div>
+                    <label><span>Traços de Personalidade</span><textarea rows="2" value={data.tracosPersonalidade || ''} onChange={e => updateField('tracosPersonalidade', e.target.value)} /></label>
+                    <label><span>Ideais</span><textarea rows="2" value={data.ideais || ''} onChange={e => updateField('ideais', e.target.value)} /></label>
+                    <label><span>Vínculos</span><textarea rows="2" value={data.vinculos || ''} onChange={e => updateField('vinculos', e.target.value)} /></label>
+                    <label><span>Defeitos</span><textarea rows="2" value={data.defeitos || ''} onChange={e => updateField('defeitos', e.target.value)} /></label>
+                  </div>
+                </details>
+              </section>
+            </div>
+          </div>
+        )}
+
+        {activeMainTab === 'magias' && (
+          <div className="dnd-v3-pane dnd-v4-spell-page">
+            <section className="dnd-v4-spell-toolbar">
+              <div className="dnd-v4-spell-title">
+                <div><b>Livro de Magias</b><span>Organização por círculo, preparação e ordem personalizada</span></div>
+                <div className="dnd-v4-spell-count"><strong>{spells.filter(spell => spell?.preparada).length}</strong><span>preparadas</span><i>/</i><strong>{spells.length}</strong><span>total</span></div>
               </div>
-            </details>
+              <div className="dnd-v3-casting-grid dnd-v4-casting-grid">
+                <label><span>Habilidade de Conjuração</span><input value={data.magias?.conjuracao?.habilidade || ''} onChange={e => updateField('magias.conjuracao.habilidade', e.target.value)} placeholder="INT/SAB/CAR" /></label>
+                <label><span>CD para Resistir</span><input value={data.magias?.conjuracao?.cd || ''} onChange={e => updateField('magias.conjuracao.cd', e.target.value)} placeholder="13" /></label>
+                <label><span>Ataque de Magia</span><input value={data.magias?.conjuracao?.ataque || ''} onChange={e => updateField('magias.conjuracao.ataque', e.target.value)} placeholder="+5" /></label>
+              </div>
+            </section>
+
+            <div className="dnd-v3-circles dnd-v4-circles">
+              {Array.from({ length: 10 }, (_, level) => {
+                const circleSpells = spells.map((spell, index) => ({ spell, index })).filter(item => spellLevel(item.spell) === level);
+                const slot = data.magias?.slots?.[level] || { atual: 0, max: 0 };
+                return (
+                  <details key={level} className="dnd-v3-circle dnd-v4-circle" open={circleSpells.length > 0 || level === 0}>
+                    <summary>
+                      <div><b>{circleName(level)}</b><span>{circleSpells.length} magia{circleSpells.length === 1 ? '' : 's'}</span></div>
+                      {level > 0 && <div className="dnd-v3-slot-mini" onClick={e => e.stopPropagation()}><span>Espaços</span><input type="number" min="0" value={slot.atual ?? 0} onChange={e => updateField(`magias.slots.${level}.atual`, Number(e.target.value) || 0)} /><i>/</i><input type="number" min="0" value={slot.max ?? 0} onChange={e => updateField(`magias.slots.${level}.max`, Number(e.target.value) || 0)} /></div>}
+                      <div className="dnd-v3-circle-actions" onClick={e => e.stopPropagation()}><button type="button" onClick={() => sortCircleAlphabetically(level)} disabled={circleSpells.length < 2}>A–Z</button><button type="button" onClick={() => addSpell(level)}>+ Magia</button></div>
+                    </summary>
+                    <div className="dnd-v4-spell-grid">
+                      {circleSpells.length === 0 ? <p className="dnd-v4-empty spell-empty">Nenhuma magia neste círculo.</p> : circleSpells.map(item => renderSpellCard(item.spell, item.index, level))}
+                    </div>
+                  </details>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>
