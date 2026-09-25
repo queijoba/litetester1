@@ -1,32 +1,51 @@
-# LiteTester1 — PJ Lite React Migration
+# LiteTester1 — PJ Lite React Preview
 
-Ambiente isolado para evoluir o PJ Lite antes da migração definitiva do `pjlite.vercel.app`.
+Ambiente isolado para evoluir e validar o PJ Lite antes de qualquer migração do `pjlite.vercel.app` definitivo.
 
 ## Estado atual
 
-A primeira prova de conceito da migração foi concluída com sucesso:
+A prévia React/Vite está funcional e modularizada por sistema:
 
-- React/ReactDOM são carregados pelo projeto Vite, sem Babel no navegador.
+- React/ReactDOM são empacotados pelo Vite, sem Babel no navegador.
 - JSZip e LZ-String são dependências NPM.
-- O CSS legado foi separado em `src/pjlite.css`.
-- O aplicativo legado permanece em `src/PJLiteApp.jsx` para preservar compatibilidade enquanto a modularização é feita aos poucos.
-- Dragonbane, D&D 5e, Fabula Ultima e O Som das Seis continuam disponíveis.
-- A exportação PDF de Dragonbane usa o template editável real em `public/pdfs/dragonbane-template.pdf`.
-- O exportador de PDF do Dragonbane já foi isolado em `src/features/pdf/dragonbane/`, criando um padrão para futuros sistemas.
-- O repositório possui CI para verificar a estrutura essencial e validar o build em cada push/PR.
+- O CSS legado continua em `src/pjlite.css`, enquanto sistemas novos podem ter estilos próprios.
+- Dragonbane, D&D 5.5e, Fabula Ultima e O Som das Seis possuem módulos próprios em `src/systems/`.
+- Skyfall, Tormenta20, Ordem Paranormal, 3D&T e Guerra dos Tronos estão reservados no registro para implementação futura.
+- Dragonbane exporta usando o template real em `public/pdfs/dragonbane-template.pdf`.
+- D&D 5.5e possui ficha responsiva, abas de Ficha & Combate, Recursos, Magias e painel dinâmico da classe/subclasse.
+- A folha `src/systems/dnd5e/dnd-sheet-v7.css` contém o polimento mobile atual do D&D.
+- O CI executa verificação estrutural e build em cada push/PR para `main`.
 
-## Estrutura desta fase
+## Estrutura principal
 
 ```text
 src/
-├─ PJLiteApp.jsx              # aplicação monolítica preservada durante a transição
-├─ main.jsx                   # bootstrap React
-├─ pjlite.css                 # estilos atuais
-└─ features/
-   └─ pdf/
-      └─ dragonbane/
-         ├─ export.js
-         └─ map.js
+├─ PJLiteApp.jsx
+├─ main.jsx
+├─ pjlite.css
+└─ systems/
+   ├─ registry.js
+   ├─ dragonbane/
+   │  ├─ components/
+   │  │  └─ Editor.jsx
+   │  └─ pdf/
+   │     ├─ export.js
+   │     └─ map.js
+   ├─ dnd5e/
+   │  ├─ classPanels.js
+   │  ├─ dnd-sheet-v7.css
+   │  └─ components/
+   │     ├─ CharacterEditor.jsx
+   │     ├─ CharacterEditorBase.jsx
+   │     └─ ThreatEditor.jsx
+   ├─ fabulaUltima/
+   │  └─ components/
+   │     ├─ CharacterEditor.jsx
+   │     └─ ThreatEditor.jsx
+   └─ somDasSeis/
+      └─ components/
+         ├─ CharacterEditor.jsx
+         └─ ThreatEditor.jsx
 
 public/
 └─ pdfs/
@@ -45,15 +64,17 @@ npm run check
 
 `npm run check` executa a verificação estrutural e o build Vite.
 
-## Próximas etapas
+## Validação antes da migração definitiva
 
-A prioridade agora é modularizar o núcleo sem quebrar compatibilidade:
+A prévia já serve para desenvolvimento e testes, mas a promoção para o projeto definitivo deve acontecer somente depois de uma rodada final de compatibilidade. Pontos ainda recomendados:
 
-1. separar infraestrutura compartilhada (armazenamento, temas, backup/importação e Ficha Chat);
-2. extrair Dragonbane para `src/systems/dragonbane/` e usá-lo como padrão;
-3. migrar D&D 5e, Fabula Ultima e O Som das Seis gradualmente;
-4. substituir dependências temporárias via CDN (Tailwind e pdf-lib) por dependências empacotadas;
-5. adicionar testes de interface automatizados quando a estrutura dos sistemas estiver estabilizada;
-6. somente depois promover a arquitetura React para o projeto definitivo.
+1. adicionar testes E2E/smoke para criar, salvar, reabrir, importar e exportar fichas dos quatro sistemas;
+2. remover trechos legados/duplicados que ainda permanecem em componentes-base durante a transição;
+3. empacotar dependências ainda carregadas externamente, como Tailwind, fontes e `pdf-lib`, reduzindo dependência de CDN;
+4. manter uma migração segura para as chaves antigas de armazenamento antes de qualquer renomeação;
+5. validar backup/importação, Ficha Chat, temas, modo escuro, mobile e PDF em navegadores diferentes;
+6. fazer um backup do projeto oficial antes da troca de domínio/deploy.
 
-O `litetester1` continua sendo o laboratório. O projeto oficial não deve ser substituído até a conclusão dos testes de compatibilidade.
+## Política da prévia
+
+O `litetester1` continua sendo o laboratório. O projeto oficial não deve ser substituído automaticamente. A decisão de promover a prévia será tomada somente após a revisão funcional final e testes de regressão.
