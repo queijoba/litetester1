@@ -59,58 +59,10 @@ function loadPdfLib() {
   return loadPdfLib.promise;
 }
 
-function normalizeBase64(value) {
-  let clean = String(value ?? '').trim();
-
-  const comma = clean.indexOf(',');
-  if (/^data:/i.test(clean) && comma >= 0) clean = clean.slice(comma + 1);
-
-  if (/%[0-9A-F]{2}/i.test(clean)) {
-    try { clean = decodeURIComponent(clean); } catch {}
-  }
-
-  clean = clean
-    .replace(/\s+/g, '')
-    .replace(/-/g, '+')
-    .replace(/_/g, '/');
-
-  // Os recursos internos podem estar divididos em arquivos no meio de um
-  // bloco Base64. Por isso, padding só pode ser calculado DEPOIS de todas as
-  // partes terem sido remontadas.
-  clean = clean.replace(/=+$/g, '');
-
-  const remainder = clean.length % 4;
-  if (remainder === 1) throw new Error('Dados Base64 inválidos.');
-  if (remainder) clean += '='.repeat(4 - remainder);
-
-  return clean;
-}
-
-function base64Bytes(value) {
-  const clean = normalizeBase64(value);
-  if (!clean) return new Uint8Array(0);
-
-  let binary;
-  try {
-    binary = atob(clean);
-  } catch (error) {
-    console.error('[PJ Lite PDF] Base64 inválido:', { length: clean.length, ending: clean.slice(-12) });
-    throw new Error('Não foi possível decodificar um recurso do PDF. Atualize a página e tente novamente.');
-  }
-
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-  return bytes;
-}
-
-function backgroundBytes(parts) {
-  // Os arquivos p1_*.js e p2_*.js são pedaços consecutivos da MESMA string
-  // Base64, não imagens Base64 independentes. Decodificar cada pedaço antes de
-  // remontá-los quebra quando a divisão cai no meio de um grupo de 4 caracteres.
-  const joined = (Array.isArray(parts) ? parts : [parts])
-    .map(part => String(part ?? '').replace(/\s+/g, ''))
-    .join('');
-  return base64Bytes(joined);
+async function fetchBinary(url, label = 'recurso') {
+  const response = await fetch(url, { cache: 'no-store' });
+  if (!response.ok) throw new Error(`Não foi possível carregar ${label}.`);
+  return new Uint8Array(await response.arrayBuffer());
 }
 
 async function buildEmbeddedTemplate(PDFLib) {
@@ -123,7 +75,7 @@ async function buildEmbeddedTemplate(PDFLib) {
 
   for (let i = 0; i < DRAGONBANE_PDF_BACKGROUNDS.length; i++) {
     const page = doc.addPage([DRAGONBANE_PDF_PAGE.width, DRAGONBANE_PDF_PAGE.height]);
-    const imageBytes = backgroundBytes(DRAGONBANE_PDF_BACKGROUNDS[i]);
+    const imageBytes = await fetchBinary(DRAGONBANE_PDF_BACKGROUNDS[i], `o fundo da página ${i + 1}`);
     const image = await doc.embedJpg(imageBytes);
     page.drawImage(image, { x: 0, y: 0, width: DRAGONBANE_PDF_PAGE.width, height: DRAGONBANE_PDF_PAGE.height });
     pages.push(page);
@@ -196,74 +148,39 @@ function download(bytes, item) {
   setTimeout(() => URL.revokeObjectURL(url), 5000);
 }
 
-function decodeImageDataUrl(value) {
-  const commaIndex = value.indexOf(',');
-  if (commaIndex < 0) return null;
-  const header = value.slice(0, commaIndex);
-  const body = value.slice(commaIndex + 1);
+async function imageFromSource(source) {
+  if (!source || typeof source !== 'string') return null;
+  const value = source.trim();
+  if (!/^(data:image\/|https?:|blob:)/i.test(value)) return null;
 
-  if (/;base64/i.test(header)) {
-    return {
-      bytes: base64Bytes(body),
-      kind: /image\/png/i.test(header) ? 'png' : 'jpg'
-    };
-  }
-
-  // Data URLs também podem usar percent-encoding em vez de Base64.
   try {
-    const decoded = decodeURIComponent(body);
-    const bytes = new TextEncoder().encode(decoded);
-    return { bytes, kind: /image\/png/i.test(header) ? 'png' : 'jpg' };
-  } catch {
+    const response = await fetch(value, /^https?:/i.test(value) ? { mode: 'cors' } : undefined);
+    if (!response.ok) return null;
+
+    const headerType = response.headers.get('content-type') || '';
+    const sourceType = value.match(/^data:(image\/(?:png|jpeg|jpg))/i)?.[1] || '';
+    const type = headerType || sourceType;
+    if (!/image\/(png|jpeg|jpg)/i.test(type)) return null;
+
+    return {
+      bytes: new Uint8Array(await response.arrayBuffer()),
+      kind: /png/i.test(type) ? 'png' : 'jpg'
+    };
+  } catch (error) {
+    console.warn('[PJ Lite PDF] Não foi possível preparar o retrato; o PDF continuará sem a imagem.', error);
     return null;
   }
 }
 
-async function imageFromSource(source) {
-  if (!source || typeof source !== 'string') return null;
-  const value = source.trim();
-
-  if (/^data:image\/(png|jpeg|jpg)/i.test(value)) {
-    try {
-      return decodeImageDataUrl(value);
-    } catch (error) {
-      console.warn('[PJ Lite PDF] Retrato inválido; PDF será gerado sem a imagem.', error);
-      return null;
-    }
-  }
-
-  if (/^(https?:|blob:)/i.test(value)) {
-    try {
-      const response = await fetch(value, /^https?:/i.test(value) ? { mode: 'cors' } : undefined);
-      if (!response.ok) return null;
-      const type = response.headers.get('content-type') || '';
-      if (!/image\/(png|jpeg|jpg)/i.test(type)) return null;
-      return { bytes: new Uint8Array(await response.arrayBuffer()), kind: /png/i.test(type) ? 'png' : 'jpg' };
-    } catch (error) {
-      console.warn('[PJ Lite PDF] Não foi possível buscar o retrato; PDF será gerado sem a imagem.', error);
-      return null;
-    }
-  }
-
-  return null;
-}
-
 async function addPortrait(doc, item, PDFLib) {
-  let loaded = null;
-  try {
-    loaded = await imageFromSource(item?.bio?.imagem);
-  } catch (error) {
-    console.warn('[PJ Lite PDF] Falha ao preparar o retrato; PDF continuará sem imagem.', error);
-    return false;
-  }
-
+  const loaded = await imageFromSource(item?.bio?.imagem);
   if (!loaded) return false;
 
   try {
     const image = loaded.kind === 'png' ? await doc.embedPng(loaded.bytes) : await doc.embedJpg(loaded.bytes);
     const page = doc.getPages()[0];
-
     const box = { x: 36.5, y: 656.5, width: 76, height: 90 };
+
     page.drawRectangle({
       x: box.x, y: box.y, width: box.width, height: box.height,
       color: PDFLib.rgb(0.965, 0.945, 0.86)
@@ -280,7 +197,7 @@ async function addPortrait(doc, item, PDFLib) {
     });
     return true;
   } catch (error) {
-    console.warn('[PJ Lite PDF] Não foi possível inserir o retrato; PDF continuará sem imagem.', error);
+    console.warn('[PJ Lite PDF] Não foi possível inserir o retrato; o PDF continuará sem imagem.', error);
     return false;
   }
 }
