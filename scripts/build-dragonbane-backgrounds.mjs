@@ -1,8 +1,7 @@
 import { mkdir, writeFile } from 'node:fs/promises';
-import page1Base64 from '../src/pdf/dragonbaneBg1.small.js';
-import page2Base64 from '../src/pdf/dragonbaneBg2.small.js';
-
-const pages = [page1Base64, page2Base64];
+import page1Full from '../src/pdf/dragonbaneBg1.js';
+import page1Small from '../src/pdf/dragonbaneBg1.small.js';
+import page2Small from '../src/pdf/dragonbaneBg2.small.js';
 
 function cleanBase64(value) {
   return String(value ?? '')
@@ -19,13 +18,25 @@ function looksLikeJpeg(buffer) {
     buffer[buffer.length - 2] === 0xff && buffer[buffer.length - 1] === 0xd9;
 }
 
+function firstValid(candidates, pageNumber) {
+  for (const [name, encoded] of candidates) {
+    const jpeg = Buffer.from(cleanBase64(encoded), 'base64');
+    console.log(`[PJ Lite] Página ${pageNumber} candidato ${name}: ${jpeg.length} bytes; jpeg=${looksLikeJpeg(jpeg)}`);
+    if (looksLikeJpeg(jpeg)) return jpeg;
+  }
+  throw new Error(`Nenhum fundo JPEG válido encontrado para a página ${pageNumber}.`);
+}
+
 await mkdir('public/generated', { recursive: true });
 
-for (let i = 0; i < pages.length; i++) {
-  const jpeg = Buffer.from(cleanBase64(pages[i]), 'base64');
-  if (!looksLikeJpeg(jpeg)) {
-    throw new Error(`O fundo JPEG compacto da página ${i + 1} está inválido (${jpeg.length} bytes).`);
-  }
-  await writeFile(`public/generated/dragonbane-page${i + 1}.jpg`, jpeg);
-  console.log(`[PJ Lite] Dragonbane página ${i + 1}: ${jpeg.length} bytes`);
-}
+const page1 = firstValid([
+  ['dragonbaneBg1.js', page1Full],
+  ['dragonbaneBg1.small.js', page1Small]
+], 1);
+const page2 = firstValid([
+  ['dragonbaneBg2.small.js', page2Small]
+], 2);
+
+await writeFile('public/generated/dragonbane-page1.jpg', page1);
+await writeFile('public/generated/dragonbane-page2.jpg', page2);
+console.log(`[PJ Lite] Fundos Dragonbane gerados: p1=${page1.length}, p2=${page2.length}`);
