@@ -1,0 +1,154 @@
+/* D&D v6 — refinamento de classe/subclasse e grimório mais intuitivo. */
+.dnd-v6-wrapper.is-custom-tab > .dnd-paper:first-child > .dnd-v3-sheet { display:none; }
+.dnd-v6-wrapper .dnd-v4-resources-page .class-card { display:none; }
+.dnd-v6-wrapper .dnd-v4-resource-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+
+.dnd-v6-custom-paper { background:transparent; }
+.dnd-v6-sheet { padding-top:16px; }
+.dnd-v6-class-page,.dnd-v6-spell-page { max-width:1500px; margin:0 auto; display:grid; gap:14px; }
+
+.dnd-v6-class-hero { display:grid; grid-template-columns:auto minmax(0,1fr) minmax(320px,.9fr); gap:16px; align-items:center; padding:16px; border:1px solid #cdbca9; border-radius:16px 5px 16px 5px; background:linear-gradient(135deg,#fffdf8 0%,#f7ecdc 100%); box-shadow:0 6px 22px rgba(74,51,31,.08); }
+.dnd-v6-class-icon { width:72px; height:72px; display:grid; place-items:center; border:2px solid rgba(177,122,38,.45); border-radius:18px 5px 18px 5px; background:#fff8e9; font-size:32px; }
+.dnd-v6-class-heading small { display:block; color:#9a7a47; font-size:8px; font-weight:900; letter-spacing:.12em; text-transform:uppercase; }
+.dnd-v6-class-heading h2 { margin:2px 0 3px; color:#5c4320; font:900 26px/1.05 Georgia,'Times New Roman',serif; }
+.dnd-v6-class-heading p { margin:0; color:#756a5f; font-size:10px; }
+.dnd-v6-class-identity { display:grid; grid-template-columns:.85fr 1.15fr; gap:8px; }
+.dnd-v6-readonly-class,.dnd-v6-subclass-select { min-width:0; padding:9px; border:1px solid #d3c3b2; border-radius:9px; background:#fffdf9; }
+.dnd-v6-readonly-class span,.dnd-v6-subclass-select>span { display:block; margin-bottom:3px; color:#796e64; font-size:7px; font-weight:900; text-transform:uppercase; letter-spacing:.06em; }
+.dnd-v6-readonly-class strong { display:block; color:#5b4120; font-size:14px; }
+.dnd-v6-readonly-class small,.dnd-v6-subclass-select small { display:block; margin-top:4px; color:#9a8d81; font-size:7px; line-height:1.3; }
+.dnd-v6-subclass-select select { width:100%; min-width:0; border:1px solid #c8b6a4; border-radius:7px; padding:7px 8px; background:#fff; color:#3d3833; outline:none; font-size:10px; font-weight:800; }
+
+.dnd-v6-class-layout { display:grid; grid-template-columns:minmax(300px,.72fr) minmax(0,1.28fr); gap:14px; align-items:start; }
+.dnd-v6-class-resource-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+.dnd-v6-class-resource { min-height:78px; padding:9px; border:1px solid #d7c8b8; border-radius:11px 4px 11px 4px; background:linear-gradient(180deg,#fffefa,#f7f0e7); }
+.dnd-v6-class-resource>span { display:block; margin-bottom:5px; color:#74685d; font-size:8px; font-weight:900; text-transform:uppercase; letter-spacing:.04em; }
+.dnd-v6-class-resource.tracker>div { display:grid; grid-template-columns:1fr auto 1fr; gap:6px; align-items:end; }
+.dnd-v6-class-resource.tracker label { min-width:0; }
+.dnd-v6-class-resource.tracker small { display:block; margin-bottom:2px; color:#a09183; font-size:6px; text-align:center; text-transform:uppercase; }
+.dnd-v6-class-resource.tracker input,.dnd-v6-class-resource.simple input { width:100%; min-width:0; border:0; border-bottom:1px solid #b9a894; background:transparent; outline:none; color:#922610; font-size:21px; font-weight:900; text-align:center; }
+.dnd-v6-class-resource.tracker i { align-self:center; color:#a79a8d; font-style:normal; font-weight:900; }
+.dnd-v6-class-resource.toggle { min-height:58px; display:flex; align-items:center; gap:8px; cursor:pointer; }
+.dnd-v6-class-resource.toggle input { width:18px; height:18px; accent-color:#922610; }
+.dnd-v6-class-resource.toggle span { margin:0; }
+.dnd-v6-class-notes { display:block; margin-top:10px; }
+.dnd-v6-class-notes>span { display:block; margin-bottom:4px; color:#756b61; font-size:8px; font-weight:900; text-transform:uppercase; }
+.dnd-v6-class-notes textarea { width:100%; border:1px solid #d3c5b6; border-radius:9px; padding:8px; background:#fffdfa; resize:vertical; outline:none; font-size:10px; }
+
+.dnd-v6-feature-title>div:first-child span,.dnd-v6-feature-title>div:first-child small { display:block; }
+.dnd-v6-feature-title>div:first-child span { font-family:Georgia,'Times New Roman',serif; color:#4c4038; font-size:13px; font-weight:900; text-transform:uppercase; }
+.dnd-v6-feature-title>div:first-child small { margin-top:2px; color:#8a8179; font-size:8px; }
+.dnd-v6-feature-actions { display:flex; gap:5px; flex-wrap:wrap; justify-content:flex-end; }
+.dnd-v6-feature-actions button { border:1px solid rgba(146,38,16,.35); border-radius:999px; padding:5px 9px; color:#922610; background:#fff8f3; font-size:8px; font-weight:900; text-transform:uppercase; }
+.dnd-v6-feature-actions button:disabled { opacity:.35; cursor:not-allowed; }
+.dnd-v6-hint { margin:-2px 0 9px; padding:7px 9px; border-left:3px solid #b17a26; background:#fff8e9; color:#806d50; font-size:8px; }
+.dnd-v6-class-feature-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+.dnd-v6-feature-card { min-width:0; padding:8px; border:1px solid #dacdbe; border-radius:9px; background:#faf6ef; }
+.dnd-v6-feature-head { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:5px; }
+.dnd-v6-origin { display:inline-flex; max-width:75%; padding:3px 6px; border-radius:999px; background:#ede3d8; color:#76695e; font-size:7px; font-weight:900; text-transform:uppercase; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.dnd-v6-origin.subclasse { background:#fff0cd; color:#805a13; }
+.dnd-v6-feature-head button { width:24px; height:24px; display:grid; place-items:center; border:0; background:transparent; color:#a32618; }
+.dnd-v6-feature-head button svg { width:13px; height:13px; }
+.dnd-v6-feature-name { width:100%; border:0; border-bottom:1px solid #b5a596; background:transparent; outline:none; color:#4b4139; font-weight:900; font-size:11px; }
+.dnd-v6-feature-card textarea { width:100%; margin-top:5px; border:0; border-top:1px dashed #d0c1b2; background:transparent; resize:vertical; outline:none; padding:6px 1px 0; font-size:9px; line-height:1.4; }
+.dnd-v6-empty { grid-column:1/-1; margin:0; padding:12px; border:1px dashed #d7c7b7; border-radius:8px; color:#978b80; background:#fffdf9; text-align:center; font-size:9px; font-style:italic; }
+
+.dnd-v6-spell-toolbar { display:grid; grid-template-columns:minmax(0,1fr) minmax(360px,.72fr); gap:12px; align-items:center; padding:14px; border:1px solid #cdbca9; border-radius:14px 5px 14px 5px; background:#fffdf9; box-shadow:0 4px 16px rgba(60,42,27,.065); }
+.dnd-v6-spell-title { display:flex; align-items:center; justify-content:space-between; gap:16px; min-width:0; }
+.dnd-v6-spell-title small,.dnd-v6-spell-title b,.dnd-v6-spell-title span { display:block; }
+.dnd-v6-spell-title small { color:#9a7a47; font-size:7px; font-weight:900; text-transform:uppercase; letter-spacing:.1em; }
+.dnd-v6-spell-title b { color:#5c4320; font:900 20px/1.05 Georgia,'Times New Roman',serif; }
+.dnd-v6-spell-title span { margin-top:2px; color:#8c8177; font-size:8px; }
+.dnd-v6-spell-count { flex:0 0 auto; display:grid; grid-template-columns:auto auto auto auto auto; gap:4px; align-items:baseline; padding:7px 9px; border:1px solid #d7c9bb; border-radius:999px; background:#faf6ef; }
+.dnd-v6-spell-count strong { color:#922610; font-size:14px; }
+.dnd-v6-spell-count span { color:#7b7067; font-size:7px; text-transform:uppercase; }
+.dnd-v6-spell-count i { color:#b1a397; font-style:normal; }
+.dnd-v6-casting-grid { display:grid; grid-template-columns:1.2fr .8fr .8fr; gap:6px; }
+.dnd-v6-casting-grid label { padding:6px; border:1px solid #d5c6b6; border-radius:7px; background:#faf6ef; }
+.dnd-v6-casting-grid span { display:block; margin-bottom:2px; color:#81776e; font-size:7px; font-weight:900; text-transform:uppercase; }
+.dnd-v6-casting-grid input { width:100%; min-width:0; border:0; background:transparent; outline:none; text-align:center; font-size:10px; font-weight:900; }
+
+.dnd-v6-circles { display:grid; gap:8px; }
+.dnd-v6-circle { overflow:hidden; border:1px solid #cdbdac; border-radius:10px; background:#faf6ef; }
+.dnd-v6-circle>summary { min-height:50px; display:grid; grid-template-columns:minmax(130px,1fr) auto auto; gap:10px; align-items:center; padding:8px 10px; cursor:pointer; list-style:none; background:linear-gradient(180deg,#f4ece3,#ece0d4); }
+.dnd-v6-circle>summary::-webkit-details-marker { display:none; }
+.dnd-v6-circle-name b,.dnd-v6-circle-name span { display:block; }
+.dnd-v6-circle-name b { color:#4f443b; font-family:Georgia,'Times New Roman',serif; font-size:11px; text-transform:uppercase; }
+.dnd-v6-circle-name span { color:#8a8077; font-size:7px; }
+.dnd-v6-slots { display:grid; grid-template-columns:auto 40px auto 40px; gap:5px; align-items:end; }
+.dnd-v6-slots>span { align-self:center; color:#7d736a; font-size:7px; font-weight:900; text-transform:uppercase; }
+.dnd-v6-slots label small { display:block; margin-bottom:1px; color:#9a8e83; font-size:6px; text-transform:uppercase; text-align:center; }
+.dnd-v6-slots input { width:40px; border:1px solid #c5b5a5; border-radius:5px; padding:4px 2px; background:#fff; text-align:center; font-size:9px; }
+.dnd-v6-slots i { align-self:center; color:#8d8278; font-size:9px; font-style:normal; }
+.dnd-v6-circle-actions { display:flex; gap:5px; }
+.dnd-v6-circle-actions button { padding:5px 7px; border:1px solid #c5b4a4; border-radius:6px; background:#fff; color:#6d6259; font-size:7px; font-weight:900; }
+.dnd-v6-circle-actions button.primary { border-color:rgba(146,38,16,.38); color:#922610; background:#fff8f3; }
+.dnd-v6-circle-actions button:disabled { opacity:.3; cursor:not-allowed; }
+.dnd-v6-spell-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; padding:8px; border-top:1px solid #d3c4b5; background:#fffdf9; }
+.dnd-v6-spell-card { min-width:0; padding:8px; border:1px solid #d8c9ba; border-left:3px solid #b8aa9d; border-radius:8px; background:#faf6ef; }
+.dnd-v6-spell-card.is-prepared { border-left-color:#922610; background:#fff8f3; }
+.dnd-v6-spell-head { display:grid; grid-template-columns:auto minmax(120px,1fr) minmax(80px,.55fr) auto; gap:6px; align-items:center; }
+.dnd-v6-prepared { display:flex; align-items:center; gap:3px; color:#786e65; font-size:7px; font-weight:900; text-transform:uppercase; white-space:nowrap; }
+.dnd-v6-prepared input { accent-color:#922610; }
+.dnd-v6-spell-name,.dnd-v6-spell-school { min-width:0; width:100%; border:0; border-bottom:1px solid #b6a89a; background:transparent; outline:none; text-overflow:ellipsis; font-size:9px; }
+.dnd-v6-spell-name { font-size:11px; font-weight:900; color:#4b4038; }
+.dnd-v6-spell-order { display:flex; gap:3px; }
+.dnd-v6-spell-order button { width:24px; height:24px; border:1px solid #cabbaa; border-radius:5px; background:#fff; color:#6d6259; font-size:10px; font-weight:900; }
+.dnd-v6-spell-order button.danger { color:#a32618; }
+.dnd-v6-spell-order button:disabled { opacity:.3; }
+.dnd-v6-spell-details { margin-top:7px; border-top:1px dashed #d2c4b5; padding-top:5px; }
+.dnd-v6-spell-details>summary { cursor:pointer; color:#806f62; font-size:8px; font-weight:900; text-transform:uppercase; }
+.dnd-v6-spell-fields { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:5px; margin-top:6px; }
+.dnd-v6-spell-fields label { min-width:0; padding:5px; border:1px solid #ddd0c3; border-radius:6px; background:#fffdf9; }
+.dnd-v6-spell-fields span { display:block; margin-bottom:2px; color:#8b8178; font-size:6px; font-weight:900; text-transform:uppercase; }
+.dnd-v6-spell-fields input { width:100%; min-width:0; border:0; background:transparent; outline:none; font-size:9px; }
+.dnd-v6-spell-flags { display:flex; flex-wrap:wrap; gap:4px; margin-top:6px; }
+.dnd-v6-spell-flags label { display:flex; align-items:center; gap:3px; padding:4px 6px; border:1px solid #d9ccbf; border-radius:999px; background:#fff; color:#746a62; font-size:7px; font-weight:900; }
+.dnd-v6-spell-flags input { accent-color:#922610; }
+.dnd-v6-spell-details textarea { width:100%; margin-top:6px; border:1px solid #ddd0c3; border-radius:7px; padding:7px; background:#fffdf9; resize:vertical; outline:none; font-size:9px; line-height:1.4; }
+
+body.theme-dark .dnd-v6-class-hero,body.theme-dark .dnd-v6-spell-toolbar,body.theme-dark .dnd-v6-readonly-class,body.theme-dark .dnd-v6-subclass-select,body.theme-dark .dnd-v6-feature-card,body.theme-dark .dnd-v6-class-resource,body.theme-dark .dnd-v6-circle,body.theme-dark .dnd-v6-spell-card { background:#23282d; border-color:#5d646a; color:#ece8e2; }
+body.theme-dark .dnd-v6-circle>summary { background:#2b3136; }
+body.theme-dark .dnd-v6-spell-grid,body.theme-dark .dnd-v6-spell-fields label,body.theme-dark .dnd-v6-spell-details textarea,body.theme-dark .dnd-v6-subclass-select select { background:#1e2327; border-color:#5d646a; color:#ece8e2; }
+body.theme-dark .dnd-v6-wrapper input,body.theme-dark .dnd-v6-wrapper textarea,body.theme-dark .dnd-v6-wrapper select { color:#f0ece6; }
+
+@media (max-width:1080px) {
+  .dnd-v6-class-hero { grid-template-columns:auto minmax(0,1fr); }
+  .dnd-v6-class-identity { grid-column:1/-1; }
+  .dnd-v6-class-layout,.dnd-v6-spell-toolbar { grid-template-columns:1fr; }
+}
+
+@media (max-width:760px) {
+  .dnd-v6-wrapper .dnd-v4-resource-grid { grid-template-columns:1fr; }
+  .dnd-v6-sheet { padding:10px; }
+  .dnd-v6-class-hero { grid-template-columns:54px minmax(0,1fr); gap:10px; padding:12px; }
+  .dnd-v6-class-icon { width:54px; height:54px; font-size:24px; }
+  .dnd-v6-class-heading h2 { font-size:20px; }
+  .dnd-v6-class-identity { grid-template-columns:1fr 1fr; }
+  .dnd-v6-class-feature-grid { grid-template-columns:1fr; }
+  .dnd-v6-feature-title { align-items:flex-start; flex-direction:column; }
+  .dnd-v6-feature-actions { width:100%; justify-content:flex-start; }
+  .dnd-v6-spell-title { align-items:flex-start; flex-direction:column; }
+  .dnd-v6-spell-count { align-self:flex-start; }
+  .dnd-v6-circle>summary { grid-template-columns:minmax(100px,1fr) auto; }
+  .dnd-v6-slots { grid-column:1; grid-row:2; justify-self:start; }
+  .dnd-v6-circle-actions { grid-column:2; grid-row:1/3; }
+  .dnd-v6-spell-head { grid-template-columns:auto minmax(100px,1fr) auto; }
+  .dnd-v6-spell-school { grid-column:2/4; }
+  .dnd-v6-spell-order { grid-column:3; grid-row:1; }
+}
+
+@media (max-width:560px) {
+  .dnd-v6-class-identity { grid-template-columns:1fr; }
+  .dnd-v6-class-resource-grid { grid-template-columns:1fr 1fr; }
+  .dnd-v6-casting-grid { grid-template-columns:1fr; }
+  .dnd-v6-spell-grid { grid-template-columns:1fr; }
+  .dnd-v6-spell-fields { grid-template-columns:1fr; }
+  .dnd-v6-circle>summary { grid-template-columns:1fr auto; }
+  .dnd-v6-slots { grid-template-columns:auto 36px auto 36px; }
+  .dnd-v6-slots input { width:36px; }
+}
+
+@media (max-width:360px) {
+  .dnd-v6-class-resource-grid { grid-template-columns:1fr; }
+}
