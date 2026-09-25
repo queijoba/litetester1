@@ -1,4 +1,5 @@
-import '../dnd-sheet-v4.css';
+import '../dnd-sheet-v5.css';
+import { DND_2024_CLASSES, getDndClassByLabel } from '../classPanels.js';
 
 // Editor modular de personagem D&D 5.5e / regras 2024.
 // A ficha prioriza leitura rápida em jogo, compatibilidade com dados antigos
@@ -12,8 +13,6 @@ export default function DndCharacterEditor({ scope }) {
     SVGIcons,
     mobileTab,
     setMobileTab,
-    dndPcTab,
-    setDndPcTab,
     updateField,
     updateArrayField,
     addToArray,
@@ -34,7 +33,11 @@ export default function DndCharacterEditor({ scope }) {
 
   if (!isDnd || data.type !== 'pc') return null;
 
-  const activeMainTab = ['status', 'recursos', 'magias'].includes(mobileTab) ? mobileTab : 'status';
+  const selectedClass = getDndClassByLabel(data.bio?.classe || '');
+  const requestedMainTab = ['status', 'recursos', 'magias', 'classe'].includes(mobileTab) ? mobileTab : 'status';
+  const activeMainTab = requestedMainTab === 'classe' && !selectedClass ? 'status' : requestedMainTab;
+  const legacyClass = data.bio?.classe && !selectedClass ? String(data.bio.classe) : '';
+  const classResourceData = selectedClass ? (data.recursosClasse?.[selectedClass.id] || {}) : {};
 
   const abilities = [
     ['for', 'Força'], ['des', 'Destreza'], ['con', 'Constituição'],
@@ -108,6 +111,41 @@ export default function DndCharacterEditor({ scope }) {
     const next = [...spells];
     indices.forEach((originalIndex, position) => { next[originalIndex] = ordered[position]; });
     updateField('magias.lista', next);
+  };
+
+  const updateClassResource = (key, value) => {
+    if (!selectedClass) return;
+    updateField(`recursosClasse.${selectedClass.id}.${key}`, value);
+  };
+
+  const renderClassField = (field) => {
+    if (!selectedClass) return null;
+    const value = classResourceData?.[field.key];
+    if (field.type === 'tracker') {
+      const current = Number(value?.atual ?? 0);
+      const max = Number(value?.max ?? 0);
+      return (
+        <div key={field.key} className="dnd-v5-class-resource tracker">
+          <span>{field.label}</span>
+          <div><input type="number" min="0" value={current} onChange={e => updateClassResource(field.key, { ...(value || {}), atual: Number(e.target.value) || 0 })} /><i>/</i><input type="number" min="0" value={max} onChange={e => updateClassResource(field.key, { ...(value || {}), max: Number(e.target.value) || 0 })} /></div>
+          <small>Atual / Máximo</small>
+        </div>
+      );
+    }
+    if (field.type === 'toggle') {
+      return (
+        <label key={field.key} className="dnd-v5-class-resource toggle">
+          <input type="checkbox" checked={!!value} onChange={e => updateClassResource(field.key, e.target.checked)} />
+          <span>{field.label}</span>
+        </label>
+      );
+    }
+    return (
+      <label key={field.key} className="dnd-v5-class-resource">
+        <span>{field.label}</span>
+        <input type={field.type === 'number' ? 'number' : 'text'} min={field.type === 'number' ? 0 : undefined} value={value ?? ''} onChange={e => updateClassResource(field.key, field.type === 'number' ? (Number(e.target.value) || 0) : e.target.value)} placeholder={field.placeholder || ''} />
+      </label>
+    );
   };
 
   const renderFeatureCard = (entry, index, allowType = true) => (
@@ -184,10 +222,11 @@ export default function DndCharacterEditor({ scope }) {
 
   return (
     <div className="dnd-paper dnd-v3 font-dnd">
-      <div className="dnd-v3-main-tabs dnd-v4-main-tabs sticky top-0 z-20">
+      <div className={`dnd-v3-main-tabs dnd-v4-main-tabs dnd-v5-main-tabs sticky top-0 z-20 ${selectedClass ? 'has-class-tab' : ''}`}>
         <button type="button" onClick={() => setMobileTab('status')} className={activeMainTab === 'status' ? 'active' : ''}>Ficha & Combate</button>
         <button type="button" onClick={() => setMobileTab('recursos')} className={activeMainTab === 'recursos' ? 'active' : ''}>Recursos</button>
         <button type="button" onClick={() => setMobileTab('magias')} className={activeMainTab === 'magias' ? 'active' : ''}>Magias</button>
+        {selectedClass && <button type="button" onClick={() => setMobileTab('classe')} className={activeMainTab === 'classe' ? 'active class-tab' : 'class-tab'}>{selectedClass.icon} {selectedClass.label}</button>}
       </div>
 
       {activeMainTab !== 'status' && (
@@ -229,7 +268,7 @@ export default function DndCharacterEditor({ scope }) {
                 <div className="dnd-v3-brand"><span>D&D 5.5E</span><small>Regras 2024</small></div>
                 <input className="dnd-v3-name" value={data.bio?.nome || ''} onChange={e => updateField('bio.nome', e.target.value)} placeholder="Nome do Personagem" />
                 <div className="dnd-v3-bio-grid">
-                  <label><span>Classe</span><input value={data.bio?.classe || ''} onChange={e => updateField('bio.classe', e.target.value)} /></label>
+                  <label><span>Classe</span><select value={data.bio?.classe || ''} onChange={e => updateField('bio.classe', e.target.value)}><option value="">Selecione a classe...</option>{legacyClass && <option value={legacyClass}>{legacyClass} (legado)</option>}{DND_2024_CLASSES.map(item => <option key={item.id} value={item.label}>{item.label}</option>)}</select></label>
                   <label><span>Subclasse</span><input value={data.bio?.subclasse || ''} onChange={e => updateField('bio.subclasse', e.target.value)} /></label>
                   <label><span>Nível</span><input type="number" min="1" value={data.bio?.nivel ?? 1} onChange={e => updateField('bio.nivel', Math.max(1, Number(e.target.value) || 1))} /></label>
                   <label><span>Espécie</span><input value={data.bio?.linhagem || ''} onChange={e => updateField('bio.linhagem', e.target.value)} /></label>
@@ -428,6 +467,40 @@ export default function DndCharacterEditor({ scope }) {
                     <label><span>Defeitos</span><textarea rows="2" value={data.defeitos || ''} onChange={e => updateField('defeitos', e.target.value)} /></label>
                   </div>
                 </details>
+              </section>
+            </div>
+          </div>
+        )}
+
+        {activeMainTab === 'classe' && selectedClass && (
+          <div className="dnd-v3-pane dnd-v5-class-page">
+            <section className="dnd-v5-class-hero">
+              <div className="dnd-v5-class-icon" aria-hidden="true">{selectedClass.icon}</div>
+              <div className="dnd-v5-class-heading">
+                <small>Painel de Classe</small>
+                <h2>{selectedClass.label}</h2>
+                <p>{selectedClass.summary}</p>
+              </div>
+              <div className="dnd-v5-class-switcher">
+                <label><span>Classe</span><select value={data.bio?.classe || ''} onChange={e => updateField('bio.classe', e.target.value)}>{DND_2024_CLASSES.map(item => <option key={item.id} value={item.label}>{item.label}</option>)}</select></label>
+                <label><span>Subclasse</span><input value={data.bio?.subclasse || ''} onChange={e => updateField('bio.subclasse', e.target.value)} placeholder="Subclasse" /></label>
+              </div>
+            </section>
+
+            <div className="dnd-v5-class-layout">
+              <section className="dnd-v3-section dnd-v5-class-trackers">
+                <div className="dnd-v3-section-title"><span>Recursos Rápidos</span><small>Contadores e valores próprios desta classe</small></div>
+                <div className="dnd-v5-class-resource-grid">{selectedClass.fields.map(renderClassField)}</div>
+                <label className="dnd-v5-class-notes"><span>Anotações da Classe</span><textarea rows="5" value={classResourceData?.notas || ''} onChange={e => updateClassResource('notas', e.target.value)} placeholder="Usos especiais, efeitos da subclasse, lembretes de descanso e observações..." /></label>
+              </section>
+
+              <section className="dnd-v3-section dnd-v5-class-features">
+                <div className="dnd-v3-section-title"><span>Habilidades da Classe</span><button type="button" onClick={() => addToArray('caracteristicas', { tipo: 'classe', nome: '', desc: '' })}>+ Habilidade</button></div>
+                <div className="dnd-v5-class-feature-grid">
+                  {features.map((entry, index) => ({ entry, index })).filter(item => (item.entry?.tipo || 'classe') === 'classe').length === 0
+                    ? <p className="dnd-v4-empty">Nenhuma habilidade de classe cadastrada ainda.</p>
+                    : features.map((entry, index) => ({ entry, index })).filter(item => (item.entry?.tipo || 'classe') === 'classe').map(item => renderFeatureCard(item.entry, item.index, false))}
+                </div>
               </section>
             </div>
           </div>
