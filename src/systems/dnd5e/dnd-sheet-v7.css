@@ -1,0 +1,270 @@
+@import './dnd-sheet-v6.css';
+
+/* D&D v7 — polimento mobile e ergonomia de toque. */
+
+/* Mantém o desktop atual e melhora a leitura em telas menores. */
+@media (max-width: 767px) {
+  .dnd-v6-wrapper .dnd-v3-main-tabs,
+  .dnd-v6-wrapper .dnd-v5-main-tabs,
+  .dnd-v6-wrapper .dnd-v5-main-tabs.has-class-tab {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    background: rgba(248, 241, 231, .985);
+    border: 1px solid #ccb79f;
+    box-shadow: 0 5px 16px rgba(55, 39, 24, .12);
+  }
+  .dnd-v6-wrapper .dnd-v3-main-tabs::-webkit-scrollbar,
+  .dnd-v6-wrapper .dnd-v5-main-tabs::-webkit-scrollbar { display: none; }
+  .dnd-v6-wrapper .dnd-v3-main-tabs button,
+  .dnd-v6-wrapper .dnd-v5-main-tabs button {
+    flex: 0 0 auto;
+    min-width: 118px;
+    min-height: 46px;
+    padding: 8px 10px;
+    border-radius: 8px 8px 4px 4px;
+    scroll-snap-align: start;
+    white-space: nowrap;
+    font-size: 9px;
+    line-height: 1.15;
+  }
+
+  .dnd-v6-wrapper .dnd-v3-context {
+    gap: 8px;
+    padding: 8px 10px;
+  }
+  .dnd-v6-wrapper .dnd-v3-context strong { font-size: 13px; }
+  .dnd-v6-wrapper .dnd-v3-context span { font-size: 8px; }
+  .dnd-v6-wrapper .dnd-v3-context b { padding: 4px 6px; font-size: 7px; }
+
+  .dnd-v6-wrapper .dnd-v3-sheet,
+  .dnd-v6-sheet { padding: 6px; }
+  .dnd-v6-wrapper .dnd-v3-pane,
+  .dnd-v6-class-page,
+  .dnd-v6-spell-page { gap: 9px; }
+
+  /* Identidade: retrato continua disponível no telefone e não ocupa a tela inteira. */
+  .dnd-v6-wrapper .dnd-v3-header {
+    grid-template-columns: 82px minmax(0, 1fr);
+    gap: 9px;
+    padding: 9px;
+    border-radius: 12px 4px 12px 4px;
+  }
+  .dnd-v6-wrapper .dnd-v3-portrait-wrap { display: flex; }
+  .dnd-v6-wrapper .dnd-v3-portrait { width: 76px; border-radius: 10px 3px 10px 3px; }
+  .dnd-v6-wrapper .dnd-v3-portrait-tools {
+    inset: auto 3px 3px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 3px;
+    opacity: 1;
+    background: linear-gradient(180deg, transparent, rgba(18,16,14,.88));
+  }
+  .dnd-v6-wrapper .dnd-v3-portrait-tools label,
+  .dnd-v6-wrapper .dnd-v3-portrait-tools button {
+    width: auto;
+    min-height: 27px;
+    padding: 5px 6px;
+    border-radius: 5px;
+    font-size: 7px;
+  }
+  .dnd-v6-wrapper .dnd-v3-portrait-tools.show {
+    inset: 3px;
+    flex-direction: column;
+    padding: 6px;
+    background: rgba(18,16,14,.92);
+  }
+  .dnd-v6-wrapper .dnd-v3-portrait-tools.show input,
+  .dnd-v6-wrapper .dnd-v3-portrait-tools.show button { width: 100%; }
+
+  .dnd-v6-wrapper .dnd-v3-brand { margin-bottom: 4px; }
+  .dnd-v6-wrapper .dnd-v3-brand span { font-size: 12px; }
+  .dnd-v6-wrapper .dnd-v3-brand small { font-size: 6px; }
+  .dnd-v6-wrapper .dnd-v3-name { font-size: 19px; padding-bottom: 4px; }
+  .dnd-v6-wrapper .dnd-v3-bio-grid { grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 7px; }
+  .dnd-v6-wrapper .dnd-v3-bio-grid label { min-width: 0; }
+  .dnd-v6-wrapper .dnd-v3-bio-grid label span { font-size: 7px; }
+  .dnd-v6-wrapper .dnd-v3-bio-grid input,
+  .dnd-v6-wrapper .dnd-v3-bio-grid select {
+    min-height: 34px;
+    padding: 5px 2px;
+    font-size: 12px;
+  }
+
+  /* Seções e controles ficam mais fáceis de tocar sem aumentar demais a ficha. */
+  .dnd-v6-wrapper .dnd-v3-section { padding: 8px; border-radius: 11px 4px 11px 4px; }
+  .dnd-v6-wrapper .dnd-v3-section-title {
+    min-height: 34px;
+    margin-bottom: 7px;
+    padding-bottom: 6px;
+    align-items: center;
+    flex-direction: row;
+  }
+  .dnd-v6-wrapper .dnd-v3-section-title > span { font-size: 11px; }
+  .dnd-v6-wrapper .dnd-v3-section-title button,
+  .dnd-v6-wrapper .dnd-v3-column-head button { min-height: 32px; padding: 6px 9px; }
+
+  /* Atributos: 3 x 2 é mais curto e continua legível em telefones comuns. */
+  .dnd-v6-wrapper .dnd-v3-ability-grid { grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px 5px; }
+  .dnd-v6-wrapper .dnd-v3-ability { padding: 0 5px 9px; }
+  .dnd-v6-wrapper .dnd-v3-save-line { min-height: 30px; margin-left: -5px; margin-right: -5px; padding: 4px 5px; }
+  .dnd-v6-wrapper .dnd-v3-save-line input { width: 15px; height: 15px; }
+  .dnd-v6-wrapper .dnd-v3-save-line span { font-size: 6px; }
+  .dnd-v6-wrapper .dnd-v3-save-line strong { font-size: 10px; }
+  .dnd-v6-wrapper .dnd-v3-ability-label { font-size: 8px; }
+  .dnd-v6-wrapper .dnd-v3-ability > input { font-size: 22px; }
+
+  /* Perícias continuam em 2 colunas, agora com alvo de toque maior. */
+  .dnd-v6-wrapper .dnd-v3-quick-row { grid-template-columns: 74px minmax(0,1fr); gap: 5px; }
+  .dnd-v6-wrapper .dnd-v3-quick-row > div,
+  .dnd-v6-wrapper .dnd-v3-quick-row > label { min-height: 44px; padding: 5px; }
+  .dnd-v6-wrapper .dnd-v3-quick-row > label:last-child { grid-column: 1 / -1; }
+  .dnd-v6-wrapper .dnd-v3-skills-grid { grid-template-columns: 1fr 1fr; gap: 4px; }
+  .dnd-v6-wrapper .dnd-v3-skill-row {
+    min-height: 38px;
+    grid-template-columns: 12px 27px minmax(0,1fr) 22px;
+    gap: 3px;
+    padding: 5px 4px;
+    border-color: #eadfd4;
+    background: rgba(250,246,239,.55);
+  }
+  .dnd-v6-wrapper .dnd-v3-skill-row span { font-size: 9px; }
+  .dnd-v6-wrapper .dnd-v3-skill-row small { font-size: 6px; }
+
+  /* Combate: cartões menores, sem campos espremidos. */
+  .dnd-v6-wrapper .dnd-v3-overview-grid { grid-template-columns: 1fr; gap: 9px; }
+  .dnd-v6-wrapper .dnd-v3-combat-stats { grid-template-columns: 1fr 1fr; gap: 6px; }
+  .dnd-v6-wrapper .dnd-v3-combat-stats > label { min-height: 70px; padding: 6px; }
+  .dnd-v6-wrapper .dnd-v3-combat-stats > label > input { font-size: 18px; }
+  .dnd-v6-wrapper .dnd-v3-combat-stats .accent > input { font-size: 24px; }
+  .dnd-v6-wrapper .dnd-v3-hp-card { grid-template-columns: minmax(0,1fr) 96px; }
+  .dnd-v6-wrapper .dnd-v3-hp-main input { font-size: 32px; }
+  .dnd-v6-wrapper .dnd-v3-survival-grid { grid-template-columns: .85fr 1.15fr; }
+  .dnd-v6-wrapper .dnd-v3-death-saves input { width: 16px; height: 16px; }
+
+  /* Ataques e inventário ganham linhas mais estáveis no celular. */
+  .dnd-v6-wrapper .dnd-v3-bottom-grid { grid-template-columns: 1fr; gap: 9px; }
+  .dnd-v6-wrapper .dnd-v3-attack-row {
+    grid-template-columns: minmax(0,1fr) 54px 68px 30px;
+    gap: 5px;
+    padding: 7px;
+  }
+  .dnd-v6-wrapper .dnd-v3-attack-row label:nth-of-type(4) { grid-column: 1 / 4; }
+  .dnd-v6-wrapper .dnd-v3-attack-row input,
+  .dnd-v6-wrapper .dnd-v3-item-row input,
+  .dnd-v6-wrapper .dnd-v3-item-row select { min-height: 32px; font-size: 11px; }
+  .dnd-v6-wrapper .dnd-v3-item-row {
+    grid-template-columns: minmax(0,1fr) 44px 88px 30px;
+    gap: 5px;
+    padding: 7px;
+  }
+  .dnd-v6-wrapper .dnd-v3-item-row .sync { grid-column: 1 / 4; min-height: 30px; }
+
+  /* Recursos */
+  .dnd-v6-wrapper .dnd-v3-roleplay-grid { grid-template-columns: 1fr; gap: 7px; }
+  .dnd-v6-wrapper .dnd-v4-resource-grid { grid-template-columns: 1fr; gap: 8px; }
+  .dnd-v6-wrapper .dnd-v4-resource-list { gap: 6px; }
+  .dnd-v6-wrapper .dnd-v3-feature-card { padding: 8px; }
+  .dnd-v6-wrapper .dnd-v3-feature-name,
+  .dnd-v6-wrapper .dnd-v3-plain-textarea { font-size: 10px; }
+  .dnd-v6-wrapper .dnd-v4-support-grid { grid-template-columns: 1fr; gap: 8px; }
+  .dnd-v6-wrapper .dnd-v4-proficiency-grid { grid-template-columns: 1fr; }
+
+  /* Painel de classe */
+  .dnd-v6-class-page { gap: 9px; }
+  .dnd-v6-class-hero { grid-template-columns: 50px minmax(0,1fr); gap: 9px; padding: 10px; }
+  .dnd-v6-class-icon { width: 50px; height: 50px; font-size: 23px; border-radius: 12px 4px 12px 4px; }
+  .dnd-v6-class-heading h2 { font-size: 19px; }
+  .dnd-v6-class-heading p { font-size: 9px; line-height: 1.35; }
+  .dnd-v6-class-identity.compact { grid-column: 1 / -1; grid-template-columns: 58px minmax(0,1fr); }
+  .dnd-v6-level-badge,.dnd-v6-subclass-select { padding: 7px; }
+  .dnd-v6-subclass-select select { min-height: 38px; font-size: 12px; }
+  .dnd-v6-class-layout { grid-template-columns: 1fr; gap: 8px; }
+  .dnd-v6-class-resource-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
+  .dnd-v6-class-resource { min-height: 68px; padding: 7px; }
+  .dnd-v6-feature-columns { grid-template-columns: 1fr; gap: 7px; }
+  .dnd-v6-lane-head button { min-height: 32px; }
+  .dnd-v6-feature-name { font-size: 12px; }
+  .dnd-v6-feature-card textarea { font-size: 10px; }
+
+  /* Magias: um card por linha no telefone; duas colunas voltam em tablet/desktop. */
+  .dnd-v6-spell-toolbar { grid-template-columns: 1fr; gap: 8px; padding: 10px; }
+  .dnd-v6-spell-title { align-items: flex-start; flex-direction: column; gap: 7px; }
+  .dnd-v6-spell-title b { font-size: 18px; }
+  .dnd-v6-spell-count { align-self: flex-start; }
+  .dnd-v6-casting-grid { grid-template-columns: 1fr 1fr 1fr; gap: 5px; }
+  .dnd-v6-casting-grid label { padding: 5px; }
+  .dnd-v6-casting-grid input { min-height: 30px; font-size: 11px; }
+  .dnd-v6-circle > summary { grid-template-columns: minmax(0,1fr) auto; gap: 6px; padding: 8px; }
+  .dnd-v6-slots { grid-column: 1; grid-row: 2; justify-self: start; }
+  .dnd-v6-circle-actions { grid-column: 2; grid-row: 1 / 3; align-self: center; flex-direction: column; }
+  .dnd-v6-circle-actions button { min-width: 52px; min-height: 32px; }
+  .dnd-v6-spell-grid { grid-template-columns: 1fr; gap: 7px; padding: 7px; }
+  .dnd-v6-spell-card { padding: 8px; }
+  .dnd-v6-spell-head { grid-template-columns: auto minmax(0,1fr) auto; gap: 5px; }
+  .dnd-v6-spell-school { grid-column: 2 / 4; }
+  .dnd-v6-spell-order { grid-column: 3; grid-row: 1; }
+  .dnd-v6-spell-order button { width: 32px; height: 32px; }
+  .dnd-v6-spell-name { font-size: 12px; }
+  .dnd-v6-spell-school { font-size: 10px; }
+  .dnd-v6-spell-meta span { min-height: 24px; font-size: 8px; }
+  .dnd-v6-spell-details > summary { min-height: 34px; display: flex; align-items: center; }
+  .dnd-v6-spell-fields { grid-template-columns: 1fr 1fr; }
+  .dnd-v6-spell-fields input { min-height: 32px; font-size: 11px; }
+  .dnd-v6-spell-flags label { min-height: 32px; font-size: 8px; }
+  .dnd-v6-spell-details textarea { font-size: 11px; }
+}
+
+@media (max-width: 430px) {
+  .dnd-v6-wrapper .dnd-v3-header { grid-template-columns: 72px minmax(0,1fr); }
+  .dnd-v6-wrapper .dnd-v3-portrait { width: 68px; }
+  .dnd-v6-wrapper .dnd-v3-name { font-size: 17px; }
+  .dnd-v6-wrapper .dnd-v3-bio-grid { grid-template-columns: 1fr 1fr; }
+  .dnd-v6-wrapper .dnd-v3-ability-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
+  .dnd-v6-wrapper .dnd-v3-ability-label { font-size: 7px; }
+  .dnd-v6-wrapper .dnd-v3-quick-row { grid-template-columns: 68px minmax(0,1fr); }
+  .dnd-v6-wrapper .dnd-v3-survival-grid { grid-template-columns: 1fr; }
+  .dnd-v6-wrapper .dnd-v3-attack-row {
+    grid-template-columns: minmax(0,1fr) 50px 64px 30px;
+  }
+  .dnd-v6-wrapper .dnd-v3-item-row {
+    grid-template-columns: minmax(0,1fr) 42px 78px 30px;
+  }
+  .dnd-v6-class-resource-grid { grid-template-columns: 1fr 1fr; }
+  .dnd-v6-casting-grid { grid-template-columns: 1fr; }
+  .dnd-v6-spell-fields { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 350px) {
+  .dnd-v6-wrapper .dnd-v3-header { grid-template-columns: 1fr; }
+  .dnd-v6-wrapper .dnd-v3-portrait-wrap { justify-content: flex-start; }
+  .dnd-v6-wrapper .dnd-v3-portrait { width: 72px; }
+  .dnd-v6-wrapper .dnd-v3-ability-grid { grid-template-columns: 1fr 1fr; }
+  .dnd-v6-wrapper .dnd-v3-skills-grid { grid-template-columns: 1fr; }
+  .dnd-v6-wrapper .dnd-v3-attack-row,
+  .dnd-v6-wrapper .dnd-v3-item-row { grid-template-columns: 1fr; }
+  .dnd-v6-wrapper .dnd-v3-attack-row label:nth-of-type(4),
+  .dnd-v6-wrapper .dnd-v3-item-row .sync { grid-column: auto; }
+  .dnd-v6-class-identity.compact { grid-template-columns: 1fr; }
+  .dnd-v6-class-resource-grid { grid-template-columns: 1fr; }
+}
+
+/* Dark/custom precisam conservar contraste nos novos cartões móveis. */
+body.theme-dark .dnd-v6-wrapper .dnd-v3-skill-row { background:#23282d; border-color:#4d555c; }
+body.theme-dark .dnd-v6-wrapper .dnd-v3-main-tabs,
+body.theme-dark .dnd-v6-wrapper .dnd-v5-main-tabs { background:rgba(23,27,31,.985); border-color:#4c5359; }
+body.theme-custom .dnd-v6-wrapper .dnd-v3-main-tabs,
+body.theme-custom .dnd-v6-wrapper .dnd-v5-main-tabs {
+  background:color-mix(in srgb,var(--custom-window-color) 96%,var(--custom-accent-color) 4%);
+  border-color:color-mix(in srgb,var(--custom-accent-color) 36%,#999);
+}
