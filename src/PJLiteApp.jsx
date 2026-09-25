@@ -95,9 +95,9 @@ const { useState, useEffect, useRef } = React;
 
         const initialDndPcData = {
             id: '', system: 'dnd5e', type: 'pc',
-            bio: { nome: '', classe: '', linhagem: '', antecedente: '', alinhamento: '', xp: 0, nivel: 1, jogador: '', imagem: '' },
+            bio: { nome: '', classe: '', subclasse: '', linhagem: '', antecedente: '', alinhamento: '', xp: 0, nivel: 1, jogador: '', imagem: '', aparencia: '', historiaPersonalidade: '' },
             atributos: { for: 10, des: 10, con: 10, int: 10, sab: 10, car: 10 },
-            status: { pvAtual: 10, pvMax: 10, pvTemp: 0, dadosVida: '1d10', ca: 10, iniciativa: '', deslocamento: '9 m', inspiracao: false, percepcaoPassiva: '' },
+            status: { pvAtual: 10, pvMax: 10, pvTemp: 0, dadosVida: '1d10', ca: 10, escudo: 0, iniciativa: '', deslocamento: '9 m', tamanho: 'Médio', inspiracao: false, percepcaoPassiva: '' },
             testesMorte: { sucessos: [false, false, false], falhas: [false, false, false] },
             proficienciasResistencia: { for: false, des: false, con: false, int: false, sab: false, car: false },
             pericias: DND_SKILLS_LIST.map(sk => ({ id: sk.id, prof: 0 })), // 0: Nenhuma, 1: Proficiência, 2: Expertise (Dobro)
@@ -105,7 +105,9 @@ const { useState, useEffect, useRef } = React;
             magias: { conjuracao: { habilidade: '', cd: '', ataque: '' }, slots: { 1: { atual: 0, max: 0 }, 2: { atual: 0, max: 0 }, 3: { atual: 0, max: 0 }, 4: { atual: 0, max: 0 }, 5: { atual: 0, max: 0 }, 6: { atual: 0, max: 0 }, 7: { atual: 0, max: 0 }, 8: { atual: 0, max: 0 }, 9: { atual: 0, max: 0 } }, lista: [] },
             caracteristicas: [],
             tracosPersonalidade: '', ideais: '', vinculos: '', defeitos: '',
-            outrasProficiencias: '',
+            outrasProficiencias: '', idiomas: '', armasProficiencias: '', ferramentas: '',
+            treinoArmadura: { leve: false, media: false, pesada: false, escudos: false },
+            sintonizacao: ['', '', ''],
             inventario: '', itensSincronizados: [], moedas: { pc: 0, pp: 0, pe: 0, po: 0, pl: 0 }
         };
 
@@ -514,8 +516,15 @@ const { useState, useEffect, useRef } = React;
             clone.status = { ...initialDndPcData.status, ...(clone.status || {}) };
             clone.status.inspiracao = !!clone.status.inspiracao;
             clone.status.percepcaoPassiva = clone.status.percepcaoPassiva ?? '';
+            clone.status.tamanho = clone.status.tamanho || 'Médio';
+            clone.status.escudo = Number(clone.status.escudo || 0);
             clone.atributos = { ...initialDndPcData.atributos, ...(clone.atributos || {}) };
             clone.proficienciasResistencia = { ...initialDndPcData.proficienciasResistencia, ...(clone.proficienciasResistencia || {}) };
+            clone.treinoArmadura = { ...initialDndPcData.treinoArmadura, ...(clone.treinoArmadura || {}) };
+            clone.idiomas = clone.idiomas || '';
+            clone.armasProficiencias = clone.armasProficiencias || '';
+            clone.ferramentas = clone.ferramentas || '';
+            clone.sintonizacao = Array.from({ length: 3 }, (_, i) => String(clone.sintonizacao?.[i] || ''));
 
             // Garante que fichas antigas sempre tenham as 18 perícias atuais,
             // preservando Proficiência/Expertise das entradas já existentes.
@@ -529,15 +538,15 @@ const { useState, useEffect, useRef } = React;
 
             clone.ataques = Array.isArray(clone.ataques) ? clone.ataques : [];
             clone.caracteristicas = Array.isArray(clone.caracteristicas)
-                ? clone.caracteristicas
-                : (clone.caracteristicas ? String(clone.caracteristicas).split('\n').filter(Boolean).map(nome => ({ nome, desc: '' })) : []);
+                ? clone.caracteristicas.map(c => ({ tipo: 'classe', nome: '', desc: '', ...(c || {}) }))
+                : (clone.caracteristicas ? String(clone.caracteristicas).split('\n').filter(Boolean).map(nome => ({ tipo: 'classe', nome, desc: '' })) : []);
 
             const oldMagias = clone.magias || {};
             clone.magias = { conjuracao: { ...initialDndPcData.magias.conjuracao, ...(oldMagias.conjuracao || {}) }, slots: {}, lista: [] };
             for (let lvl = 1; lvl <= 9; lvl++) clone.magias.slots[lvl] = { ...initialDndPcData.magias.slots[lvl], ...(oldMagias.slots?.[lvl] || {}) };
             clone.magias.lista = Array.isArray(oldMagias.lista)
-                ? oldMagias.lista
-                : (oldMagias.lista ? String(oldMagias.lista).split('\n').filter(Boolean).map(nome => ({ nome, nivel: '', desc: '' })) : []);
+                ? oldMagias.lista.map(m => ({ nome: '', nivel: '', tempo: '', alcance: '', concentracao: false, ritual: false, material: false, desc: '', ...(m || {}) }))
+                : (oldMagias.lista ? String(oldMagias.lista).split('\n').filter(Boolean).map(nome => ({ nome, nivel: '', tempo: '', alcance: '', concentracao: false, ritual: false, material: false, desc: '' })) : []);
 
             clone.moedas = { ...initialDndPcData.moedas, ...(clone.moedas || {}) };
             clone.itensSincronizados = Array.isArray(clone.itensSincronizados) ? clone.itensSincronizados.map((it, idx) => ({
@@ -3077,7 +3086,7 @@ const { useState, useEffect, useRef } = React;
                                 <SVGIcons.ArrowLeft /> <span className="hidden sm:inline">Voltar</span>
                             </button>
                             <span className="font-title font-bold text-lg md:text-xl tracking-wider uppercase">
-                                {isDnd ? (data.type === 'pc' ? 'D&D 5e - Personagem • EM ADAPTAÇÃO' : 'D&D 5e - Bestiário • EM ADAPTAÇÃO') : isFabula ? (data.type === 'pc' ? 'FABULA ULTIMA • PERSONAGEM • INTEGRADO' : 'FABULA ULTIMA • AMEAÇA / PNJ • INTEGRADO') : isSom6 ? (data.type === 'pc' ? 'O SOM DAS SEIS • PERSONAGEM • INTEGRADO' : 'O SOM DAS SEIS • PDJ • INTEGRADO') : (data.type === 'pc' ? 'DRAGONBANE' : data.type === 'pnj' ? 'PNJ (DB)' : 'AMEAÇA (DB)')}
+                                {isDnd ? (data.type === 'pc' ? 'D&D 5.5e / 2024 - Personagem' : 'D&D 5.5e / 2024 - Bestiário') : isFabula ? (data.type === 'pc' ? 'FABULA ULTIMA • PERSONAGEM • INTEGRADO' : 'FABULA ULTIMA • AMEAÇA / PNJ • INTEGRADO') : isSom6 ? (data.type === 'pc' ? 'O SOM DAS SEIS • PERSONAGEM • INTEGRADO' : 'O SOM DAS SEIS • PDJ • INTEGRADO') : (data.type === 'pc' ? 'DRAGONBANE' : data.type === 'pnj' ? 'PNJ (DB)' : 'AMEAÇA (DB)')}
                             </span>
                         </div>
                         <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end items-center">

@@ -77,8 +77,8 @@ app = app.replaceAll('D&D 5e - Bestiário • EM ADAPTAÇÃO', 'D&D 5.5e / 2024 
 // ---------------------------------------------------------------------------
 editor = replaceOnce(
   editor,
-  "  return (\n",
-  "  const dndFeatureGroups = [\n    { id: 'classe', label: 'Características de Classe' },\n    { id: 'especie', label: 'Características de Espécie' },\n    { id: 'talento', label: 'Talentos' },\n    { id: 'outro', label: 'Outros Recursos' }\n  ];\n  const dndAttunements = Array.isArray(data.sintonizacao) ? data.sintonizacao : ['', '', ''];\n\n  return (\n",
+  "  } = scope;\n\n  return (\n",
+  "  } = scope;\n\n  const dndFeatureGroups = [\n    { id: 'classe', label: 'Características de Classe' },\n    { id: 'especie', label: 'Características de Espécie' },\n    { id: 'talento', label: 'Talentos' },\n    { id: 'outro', label: 'Outros Recursos' }\n  ];\n  const dndAttunements = Array.isArray(data.sintonizacao) ? data.sintonizacao : ['', '', ''];\n\n  return (\n",
   'helpers visuais D&D'
 );
 
@@ -168,8 +168,7 @@ const newFeatures = `                                                      <div 
                                                               );
                                                           })}
                                                       </div>
-                                                  </div>
-                                              ) : (`;
+`;
 editor = replaceBlock(editor, featStart, featEnd, newFeatures, 'características agrupadas');
 
 editor = editor.replace("updateField('magias.lista', [...list, { nome: '', nivel: '', desc: '' }]);", "updateField('magias.lista', [...list, { nome: '', nivel: '', tempo: '', alcance: '', concentracao: false, ritual: false, material: false, desc: '' }]);");
@@ -200,9 +199,7 @@ const newProf = `                                          <div className="dnd-s
                                                   {dndAttunements.map((item, idx) => <label key={idx}><span>✦</span><input value={item} onChange={e => { const list=[...dndAttunements]; list[idx]=e.target.value; updateField('sintonizacao', list); }} placeholder={'Item sintonizado ' + (idx + 1)} /></label>)}
                                               </div>
                                           </div>
-                                      </div>
-                                  </div>
-                                  </div>`;
+`;
 editor = replaceBlock(editor, profStart, profEnd, newProf, 'proficiências e sintonização');
 
 // ---------------------------------------------------------------------------

@@ -255,6 +255,14 @@ export default function DndCharacterEditor({ scope }) {
     view
   } = scope;
 
+  const dndFeatureGroups = [
+    { id: 'classe', label: 'Características de Classe' },
+    { id: 'especie', label: 'Características de Espécie' },
+    { id: 'talento', label: 'Talentos' },
+    { id: 'outro', label: 'Outros Recursos' }
+  ];
+  const dndAttunements = Array.isArray(data.sintonizacao) ? data.sintonizacao : ['', '', ''];
+
   return (
     <>
       {isDnd && data.type === 'pc' && (
@@ -264,7 +272,7 @@ export default function DndCharacterEditor({ scope }) {
                                       {[
                                           { id: 'status', label: 'Perfil & Atributos' },
                                           { id: 'equipamento', label: 'Combate' },
-                                          { id: 'recursos', label: 'Recursos' }
+                                          { id: 'recursos', label: 'Recursos & Magias' }
                                       ].map(tab => (
                                           <button
                                               key={tab.id}
@@ -378,13 +386,14 @@ export default function DndCharacterEditor({ scope }) {
                                       </div>
       
                                       <div className="flex-1 w-full">
-                                          <div className="dnd-brand-row"><span className="dnd-brand-mark">D&amp;D 5E</span><span className="dnd-brand-name">Dungeons &amp; Dragons</span></div>
+                                          <div className="dnd-brand-row"><span className="dnd-brand-mark">D&amp;D 5.5E</span><span className="dnd-brand-name">Dungeons &amp; Dragons • Regras 2024</span></div>
                                           <input type="text" value={data.bio?.nome} onChange={e => updateField('bio.nome', e.target.value)} placeholder="Nome do Personagem" className="dnd-name w-full text-3xl font-title font-bold outline-none text-[#922610]" />
                                           <div className="dnd-bio-grid grid grid-cols-2 lg:grid-cols-4 gap-2 text-sm w-full mt-3">
                                               <div className="border-b border-[#922610]/50"><label className="text-[10px] uppercase font-bold text-gray-500 block">Classe</label><input type="text" value={data.bio?.classe} onChange={e => updateField('bio.classe', e.target.value)} className="w-full outline-none font-bold" /></div>
+                                              <div className="border-b border-[#922610]/50"><label className="text-[10px] uppercase font-bold text-gray-500 block">Subclasse</label><input type="text" value={data.bio?.subclasse || ''} onChange={e => updateField('bio.subclasse', e.target.value)} className="w-full outline-none font-bold" /></div>
                                               <div className="border-b border-[#922610]/50"><label className="text-[10px] uppercase font-bold text-gray-500 block">Nível</label><input type="number" value={data.bio?.nivel} onChange={e => updateField('bio.nivel', parseInt(e.target.value)||1)} className="w-full outline-none font-bold" /></div>
-                                              <div className="border-b border-[#922610]/50"><label className="text-[10px] uppercase font-bold text-gray-500 block">Linhagem/Espécie</label><input type="text" value={data.bio?.linhagem} onChange={e => updateField('bio.linhagem', e.target.value)} className="w-full outline-none font-bold" /></div>
-                                              <div className="border-b border-[#922610]/50"><label className="text-[10px] uppercase font-bold text-gray-500 block">Antecedente</label><input type="text" value={data.bio?.antecedente} onChange={e => updateField('bio.antecedente', e.target.value)} className="w-full outline-none font-bold" /></div>
+                                              <div className="border-b border-[#922610]/50"><label className="text-[10px] uppercase font-bold text-gray-500 block">Espécie</label><input type="text" value={data.bio?.linhagem} onChange={e => updateField('bio.linhagem', e.target.value)} className="w-full outline-none font-bold" /></div>
+                                              <div className="border-b border-[#922610]/50"><label className="text-[10px] uppercase font-bold text-gray-500 block">Origem / Antecedente</label><input type="text" value={data.bio?.antecedente} onChange={e => updateField('bio.antecedente', e.target.value)} className="w-full outline-none font-bold" /></div>
                                               <div className="border-b border-[#922610]/50"><label className="text-[10px] uppercase font-bold text-gray-500 block">Alinhamento</label><input type="text" value={data.bio?.alinhamento} onChange={e => updateField('bio.alinhamento', e.target.value)} className="w-full outline-none font-bold" /></div>
                                               <div className="border-b border-[#922610]/50"><label className="text-[10px] uppercase font-bold text-gray-500 block">XP</label><input type="number" value={data.bio?.xp} onChange={e => updateField('bio.xp', parseInt(e.target.value)||0)} className="w-full outline-none font-bold" /></div>
                                               <div className="border-b border-[#922610]/50 lg:col-span-2"><label className="text-[10px] uppercase font-bold text-gray-500 block">Jogador</label><input type="text" value={data.bio?.jogador} onChange={e => updateField('bio.jogador', e.target.value)} className="w-full outline-none font-bold" /></div>
@@ -416,7 +425,7 @@ export default function DndCharacterEditor({ scope }) {
                                                   <div className="grid grid-cols-2 gap-2">
                                                       <label className="dnd-panel border border-gray-300 rounded p-2 bg-white flex items-center gap-2 cursor-pointer">
                                                           <input type="checkbox" checked={!!data.status?.inspiracao} onChange={e=>updateField('status.inspiracao',e.target.checked)} />
-                                                          <span className="text-[10px] font-bold uppercase">Inspiração</span>
+                                                          <span className="text-[10px] font-bold uppercase">Inspiração Heroica</span>
                                                       </label>
                                                       <label className="dnd-panel border border-gray-300 rounded p-2 bg-white">
                                                           <span className="block text-[8px] font-bold uppercase text-gray-500 text-center">Percepção Passiva</span>
@@ -469,18 +478,23 @@ export default function DndCharacterEditor({ scope }) {
       
                                       {/* D&D Col 2: Combate, HP, Ataques */}
                                       <div className={`${mobileTab === 'equipamento' ? 'block' : 'hidden md:block'} dnd-column space-y-4`}>
-                                          <div className="grid grid-cols-3 gap-2">
+                                          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                                               <div className="dnd-combat-stat dnd-ac-card border-2 border-gray-300 bg-white p-2 rounded text-center flex flex-col items-center shadow-sm">
                                                   <div className="text-[10px] uppercase font-bold text-gray-500 mb-1">Classe de Armadura</div>
                                                   <input type="number" value={data.status?.ca} onChange={e => updateField('status.ca', parseInt(e.target.value)||10)} className="w-full text-center text-3xl font-bold bg-transparent outline-none text-[#922610]" />
+                                                  <label className="dnd-shield-field"><span>Escudo</span><input type="number" min="0" value={data.status?.escudo ?? 0} onChange={e => updateField('status.escudo', parseInt(e.target.value)||0)} /></label>
                                               </div>
                                               <div className="dnd-combat-stat border-2 border-gray-300 bg-white p-2 rounded text-center flex flex-col items-center shadow-sm">
                                                   <div className="text-[10px] uppercase font-bold text-gray-500 mb-1">Iniciativa</div>
                                                   <input type="text" value={data.status?.iniciativa} onChange={e => updateField('status.iniciativa', e.target.value)} className="w-full text-center text-2xl font-bold bg-transparent outline-none mt-1" />
                                               </div>
                                               <div className="dnd-combat-stat border-2 border-gray-300 bg-white p-2 rounded text-center flex flex-col items-center shadow-sm">
-                                                  <div className="text-[10px] uppercase font-bold text-gray-500 mb-1">Deslocamento</div>
+                                                  <div className="text-[10px] uppercase font-bold text-gray-500 mb-1">Velocidade</div>
                                                   <input type="text" value={data.status?.deslocamento} onChange={e => updateField('status.deslocamento', e.target.value)} className="w-full text-center text-2xl font-bold bg-transparent outline-none mt-1" />
+                                              </div>
+                                              <div className="dnd-combat-stat dnd-size-card border-2 border-gray-300 bg-white p-2 rounded text-center flex flex-col items-center shadow-sm">
+                                                  <div className="text-[10px] uppercase font-bold text-gray-500 mb-1">Tamanho</div>
+                                                  <input type="text" value={data.status?.tamanho || ''} onChange={e => updateField('status.tamanho', e.target.value)} className="w-full text-center text-base font-bold bg-transparent outline-none mt-2" placeholder="Médio" />
                                               </div>
                                           </div>
       
@@ -578,13 +592,21 @@ export default function DndCharacterEditor({ scope }) {
       
                                       {/* D&D Col 3: Roleplay e Magias */}
                                       <div className={`${mobileTab === 'recursos' ? 'block' : 'hidden md:block'} dnd-column space-y-4`}>
-                                          <div className="dnd-traits-card dnd-section-card border border-gray-300 rounded bg-white shadow-sm flex flex-col gap-2 p-2">
-                                              <div className="bg-gray-50 border p-2 rounded"><textarea rows="2" value={data.tracosPersonalidade} onChange={e => updateField('tracosPersonalidade', e.target.value)} className="w-full bg-transparent outline-none text-xs resize-y" placeholder="Traços de Personalidade..."></textarea></div>
-                                              <div className="bg-gray-50 border p-2 rounded"><textarea rows="2" value={data.ideais} onChange={e => updateField('ideais', e.target.value)} className="w-full bg-transparent outline-none text-xs resize-y" placeholder="Ideais..."></textarea></div>
-                                              <div className="bg-gray-50 border p-2 rounded"><textarea rows="2" value={data.vinculos} onChange={e => updateField('vinculos', e.target.value)} className="w-full bg-transparent outline-none text-xs resize-y" placeholder="Vínculos..."></textarea></div>
-                                              <div className="bg-gray-50 border p-2 rounded"><textarea rows="2" value={data.defeitos} onChange={e => updateField('defeitos', e.target.value)} className="w-full bg-transparent outline-none text-xs resize-y" placeholder="Defeitos..."></textarea></div>
+                                          <div className="dnd-traits-card dnd-section-card border border-gray-300 rounded bg-white shadow-sm p-2 space-y-2">
+                                              <div className="dnd-section-head text-sm border-b pb-1">Aparência, História & Personalidade</div>
+                                              <label className="dnd-profile-card"><span>Aparência</span><textarea rows="3" value={data.bio?.aparencia || ''} onChange={e => updateField('bio.aparencia', e.target.value)} placeholder="Descrição visual, marcas, roupas, símbolos..."></textarea></label>
+                                              <label className="dnd-profile-card"><span>História & Personalidade</span><textarea rows="5" value={data.bio?.historiaPersonalidade || ''} onChange={e => updateField('bio.historiaPersonalidade', e.target.value)} placeholder="Passado, motivações, hábitos e detalhes de interpretação..."></textarea></label>
+                                              <details className="dnd-legacy-roleplay">
+                                                  <summary>Detalhes clássicos de interpretação</summary>
+                                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
+                                                      <div><textarea rows="2" value={data.tracosPersonalidade} onChange={e => updateField('tracosPersonalidade', e.target.value)} placeholder="Traços de Personalidade..."></textarea></div>
+                                                      <div><textarea rows="2" value={data.ideais} onChange={e => updateField('ideais', e.target.value)} placeholder="Ideais..."></textarea></div>
+                                                      <div><textarea rows="2" value={data.vinculos} onChange={e => updateField('vinculos', e.target.value)} placeholder="Vínculos..."></textarea></div>
+                                                      <div><textarea rows="2" value={data.defeitos} onChange={e => updateField('defeitos', e.target.value)} placeholder="Defeitos..."></textarea></div>
+                                                  </div>
+                                              </details>
                                           </div>
-      
+
                                           <div className="dnd-section-card border border-gray-300 rounded bg-white shadow-sm overflow-hidden">
                                               <div className="dnd-tabbar flex border-b bg-gray-100">
                                                   <button type="button" onClick={() => setDndPcTab('caracteristicas')} className={`flex-1 px-2 py-2 text-[10px] md:text-xs font-bold uppercase transition-colors ${dndPcTab === 'caracteristicas' ? 'dnd-tab-active bg-[#922610] text-white' : 'text-gray-600 hover:bg-gray-200'}`}>Características & Talentos</button>
@@ -593,21 +615,35 @@ export default function DndCharacterEditor({ scope }) {
       
                                               {dndPcTab === 'caracteristicas' ? (
                                                   <div className="p-2">
-                                                      <div className="flex justify-between items-center mb-2">
-                                                          <span className="text-[10px] text-gray-500">Habilidades de classe, talentos e traços.</span>
-                                                          <button type="button" onClick={() => addToArray('caracteristicas', { nome: '', desc: '' })} className="dnd-add-btn"><SVGIcons.Plus/> Adic.</button>
-                                                      </div>
-                                                      <div className="space-y-2">
-                                                          {(!data.caracteristicas || data.caracteristicas.length === 0) && <p className="text-[10px] italic text-gray-400 py-2">Nenhuma característica adicionada.</p>}
-                                                          {(Array.isArray(data.caracteristicas) ? data.caracteristicas : []).map((carac, idx) => (
-                                                              <div key={idx} className="dnd-feature-card border rounded bg-gray-50 p-2 flex gap-2 items-start">
-                                                                  <div className="flex-1 space-y-1">
-                                                                      <input type="text" value={carac?.nome || ''} onChange={e => updateArrayField('caracteristicas', idx, 'nome', e.target.value)} className="w-full bg-transparent border-b outline-none text-xs font-bold" placeholder="Nome da característica ou talento" />
-                                                                      <textarea rows="2" value={carac?.desc || ''} onChange={e => updateArrayField('caracteristicas', idx, 'desc', e.target.value)} className="w-full bg-transparent outline-none text-xs resize-y" placeholder="Descrição, uso, limite, efeito..." />
-                                                                  </div>
-                                                                  <button type="button" onClick={() => removeFromArray('caracteristicas', idx)} className="text-red-500 hover:text-red-700"><SVGIcons.Trash/></button>
-                                                              </div>
-                                                          ))}
+                                                      <div className="dnd-feature-groups space-y-3">
+                                                          {dndFeatureGroups.map(group => {
+                                                              const entries = (Array.isArray(data.caracteristicas) ? data.caracteristicas : []).map((carac, originalIndex) => ({ ...carac, originalIndex })).filter(carac => (carac.tipo || 'classe') === group.id);
+                                                              return (
+                                                                  <section key={group.id} className="dnd-feature-group">
+                                                                      <div className="dnd-feature-group-head">
+                                                                          <span>{group.label}</span>
+                                                                          <button type="button" onClick={() => addToArray('caracteristicas', { tipo: group.id, nome: '', desc: '' })} className="dnd-add-btn"><SVGIcons.Plus/> Adic.</button>
+                                                                      </div>
+                                                                      <div className="space-y-2 p-2">
+                                                                          {entries.length === 0 && <p className="text-[10px] italic text-gray-400 py-1">Nenhum registro nesta categoria.</p>}
+                                                                          {entries.map(carac => (
+                                                                              <div key={carac.originalIndex} className="dnd-feature-card border rounded bg-gray-50 p-2 flex gap-2 items-start">
+                                                                                  <div className="flex-1 space-y-1">
+                                                                                      <div className="grid grid-cols-[1fr_110px] gap-2">
+                                                                                          <input type="text" value={carac?.nome || ''} onChange={e => updateArrayField('caracteristicas', carac.originalIndex, 'nome', e.target.value)} className="w-full bg-transparent border-b outline-none text-xs font-bold" placeholder="Nome do recurso" />
+                                                                                          <select value={carac?.tipo || 'classe'} onChange={e => updateArrayField('caracteristicas', carac.originalIndex, 'tipo', e.target.value)} className="dnd-feature-type border rounded px-1 text-[9px] font-bold">
+                                                                                              <option value="classe">Classe</option><option value="especie">Espécie</option><option value="talento">Talento</option><option value="outro">Outro</option>
+                                                                                          </select>
+                                                                                      </div>
+                                                                                      <textarea rows="2" value={carac?.desc || ''} onChange={e => updateArrayField('caracteristicas', carac.originalIndex, 'desc', e.target.value)} className="w-full bg-transparent outline-none text-xs resize-y" placeholder="Descrição, uso, limite, efeito..." />
+                                                                                  </div>
+                                                                                  <button type="button" onClick={() => removeFromArray('caracteristicas', carac.originalIndex)} className="text-red-500 hover:text-red-700"><SVGIcons.Trash/></button>
+                                                                              </div>
+                                                                          ))}
+                                                                      </div>
+                                                                  </section>
+                                                              );
+                                                          })}
                                                       </div>
                                                   </div>
                                               ) : (
@@ -633,7 +669,7 @@ export default function DndCharacterEditor({ scope }) {
                                                       </div>
                                                       <div className="flex justify-between items-center border-t pt-2 mb-2">
                                                           <span className="text-[10px] text-gray-500">Lista de magias conhecidas/preparadas.</span>
-                                                          <button type="button" onClick={() => { const list = Array.isArray(data.magias?.lista) ? data.magias.lista : []; updateField('magias.lista', [...list, { nome: '', nivel: '', desc: '' }]); }} className="dnd-add-btn"><SVGIcons.Plus/> Adic.</button>
+                                                          <button type="button" onClick={() => { const list = Array.isArray(data.magias?.lista) ? data.magias.lista : []; updateField('magias.lista', [...list, { nome: '', nivel: '', tempo: '', alcance: '', concentracao: false, ritual: false, material: false, desc: '' }]); }} className="dnd-add-btn"><SVGIcons.Plus/> Adic.</button>
                                                       </div>
                                                       <div className="space-y-2">
                                                           {(!Array.isArray(data.magias?.lista) || data.magias.lista.length === 0) && <p className="text-[10px] italic text-gray-400 py-2">Nenhuma magia adicionada.</p>}
@@ -644,7 +680,14 @@ export default function DndCharacterEditor({ scope }) {
                                                                           <input type="text" value={magia?.nome || ''} onChange={e => { const list=[...data.magias.lista]; list[idx]={...list[idx], nome:e.target.value}; updateField('magias.lista', list); }} className="flex-1 min-w-0 bg-transparent border-b outline-none text-xs font-bold" placeholder="Nome da magia" />
                                                                           <input type="text" value={magia?.nivel || ''} onChange={e => { const list=[...data.magias.lista]; list[idx]={...list[idx], nivel:e.target.value}; updateField('magias.lista', list); }} className="w-16 bg-transparent border-b outline-none text-[10px] text-center" placeholder="Nível" />
                                                                       </div>
-                                                                      <textarea rows="2" value={magia?.desc || ''} onChange={e => { const list=[...data.magias.lista]; list[idx]={...list[idx], desc:e.target.value}; updateField('magias.lista', list); }} className="w-full bg-transparent outline-none text-xs resize-y" placeholder="Notas, duração, alcance ou efeito..." />
+                                                                      <div className="dnd-spell-meta">
+                                                                          <label><span>Tempo</span><input type="text" value={magia?.tempo || ''} onChange={e => { const list=[...data.magias.lista]; list[idx]={...list[idx], tempo:e.target.value}; updateField('magias.lista', list); }} placeholder="1 ação" /></label>
+                                                                          <label><span>Alcance</span><input type="text" value={magia?.alcance || ''} onChange={e => { const list=[...data.magias.lista]; list[idx]={...list[idx], alcance:e.target.value}; updateField('magias.lista', list); }} placeholder="18 m" /></label>
+                                                                          <label className="dnd-spell-flag"><input type="checkbox" checked={!!magia?.concentracao} onChange={e => { const list=[...data.magias.lista]; list[idx]={...list[idx], concentracao:e.target.checked}; updateField('magias.lista', list); }} /><span>C</span></label>
+                                                                          <label className="dnd-spell-flag"><input type="checkbox" checked={!!magia?.ritual} onChange={e => { const list=[...data.magias.lista]; list[idx]={...list[idx], ritual:e.target.checked}; updateField('magias.lista', list); }} /><span>R</span></label>
+                                                                          <label className="dnd-spell-flag"><input type="checkbox" checked={!!magia?.material} onChange={e => { const list=[...data.magias.lista]; list[idx]={...list[idx], material:e.target.checked}; updateField('magias.lista', list); }} /><span>M</span></label>
+                                                                      </div>
+                                                                      <textarea rows="2" value={magia?.desc || ''} onChange={e => { const list=[...data.magias.lista]; list[idx]={...list[idx], desc:e.target.value}; updateField('magias.lista', list); }} className="w-full bg-transparent outline-none text-xs resize-y mt-1" placeholder="Anotações, material necessário, duração ou efeito..." />
                                                                   </div>
                                                                   <button type="button" onClick={() => { const list=data.magias.lista.filter((_,i)=>i!==idx); updateField('magias.lista', list); }} className="text-red-500 hover:text-red-700"><SVGIcons.Trash/></button>
                                                               </div>
@@ -654,9 +697,22 @@ export default function DndCharacterEditor({ scope }) {
                                               )}
                                           </div>
       
-                                          <div className="dnd-section-card border border-gray-300 rounded bg-white shadow-sm p-2 flex flex-col">
-                                              <h3 className="dnd-section-head font-bold text-sm uppercase text-gray-600 border-b pb-1 mb-2">Outras Proficiências / Idiomas</h3>
-                                              <textarea rows="3" value={data.outrasProficiencias} onChange={e => updateField('outrasProficiencias', e.target.value)} className="w-full bg-gray-50 border rounded p-2 text-xs resize-y outline-none"></textarea>
+                                          <div className="dnd-section-card border border-gray-300 rounded bg-white shadow-sm p-2 flex flex-col gap-2">
+                                              <h3 className="dnd-section-head font-bold text-sm uppercase text-gray-600 border-b pb-1">Equipamento, Treino & Proficiências</h3>
+                                              <div className="dnd-training-grid">
+                                                  {[['leve','Leve'],['media','Média'],['pesada','Pesada'],['escudos','Escudos']].map(([key,label]) => <label key={key}><input type="checkbox" checked={!!data.treinoArmadura?.[key]} onChange={e => updateField('treinoArmadura.' + key, e.target.checked)} /><span>{label}</span></label>)}
+                                              </div>
+                                              <label className="dnd-profile-card"><span>Armas</span><textarea rows="2" value={data.armasProficiencias || ''} onChange={e => updateField('armasProficiencias', e.target.value)} placeholder="Armas simples, marciais, tipos específicos..."></textarea></label>
+                                              <label className="dnd-profile-card"><span>Ferramentas</span><textarea rows="2" value={data.ferramentas || ''} onChange={e => updateField('ferramentas', e.target.value)} placeholder="Ferramentas, kits, instrumentos, veículos..."></textarea></label>
+                                              <label className="dnd-profile-card"><span>Idiomas</span><textarea rows="2" value={data.idiomas || ''} onChange={e => updateField('idiomas', e.target.value)} placeholder="Comum, Élfico, Dracônico..."></textarea></label>
+                                              <details className="dnd-legacy-roleplay"><summary>Notas antigas de proficiência</summary><textarea rows="2" value={data.outrasProficiencias} onChange={e => updateField('outrasProficiencias', e.target.value)} className="w-full mt-2" /></details>
+                                          </div>
+
+                                          <div className="dnd-section-card border border-gray-300 rounded bg-white shadow-sm p-2">
+                                              <h3 className="dnd-section-head font-bold text-sm uppercase text-gray-600 border-b pb-1 mb-2">Sintonização de Item Mágico</h3>
+                                              <div className="dnd-attunement-list">
+                                                  {dndAttunements.map((item, idx) => <label key={idx}><span>✦</span><input value={item} onChange={e => { const list=[...dndAttunements]; list[idx]=e.target.value; updateField('sintonizacao', list); }} placeholder={'Item sintonizado ' + (idx + 1)} /></label>)}
+                                              </div>
                                           </div>
                                       </div>
                                   </div>
