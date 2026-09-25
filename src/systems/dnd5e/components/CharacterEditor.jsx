@@ -1,5 +1,5 @@
 import CharacterEditorBase from './CharacterEditorBase.jsx';
-import '../dnd-sheet-v6.css';
+import '../dnd-sheet-v7.css';
 import { getDndClassByLabel } from '../classPanels.js';
 
 const clampSpellLevel = (raw) => {
