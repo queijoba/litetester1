@@ -10,8 +10,11 @@ const requiredFiles = [
   'src/systems/dragonbane/pdf/export.js',
   'src/systems/dragonbane/pdf/map.js',
   'src/systems/dnd5e/index.js',
+  'src/systems/dnd5e/classPanels.js',
   'src/systems/dnd5e/components/CharacterEditor.jsx',
+  'src/systems/dnd5e/components/CharacterEditorBase.jsx',
   'src/systems/dnd5e/components/ThreatEditor.jsx',
+  'src/systems/dnd5e/dnd-sheet-v7.css',
   'src/systems/fabulaUltima/index.js',
   'src/systems/fabulaUltima/components/CharacterEditor.jsx',
   'src/systems/fabulaUltima/components/ThreatEditor.jsx',
@@ -56,6 +59,14 @@ for (const modulePath of [
   }
 }
 
+const dndEditor = await readFile('src/systems/dnd5e/components/CharacterEditor.jsx', 'utf8');
+if (!dndEditor.includes("../dnd-sheet-v7.css")) {
+  throw new Error('O editor D&D não está usando a folha de estilo mobile mais recente.');
+}
+if (!dndEditor.includes('ClassWorkspace') || !dndEditor.includes('SpellWorkspace')) {
+  throw new Error('O editor D&D não contém os workspaces separados de classe e magias.');
+}
+
 const registry = await readFile('src/systems/registry.js', 'utf8');
 for (const id of ['dragonbane', 'dnd5e', 'fabulaUltima', 'somDasSeis']) {
   if (!registry.includes(`id: '${id}'`)) {
@@ -63,4 +74,4 @@ for (const id of ['dragonbane', 'dnd5e', 'fabulaUltima', 'somDasSeis']) {
   }
 }
 
-console.log('PJ Lite: estrutura essencial, editores modulares e módulos de sistemas verificados com sucesso.');
+console.log('PJ Lite: estrutura essencial, editores modulares, D&D mobile e módulos de sistemas verificados com sucesso.');
