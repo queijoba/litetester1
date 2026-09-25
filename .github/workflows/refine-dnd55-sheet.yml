@@ -28,12 +28,13 @@ jobs:
       - name: Instalar projeto
         run: npm ci
 
-      - name: Corrigir seletor único do codemod
+      - name: Corrigir codemod antes da execução
         run: |
           python3 - <<'PY'
           from pathlib import Path
           p = Path('scripts/refine-dnd55-sheet.mjs')
           s = p.read_text()
+
           old = '''editor = replaceOnce(
             editor,
             "  return (\\n",
@@ -46,9 +47,29 @@ jobs:
             "  } = scope;\\n\\n  const dndFeatureGroups = [\\n    { id: 'classe', label: 'Características de Classe' },\\n    { id: 'especie', label: 'Características de Espécie' },\\n    { id: 'talento', label: 'Talentos' },\\n    { id: 'outro', label: 'Outros Recursos' }\\n  ];\\n  const dndAttunements = Array.isArray(data.sintonizacao) ? data.sintonizacao : ['', '', ''];\\n\\n  return (\\n",
             'helpers visuais D&D'
           );'''
-          if old not in s:
-              raise SystemExit('Bloco do seletor antigo não encontrado.')
-          p.write_text(s.replace(old, new, 1))
+          if old in s:
+              s = s.replace(old, new, 1)
+
+          bad_features = '''                                                          })}
+                                                      </div>
+                                                  </div>
+                                              ) : (`;'''
+          good_features = '''                                                          })}
+                                                      </div>
+`;'''
+          if bad_features in s:
+              s = s.replace(bad_features, good_features, 1)
+
+          bad_prof = '''                                          </div>
+                                      </div>
+                                  </div>
+                                  </div>`;'''
+          good_prof = '''                                          </div>
+`;'''
+          if bad_prof in s:
+              s = s.replace(bad_prof, good_prof, 1)
+
+          p.write_text(s)
           PY
 
       - name: Aplicar refinamento D&D 5.5e
