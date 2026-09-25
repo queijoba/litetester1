@@ -49,13 +49,17 @@ function ClassWorkspace({ scope, selectedClass }) {
   } = scope;
 
   const features = Array.isArray(data.caracteristicas) ? data.caracteristicas : [];
-  const classFeatures = features
+  const indexedClassFeatures = features
     .map((entry, index) => ({ entry, index }))
     .filter(item => (item.entry?.tipo || 'classe') === 'classe');
+  const baseClassFeatures = indexedClassFeatures.filter(item => item.entry?.origem !== 'subclasse');
+  const subclassFeatures = indexedClassFeatures.filter(item => item.entry?.origem === 'subclasse');
+
   const classResourceData = data.recursosClasse?.[selectedClass.id] || {};
   const subclassOptions = Array.isArray(selectedClass.subclasses) ? selectedClass.subclasses : [];
   const currentSubclass = String(data.bio?.subclasse || '');
   const legacySubclass = currentSubclass && !subclassOptions.includes(currentSubclass) ? currentSubclass : '';
+  const characterLevel = data.bio?.nivel || '—';
 
   const updateClassResource = (key, value) => updateField(`recursosClasse.${selectedClass.id}.${key}`, value);
 
@@ -104,29 +108,26 @@ function ClassWorkspace({ scope, selectedClass }) {
     desc: ''
   });
 
-  const renderFeature = ({ entry, index }) => {
-    const origin = entry?.origem === 'subclasse' ? 'subclasse' : 'classe';
-    return (
-      <article key={index} className="dnd-v6-feature-card">
-        <div className="dnd-v6-feature-head">
-          <span className={`dnd-v6-origin ${origin}`}>{origin === 'subclasse' ? (currentSubclass || 'Subclasse') : selectedClass.label}</span>
-          <button type="button" onClick={() => removeFromArray('caracteristicas', index)} title="Remover habilidade"><SVGIcons.Trash /></button>
-        </div>
-        <input
-          className="dnd-v6-feature-name"
-          value={entry?.nome || ''}
-          onChange={e => updateArrayField('caracteristicas', index, 'nome', e.target.value)}
-          placeholder={origin === 'subclasse' ? 'Habilidade da subclasse' : 'Habilidade da classe'}
-        />
-        <textarea
-          rows="4"
-          value={entry?.desc || ''}
-          onChange={e => updateArrayField('caracteristicas', index, 'desc', e.target.value)}
-          placeholder="Efeito, usos, recarga, limites e observações..."
-        />
-      </article>
-    );
-  };
+  const renderFeature = ({ entry, index }, origin) => (
+    <article key={index} className={`dnd-v6-feature-card ${origin === 'subclasse' ? 'subclass-feature' : ''}`}>
+      <div className="dnd-v6-feature-head">
+        <span className={`dnd-v6-origin ${origin}`}>{origin === 'subclasse' ? (currentSubclass || 'Subclasse') : selectedClass.label}</span>
+        <button type="button" onClick={() => removeFromArray('caracteristicas', index)} title="Remover habilidade"><SVGIcons.Trash /></button>
+      </div>
+      <input
+        className="dnd-v6-feature-name"
+        value={entry?.nome || ''}
+        onChange={e => updateArrayField('caracteristicas', index, 'nome', e.target.value)}
+        placeholder={origin === 'subclasse' ? 'Habilidade da subclasse' : 'Habilidade da classe'}
+      />
+      <textarea
+        rows="4"
+        value={entry?.desc || ''}
+        onChange={e => updateArrayField('caracteristicas', index, 'desc', e.target.value)}
+        placeholder="Efeito, usos, recarga, limites e observações..."
+      />
+    </article>
+  );
 
   return (
     <div className="dnd-paper dnd-v3 font-dnd dnd-v6-custom-paper">
@@ -139,11 +140,10 @@ function ClassWorkspace({ scope, selectedClass }) {
               <h2>{selectedClass.label}</h2>
               <p>{selectedClass.summary}</p>
             </div>
-            <div className="dnd-v6-class-identity">
-              <div className="dnd-v6-readonly-class">
-                <span>Classe escolhida</span>
-                <strong>{selectedClass.label}</strong>
-                <small>Altere a classe na aba Ficha & Combate.</small>
+            <div className="dnd-v6-class-identity compact">
+              <div className="dnd-v6-level-badge" title="O nível é alterado na aba Ficha & Combate">
+                <span>Nível</span>
+                <strong>{characterLevel}</strong>
               </div>
               <label className="dnd-v6-subclass-select">
                 <span>{selectedClass.subclassLabel || 'Subclasse'}</span>
@@ -152,7 +152,7 @@ function ClassWorkspace({ scope, selectedClass }) {
                   {legacySubclass && <option value={legacySubclass}>{legacySubclass} (legado)</option>}
                   {subclassOptions.map(option => <option key={option} value={option}>{option}</option>)}
                 </select>
-                <small>{currentSubclass ? 'Subclasse vinculada à identidade do personagem.' : 'Escolha quando o personagem adquirir sua subclasse.'}</small>
+                <small>{currentSubclass ? 'A subclasse fica salva na identidade do personagem.' : 'Escolha quando o personagem adquirir sua subclasse.'}</small>
               </label>
             </div>
           </section>
@@ -161,7 +161,7 @@ function ClassWorkspace({ scope, selectedClass }) {
             <section className="dnd-v3-section dnd-v6-fast-resources">
               <div className="dnd-v3-section-title">
                 <span>Recursos da Classe</span>
-                <small>Contadores e valores carregados automaticamente pela classe escolhida</small>
+                <small>Contadores e valores próprios de {selectedClass.label}</small>
               </div>
               <div className="dnd-v6-class-resource-grid">
                 {selectedClass.fields.length ? selectedClass.fields.map(renderClassField) : <p className="dnd-v6-empty">Esta classe não possui contadores rápidos configurados.</p>}
@@ -174,17 +174,38 @@ function ClassWorkspace({ scope, selectedClass }) {
 
             <section className="dnd-v3-section dnd-v6-class-features">
               <div className="dnd-v3-section-title dnd-v6-feature-title">
-                <div><span>Habilidades de Classe & Subclasse</span><small>As habilidades desta área deixam de ocupar espaço na aba Recursos.</small></div>
-                <div className="dnd-v6-feature-actions">
-                  <button type="button" onClick={() => addFeature('classe')}>+ Classe</button>
-                  <button type="button" onClick={() => addFeature('subclasse')} disabled={!currentSubclass}>+ Subclasse</button>
+                <div>
+                  <span>Habilidades da Classe</span>
+                  <small>Classe e subclasse ficam separadas para consulta rápida.</small>
                 </div>
               </div>
-              {!currentSubclass && <div className="dnd-v6-hint">Selecione uma subclasse acima para habilitar o cadastro de habilidades específicas dela.</div>}
-              <div className="dnd-v6-class-feature-grid">
-                {classFeatures.length === 0
-                  ? <p className="dnd-v6-empty">Nenhuma habilidade cadastrada. Use os botões acima para registrar recursos conforme o personagem evoluir.</p>
-                  : classFeatures.map(renderFeature)}
+
+              <div className="dnd-v6-feature-columns">
+                <div className="dnd-v6-feature-lane">
+                  <div className="dnd-v6-lane-head">
+                    <div><b>{selectedClass.label}</b><small>Recursos base da classe</small></div>
+                    <button type="button" onClick={() => addFeature('classe')}>+ Habilidade</button>
+                  </div>
+                  <div className="dnd-v6-feature-list">
+                    {baseClassFeatures.length === 0
+                      ? <p className="dnd-v6-empty">Nenhuma habilidade da classe cadastrada ainda.</p>
+                      : baseClassFeatures.map(item => renderFeature(item, 'classe'))}
+                  </div>
+                </div>
+
+                <div className={`dnd-v6-feature-lane subclass-lane ${currentSubclass ? '' : 'is-disabled'}`}>
+                  <div className="dnd-v6-lane-head">
+                    <div><b>{currentSubclass || 'Subclasse'}</b><small>{currentSubclass ? 'Recursos específicos da subclasse' : 'Selecione uma subclasse no topo'}</small></div>
+                    <button type="button" onClick={() => addFeature('subclasse')} disabled={!currentSubclass}>+ Habilidade</button>
+                  </div>
+                  <div className="dnd-v6-feature-list">
+                    {!currentSubclass
+                      ? <p className="dnd-v6-empty">Escolha a subclasse para liberar esta área.</p>
+                      : subclassFeatures.length === 0
+                        ? <p className="dnd-v6-empty">Nenhuma habilidade da subclasse cadastrada ainda.</p>
+                        : subclassFeatures.map(item => renderFeature(item, 'subclasse'))}
+                  </div>
+                </div>
               </div>
             </section>
           </div>
@@ -246,6 +267,9 @@ function SpellWorkspace({ scope }) {
 
   const renderSpell = (spell, index, level, circleItems) => {
     const position = circleItems.findIndex(item => item.index === index);
+    const components = [spell?.verbal && 'V', spell?.somatico && 'S', spell?.material && 'M'].filter(Boolean).join(' / ');
+    const hasQuickInfo = spell?.tempo || spell?.alcance || spell?.duracao || components || spell?.concentracao || spell?.ritual;
+
     return (
       <article key={index} className={`dnd-v6-spell-card ${spell?.preparada ? 'is-prepared' : ''}`}>
         <div className="dnd-v6-spell-head">
@@ -258,8 +282,20 @@ function SpellWorkspace({ scope }) {
             <button type="button" className="danger" onClick={() => removeSpell(index)} title="Remover magia">×</button>
           </div>
         </div>
+
+        {hasQuickInfo && (
+          <div className="dnd-v6-spell-meta" aria-label="Resumo da magia">
+            {spell?.tempo && <span title="Tempo de conjuração">⏱ {spell.tempo}</span>}
+            {spell?.alcance && <span title="Alcance">↗ {spell.alcance}</span>}
+            {spell?.duracao && <span title="Duração">◷ {spell.duracao}</span>}
+            {components && <span title="Componentes">{components}</span>}
+            {spell?.concentracao && <span className="accent" title="Concentração">C</span>}
+            {spell?.ritual && <span className="accent" title="Ritual">Ritual</span>}
+          </div>
+        )}
+
         <details className="dnd-v6-spell-details">
-          <summary>Detalhes</summary>
+          <summary>Editar detalhes</summary>
           <div className="dnd-v6-spell-fields">
             <label><span>Tempo</span><input value={spell?.tempo || ''} onChange={e => updateSpell(index, { tempo: e.target.value })} placeholder="1 ação" /></label>
             <label><span>Alcance</span><input value={spell?.alcance || ''} onChange={e => updateSpell(index, { alcance: e.target.value })} placeholder="18 m" /></label>
@@ -284,7 +320,7 @@ function SpellWorkspace({ scope }) {
         <div className="dnd-v6-spell-page">
           <section className="dnd-v6-spell-toolbar">
             <div className="dnd-v6-spell-title">
-              <div><small>Conjuração</small><b>Livro de Magias</b><span>Cada magia pertence automaticamente ao círculo em que foi criada.</span></div>
+              <div><small>Conjuração</small><b>Livro de Magias</b><span>Crie a magia diretamente no círculo correto; o círculo é definido automaticamente.</span></div>
               <div className="dnd-v6-spell-count"><strong>{spells.filter(spell => spell?.preparada).length}</strong><span>preparadas</span><i>/</i><strong>{spells.length}</strong><span>total</span></div>
             </div>
             <div className="dnd-v6-casting-grid">
