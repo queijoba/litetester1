@@ -1,6 +1,6 @@
 # Sistemas do PJ Lite
 
-Esta pasta é a nova fronteira modular do projeto. Cada sistema terá sua própria pasta e, conforme a migração avançar, seus componentes, modelos de dados, armazenamento específico, tema e integrações (como PDF) serão movidos para dentro dela.
+Esta pasta é a fronteira modular do projeto. Cada sistema possui sua própria pasta e os editores visuais das fichas ativas já foram retirados do antigo bloco monolítico de `PJLiteApp.jsx`.
 
 ## Sistemas ativos
 
@@ -8,6 +8,33 @@ Esta pasta é a nova fronteira modular do projeto. Cada sistema terá sua própr
 - `dnd5e/`
 - `fabulaUltima/`
 - `somDasSeis/`
+
+## Estrutura atual
+
+Os modelos visuais ficam dentro do próprio sistema:
+
+```text
+systems/
+├─ dragonbane/
+│  ├─ components/Editor.jsx
+│  └─ pdf/
+├─ dnd5e/
+│  └─ components/
+│     ├─ CharacterEditor.jsx
+│     └─ ThreatEditor.jsx
+├─ fabulaUltima/
+│  └─ components/
+│     ├─ CharacterEditor.jsx
+│     └─ ThreatEditor.jsx
+└─ somDasSeis/
+   └─ components/
+      ├─ CharacterEditor.jsx
+      └─ ThreatEditor.jsx
+```
+
+Isso permite revisar o desenho de uma ficha sem procurar seu JSX no meio das fichas dos outros sistemas.
+
+O núcleo compartilhado — dashboard, temas, importação/exportação, armazenamento, histórico, Ficha Chat e parte dos modelos/normalizações — continua em `PJLiteApp.jsx` durante a transição. Os editores recebem temporariamente um escopo de compatibilidade; esse acoplamento será reduzido à medida que dados e utilitários forem migrados para módulos compartilhados ou para o sistema correspondente.
 
 ## Sistemas planejados
 
@@ -17,15 +44,14 @@ Esta pasta é a nova fronteira modular do projeto. Cada sistema terá sua própr
 - `3det/`
 - `guerraDosTronos/`
 
-O arquivo `registry.js` concentra a lista de sistemas ativos e planejados. Sistemas planejados ficam com `enabled: false` até existir uma implementação utilizável.
+O arquivo `registry.js` concentra a lista de sistemas ativos e planejados. Sistemas planejados permanecem com `enabled: false` até existir uma implementação utilizável.
 
-## Migração
+## Próximas etapas da migração
 
-O `PJLiteApp.jsx` ainda contém boa parte da implementação legada. A migração deve ser gradual para evitar regressões:
+1. manter os editores visuais independentes;
+2. mover modelos, normalizadores e regras específicas para `data/` e `logic/` de cada sistema;
+3. mover infraestrutura realmente compartilhada para `src/shared/`;
+4. separar estilos específicos por sistema quando os próximos redesigns forem feitos;
+5. adicionar novos sistemas usando o mesmo padrão, sem voltar a aumentar o arquivo central.
 
-1. mover código compartilhado para `src/shared/`;
-2. extrair Dragonbane primeiro;
-3. repetir o padrão em D&D 5e, Fabula Ultima e O Som das Seis;
-4. só então adicionar os novos sistemas usando a arquitetura modular.
-
-O PDF do Dragonbane já serve como primeiro exemplo de recurso pertencente ao próprio sistema em `dragonbane/pdf/`.
+O PDF do Dragonbane já é um exemplo de integração pertencente ao próprio sistema em `dragonbane/pdf/`.
