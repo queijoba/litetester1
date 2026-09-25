@@ -5,4 +5,5 @@ export const dragonbaneSystem = {
   enabled: true,
 };
 
+export { default as DragonbaneEditor } from './components/Editor.jsx';
 export { installDragonbanePdfExport } from './pdf/export.js';
