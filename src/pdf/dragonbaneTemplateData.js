@@ -1,10 +1,3 @@
-import p11 from './bg/p1_1.js';
-import p12 from './bg/p1_2.js';
-import p13 from './bg/p1_3.js';
-import p21 from './bg/p2_1.js';
-import p22 from './bg/p2_2.js';
-import p23 from './bg/p2_3.js';
-import p24 from './bg/p2_4.js';
 import f1 from './dragonbaneFields1.js';
 import f2 from './dragonbaneFields2.js';
 import f3 from './dragonbaneFields3.js';
@@ -16,12 +9,11 @@ import f8 from './dragonbaneFields8.js';
 
 export const DRAGONBANE_PDF_PAGE = { width: 595.2756, height: 841.8898 };
 
-// Os fundos são mantidos em partes independentes. Cada parte pode possuir
-// padding Base64 próprio (=). Concatenar as strings antes de decodificar faz
-// alguns navegadores móveis rejeitarem o conteúdo no atob().
+// Os fundos agora são reconstruídos no build da Vercel e servidos como JPGs
+// estáticos. Isso evita atob/Base64 no navegador, especialmente no mobile.
 export const DRAGONBANE_PDF_BACKGROUNDS = [
-  [p11, p12, p13],
-  [p21, p22, p23, p24]
+  '/generated/dragonbane-page1.jpg',
+  '/generated/dragonbane-page2.jpg'
 ];
 
 export const DRAGONBANE_PDF_FIELDS = [...f1, ...f2, ...f3, ...f4, ...f5, ...f6, ...f7, ...f8];
