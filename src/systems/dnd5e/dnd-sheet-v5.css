@@ -34,6 +34,21 @@
 
 .dnd-v3-bio-grid select { width:100%; min-width:0; border:0; border-bottom:1px solid #bba895; background:transparent; outline:none; padding:4px 1px; font-size:12px; font-weight:700; color:inherit; }
 
+/* Revisão da aba de magias: evita sobreposição ao rolar e reduz a densidade visual. */
+.dnd-v4-spell-toolbar { position:static; top:auto; z-index:auto; overflow:visible; background:#fffdf9; }
+.dnd-v4-circle { overflow:hidden; isolation:isolate; }
+.dnd-v4-circle>summary { position:static; top:auto; z-index:auto; }
+.dnd-v4-spell-grid { grid-template-columns:repeat(2,minmax(0,1fr)); position:relative; z-index:0; overflow:visible; }
+.dnd-v4-spell-grid>.dnd-v3-spell-card { min-width:0; max-width:100%; overflow:hidden; }
+.dnd-v4-spell-grid .dnd-v3-spell-head { grid-template-columns:auto minmax(0,1fr) minmax(70px,.42fr) auto; }
+.dnd-v4-spell-grid .dnd-v3-spell-name,.dnd-v4-spell-grid .dnd-v3-spell-school { min-width:0; width:100%; }
+.dnd-v4-spell-grid .dnd-v3-spell-details { min-width:0; }
+.dnd-v4-spell-grid .dnd-v3-spell-fields { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.dnd-v4-spell-grid .dnd-v3-spell-fields input,.dnd-v4-spell-grid .dnd-v3-spell-fields select,.dnd-v4-spell-grid .dnd-v3-plain-textarea { width:100%; min-width:0; max-width:100%; box-sizing:border-box; }
+.dnd-v3-circle>summary { overflow:hidden; }
+.dnd-v3-circle>summary>div:first-child { min-width:0; }
+.dnd-v3-circle>summary>div:first-child b,.dnd-v3-circle>summary>div:first-child span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
 @media (max-width:1000px) {
   .dnd-v5-class-hero { grid-template-columns:auto minmax(0,1fr); }
   .dnd-v5-class-switcher { grid-column:1/-1; }
@@ -48,6 +63,17 @@
   .dnd-v5-class-heading h2 { font-size:20px; }
   .dnd-v5-class-switcher { grid-template-columns:1fr 1fr; }
   .dnd-v5-class-feature-grid { grid-template-columns:1fr 1fr; }
+  .dnd-v3-circle>summary { grid-template-columns:minmax(0,1fr) auto; }
+  .dnd-v3-slot-mini { min-width:0; }
+  .dnd-v4-spell-grid .dnd-v3-spell-head { grid-template-columns:44px minmax(0,1fr) auto; }
+  .dnd-v4-spell-grid .dnd-v3-spell-school { grid-column:2/4; }
+}
+
+@media (max-width:560px) {
+  .dnd-v4-spell-grid { grid-template-columns:1fr; }
+  .dnd-v3-circle>summary { grid-template-columns:minmax(0,1fr) auto; gap:6px; }
+  .dnd-v3-slot-mini { grid-column:1/2; grid-row:2; }
+  .dnd-v3-circle-actions { grid-column:2; grid-row:1/3; align-self:center; }
 }
 
 @media (max-width:460px) {
@@ -59,3 +85,8 @@
 @media (max-width:350px) {
   .dnd-v5-class-resource-grid { grid-template-columns:1fr; }
 }
+
+body.theme-dark .dnd-v4-spell-toolbar { background:#1d2226; border-color:#555d63; }
+body.theme-dark .dnd-v4-circle { border-color:#5d646a; }
+body.theme-dark .dnd-v4-spell-grid .dnd-v3-spell-card { background:#23282d; border-color:#5d646a; }
+body.theme-custom .dnd-v4-spell-toolbar { background:color-mix(in srgb,var(--custom-window-color) 94%,var(--custom-accent-color) 6%); color:var(--custom-text-color); }
