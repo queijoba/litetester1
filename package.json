@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "verify": "node scripts/verify-project.mjs",
     "build": "vite build",
+    "check": "npm run verify && npm run build",
     "preview": "vite preview"
   },
   "dependencies": {
