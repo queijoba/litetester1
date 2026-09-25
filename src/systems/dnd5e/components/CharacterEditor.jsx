@@ -23,6 +23,20 @@ export default function DndCharacterEditor({ scope }) {
     ...scope,
     updateField: (path, value) => {
       if (path === 'bio.classe' && value !== data.bio?.classe) {
+        const previousClass = getDndClassByLabel(data.bio?.classe || '');
+        if (previousClass && Array.isArray(data.caracteristicas)) {
+          const migrated = data.caracteristicas.map((entry) => {
+            if ((entry?.tipo || 'classe') !== 'classe' || entry?.classId) return entry;
+            return {
+              ...entry,
+              classId: previousClass.id,
+              ...(entry?.origem === 'subclasse' && data.bio?.subclasse && !entry?.subclasse
+                ? { subclasse: data.bio.subclasse }
+                : {})
+            };
+          });
+          updateField('caracteristicas', migrated);
+        }
         updateField('bio.subclasse', '');
       }
       updateField(path, value);
@@ -39,29 +53,43 @@ export default function DndCharacterEditor({ scope }) {
 }
 
 function ClassWorkspace({ scope, selectedClass }) {
-  const {
-    data,
-    SVGIcons,
-    updateField,
-    updateArrayField,
-    addToArray,
-    removeFromArray
-  } = scope;
+  const { data, SVGIcons, updateField, updateArrayField, addToArray, removeFromArray } = scope;
 
   const features = Array.isArray(data.caracteristicas) ? data.caracteristicas : [];
-  const indexedClassFeatures = features
-    .map((entry, index) => ({ entry, index }))
-    .filter(item => (item.entry?.tipo || 'classe') === 'classe');
-  const baseClassFeatures = indexedClassFeatures.filter(item => item.entry?.origem !== 'subclasse');
-  const subclassFeatures = indexedClassFeatures.filter(item => item.entry?.origem === 'subclasse');
-
-  const classResourceData = data.recursosClasse?.[selectedClass.id] || {};
-  const subclassOptions = Array.isArray(selectedClass.subclasses) ? selectedClass.subclasses : [];
   const currentSubclass = String(data.bio?.subclasse || '');
+  const subclassOptions = Array.isArray(selectedClass.subclasses) ? selectedClass.subclasses : [];
   const legacySubclass = currentSubclass && !subclassOptions.includes(currentSubclass) ? currentSubclass : '';
   const characterLevel = data.bio?.nivel || '—';
+  const classResourceData = data.recursosClasse?.[selectedClass.id] || {};
+
+  const indexedClassFeatures = features
+    .map((entry, index) => ({ entry, index }))
+    .filter(item => (item.entry?.tipo || 'classe') === 'classe')
+    .filter(item => !item.entry?.classId || item.entry.classId === selectedClass.id);
+
+  const baseClassFeatures = indexedClassFeatures.filter(item => item.entry?.origem !== 'subclasse');
+  const subclassFeatures = indexedClassFeatures.filter(item =>
+    item.entry?.origem === 'subclasse' && (!item.entry?.subclasse || item.entry.subclasse === currentSubclass)
+  );
 
   const updateClassResource = (key, value) => updateField(`recursosClasse.${selectedClass.id}.${key}`, value);
+
+  const changeSubclass = (nextSubclass) => {
+    if (nextSubclass === currentSubclass) return;
+
+    if (currentSubclass && Array.isArray(data.caracteristicas)) {
+      const migrated = data.caracteristicas.map((entry) => {
+        if ((entry?.tipo || 'classe') !== 'classe') return entry;
+        if (entry?.origem !== 'subclasse') return entry;
+        if (entry?.classId && entry.classId !== selectedClass.id) return entry;
+        if (entry?.subclasse) return entry;
+        return { ...entry, classId: selectedClass.id, subclasse: currentSubclass };
+      });
+      updateField('caracteristicas', migrated);
+    }
+
+    updateField('bio.subclasse', nextSubclass);
+  };
 
   const renderClassField = (field) => {
     const value = classResourceData?.[field.key];
@@ -79,6 +107,7 @@ function ClassWorkspace({ scope, selectedClass }) {
         </div>
       );
     }
+
     if (field.type === 'toggle') {
       return (
         <label key={field.key} className="dnd-v6-class-resource toggle">
@@ -87,6 +116,7 @@ function ClassWorkspace({ scope, selectedClass }) {
         </label>
       );
     }
+
     return (
       <label key={field.key} className="dnd-v6-class-resource simple">
         <span>{field.label}</span>
@@ -104,6 +134,8 @@ function ClassWorkspace({ scope, selectedClass }) {
   const addFeature = (origin) => addToArray('caracteristicas', {
     tipo: 'classe',
     origem: origin,
+    classId: selectedClass.id,
+    ...(origin === 'subclasse' ? { subclasse: currentSubclass } : {}),
     nome: '',
     desc: ''
   });
@@ -136,9 +168,9 @@ function ClassWorkspace({ scope, selectedClass }) {
           <section className="dnd-v6-class-hero">
             <div className="dnd-v6-class-icon" aria-hidden="true">{selectedClass.icon}</div>
             <div className="dnd-v6-class-heading">
-              <small>Painel da Classe</small>
+              <small>Classe & Subclasse</small>
               <h2>{selectedClass.label}</h2>
-              <p>{selectedClass.summary}</p>
+              <p>{selectedClass.summary} A classe é definida em “Ficha & Combate”; aqui você gerencia apenas seus recursos e a subclasse.</p>
             </div>
             <div className="dnd-v6-class-identity compact">
               <div className="dnd-v6-level-badge" title="O nível é alterado na aba Ficha & Combate">
@@ -147,12 +179,12 @@ function ClassWorkspace({ scope, selectedClass }) {
               </div>
               <label className="dnd-v6-subclass-select">
                 <span>{selectedClass.subclassLabel || 'Subclasse'}</span>
-                <select value={currentSubclass} onChange={e => updateField('bio.subclasse', e.target.value)}>
+                <select value={currentSubclass} onChange={e => changeSubclass(e.target.value)}>
                   <option value="">Selecione a subclasse...</option>
                   {legacySubclass && <option value={legacySubclass}>{legacySubclass} (legado)</option>}
                   {subclassOptions.map(option => <option key={option} value={option}>{option}</option>)}
                 </select>
-                <small>{currentSubclass ? 'A subclasse fica salva na identidade do personagem.' : 'Escolha quando o personagem adquirir sua subclasse.'}</small>
+                <small>{currentSubclass ? 'Recursos desta subclasse aparecem separados abaixo.' : 'Escolha quando o personagem adquirir sua subclasse.'}</small>
               </label>
             </div>
           </section>
@@ -164,7 +196,9 @@ function ClassWorkspace({ scope, selectedClass }) {
                 <small>Contadores e valores próprios de {selectedClass.label}</small>
               </div>
               <div className="dnd-v6-class-resource-grid">
-                {selectedClass.fields.length ? selectedClass.fields.map(renderClassField) : <p className="dnd-v6-empty">Esta classe não possui contadores rápidos configurados.</p>}
+                {selectedClass.fields.length
+                  ? selectedClass.fields.map(renderClassField)
+                  : <p className="dnd-v6-empty">Esta classe não possui contadores rápidos configurados.</p>}
               </div>
               <label className="dnd-v6-class-notes">
                 <span>Anotações da Classe</span>
@@ -176,7 +210,7 @@ function ClassWorkspace({ scope, selectedClass }) {
               <div className="dnd-v3-section-title dnd-v6-feature-title">
                 <div>
                   <span>Habilidades da Classe</span>
-                  <small>Classe e subclasse ficam separadas para consulta rápida.</small>
+                  <small>Classe e subclasse ficam separadas para consulta rápida e não se misturam ao trocar de opção.</small>
                 </div>
               </div>
 
@@ -228,9 +262,10 @@ function SpellWorkspace({ scope }) {
   const addSpell = (level) => updateField('magias.lista', [
     ...spells,
     {
-      nome: '', nivel: level, escola: '', tempo: '', alcance: '', duracao: '',
-      verbal: false, somatico: false, material: false,
-      concentracao: false, ritual: false, preparada: false, desc: ''
+      nome: '', nivel: level, escola: '', tempo: '', alcance: '', duracao: '', alvo: '',
+      verbal: false, somatico: false, material: false, materialDetalhe: '',
+      concentracao: false, ritual: false, preparada: false,
+      salvaguarda: '', dano: '', desc: ''
     }
   ]);
 
@@ -268,7 +303,6 @@ function SpellWorkspace({ scope }) {
   const renderSpell = (spell, index, level, circleItems) => {
     const position = circleItems.findIndex(item => item.index === index);
     const components = [spell?.verbal && 'V', spell?.somatico && 'S', spell?.material && 'M'].filter(Boolean).join(' / ');
-    const hasQuickInfo = spell?.tempo || spell?.alcance || spell?.duracao || components || spell?.concentracao || spell?.ritual;
 
     return (
       <article key={index} className={`dnd-v6-spell-card ${spell?.preparada ? 'is-prepared' : ''}`}>
@@ -283,16 +317,18 @@ function SpellWorkspace({ scope }) {
           </div>
         </div>
 
-        {hasQuickInfo && (
-          <div className="dnd-v6-spell-meta" aria-label="Resumo da magia">
-            {spell?.tempo && <span title="Tempo de conjuração">⏱ {spell.tempo}</span>}
-            {spell?.alcance && <span title="Alcance">↗ {spell.alcance}</span>}
-            {spell?.duracao && <span title="Duração">◷ {spell.duracao}</span>}
-            {components && <span title="Componentes">{components}</span>}
-            {spell?.concentracao && <span className="accent" title="Concentração">C</span>}
-            {spell?.ritual && <span className="accent" title="Ritual">Ritual</span>}
-          </div>
-        )}
+        <div className="dnd-v6-spell-meta" aria-label="Resumo da magia">
+          <span className="accent" title="Círculo definido pela seção">{circleName(level)}</span>
+          {spell?.tempo && <span title="Tempo de conjuração">⏱ {spell.tempo}</span>}
+          {spell?.alcance && <span title="Alcance">↗ {spell.alcance}</span>}
+          {spell?.duracao && <span title="Duração">◷ {spell.duracao}</span>}
+          {spell?.alvo && <span title="Alvo">◎ {spell.alvo}</span>}
+          {components && <span title="Componentes">{components}</span>}
+          {spell?.salvaguarda && <span title="Salvaguarda">Salv. {spell.salvaguarda}</span>}
+          {spell?.dano && <span title="Dano ou efeito">{spell.dano}</span>}
+          {spell?.concentracao && <span className="accent" title="Concentração">C</span>}
+          {spell?.ritual && <span className="accent" title="Ritual">Ritual</span>}
+        </div>
 
         <details className="dnd-v6-spell-details">
           <summary>Editar detalhes</summary>
@@ -301,6 +337,11 @@ function SpellWorkspace({ scope }) {
             <label><span>Alcance</span><input value={spell?.alcance || ''} onChange={e => updateSpell(index, { alcance: e.target.value })} placeholder="18 m" /></label>
             <label><span>Duração</span><input value={spell?.duracao || ''} onChange={e => updateSpell(index, { duracao: e.target.value })} placeholder="Instantânea" /></label>
           </div>
+          <div className="dnd-v6-spell-fields">
+            <label><span>Alvo / Área</span><input value={spell?.alvo || ''} onChange={e => updateSpell(index, { alvo: e.target.value })} placeholder="1 criatura / cone de 4,5 m" /></label>
+            <label><span>Salvaguarda</span><input value={spell?.salvaguarda || ''} onChange={e => updateSpell(index, { salvaguarda: e.target.value })} placeholder="DES / SAB / nenhuma" /></label>
+            <label><span>Dano / Efeito</span><input value={spell?.dano || ''} onChange={e => updateSpell(index, { dano: e.target.value })} placeholder="3d6 fogo / cura 2d8" /></label>
+          </div>
           <div className="dnd-v6-spell-flags">
             <label><input type="checkbox" checked={!!spell?.verbal} onChange={e => updateSpell(index, { verbal: e.target.checked })} /><span>V</span></label>
             <label><input type="checkbox" checked={!!spell?.somatico} onChange={e => updateSpell(index, { somatico: e.target.checked })} /><span>S</span></label>
@@ -308,7 +349,13 @@ function SpellWorkspace({ scope }) {
             <label className="wide"><input type="checkbox" checked={!!spell?.concentracao} onChange={e => updateSpell(index, { concentracao: e.target.checked })} /><span>Concentração</span></label>
             <label className="wide"><input type="checkbox" checked={!!spell?.ritual} onChange={e => updateSpell(index, { ritual: e.target.checked })} /><span>Ritual</span></label>
           </div>
-          <textarea rows="4" value={spell?.desc || ''} onChange={e => updateSpell(index, { desc: e.target.value })} placeholder="Componentes materiais, efeito, dano, alvos, salvaguardas e observações..." />
+          {spell?.material && (
+            <label className="dnd-v6-class-notes">
+              <span>Componente material</span>
+              <input value={spell?.materialDetalhe || ''} onChange={e => updateSpell(index, { materialDetalhe: e.target.value })} placeholder="Material, foco ou custo consumido..." />
+            </label>
+          )}
+          <textarea rows="4" value={spell?.desc || ''} onChange={e => updateSpell(index, { desc: e.target.value })} placeholder="Efeito completo, condições, escalonamento, observações e lembretes..." />
         </details>
       </article>
     );
@@ -320,7 +367,7 @@ function SpellWorkspace({ scope }) {
         <div className="dnd-v6-spell-page">
           <section className="dnd-v6-spell-toolbar">
             <div className="dnd-v6-spell-title">
-              <div><small>Conjuração</small><b>Livro de Magias</b><span>Crie a magia diretamente no círculo correto; o círculo é definido automaticamente.</span></div>
+              <div><small>Conjuração</small><b>Livro de Magias</b><span>Adicione a magia no círculo correto. O círculo fica fixo pela seção e não precisa ser selecionado novamente.</span></div>
               <div className="dnd-v6-spell-count"><strong>{spells.filter(spell => spell?.preparada).length}</strong><span>preparadas</span><i>/</i><strong>{spells.length}</strong><span>total</span></div>
             </div>
             <div className="dnd-v6-casting-grid">
