@@ -1,0 +1,44 @@
+name: Aplicar painel de classe D&D
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/add-dnd-class-panel.mjs'
+      - 'src/systems/dnd5e/dnd-sheet-v5.css'
+      - 'src/systems/dnd5e/classPanels.js'
+      - '.github/workflows/apply-dnd-class-panel.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Instalar dependências
+        run: npm ci
+      - name: Aplicar painel de classe
+        run: node scripts/add-dnd-class-panel.mjs
+      - name: Verificar projeto
+        run: npm run check
+      - name: Commitar resultado
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/systems/dnd5e/components/CharacterEditor.jsx
+          if git diff --cached --quiet; then
+            echo 'Nenhuma alteração para commitar.'
+          else
+            git commit -m 'Adiciona painel extra selecionável por classe no D&D'
+            git push origin main
+          fi
