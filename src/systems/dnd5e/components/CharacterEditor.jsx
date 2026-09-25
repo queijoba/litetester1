@@ -267,27 +267,39 @@ export default function DndCharacterEditor({ scope }) {
     <>
       {isDnd && data.type === 'pc' && (
                               <div className="dnd-paper font-dnd">
-                                  {/* Abas mobile D&D 5e */}
-                                  <div className="md:hidden grid grid-cols-3 bg-[#f3eadc] border-b border-[#c9ad92] sticky top-0 z-20 shadow-sm">
+                                  {/* Navegação principal D&D 5.5e — desktop e mobile */}
+                                  <div className="dnd-main-tabs grid grid-cols-3 sticky top-0 z-20">
                                       {[
-                                          { id: 'status', label: 'Perfil & Atributos' },
-                                          { id: 'equipamento', label: 'Combate' },
+                                          { id: 'status', label: 'Personagem' },
+                                          { id: 'equipamento', label: 'Combate & Equipamento' },
                                           { id: 'recursos', label: 'Recursos & Magias' }
                                       ].map(tab => (
                                           <button
                                               key={tab.id}
                                               type="button"
                                               onClick={() => setMobileTab(tab.id)}
-                                              className={`py-3 px-1 text-[9px] font-bold uppercase text-center border-b-4 transition-colors ${mobileTab === tab.id ? 'border-[#922610] text-[#922610] bg-white' : 'border-transparent text-gray-500'}`}
+                                              className={`dnd-main-tab ${mobileTab === tab.id ? 'is-active' : ''}`}
                                           >
                                               {tab.label}
                                           </button>
                                       ))}
                                   </div>
+
+                                  {mobileTab !== 'status' && (
+                                      <div className="dnd-tab-context">
+                                          <div className="min-w-0">
+                                              <div className="dnd-tab-context-name">{data.bio?.nome || 'Personagem sem nome'}</div>
+                                              <div className="dnd-tab-context-meta">
+                                                  {[data.bio?.classe, data.bio?.subclasse, data.bio?.nivel ? 'Nível ' + data.bio.nivel : ''].filter(Boolean).join(' • ') || 'D&D 5.5e / 2024'}
+                                              </div>
+                                          </div>
+                                          <span className="dnd-tab-context-badge">D&D 5.5e</span>
+                                      </div>
+                                  )}
       
-                                  <div className="dnd-sheet p-4 md:p-8 space-y-6">
+                                  <div className="dnd-sheet p-3 sm:p-4 md:p-6 lg:p-8 space-y-5">
                                   {/* Header D&D */}
-                                  <div className={`${mobileTab === 'status' ? 'flex' : 'hidden md:flex'} dnd-header flex-col md:flex-row gap-5 border-b-2 border-[#922610] pb-4`}>
+                                  <div className={`${mobileTab === 'status' ? 'flex' : 'hidden'} dnd-header flex-col md:flex-row gap-5 border-b-2 border-[#922610] pb-4`}>
                                       {/* Retrato D&D 5e - mesma experiência do Dragonbane */}
                                       <div className="flex flex-col items-center gap-2 shrink-0 w-full md:w-36">
                                           <div className="dnd-portrait w-32 h-32 md:w-36 md:h-36 border-2 border-[#922610] rounded bg-gray-100 relative group overflow-hidden flex items-center justify-center shadow-sm">
@@ -401,11 +413,11 @@ export default function DndCharacterEditor({ scope }) {
                                       </div>
                                   </div>
       
-                                  <div className="dnd-layout grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                  <div className="dnd-layout dnd-tab-content grid grid-cols-1 gap-0">
                                       {/* D&D Col 1: Atributos e Perícias */}
-                                      <div className={`${mobileTab === 'status' ? 'block' : 'hidden md:block'} dnd-column space-y-4`}>
-                                          <div className="flex gap-4">
-                                              <div className="flex flex-col gap-2 w-20">
+                                      <div className={`${mobileTab === 'status' ? 'block' : 'hidden'} dnd-column dnd-tab-pane space-y-4`}>
+                                          <div className="dnd-status-grid flex flex-col sm:flex-row gap-4">
+                                              <div className="dnd-ability-stack grid grid-cols-3 sm:flex sm:flex-col gap-2 w-full sm:w-20">
                                                   {['for','des','con','int','sab','car'].map(attr => (
                                                       <div key={attr} className="dnd-ability-card border-2 border-[#922610] rounded-lg p-2 text-center relative bg-gray-50 shadow-sm">
                                                           <div className="dnd-ability-name text-[9px] font-bold uppercase text-[#922610]">{attr}</div>
@@ -477,7 +489,7 @@ export default function DndCharacterEditor({ scope }) {
                                       </div>
       
                                       {/* D&D Col 2: Combate, HP, Ataques */}
-                                      <div className={`${mobileTab === 'equipamento' ? 'block' : 'hidden md:block'} dnd-column space-y-4`}>
+                                      <div className={`${mobileTab === 'equipamento' ? 'block' : 'hidden'} dnd-column dnd-tab-pane space-y-4`}>
                                           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                                               <div className="dnd-combat-stat dnd-ac-card border-2 border-gray-300 bg-white p-2 rounded text-center flex flex-col items-center shadow-sm">
                                                   <div className="text-[10px] uppercase font-bold text-gray-500 mb-1">Classe de Armadura</div>
@@ -591,7 +603,7 @@ export default function DndCharacterEditor({ scope }) {
                                       </div>
       
                                       {/* D&D Col 3: Roleplay e Magias */}
-                                      <div className={`${mobileTab === 'recursos' ? 'block' : 'hidden md:block'} dnd-column space-y-4`}>
+                                      <div className={`${mobileTab === 'recursos' ? 'block' : 'hidden'} dnd-column dnd-tab-pane space-y-4`}>
                                           <div className="dnd-traits-card dnd-section-card border border-gray-300 rounded bg-white shadow-sm p-2 space-y-2">
                                               <div className="dnd-section-head text-sm border-b pb-1">Aparência, História & Personalidade</div>
                                               <label className="dnd-profile-card"><span>Aparência</span><textarea rows="3" value={data.bio?.aparencia || ''} onChange={e => updateField('bio.aparencia', e.target.value)} placeholder="Descrição visual, marcas, roupas, símbolos..."></textarea></label>
