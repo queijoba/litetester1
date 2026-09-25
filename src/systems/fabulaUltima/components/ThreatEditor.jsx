@@ -1,0 +1,311 @@
+// Extraído automaticamente do antigo PJLiteApp monolítico.
+// Este arquivo agora é a fonte visual do editor deste sistema.
+export default function FabulaThreatEditor({ scope }) {
+  const {
+    addDndSyncedItem,
+    addToArray,
+    App,
+    applyCustomPreset,
+    CHAT_MODES,
+    chatModal,
+    codeModal,
+    copyChatFromModal,
+    copySheetToChat,
+    copyToClipboard,
+    createTarget,
+    CUSTOM_ACCENT_COLOR_KEY,
+    CUSTOM_BAR_COLOR_KEY,
+    CUSTOM_BG_KEY,
+    CUSTOM_BG_POSITION_KEY,
+    CUSTOM_BG_SIZE_KEY,
+    CUSTOM_BLUR_KEY,
+    CUSTOM_OPACITY_KEY,
+    CUSTOM_OVERLAY_KEY,
+    CUSTOM_TEXT_COLOR_KEY,
+    CUSTOM_WIN_COLOR_KEY,
+    customAccentColor,
+    customBarColor,
+    customBgLink,
+    customBgPosition,
+    customBgSize,
+    customBgUrl,
+    customBlur,
+    customOpacity,
+    customOverlay,
+    customTextColor,
+    customWinColor,
+    dashboardView,
+    data,
+    deleteCharacter,
+    deleteConfirmId,
+    deleteThreat,
+    DND_SKILLS_LIST,
+    dndPcTab,
+    duplicateItem,
+    exportFullBackup,
+    FABULA_DEFAULT_SUPPLEMENTS,
+    FABULA_EXTRA_OPTIONS,
+    FABULA_MAGIC_DISCIPLINES,
+    FABULA_RITUAL_AREA,
+    FABULA_RITUAL_POTENCY,
+    FABULA_SPELL_DISCIPLINES,
+    FABULA_SUPPLEMENT_OPTIONS,
+    FabulaAcampamentoPanel,
+    FabulaArcanosPanel,
+    FabulaArmasPersonalizadasPanel,
+    FabulaComercioPanel,
+    fabulaCreateSupplements,
+    FabulaInvocacoesPanel,
+    FabulaJardimPanel,
+    FabulaMagicPanel,
+    FabulaMateriaisPanel,
+    FabulaMnemosferaPanel,
+    FabulaNotasPanel,
+    FabulaPeculiaridadePanel,
+    FabulaPoderZeroPanel,
+    FabulaProjetosPanel,
+    FabulaReceitasPanel,
+    FabulaRecursosClassePanel,
+    fabulaTab,
+    FabulaTecnosferasPanel,
+    FabulaThreatList,
+    FabulaVeiculoPanel,
+    filterAndSortItems,
+    filterChatText,
+    formatDndMod,
+    generateChatText,
+    generatePnjAspect,
+    getBarStyle,
+    getChanceBase,
+    getDanoBonus,
+    getDndAbilityMod,
+    getFabulaDieClass,
+    getFabulaMagicTestHint,
+    getFabulaRitualRef,
+    getHistory,
+    getMovimento,
+    getProficiencyBonus,
+    getSavedCharacters,
+    getSavedThreats,
+    getSelectedFabulaSupplements,
+    getValidationWarnings,
+    getWindowStyle,
+    guideTab,
+    handleAncestryChange,
+    handleAttributeChange,
+    handleCodeImport,
+    handleExport,
+    handleImport,
+    hexToRgb,
+    HISTORY_STORAGE_KEY,
+    historySignature,
+    initialAmeacaData,
+    initialData,
+    initialDndMonsterData,
+    initialDndPcData,
+    initialFabulaPcData,
+    initialFabulaThreatData,
+    initialPnjData,
+    initialSom6PcData,
+    initialSom6PdjData,
+    isDnd,
+    isFabula,
+    isFabulaExtraUnlocked,
+    isSom6,
+    JSZip,
+    loadCharacter,
+    loadFabulaTemplateWithSupplements,
+    loadTemplate,
+    loadThreat,
+    LZString,
+    mobileTab,
+    MODELOS_AMEACAS_GENERICOS,
+    MODELOS_DND_AMEACA,
+    MODELOS_DND_PC,
+    MODELOS_DRAGONBANE_PC,
+    MODELOS_FABULA_AMEACA,
+    MODELOS_FABULA_PC,
+    MODELOS_SOM6_PC,
+    MODELOS_SOM6_PDJ,
+    moveArrayItem,
+    moveNestedArrayItem,
+    NEWS_COLLAPSED_KEY,
+    newsCollapsed,
+    normalizeDndPcData,
+    normalizeFabulaPcData,
+    normalizeFabulaThreatData,
+    normalizeImportedSheet,
+    normalizeMetaItem,
+    normalizeSom6PcData,
+    normalizeSom6PdjData,
+    onlyFavorites,
+    openChatOptions,
+    openCodeExport,
+    openCodeImport,
+    optimizeImageFile,
+    pushHistorySnapshot,
+    React,
+    ReactDOM,
+    readableTextColor,
+    removeDndSyncedItem,
+    removeFromArray,
+    renderFabulaDieSelect,
+    renderHistoryModal,
+    restoreFabulaEquipmentSlots,
+    restoreFullBackup,
+    restoreHistorySnapshot,
+    returnToDashboard,
+    savedChars,
+    savedThreats,
+    saveStatus,
+    saveToLocal,
+    SCHEMA_VERSION,
+    searchQuery,
+    setChatModal,
+    setCodeModal,
+    setCreateTarget,
+    setCustomAccentColor,
+    setCustomBarColor,
+    setCustomBgLink,
+    setCustomBgPosition,
+    setCustomBgSize,
+    setCustomBgUrl,
+    setCustomBlur,
+    setCustomOpacity,
+    setCustomOverlay,
+    setCustomTextColor,
+    setCustomWinColor,
+    setDashboardView,
+    setData,
+    setDeleteConfirmId,
+    setDndPcTab,
+    setFabulaCreateSupplements,
+    setFabulaSupplementEnabled,
+    setFabulaTab,
+    setGuideTab,
+    setMobileTab,
+    setNewsCollapsed,
+    setOnlyFavorites,
+    setSavedChars,
+    setSavedThreats,
+    setSaveStatus,
+    setSearchQuery,
+    setShowCustomBgModal,
+    setShowDbModelModal,
+    setShowDndModelModal,
+    setShowFabulaExtras,
+    setShowFabulaModelModal,
+    setShowFilters,
+    setShowGuideModal,
+    setShowHistoryModal,
+    setShowSom6ModelModal,
+    setShowSystemModal,
+    setShowThreatModal,
+    setShowUrlInput,
+    setSom6Tab,
+    setSortMode,
+    setSystemFilter,
+    setTempUrl,
+    setTheme,
+    setToastMsg,
+    setUndoState,
+    setView,
+    showCustomBgModal,
+    showDbModelModal,
+    showDndModelModal,
+    showFabulaExtras,
+    showFabulaModelModal,
+    showFilters,
+    showGuideModal,
+    showHistoryModal,
+    showSom6ModelModal,
+    showSystemModal,
+    showThreatModal,
+    showToast,
+    showUrlInput,
+    SOM6_ANTECEDENTES,
+    SOM6_HABILIDADES,
+    SOM6_LEVELS,
+    Som6Pips,
+    som6Tab,
+    sortMode,
+    STORAGE_KEY,
+    stripHeavyHistoryMedia,
+    SVGIcons,
+    systemFilter,
+    tempUrl,
+    theme,
+    THEME_PREF_KEY,
+    THREAT_STORAGE_KEY,
+    toastMsg,
+    toastTimerRef,
+    toggleFabulaCreateSupplement,
+    toggleFavorite,
+    toggleTreinada,
+    topBarColor,
+    undoLastRemoval,
+    undoState,
+    UPDATE_LOG,
+    updateArrayField,
+    updateDndSyncedItem,
+    updateField,
+    useEffect,
+    useRef,
+    useState,
+    view
+  } = scope;
+
+  return (
+    <>
+      {isFabula && data.type !== 'pc' && (
+                              <div className="p-3 md:p-5 fabula-threat-editor">
+                                  <div className="fabula-threat-compact fabula-threat-readable space-y-4">
+                                      <div className="fabula-threat-intro">
+                                          <div><div className="fabula-pill-title">👾 Ameaça / PNJ</div><p className="text-xs text-gray-500 mt-2">Organização inspirada no bestiário, mas com campos maiores e leitura mais intuitiva.</p></div>
+                                          {data.tipoNpc==='Vilão'&&<label className="fabula-mini-badge gap-2">Pontos de Ultima <input type="number" min="0" value={data.pontosUltima||0} onChange={e=>updateField('pontosUltima',Number(e.target.value))} className="w-14 border-0 bg-transparent text-center font-black"/></label>}
+                                      </div>
+      
+                                      <div className="fabula-threat-identity-card">
+                                          <div className="fabula-threat-name-row"><label>Nome da ameaça / PNJ<input value={data.nome||''} onChange={e=>updateField('nome',e.target.value)} placeholder="Nome da ameaça"/></label></div>
+                                          <div className="fabula-threat-meta-grid">
+                                              <label>Tipo<select value={data.tipoNpc||'Ameaça'} onChange={e=>updateField('tipoNpc',e.target.value)}><option>Ameaça</option><option>PNJ</option><option>Vilão</option></select></label>
+                                              <label>Nível<input type="number" min="5" max="60" value={data.nivel||5} onChange={e=>updateField('nivel',Number(e.target.value))}/></label>
+                                              <label>Patente<select value={data.patente||'Soldado'} onChange={e=>updateField('patente',e.target.value)}><option>Soldado</option><option>Elite</option><option>Campeão</option></select></label>
+                                              <label>Espécie<select value={data.especie||'Humanoide'} onChange={e=>updateField('especie',e.target.value)}>{['Construto','Demônio','Elemental','Fera','Humanoide','Monstro','Morto-vivo','Planta'].map(x=><option key={x}>{x}</option>)}</select></label>
+                                          </div>
+                                      </div>
+      
+                                      <div className="fabula-threat-main-grid">
+                                          <section className="fabula-threat-section-card">
+                                              <div className="fabula-threat-section-head"><h3>🎲 Atributos</h3><p>Dados usados nos testes da ameaça.</p></div>
+                                              <div className="fabula-threat-section-body"><div className="fabula-threat-attrs-readable">{[['des','DES'],['ast','AST'],['vig','VIG'],['von','VON']].map(([k,n])=><label key={k} className="fabula-threat-attr-readable"><span>{n}</span><select value={data.atributos?.[k]||'d8'} onChange={e=>updateField(`atributos.${k}`,e.target.value)}>{['d6','d8','d10','d12'].map(d=><option key={d}>{d}</option>)}</select></label>)}</div></div>
+                                          </section>
+                                          <section className="fabula-threat-section-card">
+                                              <div className="fabula-threat-section-head"><h3>❤️ Recursos & Defesas</h3><p>PV, PM, Crise, Iniciativa e defesas em blocos separados.</p></div>
+                                              <div className="fabula-threat-section-body"><div className="fabula-threat-resource-grid">
+                                                  <label className="fabula-threat-resource"><span>PV atual / máximo</span><div className="fabula-threat-resource-pair"><input type="number" value={data.status?.pvAtual??0} onChange={e=>updateField('status.pvAtual',Number(e.target.value))}/><b>/</b><input type="number" value={data.status?.pvMax??0} onChange={e=>updateField('status.pvMax',Number(e.target.value))}/></div></label>
+                                                  <div className="fabula-threat-resource"><span>Crise</span><div className="readout">{Math.ceil(Number(data.status?.pvMax||0)/2)}</div></div>
+                                                  <label className="fabula-threat-resource"><span>PM atual / máximo</span><div className="fabula-threat-resource-pair"><input type="number" value={data.status?.pmAtual??0} onChange={e=>updateField('status.pmAtual',Number(e.target.value))}/><b>/</b><input type="number" value={data.status?.pmMax??0} onChange={e=>updateField('status.pmMax',Number(e.target.value))}/></div></label>
+                                                  <label className="fabula-threat-resource"><span>Iniciativa</span><input type="number" value={data.status?.iniciativa??0} onChange={e=>updateField('status.iniciativa',Number(e.target.value))}/></label>
+                                                  <label className="fabula-threat-resource"><span>Defesa</span><input type="number" value={data.status?.defesa??0} onChange={e=>updateField('status.defesa',Number(e.target.value))}/></label>
+                                                  <label className="fabula-threat-resource"><span>Defesa Mágica</span><input type="number" value={data.status?.defesaMagica??0} onChange={e=>updateField('status.defesaMagica',Number(e.target.value))}/></label>
+                                              </div></div>
+                                          </section>
+                                      </div>
+      
+                                      <details className="fabula-threat-details readable" open><summary><span>📝 Descrição, Traços & Afinidades</span><span>pode recolher</span></summary><div className="fabula-threat-details-body space-y-4"><div className="grid md:grid-cols-2 gap-3"><label className="text-[10px] font-bold text-gray-600">Descrição<textarea value={data.descricao||''} onChange={e=>updateField('descricao',e.target.value)} rows="3" className="mt-1 w-full border rounded p-2" placeholder="Quem é, como age e qual seu papel na cena..."/></label><label className="text-[10px] font-bold text-gray-600">Traços<textarea value={data.tracos||''} onChange={e=>updateField('tracos',e.target.value)} rows="3" className="mt-1 w-full border rounded p-2" placeholder="Ex.: agressivo, astuto, territorial..."/></label></div><div><div className="fabula-threat-title mb-2">Afinidades a Dano</div><div className="fabula-affinity-grid">{[['fisico','Físico'],['ar','Ar'],['raio','Raio'],['trevas','Trevas'],['terra','Terra'],['fogo','Fogo'],['gelo','Gelo'],['luz','Luz'],['veneno','Veneno']].map(([k,n])=><label key={k} className="fabula-affinity-chip"><span>{n}</span><select value={data.afinidades?.[k]||''} onChange={e=>updateField(`afinidades.${k}`,e.target.value)}><option value="">—</option><option>VU</option><option>RE</option><option>IM</option><option>AB</option></select></label>)}</div><p className="text-[9px] text-gray-500 mt-2">VU = Vulnerabilidade • RE = Resistência • IM = Imunidade • AB = Absorção.</p></div></div></details>
+      
+                                      <div className="fabula-list-card"><div className="fabula-list-card-head flex items-center justify-between gap-3"><div><h3 className="font-title font-bold text-teal-900">⚔️ Ataques Básicos</h3><p className="text-[10px] text-gray-500">Campos maiores e rotulados; ataques continuam compactos e podem ser reordenados.</p></div><button onClick={()=>addToArray('ataques',{nome:'',tipo:'Corpo a corpo',teste:'',dano:'',tipoDano:'',efeito:''})} className="fabula-action-btn">+ Ataque</button></div><div className="fabula-list-card-body"><div className="fabula-threat-attack-grid readable">{(data.ataques||[]).length===0&&<div className="text-xs text-gray-400 italic">Nenhum ataque registrado.</div>}{(data.ataques||[]).map((a,i)=><div key={i} className="fabula-threat-attack-card readable"><div className="grid grid-cols-[1fr_38px] gap-3"><div className="space-y-2"><div className="grid grid-cols-1 sm:grid-cols-2 gap-2"><label><span className="fabula-threat-field-label">Nome</span><input value={a.nome||''} onChange={e=>updateArrayField('ataques',i,'nome',e.target.value)} placeholder="Ex.: Garras de Pedra"/></label><label><span className="fabula-threat-field-label">Tipo</span><select value={a.tipo||'Corpo a corpo'} onChange={e=>updateArrayField('ataques',i,'tipo',e.target.value)}><option>Corpo a corpo</option><option>À distância</option></select></label><label><span className="fabula-threat-field-label">Teste</span><input value={a.teste||''} onChange={e=>updateArrayField('ataques',i,'teste',e.target.value)} placeholder="DES + VIG +1"/></label><label><span className="fabula-threat-field-label">Dano</span><input value={a.dano||''} onChange={e=>updateArrayField('ataques',i,'dano',e.target.value)} placeholder="RA + 10"/></label><label><span className="fabula-threat-field-label">Tipo de dano</span><input value={a.tipoDano||''} onChange={e=>updateArrayField('ataques',i,'tipoDano',e.target.value)} placeholder="Físico / Fogo / etc."/></label><label><span className="fabula-threat-field-label">Efeito especial</span><input value={a.efeito||''} onChange={e=>updateArrayField('ataques',i,'efeito',e.target.value)} placeholder="Opcional"/></label></div></div><div className="fabula-move-col"><button type="button" onClick={()=>moveArrayItem('ataques',i,-1)} className="fabula-move-btn" title="Mover para cima">↑</button><button type="button" onClick={()=>moveArrayItem('ataques',i,1)} className="fabula-move-btn" title="Mover para baixo">↓</button><button onClick={()=>removeFromArray('ataques',i)} className="fabula-remove-btn">×</button></div></div></div>)}</div></div></div>
+      
+                                      <div className="fabula-threat-special-grid">
+                                          <FabulaThreatList title="🔮 Feitiços" path="feiticos" items={data.feiticos||[]} add={()=>addToArray('feiticos',{nome:'',teste:'',pm:0,alvo:'',duracao:'',efeito:'',ofensiva:false})} remove={removeFromArray} update={updateArrayField} move={moveArrayItem} spell />
+                                          <FabulaThreatList title="✨ Poderes" path="poderes" items={data.poderes||[]} add={()=>addToArray('poderes',{nome:'',desc:''})} remove={removeFromArray} update={updateArrayField} move={moveArrayItem} />
+                                          <FabulaThreatList title="🎬 Outras Ações" path="outrasAcoes" items={data.outrasAcoes||[]} add={()=>addToArray('outrasAcoes',{nome:'',desc:''})} remove={removeFromArray} update={updateArrayField} move={moveArrayItem} />
+                                          <FabulaThreatList title="📜 Regras Especiais" path="regrasEspeciais" items={data.regrasEspeciais||[]} add={()=>addToArray('regrasEspeciais',{nome:'',desc:''})} remove={removeFromArray} update={updateArrayField} move={moveArrayItem} />
+                                      </div>
+                                  </div>
+                              </div>
+                          )}
+    </>
+  );
+}

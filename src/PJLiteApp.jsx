@@ -1,3 +1,10 @@
+import DndCharacterEditor from './systems/dnd5e/components/CharacterEditor.jsx';
+import DndThreatEditor from './systems/dnd5e/components/ThreatEditor.jsx';
+import FabulaCharacterEditor from './systems/fabulaUltima/components/CharacterEditor.jsx';
+import FabulaThreatEditor from './systems/fabulaUltima/components/ThreatEditor.jsx';
+import Som6CharacterEditor from './systems/somDasSeis/components/CharacterEditor.jsx';
+import Som6ThreatEditor from './systems/somDasSeis/components/ThreatEditor.jsx';
+import DragonbaneEditor from './systems/dragonbane/components/Editor.jsx';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import JSZip from 'jszip';
@@ -2806,6 +2813,261 @@ const { useState, useEffect, useRef } = React;
             const isFabula = data.system === 'fabula';
             const isSom6 = data.system === 'somdas6';
             const topBarColor = isDnd ? 'bg-[#922610]' : isFabula ? 'bg-teal-800' : isSom6 ? 'bg-red-950' : (data.type === 'pnj' ? 'bg-blue-900' : data.type === 'ameaca' ? 'bg-red-900' : 'bg-dragon-dark');
+            // Escopo de compatibilidade dos editores modularizados.
+            // Será reduzido conforme modelos e lógica forem migrados para cada sistema.
+            const systemEditorScope = {
+                addDndSyncedItem,
+                addToArray,
+                App,
+                applyCustomPreset,
+                CHAT_MODES,
+                chatModal,
+                codeModal,
+                copyChatFromModal,
+                copySheetToChat,
+                copyToClipboard,
+                createTarget,
+                CUSTOM_ACCENT_COLOR_KEY,
+                CUSTOM_BAR_COLOR_KEY,
+                CUSTOM_BG_KEY,
+                CUSTOM_BG_POSITION_KEY,
+                CUSTOM_BG_SIZE_KEY,
+                CUSTOM_BLUR_KEY,
+                CUSTOM_OPACITY_KEY,
+                CUSTOM_OVERLAY_KEY,
+                CUSTOM_TEXT_COLOR_KEY,
+                CUSTOM_WIN_COLOR_KEY,
+                customAccentColor,
+                customBarColor,
+                customBgLink,
+                customBgPosition,
+                customBgSize,
+                customBgUrl,
+                customBlur,
+                customOpacity,
+                customOverlay,
+                customTextColor,
+                customWinColor,
+                dashboardView,
+                data,
+                deleteCharacter,
+                deleteConfirmId,
+                deleteThreat,
+                DND_SKILLS_LIST,
+                dndPcTab,
+                duplicateItem,
+                exportFullBackup,
+                FABULA_DEFAULT_SUPPLEMENTS,
+                FABULA_EXTRA_OPTIONS,
+                FABULA_MAGIC_DISCIPLINES,
+                FABULA_RITUAL_AREA,
+                FABULA_RITUAL_POTENCY,
+                FABULA_SPELL_DISCIPLINES,
+                FABULA_SUPPLEMENT_OPTIONS,
+                FabulaAcampamentoPanel,
+                FabulaArcanosPanel,
+                FabulaArmasPersonalizadasPanel,
+                FabulaComercioPanel,
+                fabulaCreateSupplements,
+                FabulaInvocacoesPanel,
+                FabulaJardimPanel,
+                FabulaMagicPanel,
+                FabulaMateriaisPanel,
+                FabulaMnemosferaPanel,
+                FabulaNotasPanel,
+                FabulaPeculiaridadePanel,
+                FabulaPoderZeroPanel,
+                FabulaProjetosPanel,
+                FabulaReceitasPanel,
+                FabulaRecursosClassePanel,
+                fabulaTab,
+                FabulaTecnosferasPanel,
+                FabulaThreatList,
+                FabulaVeiculoPanel,
+                filterAndSortItems,
+                filterChatText,
+                formatDndMod,
+                generateChatText,
+                generatePnjAspect,
+                getBarStyle,
+                getChanceBase,
+                getDanoBonus,
+                getDndAbilityMod,
+                getFabulaDieClass,
+                getFabulaMagicTestHint,
+                getFabulaRitualRef,
+                getHistory,
+                getMovimento,
+                getProficiencyBonus,
+                getSavedCharacters,
+                getSavedThreats,
+                getSelectedFabulaSupplements,
+                getValidationWarnings,
+                getWindowStyle,
+                guideTab,
+                handleAncestryChange,
+                handleAttributeChange,
+                handleCodeImport,
+                handleExport,
+                handleImport,
+                hexToRgb,
+                HISTORY_STORAGE_KEY,
+                historySignature,
+                initialAmeacaData,
+                initialData,
+                initialDndMonsterData,
+                initialDndPcData,
+                initialFabulaPcData,
+                initialFabulaThreatData,
+                initialPnjData,
+                initialSom6PcData,
+                initialSom6PdjData,
+                isDnd,
+                isFabula,
+                isFabulaExtraUnlocked,
+                isSom6,
+                JSZip,
+                loadCharacter,
+                loadFabulaTemplateWithSupplements,
+                loadTemplate,
+                loadThreat,
+                LZString,
+                mobileTab,
+                MODELOS_AMEACAS_GENERICOS,
+                MODELOS_DND_AMEACA,
+                MODELOS_DND_PC,
+                MODELOS_DRAGONBANE_PC,
+                MODELOS_FABULA_AMEACA,
+                MODELOS_FABULA_PC,
+                MODELOS_SOM6_PC,
+                MODELOS_SOM6_PDJ,
+                moveArrayItem,
+                moveNestedArrayItem,
+                NEWS_COLLAPSED_KEY,
+                newsCollapsed,
+                normalizeDndPcData,
+                normalizeFabulaPcData,
+                normalizeFabulaThreatData,
+                normalizeImportedSheet,
+                normalizeMetaItem,
+                normalizeSom6PcData,
+                normalizeSom6PdjData,
+                onlyFavorites,
+                openChatOptions,
+                openCodeExport,
+                openCodeImport,
+                optimizeImageFile,
+                pushHistorySnapshot,
+                React,
+                ReactDOM,
+                readableTextColor,
+                removeDndSyncedItem,
+                removeFromArray,
+                renderFabulaDieSelect,
+                renderHistoryModal,
+                restoreFabulaEquipmentSlots,
+                restoreFullBackup,
+                restoreHistorySnapshot,
+                returnToDashboard,
+                savedChars,
+                savedThreats,
+                saveStatus,
+                saveToLocal,
+                SCHEMA_VERSION,
+                searchQuery,
+                setChatModal,
+                setCodeModal,
+                setCreateTarget,
+                setCustomAccentColor,
+                setCustomBarColor,
+                setCustomBgLink,
+                setCustomBgPosition,
+                setCustomBgSize,
+                setCustomBgUrl,
+                setCustomBlur,
+                setCustomOpacity,
+                setCustomOverlay,
+                setCustomTextColor,
+                setCustomWinColor,
+                setDashboardView,
+                setData,
+                setDeleteConfirmId,
+                setDndPcTab,
+                setFabulaCreateSupplements,
+                setFabulaSupplementEnabled,
+                setFabulaTab,
+                setGuideTab,
+                setMobileTab,
+                setNewsCollapsed,
+                setOnlyFavorites,
+                setSavedChars,
+                setSavedThreats,
+                setSaveStatus,
+                setSearchQuery,
+                setShowCustomBgModal,
+                setShowDbModelModal,
+                setShowDndModelModal,
+                setShowFabulaExtras,
+                setShowFabulaModelModal,
+                setShowFilters,
+                setShowGuideModal,
+                setShowHistoryModal,
+                setShowSom6ModelModal,
+                setShowSystemModal,
+                setShowThreatModal,
+                setShowUrlInput,
+                setSom6Tab,
+                setSortMode,
+                setSystemFilter,
+                setTempUrl,
+                setTheme,
+                setToastMsg,
+                setUndoState,
+                setView,
+                showCustomBgModal,
+                showDbModelModal,
+                showDndModelModal,
+                showFabulaExtras,
+                showFabulaModelModal,
+                showFilters,
+                showGuideModal,
+                showHistoryModal,
+                showSom6ModelModal,
+                showSystemModal,
+                showThreatModal,
+                showToast,
+                showUrlInput,
+                SOM6_ANTECEDENTES,
+                SOM6_HABILIDADES,
+                SOM6_LEVELS,
+                Som6Pips,
+                som6Tab,
+                sortMode,
+                STORAGE_KEY,
+                stripHeavyHistoryMedia,
+                SVGIcons,
+                systemFilter,
+                tempUrl,
+                theme,
+                THEME_PREF_KEY,
+                THREAT_STORAGE_KEY,
+                toastMsg,
+                toastTimerRef,
+                toggleFabulaCreateSupplement,
+                toggleFavorite,
+                toggleTreinada,
+                topBarColor,
+                undoLastRemoval,
+                undoState,
+                UPDATE_LOG,
+                updateArrayField,
+                updateDndSyncedItem,
+                updateField,
+                useEffect,
+                useRef,
+                useState,
+                view
+            };
 
             return (
                 <div style={getWindowStyle()} className={`${(!isDnd && !isFabula && !isSom6 && data.type === 'pc') ? 'max-w-[90rem]' : 'max-w-6xl'} mx-auto bg-white rounded-sm shadow-xl border-2 ${isDnd ? 'border-[#922610]' : isFabula ? 'border-teal-700' : isSom6 ? 'border-red-900' : 'border-gray-500'} transition-all duration-300`}>
@@ -2860,936 +3122,21 @@ const { useState, useEffect, useRef } = React;
 
 
                     {/* Editor Fabula Ultima — compatibilidade consolidada */}
-                    {isFabula && data.type === 'pc' && (
-                        <div className="bg-white fabula-pdf-editor">
-                            <div className="pj-mobile-tabs md:hidden flex overflow-x-auto bg-teal-50 border-b border-teal-200 sticky top-0 z-20 shadow-sm">
-                                {[
-                                    {id:'perfil',label:'Perfil & Status'}, {id:'combate',label:'Equipamentos'}, {id:'classes',label:'Classes'},
-                                    ...(data.extrasAtivos || []).map(id => ({id:`extra-${id}`, label:(FABULA_EXTRA_OPTIONS.find(x=>x.id===id)?.nome || id).split(' ')[0]}))
-                                ].map(tab => <button key={tab.id} onClick={() => setFabulaTab(tab.id)} className={`shrink-0 px-4 py-3 text-[9px] font-bold uppercase border-b-4 ${fabulaTab===tab.id?'border-teal-700 text-teal-900 bg-white':'border-transparent text-gray-500'}`}>{tab.label}</button>)}
-                            </div>
-
-                            <div className="p-4 md:p-7 space-y-6 fabula-sheet-shell">
-                                <div className="hidden md:flex fabula-tabs-desktop">
-                                    {[
-                                        {id:'perfil',label:'👤 Perfil & Status'}, {id:'combate',label:'🎒 Equipamentos'}, {id:'classes',label:'✨ Classes'},
-                                        ...(data.extrasAtivos || []).map(id => ({id:`extra-${id}`, label:`${FABULA_EXTRA_OPTIONS.find(x=>x.id===id)?.icon || '📄'} ${FABULA_EXTRA_OPTIONS.find(x=>x.id===id)?.nome || id}`}))
-                                    ].map(tab => <button key={tab.id} onClick={() => setFabulaTab(tab.id)} className={`fabula-tab-btn ${fabulaTab===tab.id?'active':''}`}>{tab.label}</button>)}
-                                    <div className="ml-auto flex items-center gap-2">
-                                        <div className="fabula-material-icons" aria-label="Materiais habilitados">{FABULA_SUPPLEMENT_OPTIONS.filter(src=>src.locked||data.suplementos?.[src.id]).map(src=><span key={src.id} className="fabula-material-icon" title={src.nome} aria-label={src.nome}>{src.icon}</span>)}</div>
-                                        <button onClick={() => setShowFabulaExtras(true)} className="fabula-soft-btn">＋ Fichas Extras</button>
-                                    </div>
-                                </div>
-                                <div className="md:hidden flex items-center justify-between gap-3"><div className="fabula-material-icons" aria-label="Materiais habilitados">{FABULA_SUPPLEMENT_OPTIONS.filter(src=>src.locked||data.suplementos?.[src.id]).map(src=><span key={src.id} className="fabula-material-icon" title={src.nome}>{src.icon}</span>)}</div><button onClick={() => setShowFabulaExtras(true)} className="px-3 py-2 rounded text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300">＋ Fichas Extras</button></div>
-
-                                {fabulaTab === 'perfil' && (
-                                    <div className="fabula-profile-layout animate-fade-in-up">
-                                        <div className="space-y-2">
-                                            <div className="fabula-portrait-frame relative group">
-                                                {data.bio?.imagem ? <img src={data.bio.imagem} alt="Retrato" className="w-full h-full object-cover"/> : <span className="text-teal-700 font-bold text-xs uppercase">Retrato</span>}
-                                                <div className={`absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center gap-2 transition-opacity ${showUrlInput ? 'opacity-100' : 'opacity-0 lg:group-hover:opacity-100 active:opacity-100'}`}>
-                                                    {!showUrlInput ? (
-                                                        <React.Fragment>
-                                                            <label className="cursor-pointer bg-white text-black px-3 py-1.5 rounded text-xs font-bold hover:bg-gray-200 w-24 text-center shadow">Upload<input type="file" accept="image/*" className="hidden" onChange={async e=>{const f=e.target.files[0]; e.target.value=''; if(!f)return; try{updateField('bio.imagem',await optimizeImageFile(f,720,0.82));}catch(err){console.error(err);showToast('Não foi possível usar esta imagem.');}}}/></label>
-                                                            <button type="button" onClick={()=>setShowUrlInput(true)} className="bg-white text-black px-3 py-1.5 rounded text-xs font-bold hover:bg-gray-200 w-24 shadow">Usar URL</button>
-                                                            {data.bio?.imagem && <button type="button" onClick={()=>updateField('bio.imagem','')} className="bg-red-600 text-white px-3 py-1.5 rounded text-xs font-bold hover:bg-red-700 w-24 shadow">Remover</button>}
-                                                        </React.Fragment>
-                                                    ) : (
-                                                        <div className="flex flex-col gap-2 w-full px-3 items-center">
-                                                            <input type="url" placeholder="https://.../imagem.jpg" value={tempUrl} onChange={e=>setTempUrl(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&tempUrl.trim()){updateField('bio.imagem',tempUrl.trim());setTempUrl('');setShowUrlInput(false);}}} className="w-full p-2 text-[10px] outline-none rounded text-black bg-white"/>
-                                                            <div className="flex gap-2">
-                                                                <button type="button" onClick={()=>{if(tempUrl.trim()){updateField('bio.imagem',tempUrl.trim());setTempUrl('');setShowUrlInput(false);}}} className="bg-teal-600 text-white px-3 py-1 rounded text-xs font-bold">Aplicar</button>
-                                                                <button type="button" onClick={()=>{setTempUrl('');setShowUrlInput(false);}} className="bg-gray-500 text-white px-3 py-1 rounded text-xs font-bold">Voltar</button>
-                                                            </div>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                            <p className="text-[10px] text-gray-500 text-center lg:text-left">Passe o mouse/toque no retrato para usar Upload ou URL.</p>
-                                        </div>
-                                        <div className="space-y-4 fabula-profile-panel"><div className="flex items-end justify-between gap-3 border-b border-teal-200 pb-3"><div><div className="fabula-top-sub">Fabula Ultima</div><div className="fabula-top-title">Ficha de Personagem</div></div><div className="text-right text-[10px] text-gray-500">visual inspirado na ficha em PDF</div></div>
-                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 fabula-profile-grid">
-                                                <label className="md:col-span-2 text-xs font-bold text-gray-600">Nome<input value={data.bio?.nome||''} onChange={e=>updateField('bio.nome',e.target.value)} className="mt-1 w-full border-2 border-teal-200 rounded p-2 text-lg font-bold outline-none focus:border-teal-700"/></label>
-                                                <label className="text-xs font-bold text-gray-600">Jogador<input value={data.bio?.jogador||''} onChange={e=>updateField('bio.jogador',e.target.value)} className="mt-1 w-full border rounded p-2"/></label>
-                                                <label className="text-xs font-bold text-gray-600">Identidade<input value={data.bio?.identidade||''} onChange={e=>updateField('bio.identidade',e.target.value)} className="mt-1 w-full border rounded p-2"/></label>
-                                                <label className="text-xs font-bold text-gray-600">Tema<input value={data.bio?.tema||''} onChange={e=>updateField('bio.tema',e.target.value)} className="mt-1 w-full border rounded p-2"/></label>
-                                                <label className="text-xs font-bold text-gray-600">Origem<input value={data.bio?.origem||''} onChange={e=>updateField('bio.origem',e.target.value)} className="mt-1 w-full border rounded p-2"/></label>
-                                                <label className="text-xs font-bold text-gray-600">Gênero<input value={data.bio?.genero||''} onChange={e=>updateField('bio.genero',e.target.value)} className="mt-1 w-full border rounded p-2"/></label>
-                                                <label className="text-xs font-bold text-gray-600">Nível<input type="number" min="1" value={data.nivel||1} onChange={e=>updateField('nivel',Number(e.target.value))} className="mt-1 w-full border rounded p-2"/></label>
-                                                <label className="text-xs font-bold text-gray-600">Experiência<input type="number" min="0" value={data.experiencia||0} onChange={e=>updateField('experiencia',Number(e.target.value))} className="mt-1 w-full border rounded p-2"/></label>
-                                            </div>
-                                            <label className="text-xs font-bold text-gray-600 block fabula-profile-grid">Traços<textarea value={data.bio?.tracos||''} onChange={e=>updateField('bio.tracos',e.target.value)} rows="3" className="mt-1 w-full border rounded p-2 resize-y" placeholder="Traços que definem o protagonista..."/></label>
-                                            <div className="fabula-bond-panel">
-                                                <div className="flex justify-between items-center mb-2"><h3 className="font-title font-bold text-teal-900">🤝 Laços</h3><button onClick={()=>addToArray('lacos',{alvo:'',forca:1,emocoes:''})} className="text-xs font-bold bg-teal-700 text-white px-2 py-1 rounded">+ Laço</button></div>
-                                                <div className="space-y-2">{(data.lacos||[]).map((l,i)=><div key={i} className="bond-row"><input value={l.alvo||''} onChange={e=>updateArrayField('lacos',i,'alvo',e.target.value)} className="border rounded p-2 text-xs" placeholder="Pessoa / local"/><input type="number" min="1" max="3" value={l.forca||1} onChange={e=>updateArrayField('lacos',i,'forca',Number(e.target.value))} className="border rounded p-2 text-xs"/><input value={l.emocoes||''} onChange={e=>updateArrayField('lacos',i,'emocoes',e.target.value)} className="border rounded p-2 text-xs" placeholder="Afeto, lealdade..."/><button onClick={()=>removeFromArray('lacos',i)} className="text-red-600">×</button></div>)}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {fabulaTab === 'perfil' && (
-                                    <div className="space-y-6 animate-fade-in-up">
-                                        <div className="fabula-subpanel"><div className="fabula-sheet-heading"><span>📊 Atributos e Condições</span></div><div className="fabula-attr-grid">{[['des','Destreza'],['ast','Astúcia'],['vig','Vigor'],['von','Vontade']].map(([k,n])=><div key={k} className="fabula-attr-card"><div className="fabula-attr-name">{n}</div><div className="fabula-die-pair"><div className="fabula-die-slot">{renderFabulaDieSelect(data.atributos?.[k]?.base||'d8', e=>updateField(`atributos.${k}.base`,e.target.value), `${n} Base`, 'base')}<div className="fabula-die-caption">Base</div></div><div className="fabula-die-slot">{renderFabulaDieSelect(data.atributos?.[k]?.atual||'d8', e=>updateField(`atributos.${k}.atual`,e.target.value), `${n} Atual`, 'current')}<div className="fabula-die-caption">Atual</div></div></div></div>)}</div></div>
-                                        <div className="fabula-conditions-grid">{Object.keys(initialFabulaPcData.condicoes).map(k=><label key={k} className={`fabula-condition-chip ${data.condicoes?.[k]?'active':''}`}><input type="checkbox" checked={!!data.condicoes?.[k]} onChange={e=>updateField(`condicoes.${k}`,e.target.checked)}/>{k.charAt(0).toUpperCase()+k.slice(1)}</label>)}</div>
-                                        <div className="fabula-track-grid">{[['pv','PV','❤️'],['pm','PM','🔷'],['pi','PI','🎒']].map(([k,n,ic])=><div key={k} className="fabula-track-box"><div className="fabula-track-title">{ic} {n}</div><div className="grid grid-cols-2 gap-2 mt-2"><input type="number" value={data.status?.[`${k}Atual`]??0} onChange={e=>updateField(`status.${k}Atual`,Number(e.target.value))}/><input type="number" value={data.status?.[`${k}Max`]??0} onChange={e=>updateField(`status.${k}Max`,Number(e.target.value))}/></div><div className="grid grid-cols-2 text-[9px] text-gray-500 mt-1"><span>Atual</span><span>Máx.</span></div></div>)}<div className="fabula-track-box" style={{background:'linear-gradient(180deg,#fff8e7 0%, #fff2c6 100%)'}}><div className="fabula-track-title">🌟 Pontos de Fabula</div><input type="number" min="0" value={data.status?.fabula??0} onChange={e=>updateField('status.fabula',Number(e.target.value))} className="mt-2"/></div></div>
-                                        <div className="fabula-small-grid">{[['defesa','Defesa'],['defesaMagica','Defesa Mágica'],['iniciativa','Mod. Iniciativa']].map(([k,n])=><label key={k} className="fabula-small-stat"><span className="fabula-meta-box">{n}</span><input type="number" value={data.status?.[k]??0} onChange={e=>updateField(`status.${k}`,Number(e.target.value))}/></label>)}<label className="fabula-small-stat"><span className="fabula-meta-box">Zênites</span><input type="number" min="0" value={data.zenites||0} onChange={e=>updateField('zenites',Number(e.target.value))}/></label></div>
-                                    </div>
-                                )}
-
-                                {fabulaTab === 'combate' && (
-                                    <div className="space-y-6 animate-fade-in-up fabula-subpanel">
-                                        <div className="flex flex-wrap items-center justify-between gap-3">
-                                            <div>
-                                                <div className="fabula-pill-title">🎒 Equipamentos & Mochila</div>
-                                                <p className="text-xs text-gray-500 mt-2">Organize itens equipados, proficiências, consumíveis e o inventário geral.</p>
-                                            </div>
-                                            <div className="flex flex-wrap gap-2"><button type="button" onClick={()=>addToArray('equipamentos',{slot:'Outro',nome:'',descricao:''})} className="fabula-action-btn">+ Equipamento</button><button type="button" onClick={restoreFabulaEquipmentSlots} className="fabula-soft-btn" title="Adiciona apenas os slots básicos que estiverem faltando, sem apagar equipamentos">Restaurar slots básicos</button></div>
-                                        </div>
-                                        <div className="fabula-list-card"><div className="fabula-list-card-head"><h3 className="font-title font-bold text-teal-900">Equipamentos em uso</h3><p className="text-[10px] text-gray-500">Slots equipados, armas, armaduras e acessórios importantes.</p></div><div className="fabula-list-card-body space-y-2">
-                                                {(data.equipamentos||[]).length===0 && <div className="text-xs text-gray-400 italic text-center py-4 border border-dashed rounded">Nenhum equipamento cadastrado. Use “+ Equipamento” ou restaure os slots básicos.</div>}
-                                                {(data.equipamentos||[]).map((eq,i)=><div key={i} className="fabula-equipment-row grid grid-cols-1 md:grid-cols-[150px_1fr_2fr_36px] gap-2 items-center"><div><div className="fabula-input-label">Slot</div><input value={eq.slot||''} onChange={e=>updateArrayField('equipamentos',i,'slot',e.target.value)} className="border rounded p-2 text-xs font-bold min-w-0" placeholder="Slot"/></div><div><div className="fabula-input-label">Item equipado</div><input value={eq.nome||''} onChange={e=>updateArrayField('equipamentos',i,'nome',e.target.value)} className="border rounded p-2 text-xs min-w-0" placeholder="Item equipado"/></div><div><div className="fabula-input-label">Descrição / efeito</div><input value={eq.descricao||''} onChange={e=>updateArrayField('equipamentos',i,'descricao',e.target.value)} className="border rounded p-2 text-xs min-w-0" placeholder="Precisão, dano, defesa, qualidade..."/></div><button type="button" onClick={()=>removeFromArray('equipamentos',i)} className="fabula-remove-btn" title="Excluir equipamento" aria-label={`Excluir equipamento ${eq.nome||i+1}`}>×</button></div>)}
-                                            </div></div>
-                                        <div className="fabula-list-card"><div className="fabula-list-card-head"><h3 className="font-title font-bold text-teal-900">Proficiências de equipamento</h3><p className="text-[10px] text-gray-500">Marque apenas o que este personagem realmente domina.</p></div><div className="fabula-list-card-body"><div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2">{[['armaduraMarcial','🛡️','Armadura marcial'],['escudoMarcial','🧷','Escudo marcial'],['armaCorpoMarcial','⚔️','Arma corpo a corpo marcial'],['armaDistanciaMarcial','🏹','Arma à distância marcial']].map(([k,icon,n])=><label key={k} className="fabula-check-card"><input type="checkbox" checked={!!data.equipavel?.[k]} onChange={e=>updateField(`equipavel.${k}`,e.target.checked)}/><div className="fabula-check-icon">{icon}</div><div className="fabula-check-text">{n}</div></label>)}</div></div></div>
-                                        <label className="block text-xs font-bold text-gray-600 fabula-list-card"><div className="fabula-list-card-head"><h3 className="font-title font-bold text-teal-900">Características</h3></div><div className="fabula-list-card-body"><textarea value={data.caracteristicas||''} onChange={e=>updateField('caracteristicas',e.target.value)} rows="5" className="w-full border rounded p-2" placeholder="Regras marcantes, qualidade do equipamento, reações defensivas, etc."/></div></label>
-                                        <div className="fabula-list-card">
-                                            <div className="fabula-list-card-head flex items-center justify-between gap-3">
-                                                <div><h3 className="font-title font-bold text-teal-900">🎒 Inventário / Mochila</h3><p className="text-[10px] text-gray-500">Itens guardados pelo personagem que não estão equipados.</p></div>
-                                                <button type="button" onClick={()=>addToArray('inventario',{nome:'',quantidade:1,notas:''})} className="fabula-action-btn">+ Item</button>
-                                            </div>
-                                            <div className="fabula-list-card-body space-y-3">
-                                                <details className="rounded-lg border border-teal-200 bg-white overflow-hidden">
-                                                    <summary className="cursor-pointer select-none px-3 py-2 text-xs font-bold text-teal-900 bg-teal-50 hover:bg-teal-100">🧪 Consulta rápida de PI — itens consumíveis</summary>
-                                                    <div className="p-3 space-y-2">
-                                                        <p className="text-[10px] text-gray-500">Pontos de Inventário representam consumíveis e utilidades preparados na hora. O item é criado, usado imediatamente e não fica guardado na mochila.</p>
-                                                        <div className="overflow-x-auto">
-                                                            <table className="w-full min-w-[520px] text-[11px] border-collapse">
-                                                                <thead><tr className="bg-teal-50 text-teal-900"><th className="text-left border border-teal-200 px-2 py-1.5">Item</th><th className="w-20 text-center border border-teal-200 px-2 py-1.5">PI</th><th className="text-left border border-teal-200 px-2 py-1.5">Uso rápido</th></tr></thead>
-                                                                <tbody>
-                                                                    <tr><td className="border border-teal-100 px-2 py-1.5 font-bold">Elixir</td><td className="border border-teal-100 px-2 py-1.5 text-center">3</td><td className="border border-teal-100 px-2 py-1.5">Recupera 50 PM de uma criatura.</td></tr>
-                                                                    <tr className="bg-gray-50"><td className="border border-teal-100 px-2 py-1.5 font-bold">Remédio</td><td className="border border-teal-100 px-2 py-1.5 text-center">3</td><td className="border border-teal-100 px-2 py-1.5">Recupera 50 PV de uma criatura.</td></tr>
-                                                                    <tr><td className="border border-teal-100 px-2 py-1.5 font-bold">Tônico</td><td className="border border-teal-100 px-2 py-1.5 text-center">2</td><td className="border border-teal-100 px-2 py-1.5">Remove todas as condições de uma criatura.</td></tr>
-                                                                    <tr className="bg-gray-50"><td className="border border-teal-100 px-2 py-1.5 font-bold">Fragmento elemental</td><td className="border border-teal-100 px-2 py-1.5 text-center">2</td><td className="border border-teal-100 px-2 py-1.5">Causa 10 de dano de ar, fogo, gelo, raio ou terra a uma criatura visível.</td></tr>
-                                                                    <tr><td className="border border-teal-100 px-2 py-1.5 font-bold">Barraca mágica</td><td className="border border-teal-100 px-2 py-1.5 text-center">4</td><td className="border border-teal-100 px-2 py-1.5">Permite que o grupo descanse nos ermos.</td></tr>
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                        <p className="text-[10px] text-gray-500">Limite padrão: 6 PI. Classes e poderes podem alterar o limite ou permitir outros usos. Consulte o Livro Básico para exceções e itens especiais.</p>
-                                                    </div>
-                                                </details>
-                                                {(data.inventario||[]).length === 0 && <div className="text-xs text-gray-400 italic text-center py-3">Nenhum item guardado.</div>}
-                                                {(data.inventario||[]).map((it,i)=><div key={i} className="fabula-equipment-row grid grid-cols-1 sm:grid-cols-[1fr_90px_1.4fr_32px] gap-2">
-                                                    <div><div className="fabula-input-label">Item</div><input value={it.nome||''} onChange={e=>updateArrayField('inventario',i,'nome',e.target.value)} className="border rounded p-2 text-xs" placeholder="Item"/></div>
-                                                    <div><div className="fabula-input-label">Qtd.</div><input type="number" min="0" value={it.quantidade??1} onChange={e=>updateArrayField('inventario',i,'quantidade',Number(e.target.value))} className="border rounded p-2 text-xs" placeholder="Qtd."/></div>
-                                                    <div><div className="fabula-input-label">Notas</div><input value={it.notas||''} onChange={e=>updateArrayField('inventario',i,'notas',e.target.value)} className="border rounded p-2 text-xs" placeholder="Descrição / efeito / observação"/></div>
-                                                    <button type="button" onClick={()=>removeFromArray('inventario',i)} className="fabula-remove-btn">×</button>
-                                                </div>)}
-                                            </div>
-                                        </div>
-                                        <label className="block text-xs font-bold text-gray-600 fabula-list-card"><div className="fabula-list-card-head"><h3 className="font-title font-bold text-teal-900">Mochila & Anotações</h3></div><div className="fabula-list-card-body"><textarea value={data.mochila||''} onChange={e=>updateField('mochila',e.target.value)} rows="5" className="w-full border rounded p-2" placeholder="Anotações gerais, itens especiais, lembretes..."/></div></label>
-                                    </div>
-                                )}
-
-                                {fabulaTab === 'classes' && (
-                                    <div className="space-y-5 animate-fade-in-up fabula-subpanel">
-                                        <div className="flex justify-between items-center gap-3"><div><div className="fabula-pill-title">✨ Classes & Poderes</div><p className="text-xs text-gray-500 mt-2">Classes, níveis, benefícios, poderes e progressão heroica.</p></div><button onClick={()=>addToArray('classes',{nome:'',nivel:1,beneficios:'',poderes:[]})} className="fabula-action-btn">+ Classe</button></div>
-                                        {(data.classes||[]).map((cl,ci)=><div key={ci} className="fabula-list-card"><div className="fabula-list-card-head grid grid-cols-[1fr_90px_38px] gap-2 items-center"><div><div className="fabula-input-label">Classe</div><input value={cl.nome||''} onChange={e=>{const arr=JSON.parse(JSON.stringify(data.classes));arr[ci].nome=e.target.value;updateField('classes',arr)}} className="border rounded p-2 font-bold" placeholder="Classe"/></div><div><div className="fabula-input-label">Nível</div><input type="number" min="1" value={cl.nivel||1} onChange={e=>{const arr=JSON.parse(JSON.stringify(data.classes));arr[ci].nivel=Number(e.target.value);updateField('classes',arr)}} className="border rounded p-2"/></div><button onClick={()=>removeFromArray('classes',ci)} className="fabula-remove-btn">×</button></div><div className="fabula-list-card-body space-y-3"><label className="block"><span className="fabula-input-label">Benefícios gratuitos / observações</span><textarea value={cl.beneficios||''} onChange={e=>{const arr=JSON.parse(JSON.stringify(data.classes));arr[ci].beneficios=e.target.value;updateField('classes',arr)}} className="w-full border rounded p-2 text-xs" rows="2" placeholder="Benefícios gratuitos / observações"/></label><div className="fabula-two-col-grid">{(cl.poderes||[]).map((p,pi)=><div key={pi} className="fabula-power-row grid grid-cols-[1fr_38px] gap-2 items-start"><div className="space-y-2"><div className="grid grid-cols-1 sm:grid-cols-[1fr_100px] gap-2"><div><div className="fabula-input-label">Poder</div><input value={p.nome||''} onChange={e=>{const arr=JSON.parse(JSON.stringify(data.classes));arr[ci].poderes[pi].nome=e.target.value;updateField('classes',arr)}} className="border rounded p-2 text-xs" placeholder="Poder"/></div><div><div className="fabula-input-label">Nível / NP</div><input value={p.nivel||''} onChange={e=>{const arr=JSON.parse(JSON.stringify(data.classes));arr[ci].poderes[pi].nivel=e.target.value;updateField('classes',arr)}} className="border rounded p-2 text-xs" placeholder="NP"/></div></div><div><div className="fabula-input-label">Efeito / lembrete</div><textarea value={p.desc||''} onChange={e=>{const arr=JSON.parse(JSON.stringify(data.classes));arr[ci].poderes[pi].desc=e.target.value;updateField('classes',arr)}} className="w-full border rounded p-2 text-xs" rows="3" placeholder="Efeito / lembrete"/></div></div><div className="fabula-move-col"><button type="button" onClick={()=>moveNestedArrayItem('classes',ci,'poderes',pi,-1)} className="fabula-move-btn" title="Mover para cima">↑</button><button type="button" onClick={()=>moveNestedArrayItem('classes',ci,'poderes',pi,1)} className="fabula-move-btn" title="Mover para baixo">↓</button><button onClick={()=>{const arr=JSON.parse(JSON.stringify(data.classes));arr[ci].poderes.splice(pi,1);updateField('classes',arr)}} className="fabula-remove-btn">×</button></div></div>)}</div><button onClick={()=>{const arr=JSON.parse(JSON.stringify(data.classes));arr[ci].poderes.push({nome:'',nivel:'',desc:''});updateField('classes',arr)}} className="fabula-soft-btn">+ Poder</button></div></div>)}
-                                        <div className="fabula-list-card"><div className="fabula-list-card-head flex items-center justify-between gap-2"><h3 className="font-title font-bold text-teal-900">Poderes Heroicos</h3><button onClick={()=>addToArray('poderesHeroicos',{nome:'',desc:''})} className="fabula-action-btn">+ Poder Heroico</button></div><div className="fabula-list-card-body space-y-2">{(data.poderesHeroicos||[]).length===0 && <div className="text-xs text-gray-400 italic">Nenhum poder heroico registrado.</div>}{(data.poderesHeroicos||[]).map((p,i)=><div key={i} className="fabula-hero-row grid grid-cols-[1fr_38px] gap-2 items-start"><div className="space-y-2"><div><div className="fabula-input-label">Nome</div><input value={p.nome||''} onChange={e=>updateArrayField('poderesHeroicos',i,'nome',e.target.value)} className="border rounded p-2 text-xs" placeholder="Nome"/></div><div><div className="fabula-input-label">Efeito / lembrete</div><textarea value={p.desc||''} onChange={e=>updateArrayField('poderesHeroicos',i,'desc',e.target.value)} className="w-full border rounded p-2 text-xs" rows="3" placeholder="Efeito / lembrete"/></div></div><div className="fabula-move-col"><button type="button" onClick={()=>moveArrayItem('poderesHeroicos',i,-1)} className="fabula-move-btn" title="Mover para cima">↑</button><button type="button" onClick={()=>moveArrayItem('poderesHeroicos',i,1)} className="fabula-move-btn" title="Mover para baixo">↓</button><button onClick={()=>removeFromArray('poderesHeroicos',i)} className="fabula-remove-btn">×</button></div></div>)}</div></div>
-                                    </div>
-                                )}
-
-                                {fabulaTab === 'extra-magia' && <FabulaMagicPanel data={data} updateField={updateField} />}
-                                {fabulaTab === 'extra-arcanos' && <FabulaArcanosPanel data={data} updateField={updateField} />}
-                                {fabulaTab === 'extra-mnemosfera' && <FabulaMnemosferaPanel data={data} updateField={updateField} />}
-                                {fabulaTab === 'extra-receitas' && <FabulaReceitasPanel data={data} updateField={updateField} />}
-                                {fabulaTab === 'extra-projetos' && <FabulaProjetosPanel data={data} updateField={updateField} />}
-                                {fabulaTab === 'extra-anotacoes' && <FabulaNotasPanel data={data} updateField={updateField} />}
-                                {fabulaTab === 'extra-peculiaridade' && <FabulaPeculiaridadePanel data={data} updateField={updateField} />}
-                                {fabulaTab === 'extra-armaPersonalizada' && <FabulaArmasPersonalizadasPanel data={data} updateField={updateField} />}
-                                {fabulaTab === 'extra-recursosClasse' && <FabulaRecursosClassePanel data={data} updateField={updateField} />}
-                                {fabulaTab === 'extra-acampamento' && <FabulaAcampamentoPanel data={data} updateField={updateField} />}
-                                {fabulaTab === 'extra-jardim' && <FabulaJardimPanel data={data} updateField={updateField} />}
-                                {fabulaTab === 'extra-invocacoes' && <FabulaInvocacoesPanel data={data} updateField={updateField} />}
-                                {fabulaTab === 'extra-comercio' && <FabulaComercioPanel data={data} updateField={updateField} />}
-                                {fabulaTab === 'extra-materiais' && <FabulaMateriaisPanel data={data} updateField={updateField} />}
-                                {fabulaTab === 'extra-poderZero' && <FabulaPoderZeroPanel data={data} updateField={updateField} />}
-                                {fabulaTab === 'extra-tecnosferas' && <FabulaTecnosferasPanel data={data} updateField={updateField} />}
-                                {fabulaTab === 'extra-veiculo' && <FabulaVeiculoPanel data={data} updateField={updateField} />}
-
-                                <div className="mt-8 rounded border border-teal-200 bg-teal-50 p-3 text-[10px] text-teal-900">Compatibilidade com Fabula Ultima — interface independente e não oficial do PJ Lite, organizada para consulta e gerenciamento de fichas.</div>
-                            </div>
-
-                            {showFabulaExtras && ReactDOM.createPortal(
-                                <div className="fixed inset-0 z-[150] bg-black/60 p-4 flex items-center justify-center"><div className="bg-white w-full max-w-2xl rounded-lg shadow-2xl border-2 border-teal-700 overflow-hidden max-h-[90vh] flex flex-col"><div className="bg-teal-800 text-white p-3 flex justify-between shrink-0"><div><h3 className="font-title font-bold">Fichas Extras & Materiais</h3><p className="text-[10px] text-teal-100">Mude os suplementos quando precisar; dados de módulos ocultos não são apagados.</p></div><button onClick={()=>setShowFabulaExtras(false)} className="text-2xl">×</button></div><div className="p-4 space-y-4 overflow-y-auto"><div><h4 className="font-title font-bold text-teal-900 mb-1">📚 Materiais habilitados</h4><p className="text-[10px] text-gray-500 mb-3">Clique em um suplemento para ativar ou desativar. O Livro Básico permanece sempre ligado.</p><div className="grid sm:grid-cols-2 gap-2">{FABULA_SUPPLEMENT_OPTIONS.map(src=>{const checked=src.locked||!!data.suplementos?.[src.id];return <button type="button" key={src.id} disabled={!!src.locked} aria-pressed={checked} onClick={()=>!src.locked&&setFabulaSupplementEnabled(src.id,!checked)} className={`fabula-supplement-card ${checked?'active':''} ${src.locked?'locked':''}`}><span className="fabula-supplement-icon">{src.icon}</span><span className="min-w-0 text-left"><span className="flex items-center gap-2"><strong className="text-xs">{src.nome}</strong>{src.locked&&<span className="fabula-supplement-status">sempre</span>}</span><span className="block text-[9px] opacity-70 mt-1">{src.desc}</span></span><span className="fabula-supplement-check" aria-hidden="true">{checked?'✓':'＋'}</span></button>})}</div></div><div className="border-t pt-4"><h4 className="font-title font-bold text-teal-900 mb-1">＋ Fichas Extras disponíveis</h4><p className="text-[10px] text-gray-500 mb-2">Extras do Livro Básico, como Arcanos, Magia & Rituais e Projetos, ficam disponíveis independentemente dos suplementos.</p><div className="space-y-2">{FABULA_EXTRA_OPTIONS.filter(opt=>isFabulaExtraUnlocked(opt,data.suplementos)||(data.extrasAtivos||[]).includes(opt.id)).map(opt=>{const active=(data.extrasAtivos||[]).includes(opt.id);return <label key={opt.id} className={`flex items-start gap-3 border-2 rounded p-3 cursor-pointer ${active?'border-teal-600 bg-teal-50':'border-gray-200'}`}><input type="checkbox" checked={active} onChange={e=>{let arr=[...(data.extrasAtivos||[])]; if(e.target.checked){if(!arr.includes(opt.id))arr.push(opt.id)}else arr=arr.filter(x=>x!==opt.id); updateField('extrasAtivos',arr); if(e.target.checked)setFabulaTab(`extra-${opt.id}`); else if(fabulaTab===`extra-${opt.id}`)setFabulaTab('perfil')}} className="mt-1"/><div><div className="font-bold text-sm">{opt.icon} {opt.nome}</div><div className="text-xs text-gray-500">{opt.desc}</div></div></label>})}</div></div><div className="pt-2 flex justify-end"><button onClick={()=>setShowFabulaExtras(false)} className="bg-teal-800 text-white px-4 py-2 rounded font-bold text-xs">Concluir</button></div></div></div></div>, document.body
-                            )}
-                        </div>
-                    )}
+                    <FabulaCharacterEditor scope={systemEditorScope} />
 
                     {/* O Som das Seis — Personagem (integração linha 0.7) */}
-                    {isSom6 && data.type === 'pc' && (
-                        <div className="som6-paper">
-                            <div className="pj-mobile-tabs flex overflow-x-auto bg-red-950 text-amber-50 border-b border-red-900 sticky top-0 z-20 shadow-sm">
-                                {[['perfil','Ficha'],['montaria','Montaria']].map(([id,label])=><button key={id} onClick={()=>setSom6Tab(id)} className={`shrink-0 px-5 py-3 text-[10px] font-bold uppercase border-b-4 ${som6Tab===id?'border-amber-300 bg-red-900':'border-transparent opacity-75'}`}>{label}</button>)}
-                            </div>
-                            <div className="p-3 md:p-5">
-                                {som6Tab!=='montaria' && <div className="som6-sheet max-w-6xl mx-auto space-y-3 animate-fade-in-up">
-                                    <div className="flex items-end justify-between gap-3 px-1">
-                                        <div className="som6-logo text-3xl sm:text-5xl">O Som das Seis</div>
-                                        <div className="text-[9px] font-bold uppercase tracking-widest text-red-900 text-right">Ficha integrada • v0.7 Alpha</div>
-                                    </div>
+                    <Som6CharacterEditor scope={systemEditorScope} />
 
-                                    <div className="som6-frame som6-frame-cut">
-                                        <div className="grid grid-cols-[98px_1fr] sm:grid-cols-[118px_1fr_108px] gap-2 items-stretch">
-                                            <div className="min-w-0">
-                                                <div className="som6-portrait h-[112px] sm:h-[132px] relative group">
-                                                    {data.bio?.imagem ? <img src={data.bio.imagem} alt={`Retrato de ${data.bio?.nome||'personagem'}`} className="som6-portrait-img"/> : <div className="som6-portrait-empty">retrato<br/>da personagem</div>}
-                                                </div>
-                                                {!showUrlInput ? <div className="som6-portrait-actions">
-                                                    <label className="bg-amber-50 text-stone-900 border border-stone-400 hover:bg-white" title="Enviar imagem">Upload<input type="file" accept="image/*" className="hidden" onChange={async e=>{const f=e.target.files?.[0];e.target.value='';if(!f)return;try{updateField('bio.imagem',await optimizeImageFile(f,720,0.82));showToast('Retrato atualizado!');}catch(err){console.error(err);showToast('Não foi possível usar esta imagem.');}}}/></label>
-                                                    <button type="button" onClick={()=>setShowUrlInput(true)} className="bg-stone-800 text-white border border-stone-700 hover:bg-black">URL</button>
-                                                    {data.bio?.imagem && <button type="button" onClick={()=>updateField('bio.imagem','')} className="col-span-2 bg-red-900 text-white border border-red-950 hover:bg-red-800">Remover</button>}
-                                                </div> : <div className="mt-1 space-y-1">
-                                                    <input type="url" value={tempUrl} onChange={e=>setTempUrl(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&tempUrl.trim()){updateField('bio.imagem',tempUrl.trim());setTempUrl('');setShowUrlInput(false);}}} className="w-full border rounded px-1.5 py-1 text-[9px]" placeholder="https://..."/>
-                                                    <div className="grid grid-cols-2 gap-1"><button type="button" onClick={()=>{if(tempUrl.trim()){updateField('bio.imagem',tempUrl.trim());setTempUrl('');setShowUrlInput(false);}}} className="rounded bg-red-900 text-white text-[9px] font-bold py-1">Aplicar</button><button type="button" onClick={()=>{setTempUrl('');setShowUrlInput(false)}} className="rounded bg-stone-600 text-white text-[9px] font-bold py-1">Voltar</button></div>
-                                                </div>}
-                                            </div>
-                                            <div className="som6-stat-box min-w-0">
-                                                <span className="font-serif font-black text-lg">nome</span><input value={data.bio?.nome||''} onChange={e=>updateField('bio.nome',e.target.value)} className="w-full border rounded som6-mini-input mt-1 text-lg font-bold"/>
-                                                <div className="grid grid-cols-2 gap-1 mt-2 sm:hidden"><label><span className="som6-label !text-stone-600">nível</span><input type="number" min="1" max="6" value={data.nivel||1} onChange={e=>updateField('nivel',Number(e.target.value))} className="w-full border rounded som6-mini-input mt-1 text-center font-black"/></label><label><span className="som6-label !text-stone-600">jogador</span><input value={data.bio?.jogador||''} onChange={e=>updateField('bio.jogador',e.target.value)} className="w-full border rounded som6-mini-input mt-1 text-xs"/></label></div>
-                                                <label className="hidden sm:block mt-2"><span className="som6-label !text-stone-600">jogador</span><input value={data.bio?.jogador||''} onChange={e=>updateField('bio.jogador',e.target.value)} className="w-full border rounded som6-mini-input mt-1 text-xs" placeholder="Nome de quem joga"/></label>
-                                            </div>
-                                            <div className="som6-stat-box hidden sm:block"><span className="font-serif font-black text-lg">nível</span><input type="number" min="1" max="6" value={data.nivel||1} onChange={e=>updateField('nivel',Number(e.target.value))} className="w-full border rounded som6-mini-input mt-1 text-center text-lg font-black"/><div className="mt-2"><span className="som6-label !text-stone-600">XP</span><input type="number" min="0" value={data.xp||0} onChange={e=>updateField('xp',Number(e.target.value))} className="w-full border rounded som6-mini-input mt-1 text-center"/></div></div>
-                                        </div>
-                                    </div>
+                    <Som6ThreatEditor scope={systemEditorScope} />
 
-                                    <div className="grid lg:grid-cols-[0.9fr_1.5fr] gap-4 items-start">
-                                        <div className="space-y-3">
-                                            <div className="grid grid-cols-[1fr_92px] gap-3">
-                                                <div className="som6-frame som6-frame-cut">
-                                                    <div className="text-center font-serif font-black text-amber-50 mb-2">atributos</div>
-                                                    <div className="space-y-2.5">
-                                                        {[['fisico','físico'],['agilidade','agilidade'],['intelecto','intelecto'],['coragem','coragem']].map(([k,n])=><div key={k} className="flex items-center justify-between gap-2"><span className="font-serif font-black text-amber-50 text-sm sm:text-base">{n}</span><Som6Pips value={data.atributos?.[k]||0} onChange={v=>updateField(`atributos.${k}`,v)} title={n}/></div>)}
-                                                    </div>
-                                                </div>
-                                                <div className="space-y-3">
-                                                    <div className="som6-frame som6-frame-cut"><div className="som6-stat-box text-center"><div className="font-serif font-black">vida</div><div className="grid grid-cols-2 gap-1 mt-1"><input type="number" value={data.status?.pvAtual??0} onChange={e=>updateField('status.pvAtual',Number(e.target.value))} className="w-full border rounded som6-mini-input text-center font-bold" title="PV atual"/><input type="number" value={data.status?.pvMax??0} onChange={e=>updateField('status.pvMax',Number(e.target.value))} className="w-full border rounded som6-mini-input text-center font-bold" title="PV máximo"/></div><div className="text-[8px] uppercase mt-1 opacity-60">atual / máx.</div></div></div>
-                                                    <div className="som6-frame som6-frame-cut"><div className="som6-stat-box text-center"><div className="font-serif font-black">defesa</div><input type="number" value={data.status?.defesa??5} onChange={e=>updateField('status.defesa',Number(e.target.value))} className="w-full border rounded som6-mini-input mt-1 text-center text-lg font-black"/></div></div>
-                                                </div>
-                                            </div>
-
-                                            <div className="grid grid-cols-2 gap-3">
-                                                <div className="som6-frame som6-frame-cut"><div className="som6-stat-box"><div className="font-serif font-black">iniciativa</div><input type="number" value={data.status?.iniciativa??1} onChange={e=>updateField('status.iniciativa',Number(e.target.value))} className="w-full border rounded som6-mini-input mt-1 text-center font-black"/></div></div>
-                                                <div className="som6-frame som6-frame-cut"><div className="som6-stat-box"><div className="font-serif font-black">ações</div><input type="number" min="1" value={data.status?.acoes??1} onChange={e=>updateField('status.acoes',Number(e.target.value))} className="w-full border rounded som6-mini-input mt-1 text-center font-black"/></div></div>
-                                            </div>
-
-                                            <div className="som6-frame som6-frame-cut">
-                                                <div className="som6-cream rounded-xl p-3">
-                                                    <div className="flex items-center justify-between gap-2 mb-2"><div className="font-serif font-black text-center flex-1">antecedentes</div><span className="text-[8px] font-bold uppercase text-red-900">4 pontos iniciais</span></div>
-                                                    <div className="space-y-2">{SOM6_ANTECEDENTES.map(([id,nome])=><div key={id} className="flex items-center justify-between gap-2"><span className="font-serif font-black text-sm">{nome.toLowerCase()}</span><Som6Pips value={data.antecedentes?.[id]??0} onChange={v=>updateField(`antecedentes.${id}`,v)} title={nome}/></div>)}</div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-3">
-                                            <div className="grid sm:grid-cols-2 gap-3">
-                                                <div className="som6-frame som6-frame-cut"><div className="som6-stat-box"><div className="font-serif font-black">tormento</div><select value={data.tormento?.tipo||''} onChange={e=>updateField('tormento.tipo',e.target.value)} className="w-full border rounded som6-mini-input mt-1 text-xs"><option value="">Tipo...</option>{['Vingança','Fugindo','Vício','Segredo','Doença','Dever'].map(x=><option key={x}>{x}</option>)}</select><textarea rows="2" value={data.tormento?.desc||''} onChange={e=>updateField('tormento.desc',e.target.value)} className="w-full border rounded p-2 mt-1 text-xs som6-compact-textarea" placeholder="Descreva o Tormento..."/></div></div>
-                                                <div className="som6-frame som6-frame-cut"><div className="som6-stat-box"><div className="font-serif font-black">recompensa</div><div className="flex items-center gap-1 mt-1"><span className="font-black">$</span><input type="number" min="0" value={data.recompensa??0} onChange={e=>updateField('recompensa',Number(e.target.value))} className="w-full border rounded som6-mini-input font-bold"/></div><div className="mt-2 sm:hidden"><span className="som6-label !text-stone-600">XP</span><input type="number" min="0" value={data.xp||0} onChange={e=>updateField('xp',Number(e.target.value))} className="w-full border rounded som6-mini-input mt-1"/></div></div></div>
-                                            </div>
-
-                                            <div className="som6-frame som6-frame-cut h-full">
-                                                <div className="som6-cream rounded-xl p-3 h-full">
-                                                    <div className="flex flex-wrap justify-between items-center gap-2 mb-2"><div><div className="font-serif font-black text-lg">habilidades</div><div className="som6-help-chip mt-1">2 iniciais • arraste a ordem com ↑ ↓</div></div><button type="button" onClick={()=>updateField('habilidades',[...(data.habilidades||[]),{nome:'',desc:''}])} className="bg-red-900 text-white rounded px-2 py-1 text-[10px] font-bold">＋ habilidade</button></div>
-                                                    <div className="som6-skill-grid">{(data.habilidades||[]).map((h,i)=><div key={i} className="som6-skill-card grid grid-cols-[1fr_28px] gap-2"><div className="min-w-0"><input list="som6-habs" value={h.nome||''} onChange={e=>{const x=[...(data.habilidades||[])];x[i]={...x[i],nome:e.target.value};updateField('habilidades',x)}} className="w-full border rounded som6-mini-input text-xs font-black" placeholder={`Habilidade ${i+1}`}/>{i===0&&<datalist id="som6-habs">{SOM6_HABILIDADES.map(n=><option key={n} value={n}/>)}</datalist>}<textarea rows="3" value={h.desc||''} onChange={e=>{const x=[...(data.habilidades||[])];x[i]={...x[i],desc:e.target.value};updateField('habilidades',x)}} className="w-full border rounded p-1.5 mt-1 text-[11px] som6-compact-textarea" placeholder="Gatilho e resumo do efeito"/></div><div className="som6-order-col"><button type="button" disabled={i===0} onClick={()=>moveArrayItem('habilidades',i,-1)} className="som6-order-btn" title="Mover para cima">↑</button><button type="button" disabled={i===(data.habilidades||[]).length-1} onClick={()=>moveArrayItem('habilidades',i,1)} className="som6-order-btn" title="Mover para baixo">↓</button><button type="button" onClick={()=>updateField('habilidades',(data.habilidades||[]).filter((_,j)=>j!==i))} className="som6-order-btn !text-red-800" title="Remover">×</button></div></div>)}</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="grid md:grid-cols-[1fr_230px] gap-3">
-                                        <div className="som6-frame som6-frame-cut"><div className="som6-stat-box"><div className="font-serif font-black">reputação</div><div className="grid sm:grid-cols-[110px_1fr] gap-2 mt-1"><select value={data.reputacao?.valor??0} onChange={e=>updateField('reputacao.valor',Number(e.target.value))} className="border rounded som6-mini-input text-xs"><option value={-1}>-1 Má</option><option value={0}>0 Neutra</option><option value={1}>+1 Boa</option></select><input value={data.reputacao?.titulo||''} onChange={e=>updateField('reputacao.titulo',e.target.value)} className="border rounded som6-mini-input text-xs" placeholder="Como é conhecida?"/></div></div></div>
-                                        <div className="som6-frame som6-frame-cut"><div className="som6-stat-box"><div className="font-serif font-black">U$</div><input type="number" step="0.5" value={data.dinheiro??150} onChange={e=>updateField('dinheiro',Number(e.target.value))} className="w-full border rounded som6-mini-input mt-1 text-right font-black"/></div></div>
-                                    </div>
-
-                                    <div className="som6-frame som6-frame-cut">
-                                        <div className="som6-cream rounded-xl p-3">
-                                            <div className="flex justify-between items-center gap-2"><div><div className="font-serif font-black text-lg">equipamento</div><div className="text-[9px] text-stone-600">Armas mantêm dano, munição e recarga; outros itens ficam logo abaixo.</div></div><button onClick={()=>updateField('armas',[...(data.armas||[]),{nome:'',dano:'',municaoAtual:'',municaoMax:'',recarga:'',notas:''}])} className="bg-red-900 text-white rounded px-2 py-1 text-[10px] font-bold">＋ arma</button></div>
-                                            <div className="hidden md:grid grid-cols-[1.25fr_.65fr_.8fr_.7fr_1.2fr_26px] gap-1 text-[8px] font-black uppercase mt-2 px-1"><span>arma</span><span>dano</span><span>munição</span><span>recarga</span><span>notas</span><span></span></div>
-                                            <div className="space-y-1 mt-1">{(data.armas||[]).map((a,i)=><div key={i} className="som6-table-row rounded p-1.5 grid grid-cols-2 md:grid-cols-[1.25fr_.65fr_.8fr_.7fr_1.2fr_26px] gap-1"><input value={a.nome||''} onChange={e=>{const x=[...(data.armas||[])];x[i]={...x[i],nome:e.target.value};updateField('armas',x)}} className="border rounded som6-mini-input text-xs" placeholder="Arma"/><input value={a.dano||''} onChange={e=>{const x=[...(data.armas||[])];x[i]={...x[i],dano:e.target.value};updateField('armas',x)}} className="border rounded som6-mini-input text-xs" placeholder="Dano"/><input value={`${a.municaoAtual??''}${a.municaoAtual!==''&&a.municaoMax!==''?'/':''}${a.municaoMax??''}`} onChange={e=>{const [at='',mx='']=e.target.value.split('/');const x=[...(data.armas||[])];x[i]={...x[i],municaoAtual:at,municaoMax:mx};updateField('armas',x)}} className="border rounded som6-mini-input text-xs" placeholder="6/6"/><input value={a.recarga||''} onChange={e=>{const x=[...(data.armas||[])];x[i]={...x[i],recarga:e.target.value};updateField('armas',x)}} className="border rounded som6-mini-input text-xs" placeholder="2 ações"/><input value={a.notas||''} onChange={e=>{const x=[...(data.armas||[])];x[i]={...x[i],notas:e.target.value};updateField('armas',x)}} className="border rounded som6-mini-input text-xs col-span-2 md:col-span-1" placeholder="Modificações / notas"/><button onClick={()=>updateField('armas',(data.armas||[]).filter((_,j)=>j!==i))} className="text-red-800 font-black">×</button></div>)}</div>
-                                            <div className="mt-3 pt-3 border-t border-stone-400/50 flex justify-between items-center"><div className="font-serif font-black">outros itens</div><button onClick={()=>updateField('inventario',[...(data.inventario||[]),{nome:'',quantidade:1,notas:''}])} className="bg-stone-800 text-white rounded px-2 py-1 text-[10px] font-bold">＋ item</button></div>
-                                            <div className="space-y-1 mt-1">{(data.inventario||[]).map((it,i)=><div key={i} className="som6-table-row rounded p-1.5 grid grid-cols-[1fr_64px_1.2fr_26px] gap-1"><input value={it.nome||''} onChange={e=>{const x=[...(data.inventario||[])];x[i]={...x[i],nome:e.target.value};updateField('inventario',x)}} className="border rounded som6-mini-input text-xs" placeholder="Item"/><input type="number" min="0" value={it.quantidade??1} onChange={e=>{const x=[...(data.inventario||[])];x[i]={...x[i],quantidade:Number(e.target.value)};updateField('inventario',x)}} className="border rounded som6-mini-input text-xs"/><input value={it.notas||''} onChange={e=>{const x=[...(data.inventario||[])];x[i]={...x[i],notas:e.target.value};updateField('inventario',x)}} className="border rounded som6-mini-input text-xs" placeholder="Notas"/><button onClick={()=>updateField('inventario',(data.inventario||[]).filter((_,j)=>j!==i))} className="text-red-800 font-black">×</button></div>)}</div>
-                                        </div>
-                                    </div>
-
-                                    <div className="grid lg:grid-cols-[.85fr_1.15fr] gap-3">
-                                        <div className="som6-section rounded-lg p-3"><div className="flex justify-between items-center"><h3 className="font-title font-bold som6-title text-sm">🂠 Cartas de Sina</h3><span className="text-[9px] text-stone-500">máx. 2 por sessão</span></div><div className="grid grid-cols-2 gap-2 mt-2">{(data.cartasSina||[]).map((c,i)=><div key={i} className="border rounded bg-white p-2"><input value={c.carta||''} onChange={e=>{const x=[...(data.cartasSina||[])];x[i]={...x[i],carta:e.target.value};updateField('cartasSina',x)}} className="w-full border rounded som6-mini-input text-xs" placeholder={`Carta ${i+1}`}/><label className="mt-1 flex items-center gap-1 text-[10px] font-bold"><input type="checkbox" checked={!!c.usada} onChange={e=>{const x=[...(data.cartasSina||[])];x[i]={...x[i],usada:e.target.checked};updateField('cartasSina',x)}}/> usada</label></div>)}</div><div className="text-[9px] mt-2 text-stone-600">Uma Carta de Sina pode refazer um teste ou reduzir em 1d6 um dano recebido.</div></div>
-                                        <div className="som6-section rounded-lg p-3"><div className="flex justify-between items-center"><h3 className="font-title font-bold som6-title text-sm">Detalhes & anotações</h3><span className="text-[9px] text-stone-500">opcional</span></div><div className="grid sm:grid-cols-2 gap-2 mt-2"><input value={data.bio?.aparencia||''} onChange={e=>updateField('bio.aparencia',e.target.value)} className="border rounded som6-mini-input text-xs" placeholder="Aparência / traços visuais"/><input value={data.bio?.apelido||''} onChange={e=>updateField('bio.apelido',e.target.value)} className="border rounded som6-mini-input text-xs" placeholder="Apelido"/><textarea rows="2" value={data.bio?.passado||''} onChange={e=>updateField('bio.passado',e.target.value)} className="border rounded p-2 text-xs som6-compact-textarea" placeholder="Passado"/><textarea rows="2" value={data.anotacoes||''} onChange={e=>updateField('anotacoes',e.target.value)} className="border rounded p-2 text-xs som6-compact-textarea" placeholder="Anotações"/></div></div>
-                                    </div>
-
-                                    <details className="som6-section rounded-lg"><summary className="cursor-pointer p-3 text-xs font-bold som6-title">📈 Consulta de progressão</summary><div className="px-3 pb-3 grid sm:grid-cols-2 md:grid-cols-3 gap-1 text-[10px]">{SOM6_LEVELS.map(x=><div key={x.nivel} className="border rounded bg-white p-2"><strong>Nv.{x.nivel} — {x.xp} XP</strong><br/>{x.bonus}</div>)}</div></details>
-                                    <div className="text-[9px] text-stone-500 text-center pt-1">O Som das Seis — regras por Ramon Mineiro • integração PJ Lite v0.7 Alpha • regras sob CC BY-SA 4.0 conforme o livro.</div>
-                                </div>}
-
-                                {som6Tab==='montaria' && <div className="som6-sheet max-w-6xl mx-auto space-y-3 animate-fade-in-up">
-                                    <div className="flex items-end justify-between gap-3 px-1"><div className="som6-logo text-3xl sm:text-5xl">Seu Cavalo</div><label className="text-xs font-bold flex items-center gap-2"><input type="checkbox" checked={!!data.montaria?.ativa} onChange={e=>updateField('montaria.ativa',e.target.checked)}/> possui montaria</label></div>
-                                    {!data.montaria?.ativa ? <div className="som6-section rounded-xl p-6 text-center"><div className="text-3xl mb-2">🐎</div><div className="font-title font-bold som6-title">Nenhuma montaria ativa</div><p className="text-xs text-stone-600 mt-1">Marque “possui montaria” para abrir a ficha do animal.</p></div> : <>
-                                        <div className="som6-frame som6-frame-cut"><div className="grid grid-cols-1 sm:grid-cols-[1fr_150px_110px] gap-2"><div className="som6-stat-box"><div className="font-serif font-black">nome</div><input value={data.montaria?.nome||''} onChange={e=>updateField('montaria.nome',e.target.value)} className="w-full border rounded som6-mini-input mt-1 font-bold" placeholder="Nome da montaria"/></div><div className="som6-stat-box"><div className="font-serif font-black">tipo</div><input value={data.montaria?.tipo||'Cavalo'} onChange={e=>updateField('montaria.tipo',e.target.value)} className="w-full border rounded som6-mini-input mt-1 text-center font-bold" placeholder="Cavalo"/></div><div className="som6-stat-box"><div className="font-serif font-black">fidelidade</div><input type="number" min="0" max="4" value={data.montaria?.fidelidade??0} onChange={e=>updateField('montaria.fidelidade',Math.max(0,Math.min(4,Number(e.target.value))))} className="w-full border rounded som6-mini-input mt-1 text-center font-black"/></div></div></div>
-                                        <div className="grid lg:grid-cols-[.9fr_.75fr_1fr] gap-3">
-                                            <div className="som6-frame som6-frame-cut"><div className="space-y-4 py-2"><div className="flex items-center justify-between gap-2"><div><span className="font-serif font-black text-amber-50 text-lg">potência</span><div className="text-[8px] text-amber-100/75">clique nos marcadores</div></div><Som6Pips value={data.montaria?.potencia||0} onChange={v=>updateField('montaria.potencia',v)} title="Potência"/></div><div className="flex items-center justify-between gap-2"><div><span className="font-serif font-black text-amber-50 text-lg">vigor</span><div className="text-[8px] text-amber-100/75">clique nos marcadores</div></div><Som6Pips value={data.montaria?.vigor||0} onChange={v=>updateField('montaria',{...(data.montaria||{}),vigor:v,resistencia:v})} title="Vigor"/></div></div></div>
-                                            <div className="som6-frame som6-frame-cut"><div className="som6-stat-box space-y-2"><div className="grid grid-cols-[58px_1fr] items-center gap-2"><span className="font-serif font-black">vida</span><div className="grid grid-cols-2 gap-1"><input type="number" value={data.montaria?.pvAtual??0} onChange={e=>updateField('montaria.pvAtual',Number(e.target.value))} className="border rounded som6-mini-input text-center"/><input type="number" value={data.montaria?.pvMax??0} onChange={e=>updateField('montaria.pvMax',Number(e.target.value))} className="border rounded som6-mini-input text-center"/></div></div><div className="text-[8px] text-right -mt-1">referência da ficha: 1d6 + Vigor</div><div className="grid grid-cols-[58px_1fr] items-center gap-2"><span className="font-serif font-black">defesa</span><input type="number" value={data.montaria?.defesa??5} onChange={e=>updateField('montaria.defesa',Number(e.target.value))} className="border rounded som6-mini-input text-center"/></div><div className="text-[8px] text-right -mt-1">referência: 5 + Vigor</div><div className="grid grid-cols-[58px_1fr] items-center gap-2"><span className="font-serif font-black">dano</span><input value={data.montaria?.dano||''} onChange={e=>updateField('montaria.dano',e.target.value)} className="border rounded som6-mini-input text-center" placeholder="6 + Potência"/></div></div></div>
-                                            <div className="som6-frame som6-frame-cut"><div className="som6-cream rounded-xl p-3"><div className="flex justify-between items-center"><div className="font-serif font-black">itens no cavalo</div><button onClick={()=>updateField('montaria.itens',[...(data.montaria?.itens||[]),{nome:''}])} className="bg-red-900 text-white rounded px-2 py-1 text-[10px] font-bold">＋</button></div><div className="space-y-1 mt-2">{(data.montaria?.itens||[]).map((it,i)=><div key={i} className="grid grid-cols-[1fr_22px] gap-1"><input value={it.nome||''} onChange={e=>{const x=[...(data.montaria?.itens||[])];x[i]={...x[i],nome:e.target.value};updateField('montaria.itens',x)}} className="border rounded som6-mini-input text-xs" placeholder="Item"/><button onClick={()=>updateField('montaria.itens',(data.montaria?.itens||[]).filter((_,j)=>j!==i))} className="text-red-800 font-black">×</button></div>)}</div></div></div>
-                                        </div>
-                                        <div className="som6-frame som6-frame-cut"><div className="som6-cream rounded-xl p-3 space-y-2">{[
-                                            [1,'Antes de mais nada, dê um nome a seu animal. Agora sabe quando você está falando com ele.'],
-                                            [2,'O cavalo corre mais rápido e pode saltar mais longe. Adicione +1 à Potência.'],
-                                            [3,'O cavalo vai até você com um assovio e não permite que outras pessoas o montem.'],
-                                            [4,'Seu cavalo está mais esbelto e forte. Adicione +2 à Potência.']
-                                        ].map(([n,txt])=><button key={n} type="button" onClick={()=>updateField('montaria.fidelidade',n)} className={`w-full text-left flex items-start gap-3 rounded p-2 border ${Number(data.montaria?.fidelidade||0)>=n?'bg-red-50 border-red-800':'bg-white border-stone-300'}`}><span className={`som6-pip shrink-0 ${Number(data.montaria?.fidelidade||0)>=n?'active':''}`}>{Number(data.montaria?.fidelidade||0)>=n?'✓':''}</span><span className="text-xs">{txt}</span></button>)}<textarea rows="2" value={data.montaria?.notas||''} onChange={e=>updateField('montaria.notas',e.target.value)} className="w-full border rounded p-2 text-xs som6-compact-textarea mt-1" placeholder="Notas sobre a montaria..."/></div></div>
-                                    </>}
-                                    <div className="text-[9px] text-stone-500 text-center pt-1">Layout inspirado na ficha editável de O Som das Seis enviada como referência.</div>
-                                </div>}
-                            </div>
-                        </div>
-                    )}
-
-                    {isSom6 && data.type !== 'pc' && (
-                        <div className="som6-paper p-3 md:p-5">
-                            <div className="som6-sheet max-w-5xl mx-auto som6-frame som6-frame-cut">
-                                <div className="som6-cream rounded-xl p-3 space-y-3">
-                                    <div className="flex flex-wrap items-end justify-between gap-2"><div><div className="som6-logo text-2xl sm:text-3xl">PDJ</div><div className="text-[9px] font-bold uppercase text-red-900">O Som das Seis • bloco rápido da Juíza</div></div><span className="text-[9px] text-stone-500">NP 1–6 • resultado 1 no d6 sempre falha</span></div>
-                                    <div className="grid sm:grid-cols-[1.5fr_.7fr_80px] gap-2"><label><span className="som6-label">Nome</span><input value={data.nome||''} onChange={e=>updateField('nome',e.target.value)} className="w-full border rounded som6-mini-input mt-1 font-bold"/></label><label><span className="som6-label">Tipo</span><select value={data.tipoPdj||'Comum'} onChange={e=>updateField('tipoPdj',e.target.value)} className="w-full border rounded som6-mini-input mt-1 text-xs"><option>Comum</option><option>Importante</option></select></label><label><span className="som6-label">NP</span><input type="number" min="1" max="6" value={data.np||1} onChange={e=>updateField('np',Number(e.target.value))} className="w-full border rounded som6-mini-input mt-1 text-center font-black"/></label></div>
-                                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">{[['status.pvAtual','PV'],['status.pvMax','PV Máx.'],['status.defesa','Def.'],['status.acoes','Ações'],['status.ataqueBonus','Ataque'],['status.iniciativaBonus','Inic.']].map(([path,label])=>{const k=path.split('.')[1];return <label key={path} className="border rounded bg-white p-1.5"><span className="som6-label">{label}</span><input type="number" value={data.status?.[k]??0} onChange={e=>updateField(path,Number(e.target.value))} className="w-full border-0 p-1 text-center font-bold"/></label>})}</div>
-                                    <textarea rows="2" value={data.descricao||''} onChange={e=>updateField('descricao',e.target.value)} className="w-full border rounded p-2 text-xs som6-compact-textarea" placeholder="Descrição rápida do PDJ..."/>
-                                    <div className="grid lg:grid-cols-2 gap-3">
-                                        <div className="border rounded bg-white p-2"><div className="flex justify-between items-center"><strong className="text-xs uppercase text-red-900">Armas</strong><button onClick={()=>updateField('armas',[...(data.armas||[]),{nome:'',dano:'',notas:''}])} className="bg-red-900 text-white rounded px-2 py-0.5 text-xs font-bold">＋</button></div><div className="space-y-1 mt-2">{(data.armas||[]).map((a,i)=><div key={i} className="grid grid-cols-[1fr_70px_1fr_22px] gap-1"><input value={a.nome||''} onChange={e=>{const x=[...(data.armas||[])];x[i]={...x[i],nome:e.target.value};updateField('armas',x)}} className="border rounded som6-mini-input text-xs" placeholder="Arma"/><input value={a.dano||''} onChange={e=>{const x=[...(data.armas||[])];x[i]={...x[i],dano:e.target.value};updateField('armas',x)}} className="border rounded som6-mini-input text-xs" placeholder="Dano"/><input value={a.notas||''} onChange={e=>{const x=[...(data.armas||[])];x[i]={...x[i],notas:e.target.value};updateField('armas',x)}} className="border rounded som6-mini-input text-xs" placeholder="Notas"/><button onClick={()=>updateField('armas',(data.armas||[]).filter((_,j)=>j!==i))} className="text-red-800 font-black">×</button></div>)}</div></div>
-                                        <div className="border rounded bg-white p-2"><div className="flex justify-between items-center"><strong className="text-xs uppercase text-red-900">Habilidades</strong><button onClick={()=>updateField('habilidades',[...(data.habilidades||[]),{nome:'',desc:''}])} className="bg-stone-800 text-white rounded px-2 py-0.5 text-xs font-bold">＋</button></div><div className="space-y-1 mt-2">{(data.habilidades||[]).map((h,i)=><div key={i} className="grid grid-cols-[.8fr_1.3fr_22px] gap-1"><input value={h.nome||''} onChange={e=>{const x=[...(data.habilidades||[])];x[i]={...x[i],nome:e.target.value};updateField('habilidades',x)}} className="border rounded som6-mini-input text-xs" placeholder="Habilidade"/><input value={h.desc||''} onChange={e=>{const x=[...(data.habilidades||[])];x[i]={...x[i],desc:e.target.value};updateField('habilidades',x)}} className="border rounded som6-mini-input text-xs" placeholder="Efeito"/><button onClick={()=>updateField('habilidades',(data.habilidades||[]).filter((_,j)=>j!==i))} className="text-red-800 font-black">×</button></div>)}</div></div>
-                                    </div>
-                                    <textarea rows="2" value={data.notas||''} onChange={e=>updateField('notas',e.target.value)} className="w-full border rounded p-2 text-xs som6-compact-textarea" placeholder="Notas, comportamento, objetivo, contatos..."/>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {isFabula && data.type !== 'pc' && (
-                        <div className="p-3 md:p-5 fabula-threat-editor">
-                            <div className="fabula-threat-compact fabula-threat-readable space-y-4">
-                                <div className="fabula-threat-intro">
-                                    <div><div className="fabula-pill-title">👾 Ameaça / PNJ</div><p className="text-xs text-gray-500 mt-2">Organização inspirada no bestiário, mas com campos maiores e leitura mais intuitiva.</p></div>
-                                    {data.tipoNpc==='Vilão'&&<label className="fabula-mini-badge gap-2">Pontos de Ultima <input type="number" min="0" value={data.pontosUltima||0} onChange={e=>updateField('pontosUltima',Number(e.target.value))} className="w-14 border-0 bg-transparent text-center font-black"/></label>}
-                                </div>
-
-                                <div className="fabula-threat-identity-card">
-                                    <div className="fabula-threat-name-row"><label>Nome da ameaça / PNJ<input value={data.nome||''} onChange={e=>updateField('nome',e.target.value)} placeholder="Nome da ameaça"/></label></div>
-                                    <div className="fabula-threat-meta-grid">
-                                        <label>Tipo<select value={data.tipoNpc||'Ameaça'} onChange={e=>updateField('tipoNpc',e.target.value)}><option>Ameaça</option><option>PNJ</option><option>Vilão</option></select></label>
-                                        <label>Nível<input type="number" min="5" max="60" value={data.nivel||5} onChange={e=>updateField('nivel',Number(e.target.value))}/></label>
-                                        <label>Patente<select value={data.patente||'Soldado'} onChange={e=>updateField('patente',e.target.value)}><option>Soldado</option><option>Elite</option><option>Campeão</option></select></label>
-                                        <label>Espécie<select value={data.especie||'Humanoide'} onChange={e=>updateField('especie',e.target.value)}>{['Construto','Demônio','Elemental','Fera','Humanoide','Monstro','Morto-vivo','Planta'].map(x=><option key={x}>{x}</option>)}</select></label>
-                                    </div>
-                                </div>
-
-                                <div className="fabula-threat-main-grid">
-                                    <section className="fabula-threat-section-card">
-                                        <div className="fabula-threat-section-head"><h3>🎲 Atributos</h3><p>Dados usados nos testes da ameaça.</p></div>
-                                        <div className="fabula-threat-section-body"><div className="fabula-threat-attrs-readable">{[['des','DES'],['ast','AST'],['vig','VIG'],['von','VON']].map(([k,n])=><label key={k} className="fabula-threat-attr-readable"><span>{n}</span><select value={data.atributos?.[k]||'d8'} onChange={e=>updateField(`atributos.${k}`,e.target.value)}>{['d6','d8','d10','d12'].map(d=><option key={d}>{d}</option>)}</select></label>)}</div></div>
-                                    </section>
-                                    <section className="fabula-threat-section-card">
-                                        <div className="fabula-threat-section-head"><h3>❤️ Recursos & Defesas</h3><p>PV, PM, Crise, Iniciativa e defesas em blocos separados.</p></div>
-                                        <div className="fabula-threat-section-body"><div className="fabula-threat-resource-grid">
-                                            <label className="fabula-threat-resource"><span>PV atual / máximo</span><div className="fabula-threat-resource-pair"><input type="number" value={data.status?.pvAtual??0} onChange={e=>updateField('status.pvAtual',Number(e.target.value))}/><b>/</b><input type="number" value={data.status?.pvMax??0} onChange={e=>updateField('status.pvMax',Number(e.target.value))}/></div></label>
-                                            <div className="fabula-threat-resource"><span>Crise</span><div className="readout">{Math.ceil(Number(data.status?.pvMax||0)/2)}</div></div>
-                                            <label className="fabula-threat-resource"><span>PM atual / máximo</span><div className="fabula-threat-resource-pair"><input type="number" value={data.status?.pmAtual??0} onChange={e=>updateField('status.pmAtual',Number(e.target.value))}/><b>/</b><input type="number" value={data.status?.pmMax??0} onChange={e=>updateField('status.pmMax',Number(e.target.value))}/></div></label>
-                                            <label className="fabula-threat-resource"><span>Iniciativa</span><input type="number" value={data.status?.iniciativa??0} onChange={e=>updateField('status.iniciativa',Number(e.target.value))}/></label>
-                                            <label className="fabula-threat-resource"><span>Defesa</span><input type="number" value={data.status?.defesa??0} onChange={e=>updateField('status.defesa',Number(e.target.value))}/></label>
-                                            <label className="fabula-threat-resource"><span>Defesa Mágica</span><input type="number" value={data.status?.defesaMagica??0} onChange={e=>updateField('status.defesaMagica',Number(e.target.value))}/></label>
-                                        </div></div>
-                                    </section>
-                                </div>
-
-                                <details className="fabula-threat-details readable" open><summary><span>📝 Descrição, Traços & Afinidades</span><span>pode recolher</span></summary><div className="fabula-threat-details-body space-y-4"><div className="grid md:grid-cols-2 gap-3"><label className="text-[10px] font-bold text-gray-600">Descrição<textarea value={data.descricao||''} onChange={e=>updateField('descricao',e.target.value)} rows="3" className="mt-1 w-full border rounded p-2" placeholder="Quem é, como age e qual seu papel na cena..."/></label><label className="text-[10px] font-bold text-gray-600">Traços<textarea value={data.tracos||''} onChange={e=>updateField('tracos',e.target.value)} rows="3" className="mt-1 w-full border rounded p-2" placeholder="Ex.: agressivo, astuto, territorial..."/></label></div><div><div className="fabula-threat-title mb-2">Afinidades a Dano</div><div className="fabula-affinity-grid">{[['fisico','Físico'],['ar','Ar'],['raio','Raio'],['trevas','Trevas'],['terra','Terra'],['fogo','Fogo'],['gelo','Gelo'],['luz','Luz'],['veneno','Veneno']].map(([k,n])=><label key={k} className="fabula-affinity-chip"><span>{n}</span><select value={data.afinidades?.[k]||''} onChange={e=>updateField(`afinidades.${k}`,e.target.value)}><option value="">—</option><option>VU</option><option>RE</option><option>IM</option><option>AB</option></select></label>)}</div><p className="text-[9px] text-gray-500 mt-2">VU = Vulnerabilidade • RE = Resistência • IM = Imunidade • AB = Absorção.</p></div></div></details>
-
-                                <div className="fabula-list-card"><div className="fabula-list-card-head flex items-center justify-between gap-3"><div><h3 className="font-title font-bold text-teal-900">⚔️ Ataques Básicos</h3><p className="text-[10px] text-gray-500">Campos maiores e rotulados; ataques continuam compactos e podem ser reordenados.</p></div><button onClick={()=>addToArray('ataques',{nome:'',tipo:'Corpo a corpo',teste:'',dano:'',tipoDano:'',efeito:''})} className="fabula-action-btn">+ Ataque</button></div><div className="fabula-list-card-body"><div className="fabula-threat-attack-grid readable">{(data.ataques||[]).length===0&&<div className="text-xs text-gray-400 italic">Nenhum ataque registrado.</div>}{(data.ataques||[]).map((a,i)=><div key={i} className="fabula-threat-attack-card readable"><div className="grid grid-cols-[1fr_38px] gap-3"><div className="space-y-2"><div className="grid grid-cols-1 sm:grid-cols-2 gap-2"><label><span className="fabula-threat-field-label">Nome</span><input value={a.nome||''} onChange={e=>updateArrayField('ataques',i,'nome',e.target.value)} placeholder="Ex.: Garras de Pedra"/></label><label><span className="fabula-threat-field-label">Tipo</span><select value={a.tipo||'Corpo a corpo'} onChange={e=>updateArrayField('ataques',i,'tipo',e.target.value)}><option>Corpo a corpo</option><option>À distância</option></select></label><label><span className="fabula-threat-field-label">Teste</span><input value={a.teste||''} onChange={e=>updateArrayField('ataques',i,'teste',e.target.value)} placeholder="DES + VIG +1"/></label><label><span className="fabula-threat-field-label">Dano</span><input value={a.dano||''} onChange={e=>updateArrayField('ataques',i,'dano',e.target.value)} placeholder="RA + 10"/></label><label><span className="fabula-threat-field-label">Tipo de dano</span><input value={a.tipoDano||''} onChange={e=>updateArrayField('ataques',i,'tipoDano',e.target.value)} placeholder="Físico / Fogo / etc."/></label><label><span className="fabula-threat-field-label">Efeito especial</span><input value={a.efeito||''} onChange={e=>updateArrayField('ataques',i,'efeito',e.target.value)} placeholder="Opcional"/></label></div></div><div className="fabula-move-col"><button type="button" onClick={()=>moveArrayItem('ataques',i,-1)} className="fabula-move-btn" title="Mover para cima">↑</button><button type="button" onClick={()=>moveArrayItem('ataques',i,1)} className="fabula-move-btn" title="Mover para baixo">↓</button><button onClick={()=>removeFromArray('ataques',i)} className="fabula-remove-btn">×</button></div></div></div>)}</div></div></div>
-
-                                <div className="fabula-threat-special-grid">
-                                    <FabulaThreatList title="🔮 Feitiços" path="feiticos" items={data.feiticos||[]} add={()=>addToArray('feiticos',{nome:'',teste:'',pm:0,alvo:'',duracao:'',efeito:'',ofensiva:false})} remove={removeFromArray} update={updateArrayField} move={moveArrayItem} spell />
-                                    <FabulaThreatList title="✨ Poderes" path="poderes" items={data.poderes||[]} add={()=>addToArray('poderes',{nome:'',desc:''})} remove={removeFromArray} update={updateArrayField} move={moveArrayItem} />
-                                    <FabulaThreatList title="🎬 Outras Ações" path="outrasAcoes" items={data.outrasAcoes||[]} add={()=>addToArray('outrasAcoes',{nome:'',desc:''})} remove={removeFromArray} update={updateArrayField} move={moveArrayItem} />
-                                    <FabulaThreatList title="📜 Regras Especiais" path="regrasEspeciais" items={data.regrasEspeciais||[]} add={()=>addToArray('regrasEspeciais',{nome:'',desc:''})} remove={removeFromArray} update={updateArrayField} move={moveArrayItem} />
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                    <FabulaThreatEditor scope={systemEditorScope} />
 
                     {/* Editor D&D 5E */}
-                    {isDnd && data.type === 'pc' && (
-                        <div className="dnd-paper font-dnd">
-                            {/* Abas mobile D&D 5e */}
-                            <div className="md:hidden grid grid-cols-3 bg-[#f3eadc] border-b border-[#c9ad92] sticky top-0 z-20 shadow-sm">
-                                {[
-                                    { id: 'status', label: 'Perfil & Atributos' },
-                                    { id: 'equipamento', label: 'Combate' },
-                                    { id: 'recursos', label: 'Recursos' }
-                                ].map(tab => (
-                                    <button
-                                        key={tab.id}
-                                        type="button"
-                                        onClick={() => setMobileTab(tab.id)}
-                                        className={`py-3 px-1 text-[9px] font-bold uppercase text-center border-b-4 transition-colors ${mobileTab === tab.id ? 'border-[#922610] text-[#922610] bg-white' : 'border-transparent text-gray-500'}`}
-                                    >
-                                        {tab.label}
-                                    </button>
-                                ))}
-                            </div>
-
-                            <div className="dnd-sheet p-4 md:p-8 space-y-6">
-                            {/* Header D&D */}
-                            <div className={`${mobileTab === 'status' ? 'flex' : 'hidden md:flex'} dnd-header flex-col md:flex-row gap-5 border-b-2 border-[#922610] pb-4`}>
-                                {/* Retrato D&D 5e - mesma experiência do Dragonbane */}
-                                <div className="flex flex-col items-center gap-2 shrink-0 w-full md:w-36">
-                                    <div className="dnd-portrait w-32 h-32 md:w-36 md:h-36 border-2 border-[#922610] rounded bg-gray-100 relative group overflow-hidden flex items-center justify-center shadow-sm">
-                                        {data.bio?.imagem ? (
-                                            <img src={data.bio.imagem} alt="Avatar" className="w-full h-full object-cover" />
-                                        ) : (
-                                            <span className="text-gray-400 text-sm font-bold uppercase text-center px-4">Retrato</span>
-                                        )}
-
-                                        <div className={`absolute inset-0 bg-black/80 flex flex-col items-center justify-center gap-2 transition-opacity ${showUrlInput ? 'opacity-100' : 'opacity-0 lg:group-hover:opacity-100 active:opacity-100'}`}>
-                                            {!showUrlInput ? (
-                                                <React.Fragment>
-                                                    <label className="cursor-pointer bg-white text-black px-4 py-2 rounded text-sm font-bold hover:bg-gray-200 w-28 text-center shadow-lg">
-                                                        Upload
-                                                        <input
-                                                            type="file"
-                                                            accept="image/*"
-                                                            className="hidden"
-                                                            onChange={async (e) => {
-                                                                const file = e.target.files[0];
-                                                                e.target.value = '';
-                                                                if (!file) return;
-                                                                try { updateField('bio.imagem', await optimizeImageFile(file, 720, 0.82)); }
-                                                                catch (err) { console.error(err); showToast('Não foi possível usar esta imagem.'); }
-                                                            }}
-                                                        />
-                                                    </label>
-
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setShowUrlInput(true)}
-                                                        className="bg-white text-black px-4 py-2 rounded text-sm font-bold hover:bg-gray-200 w-28 text-center shadow-lg"
-                                                    >
-                                                        Usar URL
-                                                    </button>
-
-                                                    {data.bio?.imagem && (
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => {
-                                                                updateField('bio.imagem', '');
-                                                                setTempUrl('');
-                                                                setShowUrlInput(false);
-                                                            }}
-                                                            className="bg-red-600 text-white px-4 py-2 rounded text-sm font-bold hover:bg-red-700 w-28 text-center mt-2 shadow-lg"
-                                                        >
-                                                            Remover
-                                                        </button>
-                                                    )}
-                                                </React.Fragment>
-                                            ) : (
-                                                <div className="flex flex-col gap-2 w-full px-3 items-center">
-                                                    <input
-                                                        type="text"
-                                                        placeholder="Cole a URL aqui"
-                                                        value={tempUrl}
-                                                        onChange={(e) => setTempUrl(e.target.value)}
-                                                        onKeyDown={(e) => {
-                                                            if (e.key === 'Enter' && tempUrl.trim()) {
-                                                                updateField('bio.imagem', tempUrl.trim());
-                                                                setTempUrl('');
-                                                                setShowUrlInput(false);
-                                                            }
-                                                        }}
-                                                        className="w-full p-2 text-xs outline-none rounded text-black"
-                                                    />
-                                                    <div className="flex gap-2">
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => {
-                                                                if (!tempUrl.trim()) return;
-                                                                updateField('bio.imagem', tempUrl.trim());
-                                                                setTempUrl('');
-                                                                setShowUrlInput(false);
-                                                            }}
-                                                            className="bg-green-700 text-white px-3 py-1.5 text-xs rounded font-bold hover:bg-green-600"
-                                                        >
-                                                            OK
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => {
-                                                                setShowUrlInput(false);
-                                                                setTempUrl('');
-                                                            }}
-                                                            className="bg-gray-500 text-white px-3 py-1.5 text-xs rounded font-bold hover:bg-gray-600"
-                                                        >
-                                                            Voltar
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <span className="text-[9px] uppercase font-bold text-gray-400">Retrato do personagem</span>
-                                </div>
-
-                                <div className="flex-1 w-full">
-                                    <div className="dnd-brand-row"><span className="dnd-brand-mark">D&amp;D 5E</span><span className="dnd-brand-name">Dungeons &amp; Dragons</span></div>
-                                    <input type="text" value={data.bio?.nome} onChange={e => updateField('bio.nome', e.target.value)} placeholder="Nome do Personagem" className="dnd-name w-full text-3xl font-title font-bold outline-none text-[#922610]" />
-                                    <div className="dnd-bio-grid grid grid-cols-2 lg:grid-cols-4 gap-2 text-sm w-full mt-3">
-                                        <div className="border-b border-[#922610]/50"><label className="text-[10px] uppercase font-bold text-gray-500 block">Classe</label><input type="text" value={data.bio?.classe} onChange={e => updateField('bio.classe', e.target.value)} className="w-full outline-none font-bold" /></div>
-                                        <div className="border-b border-[#922610]/50"><label className="text-[10px] uppercase font-bold text-gray-500 block">Nível</label><input type="number" value={data.bio?.nivel} onChange={e => updateField('bio.nivel', parseInt(e.target.value)||1)} className="w-full outline-none font-bold" /></div>
-                                        <div className="border-b border-[#922610]/50"><label className="text-[10px] uppercase font-bold text-gray-500 block">Linhagem/Espécie</label><input type="text" value={data.bio?.linhagem} onChange={e => updateField('bio.linhagem', e.target.value)} className="w-full outline-none font-bold" /></div>
-                                        <div className="border-b border-[#922610]/50"><label className="text-[10px] uppercase font-bold text-gray-500 block">Antecedente</label><input type="text" value={data.bio?.antecedente} onChange={e => updateField('bio.antecedente', e.target.value)} className="w-full outline-none font-bold" /></div>
-                                        <div className="border-b border-[#922610]/50"><label className="text-[10px] uppercase font-bold text-gray-500 block">Alinhamento</label><input type="text" value={data.bio?.alinhamento} onChange={e => updateField('bio.alinhamento', e.target.value)} className="w-full outline-none font-bold" /></div>
-                                        <div className="border-b border-[#922610]/50"><label className="text-[10px] uppercase font-bold text-gray-500 block">XP</label><input type="number" value={data.bio?.xp} onChange={e => updateField('bio.xp', parseInt(e.target.value)||0)} className="w-full outline-none font-bold" /></div>
-                                        <div className="border-b border-[#922610]/50 lg:col-span-2"><label className="text-[10px] uppercase font-bold text-gray-500 block">Jogador</label><input type="text" value={data.bio?.jogador} onChange={e => updateField('bio.jogador', e.target.value)} className="w-full outline-none font-bold" /></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="dnd-layout grid grid-cols-1 lg:grid-cols-3 gap-6">
-                                {/* D&D Col 1: Atributos e Perícias */}
-                                <div className={`${mobileTab === 'status' ? 'block' : 'hidden md:block'} dnd-column space-y-4`}>
-                                    <div className="flex gap-4">
-                                        <div className="flex flex-col gap-2 w-20">
-                                            {['for','des','con','int','sab','car'].map(attr => (
-                                                <div key={attr} className="dnd-ability-card border-2 border-[#922610] rounded-lg p-2 text-center relative bg-gray-50 shadow-sm">
-                                                    <div className="dnd-ability-name text-[9px] font-bold uppercase text-[#922610]">{attr}</div>
-                                                    <input type="number" value={data.atributos[attr]} onChange={e => updateField(`atributos.${attr}`, parseInt(e.target.value)||10)} className="w-full text-center text-xl font-bold bg-transparent outline-none" />
-                                                    <div className="dnd-mod-bubble absolute -bottom-3 left-1/2 -translate-x-1/2 bg-white border border-gray-400 rounded-full w-8 h-5 flex items-center justify-center text-xs font-bold shadow-sm">
-                                                        {formatDndMod(getDndAbilityMod(data.atributos[attr]))}
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                        <div className="flex-1 flex flex-col gap-3">
-                                            <div className="dnd-panel border-2 border-gray-300 rounded p-2 flex items-center gap-3 bg-white">
-                                                <div className="dnd-prof-badge w-8 h-8 rounded-full border-2 border-[#922610] flex items-center justify-center font-bold text-[#922610]">+{getProficiencyBonus(data.bio?.nivel || 1)}</div>
-                                                <div className="text-xs font-bold uppercase">Bônus de Proficiência</div>
-                                            </div>
-                                            
-                                            <div className="grid grid-cols-2 gap-2">
-                                                <label className="dnd-panel border border-gray-300 rounded p-2 bg-white flex items-center gap-2 cursor-pointer">
-                                                    <input type="checkbox" checked={!!data.status?.inspiracao} onChange={e=>updateField('status.inspiracao',e.target.checked)} />
-                                                    <span className="text-[10px] font-bold uppercase">Inspiração</span>
-                                                </label>
-                                                <label className="dnd-panel border border-gray-300 rounded p-2 bg-white">
-                                                    <span className="block text-[8px] font-bold uppercase text-gray-500 text-center">Percepção Passiva</span>
-                                                    <input type="number" value={data.status?.percepcaoPassiva ?? ''} onChange={e=>updateField('status.percepcaoPassiva',e.target.value)} placeholder={String(10 + getDndAbilityMod(data.atributos?.sab ?? 10) + (((data.pericias||[]).find(p=>p.id==='percepcao')?.prof||0) * getProficiencyBonus(data.bio?.nivel||1)))} className="w-full text-center bg-transparent outline-none font-bold" title="Deixe vazio para usar como referência o valor calculado mostrado no placeholder" />
-                                                </label>
-                                            </div>
-                                            
-                                            <div className="dnd-panel border border-gray-300 rounded p-2 bg-white space-y-1">
-                                                <div className="dnd-panel-title text-[10px] font-bold uppercase text-center border-b border-gray-200 pb-1 mb-1 text-gray-500">Testes de Resistência</div>
-                                                {['for','des','con','int','sab','car'].map(attr => {
-                                                    const isProf = data.proficienciasResistencia[attr];
-                                                    const total = getDndAbilityMod(data.atributos[attr]) + (isProf ? getProficiencyBonus(data.bio?.nivel || 1) : 0);
-                                                    return (
-                                                        <div key={attr} className="flex items-center gap-2 text-xs">
-                                                            <input type="checkbox" checked={isProf} onChange={e => updateField(`proficienciasResistencia.${attr}`, e.target.checked)} className="cursor-pointer" />
-                                                            <span className="w-6 text-center border-b font-bold">{formatDndMod(total)}</span>
-                                                            <span className="uppercase">{attr}</span>
-                                                        </div>
-                                                    )
-                                                })}
-                                            </div>
-
-                                            <div className="dnd-panel border border-gray-300 rounded p-2 bg-white space-y-1">
-                                                <div className="dnd-panel-title text-[10px] font-bold uppercase text-center border-b border-gray-200 pb-1 mb-1 text-gray-500">Perícias</div>
-                                                {DND_SKILLS_LIST.map((sk, index) => {
-                                                    const pericia = data.pericias.find(p => p.id === sk.id) || { prof: 0 };
-                                                    const attrMod = getDndAbilityMod(data.atributos[sk.attr]);
-                                                    const profBonus = getProficiencyBonus(data.bio?.nivel || 1);
-                                                    const total = attrMod + (pericia.prof === 1 ? profBonus : pericia.prof === 2 ? profBonus * 2 : 0);
-                                                    
-                                                    const toggleProf = () => {
-                                                        const pList = [...data.pericias];
-                                                        const pIdx = pList.findIndex(p => p.id === sk.id);
-                                                        if(pIdx > -1) pList[pIdx].prof = pList[pIdx].prof === 0 ? 1 : pList[pIdx].prof === 1 ? 2 : 0;
-                                                        updateField('pericias', pList);
-                                                    };
-                                                    
-                                                    return (
-                                                        <div key={sk.id} className="flex items-center gap-2 text-xs hover:bg-gray-50">
-                                                            <button onClick={toggleProf} className={`dnd-skill-dot w-3 h-3 rounded-full border border-gray-500 shrink-0 ${pericia.prof === 1 ? 'prof' : pericia.prof === 2 ? 'expert' : ''}`}></button>
-                                                            <span className="w-6 text-center border-b font-bold shrink-0">{formatDndMod(total)}</span>
-                                                            <span className="truncate flex-1">{sk.nome} <span className="text-[9px] text-gray-400">({sk.attr.toUpperCase()})</span></span>
-                                                        </div>
-                                                    )
-                                                })}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* D&D Col 2: Combate, HP, Ataques */}
-                                <div className={`${mobileTab === 'equipamento' ? 'block' : 'hidden md:block'} dnd-column space-y-4`}>
-                                    <div className="grid grid-cols-3 gap-2">
-                                        <div className="dnd-combat-stat dnd-ac-card border-2 border-gray-300 bg-white p-2 rounded text-center flex flex-col items-center shadow-sm">
-                                            <div className="text-[10px] uppercase font-bold text-gray-500 mb-1">Classe de Armadura</div>
-                                            <input type="number" value={data.status?.ca} onChange={e => updateField('status.ca', parseInt(e.target.value)||10)} className="w-full text-center text-3xl font-bold bg-transparent outline-none text-[#922610]" />
-                                        </div>
-                                        <div className="dnd-combat-stat border-2 border-gray-300 bg-white p-2 rounded text-center flex flex-col items-center shadow-sm">
-                                            <div className="text-[10px] uppercase font-bold text-gray-500 mb-1">Iniciativa</div>
-                                            <input type="text" value={data.status?.iniciativa} onChange={e => updateField('status.iniciativa', e.target.value)} className="w-full text-center text-2xl font-bold bg-transparent outline-none mt-1" />
-                                        </div>
-                                        <div className="dnd-combat-stat border-2 border-gray-300 bg-white p-2 rounded text-center flex flex-col items-center shadow-sm">
-                                            <div className="text-[10px] uppercase font-bold text-gray-500 mb-1">Deslocamento</div>
-                                            <input type="text" value={data.status?.deslocamento} onChange={e => updateField('status.deslocamento', e.target.value)} className="w-full text-center text-2xl font-bold bg-transparent outline-none mt-1" />
-                                        </div>
-                                    </div>
-
-                                    <div className="dnd-hp-card border-2 border-gray-300 rounded bg-white overflow-hidden shadow-sm">
-                                        <div className="bg-gray-100 p-2 border-b flex justify-between items-center text-xs uppercase font-bold text-gray-600">Pontos de Vida <span className="font-normal text-[10px]">Máx: <input type="number" value={data.status?.pvMax} onChange={e => updateField('status.pvMax', parseInt(e.target.value)||0)} className="w-10 border-b outline-none bg-transparent font-bold text-right" /></span></div>
-                                        <div className="p-4 text-center">
-                                            <input type="number" value={data.status?.pvAtual} onChange={e => updateField('status.pvAtual', parseInt(e.target.value)||0)} className="dnd-hp-current w-full text-center text-5xl font-black bg-transparent outline-none text-green-700" />
-                                        </div>
-                                        <div className="bg-gray-50 p-2 border-t flex justify-between items-center text-[10px] uppercase font-bold text-gray-500">Temporários <input type="number" value={data.status?.pvTemp} onChange={e => updateField('status.pvTemp', parseInt(e.target.value)||0)} className="w-12 text-center border-b outline-none bg-transparent text-sm text-black" /></div>
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <div className="dnd-small-stat border-2 border-gray-300 bg-white p-2 rounded flex flex-col shadow-sm">
-                                            <div className="text-[10px] uppercase font-bold text-gray-500 mb-1 border-b pb-1">Dados de Vida</div>
-                                            <input type="text" value={data.status?.dadosVida} onChange={e => updateField('status.dadosVida', e.target.value)} className="w-full text-center text-lg font-bold bg-transparent outline-none mt-1" />
-                                        </div>
-                                        <div className="dnd-small-stat border-2 border-gray-300 bg-white p-2 rounded flex flex-col shadow-sm">
-                                            <div className="text-[10px] uppercase font-bold text-gray-500 mb-1 border-b pb-1">Testes de Morte</div>
-                                            <div className="flex flex-col gap-1 mt-1">
-                                                <div className="flex justify-between items-center text-[10px]"><span className="text-gray-500 font-bold uppercase">Sucessos</span><div className="flex gap-1">{[0,1,2].map(i => <input key={'s'+i} type="checkbox" checked={data.testesMorte.sucessos[i]} onChange={e => { const v = [...data.testesMorte.sucessos]; v[i] = e.target.checked; updateField('testesMorte.sucessos', v); }} />)}</div></div>
-                                                <div className="flex justify-between items-center text-[10px]"><span className="text-gray-500 font-bold uppercase">Falhas</span><div className="flex gap-1">{[0,1,2].map(i => <input key={'f'+i} type="checkbox" checked={data.testesMorte.falhas[i]} onChange={e => { const v = [...data.testesMorte.falhas]; v[i] = e.target.checked; updateField('testesMorte.falhas', v); }} />)}</div></div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="border border-gray-300 rounded bg-white shadow-sm p-2 min-w-0">
-                                        <div className="flex justify-between items-center border-b pb-1 mb-2 gap-2">
-                                            <h3 className="font-bold text-sm uppercase text-gray-600">Ataques</h3>
-                                            <button onClick={() => addToArray('ataques', { nome: '', bonus: '', dano: '', tipo: '' })} className="dnd-add-btn shrink-0"><SVGIcons.Plus/> Adic.</button>
-                                        </div>
-                                        <div className="space-y-2 min-w-0">
-                                            {(data.ataques || []).map((atk, idx) => (
-                                                <div key={idx} className={`grid grid-cols-12 gap-1.5 items-end bg-gray-50 p-1.5 rounded border min-w-0 ${atk?.sourceItemId?'border-[#922610]/60':''}`}>
-                                                    <div className="col-span-12 sm:col-span-5 min-w-0">
-                                                        <div className="flex items-center justify-between gap-1"><label className="block text-[8px] uppercase font-bold text-gray-400 mb-0.5">Ataque</label>{atk?.sourceItemId && <span className="dnd-sync-badge">↔ item</span>}</div>
-                                                        <input type="text" value={atk?.nome || ''} placeholder="Nome do ataque" onChange={e => updateArrayField('ataques', idx, 'nome', e.target.value)} className="w-full min-w-0 bg-transparent border-b outline-none text-xs font-bold" />
-                                                    </div>
-                                                    <div className="col-span-4 sm:col-span-2 min-w-0">
-                                                        <label className="block text-[8px] uppercase font-bold text-gray-400 mb-0.5 text-center">Bônus</label>
-                                                        <input type="text" value={atk?.bonus || ''} placeholder="+0" onChange={e => updateArrayField('ataques', idx, 'bonus', e.target.value)} className="w-full min-w-0 bg-transparent border-b outline-none text-xs text-center" />
-                                                    </div>
-                                                    <div className="col-span-4 sm:col-span-2 min-w-0">
-                                                        <label className="block text-[8px] uppercase font-bold text-gray-400 mb-0.5 text-center">Dano</label>
-                                                        <input type="text" value={atk?.dano || ''} placeholder="1d6" onChange={e => updateArrayField('ataques', idx, 'dano', e.target.value)} className="w-full min-w-0 bg-transparent border-b outline-none text-xs text-center font-bold" />
-                                                    </div>
-                                                    <div className="col-span-3 sm:col-span-2 min-w-0">
-                                                        <label className="block text-[8px] uppercase font-bold text-gray-400 mb-0.5">Tipo</label>
-                                                        <input type="text" value={atk?.tipo || ''} placeholder="Tipo" onChange={e => updateArrayField('ataques', idx, 'tipo', e.target.value)} className="w-full min-w-0 bg-transparent border-b outline-none text-[10px]" />
-                                                    </div>
-                                                    <div className="col-span-1 flex justify-end pb-0.5">
-                                                        <button onClick={() => removeFromArray('ataques', idx)} className="text-red-500 hover:text-red-700 p-0.5" title={atk?.sourceItemId?'Remover ataque e desativar sincronização do item':'Remover ataque'}><SVGIcons.Trash/></button>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="dnd-section-card border border-gray-300 rounded bg-white shadow-sm p-2">
-                                        <h3 className="dnd-section-head font-bold text-sm uppercase text-gray-600 border-b pb-1 mb-2">Inventário e Moedas</h3>
-                                        <div className="grid grid-cols-5 gap-1 mb-2 text-center text-[10px] font-bold text-gray-500 uppercase">
-                                            <div><div className="bg-yellow-700/10 rounded mb-1">PC</div><input type="number" value={data.moedas.pc} onChange={e => updateField('moedas.pc', parseInt(e.target.value)||0)} className="w-full text-center border-b outline-none text-sm text-black" /></div>
-                                            <div><div className="bg-gray-400/10 rounded mb-1">PP</div><input type="number" value={data.moedas.pp} onChange={e => updateField('moedas.pp', parseInt(e.target.value)||0)} className="w-full text-center border-b outline-none text-sm text-black" /></div>
-                                            <div><div className="bg-blue-300/10 rounded mb-1">PE</div><input type="number" value={data.moedas.pe} onChange={e => updateField('moedas.pe', parseInt(e.target.value)||0)} className="w-full text-center border-b outline-none text-sm text-black" /></div>
-                                            <div><div className="bg-yellow-400/20 rounded mb-1">PO</div><input type="number" value={data.moedas.po} onChange={e => updateField('moedas.po', parseInt(e.target.value)||0)} className="w-full text-center border-b outline-none text-sm text-black" /></div>
-                                            <div><div className="bg-gray-300/30 rounded mb-1">PL</div><input type="number" value={data.moedas.pl} onChange={e => updateField('moedas.pl', parseInt(e.target.value)||0)} className="w-full text-center border-b outline-none text-sm text-black" /></div>
-                                        </div>
-                                        <div className="border-t pt-2 mt-2">
-                                            <div className="flex items-start justify-between gap-2 mb-2">
-                                                <div><div className="text-[10px] font-bold uppercase text-gray-600">Itens Sincronizados</div><div className="dnd-sync-hint">Cadastre itens de forma estruturada. Armas podem ser sincronizadas com Ataques; alterações feitas em qualquer um dos dois lados são mantidas juntas.</div></div>
-                                                <button type="button" onClick={addDndSyncedItem} className="dnd-add-btn shrink-0"><SVGIcons.Plus/> Item</button>
-                                            </div>
-                                            <div className="space-y-2">
-                                                {(!Array.isArray(data.itensSincronizados) || data.itensSincronizados.length===0) && <div className="text-[10px] italic text-gray-400 border border-dashed rounded p-2 text-center">Nenhum item sincronizado. O inventário livre abaixo continua disponível.</div>}
-                                                {(Array.isArray(data.itensSincronizados)?data.itensSincronizados:[]).map((it,idx)=><div key={it.syncId||idx} className={`dnd-sync-item ${it.sincronizarAtaque?'is-synced':''}`}>
-                                                    <div className="grid grid-cols-[1fr_58px_100px_24px] gap-1 items-end">
-                                                        <label className="min-w-0"><span className="block text-[8px] uppercase font-bold text-gray-400">Item</span><input value={it.nome||''} onChange={e=>updateDndSyncedItem(idx,{nome:e.target.value})} className="w-full min-w-0 bg-transparent border-b outline-none text-xs font-bold" placeholder="Nome"/></label>
-                                                        <label><span className="block text-[8px] uppercase font-bold text-gray-400 text-center">Qtd.</span><input type="number" min="0" value={it.quantidade??1} onChange={e=>updateDndSyncedItem(idx,{quantidade:Number(e.target.value)})} className="w-full bg-transparent border-b outline-none text-xs text-center"/></label>
-                                                        <label><span className="block text-[8px] uppercase font-bold text-gray-400">Tipo</span><select value={it.tipo||'Equipamento'} onChange={e=>updateDndSyncedItem(idx,{tipo:e.target.value})} className="w-full bg-transparent border-b outline-none text-[10px]"><option>Equipamento</option><option>Arma</option><option>Armadura</option><option>Escudo</option><option>Consumível</option><option>Ferramenta</option><option>Outro</option></select></label>
-                                                        <button type="button" onClick={()=>removeDndSyncedItem(idx)} className="text-red-500 hover:text-red-700 pb-1" title="Remover item"><SVGIcons.Trash/></button>
-                                                    </div>
-                                                    {it.tipo==='Arma' && <div className="grid grid-cols-[70px_80px_1fr_auto] gap-1.5 items-end mt-2 pt-2 border-t">
-                                                        <label><span className="block text-[8px] uppercase font-bold text-gray-400 text-center">Bônus</span><input value={it.bonusAtaque||''} onChange={e=>updateDndSyncedItem(idx,{bonusAtaque:e.target.value})} className="w-full bg-transparent border-b outline-none text-xs text-center" placeholder="+0"/></label>
-                                                        <label><span className="block text-[8px] uppercase font-bold text-gray-400 text-center">Dano</span><input value={it.dano||''} onChange={e=>updateDndSyncedItem(idx,{dano:e.target.value})} className="w-full bg-transparent border-b outline-none text-xs text-center font-bold" placeholder="1d8"/></label>
-                                                        <label><span className="block text-[8px] uppercase font-bold text-gray-400">Tipo de dano</span><input value={it.tipoDano||''} onChange={e=>updateDndSyncedItem(idx,{tipoDano:e.target.value})} className="w-full bg-transparent border-b outline-none text-xs" placeholder="Cortante"/></label>
-                                                        <label className="flex items-center gap-1 text-[9px] font-bold cursor-pointer pb-1 whitespace-nowrap"><input type="checkbox" checked={!!it.sincronizarAtaque} onChange={e=>updateDndSyncedItem(idx,{sincronizarAtaque:e.target.checked})}/><span>↔ Ataques</span></label>
-                                                    </div>}
-                                                    <input value={it.notas||''} onChange={e=>updateDndSyncedItem(idx,{notas:e.target.value})} className="w-full bg-transparent border-b outline-none text-[10px] mt-1" placeholder="Notas do item (opcional)"/>
-                                                    {it.sincronizarAtaque && <div className="dnd-sync-badge mt-1">↔ sincronizado com Ataques</div>}
-                                                </div>)}
-                                            </div>
-                                        </div>
-                                        <label className="block mt-2"><span className="text-[9px] font-bold uppercase text-gray-500">Inventário livre / anotações</span><textarea rows="3" value={data.inventario} onChange={e => updateField('inventario', e.target.value)} className="w-full border rounded p-2 text-xs bg-gray-50 resize-y outline-none mt-1" placeholder="Equipamento antigo, tesouro, observações ou itens que você prefere manter em texto..."></textarea></label>
-                                    </div>
-                                </div>
-
-                                {/* D&D Col 3: Roleplay e Magias */}
-                                <div className={`${mobileTab === 'recursos' ? 'block' : 'hidden md:block'} dnd-column space-y-4`}>
-                                    <div className="dnd-traits-card dnd-section-card border border-gray-300 rounded bg-white shadow-sm flex flex-col gap-2 p-2">
-                                        <div className="bg-gray-50 border p-2 rounded"><textarea rows="2" value={data.tracosPersonalidade} onChange={e => updateField('tracosPersonalidade', e.target.value)} className="w-full bg-transparent outline-none text-xs resize-y" placeholder="Traços de Personalidade..."></textarea></div>
-                                        <div className="bg-gray-50 border p-2 rounded"><textarea rows="2" value={data.ideais} onChange={e => updateField('ideais', e.target.value)} className="w-full bg-transparent outline-none text-xs resize-y" placeholder="Ideais..."></textarea></div>
-                                        <div className="bg-gray-50 border p-2 rounded"><textarea rows="2" value={data.vinculos} onChange={e => updateField('vinculos', e.target.value)} className="w-full bg-transparent outline-none text-xs resize-y" placeholder="Vínculos..."></textarea></div>
-                                        <div className="bg-gray-50 border p-2 rounded"><textarea rows="2" value={data.defeitos} onChange={e => updateField('defeitos', e.target.value)} className="w-full bg-transparent outline-none text-xs resize-y" placeholder="Defeitos..."></textarea></div>
-                                    </div>
-
-                                    <div className="dnd-section-card border border-gray-300 rounded bg-white shadow-sm overflow-hidden">
-                                        <div className="dnd-tabbar flex border-b bg-gray-100">
-                                            <button type="button" onClick={() => setDndPcTab('caracteristicas')} className={`flex-1 px-2 py-2 text-[10px] md:text-xs font-bold uppercase transition-colors ${dndPcTab === 'caracteristicas' ? 'dnd-tab-active bg-[#922610] text-white' : 'text-gray-600 hover:bg-gray-200'}`}>Características & Talentos</button>
-                                            <button type="button" onClick={() => setDndPcTab('magias')} className={`flex-1 px-2 py-2 text-[10px] md:text-xs font-bold uppercase transition-colors ${dndPcTab === 'magias' ? 'dnd-tab-active bg-[#922610] text-white' : 'text-gray-600 hover:bg-gray-200'}`}>Magias</button>
-                                        </div>
-
-                                        {dndPcTab === 'caracteristicas' ? (
-                                            <div className="p-2">
-                                                <div className="flex justify-between items-center mb-2">
-                                                    <span className="text-[10px] text-gray-500">Habilidades de classe, talentos e traços.</span>
-                                                    <button type="button" onClick={() => addToArray('caracteristicas', { nome: '', desc: '' })} className="dnd-add-btn"><SVGIcons.Plus/> Adic.</button>
-                                                </div>
-                                                <div className="space-y-2">
-                                                    {(!data.caracteristicas || data.caracteristicas.length === 0) && <p className="text-[10px] italic text-gray-400 py-2">Nenhuma característica adicionada.</p>}
-                                                    {(Array.isArray(data.caracteristicas) ? data.caracteristicas : []).map((carac, idx) => (
-                                                        <div key={idx} className="dnd-feature-card border rounded bg-gray-50 p-2 flex gap-2 items-start">
-                                                            <div className="flex-1 space-y-1">
-                                                                <input type="text" value={carac?.nome || ''} onChange={e => updateArrayField('caracteristicas', idx, 'nome', e.target.value)} className="w-full bg-transparent border-b outline-none text-xs font-bold" placeholder="Nome da característica ou talento" />
-                                                                <textarea rows="2" value={carac?.desc || ''} onChange={e => updateArrayField('caracteristicas', idx, 'desc', e.target.value)} className="w-full bg-transparent outline-none text-xs resize-y" placeholder="Descrição, uso, limite, efeito..." />
-                                                            </div>
-                                                            <button type="button" onClick={() => removeFromArray('caracteristicas', idx)} className="text-red-500 hover:text-red-700"><SVGIcons.Trash/></button>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <div className="p-2">
-                                                <div className="grid grid-cols-3 gap-2 mb-3">
-                                                    <label className="dnd-small-stat border rounded bg-gray-50 p-1.5 text-center"><span className="block text-[8px] uppercase font-bold text-gray-500">Habilidade Chave</span><input value={data.magias?.conjuracao?.habilidade||''} onChange={e=>updateField('magias.conjuracao.habilidade',e.target.value)} className="w-full bg-transparent outline-none text-center text-xs font-bold" placeholder="INT/SAB/CAR"/></label>
-                                                    <label className="dnd-small-stat border rounded bg-gray-50 p-1.5 text-center"><span className="block text-[8px] uppercase font-bold text-gray-500">CD do TR</span><input value={data.magias?.conjuracao?.cd||''} onChange={e=>updateField('magias.conjuracao.cd',e.target.value)} className="w-full bg-transparent outline-none text-center text-sm font-bold" placeholder="13"/></label>
-                                                    <label className="dnd-small-stat border rounded bg-gray-50 p-1.5 text-center"><span className="block text-[8px] uppercase font-bold text-gray-500">Ataque de Magia</span><input value={data.magias?.conjuracao?.ataque||''} onChange={e=>updateField('magias.conjuracao.ataque',e.target.value)} className="w-full bg-transparent outline-none text-center text-sm font-bold" placeholder="+5"/></label>
-                                                </div>
-                                                <div className="text-[10px] uppercase font-bold text-gray-500 mb-1">Espaços de Magia — Atual / Máx.</div>
-                                                <div className="grid grid-cols-3 gap-1 mb-3">
-                                                    {[1,2,3,4,5,6,7,8,9].map(lvl => {
-                                                        const slot = data.magias?.slots?.[lvl] || { atual: 0, max: 0 };
-                                                        return (
-                                                            <div key={lvl} className="dnd-spell-slot flex border rounded overflow-hidden text-[9px] bg-gray-50">
-                                                                <div className="bg-gray-200 px-1 py-1 font-bold text-gray-700 flex items-center justify-center border-r">N{lvl}</div>
-                                                                <input type="number" min="0" value={slot.atual ?? 0} onChange={e => updateField(`magias.slots.${lvl}.atual`, parseInt(e.target.value)||0)} className="w-7 text-center outline-none bg-transparent" />
-                                                                <span className="text-gray-400 py-1">/</span>
-                                                                <input type="number" min="0" value={slot.max ?? 0} onChange={e => updateField(`magias.slots.${lvl}.max`, parseInt(e.target.value)||0)} className="w-7 text-center outline-none bg-transparent font-bold text-[#922610]" />
-                                                            </div>
-                                                        );
-                                                    })}
-                                                </div>
-                                                <div className="flex justify-between items-center border-t pt-2 mb-2">
-                                                    <span className="text-[10px] text-gray-500">Lista de magias conhecidas/preparadas.</span>
-                                                    <button type="button" onClick={() => { const list = Array.isArray(data.magias?.lista) ? data.magias.lista : []; updateField('magias.lista', [...list, { nome: '', nivel: '', desc: '' }]); }} className="dnd-add-btn"><SVGIcons.Plus/> Adic.</button>
-                                                </div>
-                                                <div className="space-y-2">
-                                                    {(!Array.isArray(data.magias?.lista) || data.magias.lista.length === 0) && <p className="text-[10px] italic text-gray-400 py-2">Nenhuma magia adicionada.</p>}
-                                                    {(Array.isArray(data.magias?.lista) ? data.magias.lista : []).map((magia, idx) => (
-                                                        <div key={idx} className="dnd-spell-row border rounded bg-gray-50 p-2 flex gap-2 items-start">
-                                                            <div className="flex-1">
-                                                                <div className="flex gap-2 mb-1">
-                                                                    <input type="text" value={magia?.nome || ''} onChange={e => { const list=[...data.magias.lista]; list[idx]={...list[idx], nome:e.target.value}; updateField('magias.lista', list); }} className="flex-1 min-w-0 bg-transparent border-b outline-none text-xs font-bold" placeholder="Nome da magia" />
-                                                                    <input type="text" value={magia?.nivel || ''} onChange={e => { const list=[...data.magias.lista]; list[idx]={...list[idx], nivel:e.target.value}; updateField('magias.lista', list); }} className="w-16 bg-transparent border-b outline-none text-[10px] text-center" placeholder="Nível" />
-                                                                </div>
-                                                                <textarea rows="2" value={magia?.desc || ''} onChange={e => { const list=[...data.magias.lista]; list[idx]={...list[idx], desc:e.target.value}; updateField('magias.lista', list); }} className="w-full bg-transparent outline-none text-xs resize-y" placeholder="Notas, duração, alcance ou efeito..." />
-                                                            </div>
-                                                            <button type="button" onClick={() => { const list=data.magias.lista.filter((_,i)=>i!==idx); updateField('magias.lista', list); }} className="text-red-500 hover:text-red-700"><SVGIcons.Trash/></button>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <div className="dnd-section-card border border-gray-300 rounded bg-white shadow-sm p-2 flex flex-col">
-                                        <h3 className="dnd-section-head font-bold text-sm uppercase text-gray-600 border-b pb-1 mb-2">Outras Proficiências / Idiomas</h3>
-                                        <textarea rows="3" value={data.outrasProficiencias} onChange={e => updateField('outrasProficiencias', e.target.value)} className="w-full bg-gray-50 border rounded p-2 text-xs resize-y outline-none"></textarea>
-                                    </div>
-                                </div>
-                            </div>
-                            </div>
-                        </div>
-                    )}
+                    <DndCharacterEditor scope={systemEditorScope} />
 
                     {/* Editor D&D 5E Bestiário */}
 
-                    {isDnd && data.type === 'ameaca' && (
-                        <div className="p-4 md:p-8 flex flex-col lg:flex-row gap-8 bg-gray-100 font-dnd">
-                            {/* Lado Esquerdo: Formulário */}
-                            <div className="w-full lg:w-1/2 bg-white p-6 rounded shadow border space-y-4 max-h-[75vh] overflow-y-auto">
-                                <h3 className="font-title font-bold text-base text-[#922610] border-b pb-1">Configuração do Stat Block</h3>
-                                <div>
-                                    <label className="block text-[10px] font-bold uppercase text-gray-500">Nome da Criatura</label>
-                                    <input type="text" value={data.nome} onChange={e => updateField('nome', e.target.value)} className="w-full border-b-2 p-1 font-title font-bold text-lg outline-none" />
-                                </div>
-                                <div className="grid grid-cols-3 gap-2">
-                                    <div><label className="block text-[10px] font-bold text-gray-500 uppercase">Tamanho</label><input type="text" value={data.tamanho} onChange={e => updateField('tamanho', e.target.value)} className="w-full border-b p-1 text-xs outline-none" /></div>
-                                    <div><label className="block text-[10px] font-bold text-gray-500 uppercase">Tipo</label><input type="text" value={data.tipo} onChange={e => updateField('tipo', e.target.value)} className="w-full border-b p-1 text-xs outline-none" /></div>
-                                    <div><label className="block text-[10px] font-bold text-gray-500 uppercase">Alinhamento</label><input type="text" value={data.alinhamento} onChange={e => updateField('alinhamento', e.target.value)} className="w-full border-b p-1 text-xs outline-none" /></div>
-                                </div>
-                                <div className="grid grid-cols-3 gap-2">
-                                    <div><label className="block text-[10px] font-bold text-gray-500 uppercase">Classe de Armadura</label><input type="text" value={data.ca} onChange={e => updateField('ca', e.target.value)} className="w-full border-b p-1 text-xs outline-none" /></div>
-                                    <div><label className="block text-[10px] font-bold text-gray-500 uppercase">Pontos de Vida</label><input type="text" value={data.pv} onChange={e => updateField('pv', e.target.value)} className="w-full border-b p-1 text-xs outline-none" /></div>
-                                    <div><label className="block text-[10px] font-bold text-gray-500 uppercase">Deslocamento</label><input type="text" value={data.deslocamento} onChange={e => updateField('deslocamento', e.target.value)} className="w-full border-b p-1 text-xs outline-none" /></div>
-                                </div>
-
-                                <div className="bg-gray-50 p-2 rounded border">
-                                    <label className="block text-[10px] font-bold uppercase text-gray-500 mb-1">Atributos Base</label>
-                                    <div className="grid grid-cols-6 gap-1 text-center">
-                                        {['for','des','con','int','sab','car'].map(attr => (
-                                            <div key={attr}>
-                                                <span className="text-[10px] font-bold uppercase">{attr}</span>
-                                                <input type="number" value={data.atributos[attr]} onChange={e => updateField(`atributos.${attr}`, parseInt(e.target.value)||10)} className="w-full border bg-white text-center text-xs font-bold p-1 outline-none" />
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                                
-                                <div className="space-y-2">
-                                    <div className="flex items-center gap-2"><label className="text-[10px] font-bold text-gray-500 uppercase w-20">Testes Res.</label><input type="text" value={data.testesResistencia} onChange={e => updateField('testesResistencia', e.target.value)} className="flex-1 border-b p-1 text-xs outline-none" placeholder="Ex: Des +4, Sab +1" /></div>
-                                    <div className="flex items-center gap-2"><label className="text-[10px] font-bold text-gray-500 uppercase w-20">Perícias</label><input type="text" value={data.pericias} onChange={e => updateField('pericias', e.target.value)} className="flex-1 border-b p-1 text-xs outline-none" placeholder="Ex: Furtividade +6" /></div>
-                                    <div className="flex items-center gap-2"><label className="text-[10px] font-bold text-gray-500 uppercase w-20">Vuln. Dano</label><input type="text" value={data.vulnerabilidades} onChange={e => updateField('vulnerabilidades', e.target.value)} className="flex-1 border-b p-1 text-xs outline-none" /></div>
-                                    <div className="flex items-center gap-2"><label className="text-[10px] font-bold text-gray-500 uppercase w-20">Resis. Dano</label><input type="text" value={data.resistencias} onChange={e => updateField('resistencias', e.target.value)} className="flex-1 border-b p-1 text-xs outline-none" /></div>
-                                    <div className="flex items-center gap-2"><label className="text-[10px] font-bold text-gray-500 uppercase w-20">Imun. Dano</label><input type="text" value={data.imunidadesDano} onChange={e => updateField('imunidadesDano', e.target.value)} className="flex-1 border-b p-1 text-xs outline-none" /></div>
-                                    <div className="flex items-center gap-2"><label className="text-[10px] font-bold text-gray-500 uppercase w-20">Imun. Cond.</label><input type="text" value={data.imunidadesCondicao} onChange={e => updateField('imunidadesCondicao', e.target.value)} className="flex-1 border-b p-1 text-xs outline-none" /></div>
-                                    <div className="flex items-center gap-2"><label className="text-[10px] font-bold text-gray-500 uppercase w-20">Sentidos</label><input type="text" value={data.sentidos} onChange={e => updateField('sentidos', e.target.value)} className="flex-1 border-b p-1 text-xs outline-none" /></div>
-                                    <div className="flex items-center gap-2"><label className="text-[10px] font-bold text-gray-500 uppercase w-20">Idiomas</label><input type="text" value={data.idiomas} onChange={e => updateField('idiomas', e.target.value)} className="flex-1 border-b p-1 text-xs outline-none" /></div>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-2">
-                                    <div><label className="block text-[10px] font-bold text-gray-500 uppercase">Desafio (CR e XP)</label><input type="text" value={data.desafio} onChange={e => updateField('desafio', e.target.value)} className="w-full border-b p-1 text-xs outline-none" /></div>
-                                    <div><label className="block text-[10px] font-bold text-gray-500 uppercase">Bônus de Proficiência</label><input type="text" value={data.proficienciaBonus} onChange={e => updateField('proficienciaBonus', e.target.value)} className="w-full border-b p-1 text-xs outline-none" /></div>
-                                </div>
-
-                                {/* Sessões Dinâmicas (Ações, Tracos, etc) */}
-                                {['tracos', 'acoes', 'acoesBonus', 'reacoes', 'acoesLendarias'].map(sec => {
-                                    const titleMap = { tracos: 'Traços / Habilidades', acoes: 'Ações', acoesBonus: 'Ações Bônus', reacoes: 'Reações', acoesLendarias: 'Ações Lendárias' };
-                                    return (
-                                        <div key={sec} className="bg-gray-50 p-2 rounded border">
-                                            <div className="flex justify-between items-center bg-gray-200 p-1.5 rounded text-xs font-bold text-gray-700 mb-2">
-                                                {titleMap[sec]} <button onClick={() => addToArray(sec, { nome: '', desc: '' })} className="text-[#922610] hover:text-red-900">+ Adic.</button>
-                                            </div>
-                                            {(data[sec] || []).map((item, idx) => (
-                                                <div key={idx} className="border bg-white p-2 mb-2 flex flex-col gap-1 relative">
-                                                    <input type="text" value={item.nome} onChange={e => updateArrayField(sec, idx, 'nome', e.target.value)} className="font-bold border-b text-xs outline-none" placeholder="Nome (Ex: Ataque Furtivo)" />
-                                                    <textarea rows="2" value={item.desc} onChange={e => updateArrayField(sec, idx, 'desc', e.target.value)} className="text-xs outline-none resize-y w-full" placeholder="Descrição do efeito..."></textarea>
-                                                    <button onClick={() => removeFromArray(sec, idx)} className="text-red-500 text-[10px] self-end mt-1"><SVGIcons.Trash/></button>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )
-                                })}
-                            </div>
-
-                            {/* Lado Direito: Preview (Stat Block) */}
-                            <div className="w-full lg:w-1/2 bg-[#fdf1dc] p-6 rounded shadow-lg border-2 border-[#922610] max-h-[75vh] overflow-y-auto" style={{boxShadow: '4px 4px 10px rgba(0,0,0,0.1)'}}>
-                                <h1 className="text-3xl font-title text-[#922610] font-bold">{data.nome || 'Criatura Sem Nome'}</h1>
-                                <p className="italic text-xs text-black mb-1">{data.tamanho} {data.tipo}, {data.alinhamento}</p>
-                                
-                                <div className="dnd-stat-block-line"></div>
-                                
-                                <div className="text-xs space-y-1 text-red-950">
-                                    <p><strong className="text-[#922610]">Classe de Armadura</strong> {data.ca}</p>
-                                    <p><strong className="text-[#922610]">Pontos de Vida</strong> {data.pv}</p>
-                                    <p><strong className="text-[#922610]">Deslocamento</strong> {data.deslocamento}</p>
-                                </div>
-                                
-                                <div className="dnd-stat-block-line"></div>
-                                
-                                <div className="grid grid-cols-6 text-center text-xs text-[#922610]">
-                                    {['for','des','con','int','sab','car'].map(attr => (
-                                        <div key={attr} className="flex flex-col">
-                                            <span className="font-bold uppercase">{attr}</span>
-                                            <span>{data.atributos[attr]} ({formatDndMod(getDndAbilityMod(data.atributos[attr]))})</span>
-                                        </div>
-                                    ))}
-                                </div>
-                                
-                                <div className="dnd-stat-block-line"></div>
-
-                                <div className="text-xs space-y-1 text-red-950">
-                                    {data.testesResistencia && <p><strong className="text-[#922610]">Testes de Resistência</strong> {data.testesResistencia}</p>}
-                                    {data.pericias && <p><strong className="text-[#922610]">Perícias</strong> {data.pericias}</p>}
-                                    {data.vulnerabilidades && <p><strong className="text-[#922610]">Vulnerabilidade a Dano</strong> {data.vulnerabilidades}</p>}
-                                    {data.resistencias && <p><strong className="text-[#922610]">Resistência a Dano</strong> {data.resistencias}</p>}
-                                    {data.imunidadesDano && <p><strong className="text-[#922610]">Imunidade a Dano</strong> {data.imunidadesDano}</p>}
-                                    {data.imunidadesCondicao && <p><strong className="text-[#922610]">Imunidade a Condição</strong> {data.imunidadesCondicao}</p>}
-                                    <p><strong className="text-[#922610]">Sentidos</strong> {data.sentidos}</p>
-                                    <p><strong className="text-[#922610]">Idiomas</strong> {data.idiomas}</p>
-                                    <p><strong className="text-[#922610]">Nível de Desafio</strong> {data.desafio} <span className="float-right"><strong className="text-[#922610]">Bônus de Proficiência</strong> {data.proficienciaBonus}</span></p>
-                                </div>
-
-                                <div className="dnd-stat-block-line"></div>
-
-                                {data.tracos && data.tracos.length > 0 && (
-                                    <div className="space-y-2 mt-3 text-xs text-red-950">
-                                        {data.tracos.map((tr, idx) => (
-                                            <p key={idx} className="leading-relaxed"><strong className="text-[#922610] italic">{tr.nome}.</strong> {tr.desc}</p>
-                                        ))}
-                                    </div>
-                                )}
-
-                                {data.acoes && data.acoes.length > 0 && (
-                                    <div className="mt-4 text-xs text-red-950">
-                                        <h3 className="font-title font-bold text-lg text-[#922610] border-b border-[#922610]/30 pb-0.5 mb-2">Ações</h3>
-                                        <div className="space-y-2">
-                                            {data.acoes.map((ac, idx) => (
-                                                <p key={idx} className="leading-relaxed"><strong className="text-[#922610] italic">{ac.nome}.</strong> {ac.desc}</p>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {data.acoesBonus && data.acoesBonus.length > 0 && (
-                                    <div className="mt-4 text-xs text-red-950">
-                                        <h3 className="font-title font-bold text-lg text-[#922610] border-b border-[#922610]/30 pb-0.5 mb-2">Ações Bônus</h3>
-                                        <div className="space-y-2">
-                                            {data.acoesBonus.map((ac, idx) => (
-                                                <p key={idx} className="leading-relaxed"><strong className="text-[#922610] italic">{ac.nome}.</strong> {ac.desc}</p>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {data.reacoes && data.reacoes.length > 0 && (
-                                    <div className="mt-4 text-xs text-red-950">
-                                        <h3 className="font-title font-bold text-lg text-[#922610] border-b border-[#922610]/30 pb-0.5 mb-2">Reações</h3>
-                                        <div className="space-y-2">
-                                            {data.reacoes.map((ac, idx) => (
-                                                <p key={idx} className="leading-relaxed"><strong className="text-[#922610] italic">{ac.nome}.</strong> {ac.desc}</p>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {data.acoesLendarias && data.acoesLendarias.length > 0 && (
-                                    <div className="mt-4 text-xs text-red-950">
-                                        <h3 className="font-title font-bold text-lg text-[#922610] border-b border-[#922610]/30 pb-0.5 mb-2">Ações Lendárias</h3>
-                                        <div className="space-y-2">
-                                            {data.acoesLendarias.map((ac, idx) => (
-                                                <p key={idx} className="leading-relaxed"><strong className="text-[#922610] italic">{ac.nome}.</strong> {ac.desc}</p>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    )}
+                    <DndThreatEditor scope={systemEditorScope} />
 
                     {/* Editor Dragonbane (Intacto) */}
                     {!['dragonbane','dnd5e','fabula','somdas6'].includes(data.system || 'dragonbane') && (
@@ -3799,497 +3146,7 @@ const { useState, useEffect, useRef } = React;
                         </div>
                     )}
 
-                    {!isDnd && !isFabula && !isSom6 && (
-                        data.type === 'pc' ? (
-                            <React.Fragment>
-                                {/* Mobile Tabs for PC */}
-                                <div className="md:hidden flex bg-gray-200 border-b border-gray-300">
-                                    {[ { id: 'status', label: 'Perfil & Status' }, { id: 'pericias', label: 'Perícias' }, { id: 'equipamento', label: 'Combate & Equip' } ].map(tab => (
-                                        <button key={tab.id} onClick={() => setMobileTab(tab.id)} className={`flex-1 py-3 text-xs font-bold uppercase text-center border-b-4 transition-colors ${mobileTab === tab.id ? 'border-red-700 text-red-900 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-300'}`}>{tab.label}</button>
-                                    ))}
-                                </div>
-
-                                <div className="db-paper db-sheet p-3 md:p-5 space-y-4">
-                                    <div className="db-brand">
-                                        <div className="db-brand-line"></div>
-                                        <div>
-                                            <div className="db-logo"><span>Dragon</span><span>Bane</span></div>
-                                            <div className="db-brand-sub">Ficha de Personagem • teste visual PJ Lite</div>
-                                        </div>
-                                        <div className="db-brand-line"></div>
-                                    </div>
-
-                                    {/* Biografia PC */}
-                                    <div className={`db-bio flex flex-col md:flex-row gap-4 items-start ${mobileTab === 'status' ? 'block' : 'hidden md:flex'}`}>
-                                        <div className="flex flex-col items-center gap-2 mx-auto md:mx-0 w-full md:w-auto">
-                                            <div className="db-portrait w-36 h-36 md:w-40 md:h-40 shrink-0 relative group overflow-hidden flex flex-col items-center justify-center">
-                                                {data.bio?.imagem ? ( <img src={data.bio.imagem} alt="Avatar" className="w-full h-full object-cover" /> ) : ( <span className="text-gray-400 text-sm font-bold uppercase text-center px-4">Retrato</span> )}
-                                                
-                                                <div className={`absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3 transition-opacity ${showUrlInput ? 'opacity-100' : 'opacity-0 lg:group-hover:opacity-100 active:opacity-100'}`}>
-                                                    {!showUrlInput ? (
-                                                        <React.Fragment>
-                                                            <label className="cursor-pointer bg-white text-black px-4 py-2 rounded text-sm font-bold hover:bg-gray-200 w-28 text-center shadow-lg">Upload<input type="file" accept="image/*" className="hidden" onChange={async (e) => { const file = e.target.files[0]; e.target.value=''; if (!file) return; try { updateField('bio.imagem', await optimizeImageFile(file, 720, 0.82)); } catch(err) { console.error(err); showToast('Não foi possível usar esta imagem.'); } }} /></label>
-                                                            <button onClick={() => setShowUrlInput(true)} className="bg-white text-black px-4 py-2 rounded text-sm font-bold hover:bg-gray-200 w-28 text-center shadow-lg">Usar URL</button>
-                                                            {data.bio?.imagem && ( <button onClick={() => updateField('bio.imagem', '')} className="bg-red-600 text-white px-4 py-2 rounded text-sm font-bold hover:bg-red-700 w-28 text-center mt-2 shadow-lg">Remover</button> )}
-                                                        </React.Fragment>
-                                                    ) : (
-                                                        <div className="flex flex-col gap-2 w-full px-4 items-center">
-                                                            <input type="text" placeholder="Cole a URL aqui" value={tempUrl} onChange={e => setTempUrl(e.target.value)} className="w-full p-2 text-sm outline-none rounded text-black border-2 border-white" />
-                                                            <div className="flex gap-2 mt-1">
-                                                                <button onClick={() => { if (tempUrl) { updateField('bio.imagem', tempUrl); setTempUrl(''); setShowUrlInput(false); } }} className="bg-green-600 text-white px-4 py-1.5 text-sm rounded font-bold hover:bg-green-700 shadow-lg">OK</button>
-                                                                <button onClick={() => { setShowUrlInput(false); setTempUrl(''); }} className="bg-gray-500 text-white px-4 py-1.5 text-sm rounded font-bold hover:bg-gray-600 shadow-lg">Voltar</button>
-                                                            </div>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div className="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                                            <div className="sm:col-span-2"><label className="block text-xs font-bold text-gray-500 uppercase">Nome do Personagem</label><input type="text" value={data.bio?.nome} onChange={e => updateField('bio.nome', e.target.value)} className="w-full text-2xl md:text-3xl font-title font-bold border-b-2 border-gray-400 focus:border-red-600 outline-none bg-transparent" /></div>
-                                            <div className="sm:col-span-2"><label className="block text-xs font-bold text-gray-500 uppercase">Jogador</label><input type="text" value={data.bio?.jogador} onChange={e => updateField('bio.jogador', e.target.value)} className="w-full text-xl md:text-2xl font-title border-b-2 border-gray-400 focus:border-red-600 outline-none bg-transparent" /></div>
-                                            <div><label className="block text-xs font-bold text-gray-500 uppercase">Ancestralidade</label><input type="text" value={data.bio?.ancestralidade} onChange={e => handleAncestryChange(e.target.value)} className="w-full border-b border-gray-400 outline-none bg-transparent" /></div>
-                                            <div><label className="block text-xs font-bold text-gray-500 uppercase">Profissão</label><input type="text" value={data.bio?.profissao} onChange={e => updateField('bio.profissao', e.target.value)} className="w-full border-b border-gray-400 outline-none bg-transparent" /></div>
-                                            <div><label className="block text-xs font-bold text-gray-500 uppercase">Idade</label><input type="text" value={data.bio?.idade} onChange={e => updateField('bio.idade', e.target.value)} className="w-full border-b border-gray-400 outline-none bg-transparent" /></div>
-                                            <div><label className="block text-xs font-bold text-gray-500 uppercase">Fraqueza</label><input type="text" value={data.bio?.fraqueza} onChange={e => updateField('bio.fraqueza', e.target.value)} className="w-full border-b border-gray-400 outline-none bg-transparent" /></div>
-                                            <div className="sm:col-span-2 lg:col-span-4"><label className="block text-xs font-bold text-gray-500 uppercase">Aparência</label><input type="text" value={data.bio?.aparencia} onChange={e => updateField('bio.aparencia', e.target.value)} className="w-full border-b border-gray-400 outline-none bg-transparent" /></div>
-                                        </div>
-                                    </div>
-
-                                    <div className={`${mobileTab === 'status' ? 'block' : 'hidden md:block'}`}>
-                                        <div className="db-attributes-strip">
-                                            {Object.keys(data.atributos || {}).map(attr => (
-                                                <div key={`strip-${attr}`} className="db-attr-medallion">
-                                                    <div className="db-attr-circle">
-                                                        <span className="db-attr-name">{attr}</span>
-                                                        <input type="number" value={data.atributos[attr].valor} onChange={e => handleAttributeChange(attr, parseInt(e.target.value)||0)} />
-                                                    </div>
-                                                    <label className={`db-condition ${data.atributos[attr].condicao ? 'active' : ''}`}>
-                                                        <input type="checkbox" checked={data.atributos[attr].condicao} onChange={e => updateField(`atributos.${attr}.condicao`, e.target.checked)} className="cursor-pointer" />
-                                                        {{ for: 'Exausto', con: 'Adoecido', agl: 'Aturdido', int: 'Enraivecido', von: 'Assustado', car: 'Desanimado' }[attr]}
-                                                    </label>
-                                                </div>
-                                            ))}
-                                        </div>
-                                        <div className="db-derived-strip">
-                                            <div className="db-derived-box"><span>Dano Bônus FOR</span><input value={data.derivados?.danoBonusFor} onChange={e=>updateField('derivados.danoBonusFor',e.target.value)} /></div>
-                                            <div className="db-derived-box"><span>Dano Bônus AGL</span><input value={data.derivados?.danoBonusAgl} onChange={e=>updateField('derivados.danoBonusAgl',e.target.value)} /></div>
-                                            <div className="db-derived-box"><span>Movimento</span><input value={data.derivados?.movimento} onChange={e=>updateField('derivados.movimento',e.target.value)} /></div>
-                                            <div className="db-derived-box"><span>Limite de Sobrecarga</span><input value={data.derivados?.limiteSobrecarga} onChange={e=>updateField('derivados.limiteSobrecarga',e.target.value)} /></div>
-                                        </div>
-                                    </div>
-
-                                    {/* Grades e Blocos PC */}
-                                    <div className="db-layout grid grid-cols-1 lg:grid-cols-12">
-                                        <div className={`db-column lg:col-span-4 xl:col-span-3 space-y-4 min-w-0 ${mobileTab === 'status' ? 'block' : 'hidden md:block'}`}>
-                                            <div className="hidden">
-                                                <h2 style={getBarStyle()} className="font-title font-bold text-lg bg-dragon-dark text-white text-center py-1 mb-3 rounded-sm">ATRIBUTOS E CONDIÇÕES</h2>
-                                                <div className="grid grid-cols-2 gap-4">
-                                                    {Object.keys(data.atributos || {}).map(attr => (
-                                                        <div key={attr} className="border-2 border-gray-300 p-2 text-center rounded bg-gray-50 relative">
-                                                            <div className="font-title font-bold text-xl uppercase text-red-800">{attr}</div>
-                                                            <input type="number" value={data.atributos[attr].valor} onChange={e => handleAttributeChange(attr, parseInt(e.target.value)||0)} className="w-full text-center text-2xl font-bold bg-transparent outline-none mb-2" />
-                                                            <div className="flex items-center justify-center gap-1 text-[10px] sm:text-xs">
-                                                                <input type="checkbox" checked={data.atributos[attr].condicao} onChange={e => updateField(`atributos.${attr}.condicao`, e.target.checked)} className="cursor-pointer" />
-                                                                <label className={`uppercase font-bold ${data.atributos[attr].condicao ? 'text-red-600' : 'text-gray-500'}`}>{{ for: 'Exausto', con: 'Adoecido', agl: 'Aturdido', int: 'Enraivecido', von: 'Assustado', car: 'Desanimado' }[attr]}</label>
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-
-                                            <div className="hidden">
-                                                <div className="flex justify-between items-center mb-1">
-                                                    <h2 className="font-title font-bold text-lg">VALORES DERIVADOS</h2>
-                                                    <div className="flex gap-1">
-                                                        <button onClick={() => updateField('status.manterDerivados', !data.status?.manterDerivados)} className={`text-[10px] px-2 py-0.5 rounded flex items-center gap-1 shadow-sm font-bold uppercase transition-colors ${data.status?.manterDerivados ? 'bg-green-100 hover:bg-green-200 text-green-800 border border-green-300' : 'bg-gray-200 hover:bg-gray-300 text-gray-700'}`}>
-                                                            {data.status?.manterDerivados ? <SVGIcons.Lock /> : <SVGIcons.Unlock />} {data.status?.manterDerivados ? 'Mantendo' : 'Manter'}
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                <div className="grid grid-cols-2 gap-2 text-sm font-bold uppercase">
-                                                    <div className="border border-gray-300 p-2 flex flex-col justify-between"><span className="text-gray-500 text-[10px] leading-tight mb-1">Dano Bônus FOR</span><input type="text" value={data.derivados?.danoBonusFor} onChange={e => updateField('derivados.danoBonusFor', e.target.value)} className="w-full border-b border-gray-300 outline-none text-center" /></div>
-                                                    <div className="border border-gray-300 p-2 flex flex-col justify-between"><span className="text-gray-500 text-[10px] leading-tight mb-1">Dano Bônus AGL</span><input type="text" value={data.derivados?.danoBonusAgl} onChange={e => updateField('derivados.danoBonusAgl', e.target.value)} className="w-full border-b border-gray-300 outline-none text-center" /></div>
-                                                    <div className="border border-gray-300 p-2 flex flex-col justify-between"><span className="text-gray-500 text-[10px] leading-tight mb-1">Movimento</span><input type="text" value={data.derivados?.movimento} onChange={e => updateField('derivados.movimento', e.target.value)} className="w-full border-b border-gray-300 outline-none text-center" /></div>
-                                                    <div className="border border-gray-300 p-2 flex flex-col justify-between"><span className="text-gray-500 text-[10px] leading-tight mb-1">Lim. Sobrecarga</span><input type="text" value={data.derivados?.limiteSobrecarga} onChange={e => updateField('derivados.limiteSobrecarga', e.target.value)} className="w-full border-b border-gray-300 outline-none text-center" /></div>
-                                                </div>
-                                            </div>
-
-                                            <div className="grid grid-cols-2 gap-2">
-                                                <div className="db-resource-life border-2 p-2 flex flex-col items-center justify-center text-center">
-                                                    <div className="font-title font-bold text-red-900 text-[10px] md:text-[11px] leading-tight uppercase">PONTOS DE VIDA</div>
-                                                    <div className="flex items-center justify-center gap-1 mt-2">
-                                                        <input type="number" value={data.status?.pv.atual} onChange={e => updateField('status.pv.atual', parseInt(e.target.value)||0)} className="w-8 xl:w-10 text-center text-lg xl:text-xl font-bold border-b-2 border-red-300 bg-transparent outline-none" />
-                                                        <span className="text-lg xl:text-xl">/</span>
-                                                        <input type="number" value={data.status?.pv.max} onChange={e => updateField('status.pv.max', parseInt(e.target.value)||0)} className="w-8 xl:w-10 text-center text-lg xl:text-xl font-bold border-b-2 border-red-300 bg-transparent outline-none" />
-                                                    </div>
-                                                </div>
-                                                <div className="db-resource-will border-2 p-2 flex flex-col items-center justify-center text-center">
-                                                    <div className="font-title font-bold text-blue-900 text-[10px] md:text-[11px] leading-tight uppercase">PONTOS DE DET.</div>
-                                                    <div className="flex items-center justify-center gap-1 mt-1">
-                                                        <input type="number" value={data.status?.pd.atual} onChange={e => updateField('status.pd.atual', parseInt(e.target.value)||0)} className="w-8 xl:w-10 text-center text-lg xl:text-xl font-bold border-b-2 border-blue-300 bg-transparent outline-none" />
-                                                        <span className="text-lg xl:text-xl">/</span>
-                                                        <input type="number" value={data.status?.pd.max} onChange={e => updateField('status.pd.max', parseInt(e.target.value)||0)} className="w-8 xl:w-10 text-center text-lg xl:text-xl font-bold border-b-2 border-blue-300 bg-transparent outline-none" />
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="db-death-box border p-3">
-                                                <div className="font-title font-bold text-center text-sm mb-2">TESTES DE MORTE</div>
-                                                <div className="flex justify-between items-center mb-1"><span className="text-[10px] font-bold uppercase text-gray-500">Sucessos</span><div className="flex gap-2">{[0, 1, 2].map(i => <input key={`suc-${i}`} type="checkbox" checked={data.status?.testesMorte.sucessos[i]} onChange={e => { const newArr = [...data.status.testesMorte.sucessos]; newArr[i] = e.target.checked; updateField('status.testesMorte.sucessos', newArr); }} className="w-4 h-4 cursor-pointer" />)}</div></div>
-                                                <div className="flex justify-between items-center"><span className="text-[10px] font-bold uppercase text-gray-500">Falhas</span><div className="flex gap-2">{[0, 1, 2].map(i => <input key={`fal-${i}`} type="checkbox" checked={data.status?.testesMorte.falhas[i]} onChange={e => { const newArr = [...data.status.testesMorte.falhas]; newArr[i] = e.target.checked; updateField('status.testesMorte.falhas', newArr); }} className="w-4 h-4 cursor-pointer" />)}</div></div>
-                                            </div>
-
-                                            {/* Desktop: Combate e Inventário ficam logo abaixo dos Testes de Morte */}
-                                            <div className="hidden lg:block space-y-4 db-combat-desktop-slot">
-                                            <div>
-                                                <h2 style={getBarStyle()} className="db-section-title font-title font-bold text-base bg-dragon-dark text-white text-center py-1 mb-2">COMBATE</h2>
-                                                <div className="space-y-3 mb-4">
-                                                    <div className="db-armor-card border p-2 space-y-1">
-                                                        <div className="flex gap-2 items-end">
-                                                            <div className="flex-1"><label className="block text-[10px] font-bold text-gray-500 uppercase">Armadura</label><input type="text" value={data.defesa?.armadura.nome} onChange={e => updateField('defesa.armadura.nome', e.target.value)} className="w-full bg-transparent outline-none text-sm font-bold border-b border-gray-300" /></div>
-                                                            <div className="w-14 shrink-0"><label className="block text-[10px] font-bold text-gray-500 uppercase text-center">Val.</label><input type="text" value={data.defesa?.armadura.valor} onChange={e => updateField('defesa.armadura.valor', e.target.value)} className="w-full bg-transparent outline-none text-sm text-center font-bold border-b border-gray-300" /></div>
-                                                        </div>
-                                                        <input type="text" value={data.defesa?.armadura.reves} onChange={e => updateField('defesa.armadura.reves', e.target.value)} className="w-full bg-transparent outline-none text-[11px] text-gray-600 italic border-b border-gray-200" placeholder="Revés..." />
-                                                    </div>
-
-                                                    <div className="db-armor-card border p-2 space-y-1">
-                                                        <div className="flex gap-2 items-end">
-                                                            <div className="flex-1"><label className="block text-[10px] font-bold text-gray-500 uppercase">Elmo</label><input type="text" value={data.defesa?.elmo.nome} onChange={e => updateField('defesa.elmo.nome', e.target.value)} className="w-full bg-transparent outline-none text-sm font-bold border-b border-gray-300" /></div>
-                                                            <div className="w-12"><label className="block text-[10px] font-bold text-gray-500 uppercase text-center">Val.</label><input type="text" value={data.defesa?.elmo.valor} onChange={e => updateField('defesa.elmo.valor', e.target.value)} className="w-full bg-transparent outline-none text-sm text-center font-bold border-b border-gray-300" /></div>
-                                                        </div>
-                                                        <input type="text" value={data.defesa?.elmo.reves} onChange={e => updateField('defesa.elmo.reves', e.target.value)} className="w-full bg-transparent outline-none text-[11px] text-gray-600 italic border-b border-gray-200" placeholder="Revés..." />
-                                                    </div>
-                                                </div>
-
-                                                <div className="mb-6">
-                                                    <div className="flex justify-between items-center bg-gray-200 py-1 px-3 mb-2 rounded-sm border border-gray-300">
-                                                        <h3 className="font-title font-bold text-sm text-gray-700">ARMAS</h3>
-                                                        <button onClick={() => addToArray('armas', { nome: '', empunhadura: '', alcance: '', dano: '', tracos: '' })} className="db-add-btn db-add-neutral"><SVGIcons.Plus/> Adic.</button>
-                                                    </div>
-                                                    <div className="space-y-3">
-                                                        {(data.armas || []).map((arma, index) => (
-                                                            <div key={index} className="db-weapon-card border p-2 shadow-sm flex flex-col gap-2">
-                                                                <div className="flex gap-2 items-end">
-                                                                    <div className="flex-1"><label className="block text-[9px] font-bold text-gray-500 uppercase">Arma / Escudo</label><input type="text" value={arma.nome} onChange={e => updateArrayField('armas', index, 'nome', e.target.value)} className="w-full border-b border-gray-400 outline-none text-sm font-bold bg-transparent"/></div>
-                                                                    <button onClick={() => removeFromArray('armas', index)} className="text-red-500 hover:text-red-700 mb-1"><SVGIcons.Trash/></button>
-                                                                </div>
-                                                                <div className="grid grid-cols-3 gap-2">
-                                                                    <div><label className="text-[9px] font-bold text-gray-500 uppercase">Empunh.</label><input type="text" value={arma.empunhadura} onChange={e => updateArrayField('armas', index, 'empunhadura', e.target.value)} className="w-full border-b border-gray-300 outline-none text-xs bg-transparent"/></div>
-                                                                    <div><label className="text-[9px] font-bold text-gray-500 uppercase">Alcance</label><input type="text" value={arma.alcance} onChange={e => updateArrayField('armas', index, 'alcance', e.target.value)} className="w-full border-b border-gray-300 outline-none text-xs bg-transparent"/></div>
-                                                                    <div><label className="text-[9px] font-bold text-gray-500 uppercase">Dano</label><input type="text" value={arma.dano} onChange={e => updateArrayField('armas', index, 'dano', e.target.value)} className="w-full border-b border-gray-300 outline-none text-xs bg-transparent font-bold"/></div>
-                                                                </div>
-                                                                <textarea rows="1" value={arma.tracos} onChange={e => updateArrayField('armas', index, 'tracos', e.target.value)} className="w-full border border-gray-200 rounded outline-none text-xs bg-white p-1 resize-y" placeholder="Traços..."></textarea>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
-
-                                                <h2 style={getBarStyle()} className="db-section-title font-title font-bold text-base bg-dragon-dark text-white text-center py-1 mb-3 mt-5">INVENTÁRIO</h2>
-                                                
-                                                <div className="grid grid-cols-3 gap-2 mb-3">
-                                                    <div className="db-money-gold border-2 rounded flex flex-col items-center justify-center p-2 shadow-sm"><label className="text-[10px] font-bold text-yellow-700 uppercase mb-1">Ouro</label><input type="number" value={data.moedas?.ouro} onChange={e => updateField('moedas.ouro', parseInt(e.target.value) || 0)} className="w-full bg-transparent text-center font-title font-bold text-xl outline-none text-yellow-900" /></div>
-                                                    <div className="db-money-silver border-2 rounded flex flex-col items-center justify-center p-2 shadow-sm"><label className="text-[10px] font-bold text-gray-500 uppercase mb-1">Prata</label><input type="number" value={data.moedas?.prata} onChange={e => updateField('moedas.prata', parseInt(e.target.value) || 0)} className="w-full bg-transparent text-center font-title font-bold text-xl outline-none text-gray-800" /></div>
-                                                    <div className="db-money-copper border-2 rounded flex flex-col items-center justify-center p-2 shadow-sm"><label className="text-[10px] font-bold text-orange-800 uppercase mb-1">Cobre</label><input type="number" value={data.moedas?.cobre} onChange={e => updateField('moedas.cobre', parseInt(e.target.value) || 0)} className="w-full bg-transparent text-center font-title font-bold text-xl outline-none text-orange-900" /></div>
-                                                </div>
-
-                                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1 mt-2">Equipamento</label>
-                                                <textarea rows="6" value={data.inventario} onChange={e => updateField('inventario', e.target.value)} className="db-inventory-box w-full border-2 p-2 text-sm outline-none resize-y mb-3"></textarea>
-                                                
-                                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Itens Miúdos</label>
-                                                <textarea rows="3" value={data.itensMiudos || ''} onChange={e => updateField('itensMiudos', e.target.value)} className="db-inventory-box w-full border-2 p-2 text-sm outline-none resize-y"></textarea>
-
-                                                <div className="mt-4 pb-10 md:pb-0">
-                                                    <label className="block text-xs font-bold text-gray-500 uppercase">Memento (Item Especial)</label>
-                                                    <input type="text" value={data.bio?.memento} onChange={e => updateField('bio.memento', e.target.value)} className="w-full border-b border-gray-400 outline-none bg-transparent text-sm italic" />
-                                                </div>
-                                            </div>
-                                            </div>
-                                        </div>
-
-                                        <div className={`db-column lg:col-span-5 xl:col-span-5 flex flex-col min-w-0 ${mobileTab === 'pericias' ? 'flex' : 'hidden md:flex'}`}>
-                                            <div className="flex justify-end mb-3">
-                                                <button onClick={() => updateField('status.armasPrimeiro', !data.status?.armasPrimeiro)} className="text-[10px] bg-gray-200 hover:bg-gray-300 text-gray-700 px-2 py-1 rounded flex items-center gap-1 shadow-sm font-bold uppercase transition-colors">
-                                                    <SVGIcons.Refresh /> Alternar Ordem
-                                                </button>
-                                            </div>
-                                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-4 xl:gap-5 items-start">
-                                                <div className={`flex flex-col ${data.status?.armasPrimeiro ? 'order-2' : 'order-1'}`}>
-                                                    <h2 style={getBarStyle()} className="db-section-title font-title font-bold text-base bg-dragon-dark text-white text-center py-1 mb-2 px-3 flex justify-between"><span>PERÍCIAS</span><span className="text-[10px] font-normal self-center hidden sm:inline">T: Treinar | Av: Avanço</span></h2>
-                                                    <div className="space-y-1">
-                                                        {(data.periciasBase || []).map((pericia, index) => {
-                                                            const attrValue = data.atributos?.[pericia.attr.toLowerCase()]?.valor || 10;
-                                                            const baseChance = getChanceBase(attrValue);
-                                                            return (
-                                                                <div key={index} className="db-skill-row flex items-center hover:bg-gray-100 p-1 rounded gap-2">
-                                                                    <input type="checkbox" checked={pericia.avanco} onChange={e => updateArrayField('periciasBase', index, 'avanco', e.target.checked)} className="cursor-pointer" />
-                                                                    <button onClick={() => toggleTreinada('periciasBase', index)} className={`w-5 h-5 rounded text-[10px] font-bold flex items-center justify-center border ${pericia.treinada ? 'bg-red-800 text-white border-red-800' : 'bg-gray-200 text-gray-500 border-gray-400'}`}>T</button>
-                                                                    <span className="flex-1 font-bold text-sm text-gray-800 min-w-0 leading-tight">{pericia.nome} <span className="text-[10px] text-gray-500 font-normal whitespace-nowrap">({pericia.attr})</span></span>
-                                                                    <div className="flex flex-col items-center"><input type="number" value={pericia.valor} onChange={e => updateArrayField('periciasBase', index, 'valor', e.target.value)} className="w-10 text-center border-b border-gray-400 outline-none bg-transparent font-bold" /><span className="text-[9px] text-gray-500 mt-0.5">Base {baseChance}</span></div>
-                                                                </div>
-                                                            );
-                                                        })}
-                                                    </div>
-                                                </div>
-
-                                                <div className={`space-y-6 flex flex-col ${data.status?.armasPrimeiro ? 'order-1' : 'order-2'}`}>
-                                                    <div>
-                                                        <h2 style={getBarStyle()} className="db-section-title font-title font-bold text-base bg-dragon-dark text-white text-center py-1 mb-2 px-3 flex justify-between"><span>ARMAS <span className="text-[10px] font-normal uppercase">(Perícias)</span></span></h2>
-                                                        <div className="space-y-1">
-                                                            {(data.periciasArmas || []).map((pericia, index) => {
-                                                                const attrValue = data.atributos?.[pericia.attr.toLowerCase()]?.valor || 10;
-                                                                const baseChance = getChanceBase(attrValue);
-                                                                return (
-                                                                    <div key={index} className="db-skill-row flex items-center hover:bg-gray-100 p-1 rounded gap-2">
-                                                                        <input type="checkbox" checked={pericia.avanco} onChange={e => updateArrayField('periciasArmas', index, 'avanco', e.target.checked)} className="cursor-pointer" />
-                                                                        <button onClick={() => toggleTreinada('periciasArmas', index)} className={`w-5 h-5 rounded text-[10px] font-bold flex items-center justify-center border ${pericia.treinada ? 'bg-red-800 text-white border-red-800' : 'bg-gray-200 text-gray-500 border-gray-400'}`}>T</button>
-                                                                        <span className="flex-1 font-bold text-sm text-gray-800 min-w-0 leading-tight">{pericia.nome} <span className="text-[10px] text-gray-500 font-normal whitespace-nowrap">({pericia.attr})</span></span>
-                                                                        <div className="flex flex-col items-center"><input type="number" value={pericia.valor} onChange={e => updateArrayField('periciasArmas', index, 'valor', e.target.value)} className="w-10 text-center border-b border-gray-400 outline-none bg-transparent font-bold" /><span className="text-[9px] text-gray-500 mt-0.5">Base {baseChance}</span></div>
-                                                                    </div>
-                                                                );
-                                                            })}
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <div>
-                                                        <div className="flex justify-between items-center bg-gray-200 py-1 px-3 mb-2 rounded-sm border border-gray-300">
-                                                            <h3 className="font-title font-bold text-sm text-gray-700">SECUNDÁRIAS</h3>
-                                                            <button onClick={() => addToArray('periciasSecundarias', { nome: '', attr: '', valor: '', avanco: false })} className="db-add-btn db-add-neutral"><SVGIcons.Plus/> Adic.</button>
-                                                        </div>
-                                                        <div className="space-y-1">
-                                                            {(data.periciasSecundarias || []).map((pericia, index) => (
-                                                                <div key={index} className="db-skill-row flex items-center gap-1 p-1 rounded hover:bg-gray-100">
-                                                                    <input type="checkbox" checked={pericia.avanco} onChange={e => updateArrayField('periciasSecundarias', index, 'avanco', e.target.checked)} className="cursor-pointer" />
-                                                                    <input type="text" value={pericia.nome} placeholder="Nome" onChange={e => updateArrayField('periciasSecundarias', index, 'nome', e.target.value)} className="flex-1 border-b border-gray-400 outline-none bg-transparent text-sm font-bold min-w-0" />
-                                                                    <input type="text" value={pericia.attr} placeholder="At" onChange={e => updateArrayField('periciasSecundarias', index, 'attr', e.target.value)} className="w-8 text-center border-b border-gray-400 outline-none bg-transparent text-[10px]" />
-                                                                    <input type="number" value={pericia.valor} onChange={e => updateArrayField('periciasSecundarias', index, 'valor', e.target.value)} className="w-10 text-center border-b border-gray-400 outline-none bg-transparent font-bold" />
-                                                                    <button onClick={() => removeFromArray('periciasSecundarias', index)} className="text-red-500 hover:text-red-700 ml-1"><SVGIcons.Trash/></button>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className={`db-column lg:col-span-3 xl:col-span-4 space-y-4 min-w-0 ${mobileTab === 'equipamento' ? 'block' : 'hidden md:block'}`}>
-                                            <div>
-                                                <div style={getBarStyle()} className="db-section-title flex justify-between items-center bg-dragon-dark text-white py-1 px-3 mb-2">
-                                                    <h2 className="font-title font-bold text-lg">HABILIDADES E MAGIAS</h2>
-                                                    <button onClick={() => addToArray('habilidadesFeiticos', { nome: '', fv_nvl: '' })} className="db-add-btn db-add-red"><SVGIcons.Plus/> Adic.</button>
-                                                </div>
-                                                <div className="db-ability-list">
-                                                    {(data.habilidadesFeiticos || []).map((hab, index) => (
-                                                        <div key={index} className="db-ability-card flex gap-2 items-start min-w-0">
-                                                            <div className="flex-1">
-                                                                {index === 0 && <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Habilidade / Magia</label>}
-                                                                <textarea rows="2" value={hab.nome} onChange={e => updateArrayField('habilidadesFeiticos', index, 'nome', e.target.value)} className="w-full border border-gray-300 rounded bg-gray-50 outline-none text-sm p-1 resize-y"></textarea>
-                                                            </div>
-                                                            <div className="w-12">
-                                                                {index === 0 && <label className="block text-[10px] font-bold text-gray-400 uppercase text-center mb-1">PD/Nv.</label>}
-                                                                <input type="text" value={hab.fv_nvl} onChange={e => updateArrayField('habilidadesFeiticos', index, 'fv_nvl', e.target.value)} className="w-full border-b border-gray-400 outline-none bg-transparent text-center text-sm mt-1" />
-                                                            </div>
-                                                            <button onClick={() => removeFromArray('habilidadesFeiticos', index)} className="text-red-500 hover:text-red-700 mt-2"><SVGIcons.Trash/></button>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-
-<div className="lg:hidden db-combat-mobile-slot">
-                                            <div>
-                                                <h2 style={getBarStyle()} className="db-section-title font-title font-bold text-base bg-dragon-dark text-white text-center py-1 mb-2">COMBATE</h2>
-                                                <div className="space-y-3 mb-4">
-                                                    <div className="db-armor-card border p-2 space-y-1">
-                                                        <div className="flex gap-2 items-end">
-                                                            <div className="flex-1"><label className="block text-[10px] font-bold text-gray-500 uppercase">Armadura</label><input type="text" value={data.defesa?.armadura.nome} onChange={e => updateField('defesa.armadura.nome', e.target.value)} className="w-full bg-transparent outline-none text-sm font-bold border-b border-gray-300" /></div>
-                                                            <div className="w-12"><label className="block text-[10px] font-bold text-gray-500 uppercase text-center">Val.</label><input type="text" value={data.defesa?.armadura.valor} onChange={e => updateField('defesa.armadura.valor', e.target.value)} className="w-full bg-transparent outline-none text-sm text-center font-bold border-b border-gray-300" /></div>
-                                                        </div>
-                                                        <input type="text" value={data.defesa?.armadura.reves} onChange={e => updateField('defesa.armadura.reves', e.target.value)} className="w-full bg-transparent outline-none text-[11px] text-gray-600 italic border-b border-gray-200" placeholder="Revés..." />
-                                                    </div>
-
-                                                    <div className="db-armor-card border p-2 space-y-1">
-                                                        <div className="flex gap-2 items-end">
-                                                            <div className="flex-1"><label className="block text-[10px] font-bold text-gray-500 uppercase">Elmo</label><input type="text" value={data.defesa?.elmo.nome} onChange={e => updateField('defesa.elmo.nome', e.target.value)} className="w-full bg-transparent outline-none text-sm font-bold border-b border-gray-300" /></div>
-                                                            <div className="w-12"><label className="block text-[10px] font-bold text-gray-500 uppercase text-center">Val.</label><input type="text" value={data.defesa?.elmo.valor} onChange={e => updateField('defesa.elmo.valor', e.target.value)} className="w-full bg-transparent outline-none text-sm text-center font-bold border-b border-gray-300" /></div>
-                                                        </div>
-                                                        <input type="text" value={data.defesa?.elmo.reves} onChange={e => updateField('defesa.elmo.reves', e.target.value)} className="w-full bg-transparent outline-none text-[11px] text-gray-600 italic border-b border-gray-200" placeholder="Revés..." />
-                                                    </div>
-                                                </div>
-
-                                                <div className="mb-6">
-                                                    <div className="flex justify-between items-center bg-gray-200 py-1 px-3 mb-2 rounded-sm border border-gray-300">
-                                                        <h3 className="font-title font-bold text-sm text-gray-700">ARMAS</h3>
-                                                        <button onClick={() => addToArray('armas', { nome: '', empunhadura: '', alcance: '', dano: '', tracos: '' })} className="db-add-btn db-add-neutral"><SVGIcons.Plus/> Adic.</button>
-                                                    </div>
-                                                    <div className="space-y-3">
-                                                        {(data.armas || []).map((arma, index) => (
-                                                            <div key={index} className="db-weapon-card border p-2 shadow-sm flex flex-col gap-2">
-                                                                <div className="flex gap-2 items-end">
-                                                                    <div className="flex-1"><label className="block text-[9px] font-bold text-gray-500 uppercase">Arma / Escudo</label><input type="text" value={arma.nome} onChange={e => updateArrayField('armas', index, 'nome', e.target.value)} className="w-full border-b border-gray-400 outline-none text-sm font-bold bg-transparent"/></div>
-                                                                    <button onClick={() => removeFromArray('armas', index)} className="text-red-500 hover:text-red-700 mb-1"><SVGIcons.Trash/></button>
-                                                                </div>
-                                                                <div className="grid grid-cols-3 gap-2">
-                                                                    <div><label className="text-[9px] font-bold text-gray-500 uppercase">Empunh.</label><input type="text" value={arma.empunhadura} onChange={e => updateArrayField('armas', index, 'empunhadura', e.target.value)} className="w-full border-b border-gray-300 outline-none text-xs bg-transparent"/></div>
-                                                                    <div><label className="text-[9px] font-bold text-gray-500 uppercase">Alcance</label><input type="text" value={arma.alcance} onChange={e => updateArrayField('armas', index, 'alcance', e.target.value)} className="w-full border-b border-gray-300 outline-none text-xs bg-transparent"/></div>
-                                                                    <div><label className="text-[9px] font-bold text-gray-500 uppercase">Dano</label><input type="text" value={arma.dano} onChange={e => updateArrayField('armas', index, 'dano', e.target.value)} className="w-full border-b border-gray-300 outline-none text-xs bg-transparent font-bold"/></div>
-                                                                </div>
-                                                                <textarea rows="1" value={arma.tracos} onChange={e => updateArrayField('armas', index, 'tracos', e.target.value)} className="w-full border border-gray-200 rounded outline-none text-xs bg-white p-1 resize-y" placeholder="Traços..."></textarea>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
-
-                                                <h2 style={getBarStyle()} className="db-section-title font-title font-bold text-base bg-dragon-dark text-white text-center py-1 mb-3 mt-5">INVENTÁRIO</h2>
-                                                
-                                                <div className="grid grid-cols-3 gap-2 mb-3">
-                                                    <div className="db-money-gold border-2 rounded flex flex-col items-center justify-center p-2 shadow-sm"><label className="text-[10px] font-bold text-yellow-700 uppercase mb-1">Ouro</label><input type="number" value={data.moedas?.ouro} onChange={e => updateField('moedas.ouro', parseInt(e.target.value) || 0)} className="w-full bg-transparent text-center font-title font-bold text-xl outline-none text-yellow-900" /></div>
-                                                    <div className="db-money-silver border-2 rounded flex flex-col items-center justify-center p-2 shadow-sm"><label className="text-[10px] font-bold text-gray-500 uppercase mb-1">Prata</label><input type="number" value={data.moedas?.prata} onChange={e => updateField('moedas.prata', parseInt(e.target.value) || 0)} className="w-full bg-transparent text-center font-title font-bold text-xl outline-none text-gray-800" /></div>
-                                                    <div className="db-money-copper border-2 rounded flex flex-col items-center justify-center p-2 shadow-sm"><label className="text-[10px] font-bold text-orange-800 uppercase mb-1">Cobre</label><input type="number" value={data.moedas?.cobre} onChange={e => updateField('moedas.cobre', parseInt(e.target.value) || 0)} className="w-full bg-transparent text-center font-title font-bold text-xl outline-none text-orange-900" /></div>
-                                                </div>
-
-                                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1 mt-2">Equipamento</label>
-                                                <textarea rows="6" value={data.inventario} onChange={e => updateField('inventario', e.target.value)} className="db-inventory-box w-full border-2 p-2 text-sm outline-none resize-y mb-3"></textarea>
-                                                
-                                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Itens Miúdos</label>
-                                                <textarea rows="3" value={data.itensMiudos || ''} onChange={e => updateField('itensMiudos', e.target.value)} className="db-inventory-box w-full border-2 p-2 text-sm outline-none resize-y"></textarea>
-
-                                                <div className="mt-4 pb-10 md:pb-0">
-                                                    <label className="block text-xs font-bold text-gray-500 uppercase">Memento (Item Especial)</label>
-                                                    <input type="text" value={data.bio?.memento} onChange={e => updateField('bio.memento', e.target.value)} className="w-full border-b border-gray-400 outline-none bg-transparent text-sm italic" />
-                                                </div>
-                                            </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </React.Fragment>
-                        ) : data.type === 'pnj' ? (
-                            <div className="p-4 md:p-8 space-y-6 bg-white" >
-                                <div className="flex flex-col md:flex-row gap-6 pb-4 border-b-2 border-blue-900 items-end">
-                                    <div className="flex-1 w-full"><label className="block text-xs font-bold text-blue-900 uppercase tracking-widest mb-1">Nome do PNJ / Ameaça Humanoide</label><input type="text" value={data.nome} onChange={e => updateField('nome', e.target.value)} className="w-full text-3xl font-title font-bold border-b-2 border-gray-400 focus:border-blue-600 outline-none bg-transparent" placeholder="Nome do Personagem" /></div>
-                                    <div className="w-full md:w-64"><label className="block text-xs font-bold text-gray-500 uppercase mb-1">Classificação</label><select value={data.tipoPnj} onChange={e => updateField('tipoPnj', e.target.value)} className="w-full p-2 border-2 border-gray-300 rounded text-sm font-bold text-gray-800 bg-gray-50 focus:border-blue-600 outline-none cursor-pointer"><option value="lacaio">Lacaio (Sem PD, Estatísticas base)</option><option value="chefe">Chefe (Tem PD e Iniciativa própria)</option></select></div>
-                                </div>
-
-                                <div className="bg-gray-100 p-4 border border-gray-300 rounded relative">
-                                    <div className="absolute -top-3 left-4 bg-white px-2 font-title font-bold text-blue-900 text-xs uppercase shadow-sm border border-gray-200">Gerador Rápido de PNJ (Improviso)</div>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 pt-2">
-                                        <div><label className="flex justify-between text-[10px] font-bold text-gray-500 uppercase mb-1">Nome <button onClick={() => generatePnjAspect('nome')} className="text-blue-600 hover:text-blue-800" title="Sortear"><SVGIcons.Dice/></button></label><input type="text" value={data.nome} onChange={e => updateField('nome', e.target.value)} className="w-full border-b border-gray-400 outline-none bg-transparent text-sm font-bold" /></div>
-                                        <div><label className="flex justify-between text-[10px] font-bold text-gray-500 uppercase mb-1">Profissão/Tipo <button onClick={() => generatePnjAspect('profissao')} className="text-blue-600 hover:text-blue-800" title="Sortear"><SVGIcons.Dice/></button></label><input type="text" value={data.profissao} onChange={e => updateField('profissao', e.target.value)} className="w-full border-b border-gray-400 outline-none bg-transparent text-sm font-bold" /></div>
-                                        <div><label className="flex justify-between text-[10px] font-bold text-gray-500 uppercase mb-1">Atitude <button onClick={() => generatePnjAspect('atitude')} className="text-blue-600 hover:text-blue-800" title="Sortear"><SVGIcons.Dice/></button></label><input type="text" value={data.atitude} onChange={e => updateField('atitude', e.target.value)} className="w-full border-b border-gray-400 outline-none bg-transparent text-sm italic" /></div>
-                                        <div><label className="flex justify-between text-[10px] font-bold text-gray-500 uppercase mb-1">Motivação <button onClick={() => generatePnjAspect('motivacao')} className="text-blue-600 hover:text-blue-800" title="Sortear"><SVGIcons.Dice/></button></label><input type="text" value={data.motivacao} onChange={e => updateField('motivacao', e.target.value)} className="w-full border-b border-gray-400 outline-none bg-transparent text-sm italic" /></div>
-                                        <div><label className="flex justify-between text-[10px] font-bold text-gray-500 uppercase mb-1">Traço Marcante <button onClick={() => generatePnjAspect('tracoMarcante')} className="text-blue-600 hover:text-blue-800" title="Sortear"><SVGIcons.Dice/></button></label><input type="text" value={data.tracoMarcante} onChange={e => updateField('tracoMarcante', e.target.value)} className="w-full border-b border-gray-400 outline-none bg-transparent text-sm italic" /></div>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-12 gap-6 pt-4">
-                                    <div className="md:col-span-5 space-y-6">
-                                        <div className="flex flex-col gap-4">
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div><label className="block text-xs font-bold text-gray-500 uppercase">Ancestralidade</label><input type="text" value={data.ancestralidade} onChange={e => updateField('ancestralidade', e.target.value)} className="w-full border-b border-gray-400 outline-none bg-transparent font-bold" /></div>
-                                                <div><label className="block text-xs font-bold text-gray-500 uppercase">Movimento</label><input type="number" value={data.movimento} onChange={e => updateField('movimento', e.target.value)} className="w-full border-b border-gray-400 outline-none bg-transparent font-bold" /></div>
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div><label className="block text-xs font-bold text-gray-500 uppercase">Dano Bônus</label><input type="text" value={data.danoBonus} onChange={e => updateField('danoBonus', e.target.value)} className="w-full border-b border-gray-400 outline-none bg-transparent font-bold" placeholder="Ex: +D4" /></div>
-                                                <div className="flex gap-2 items-end"><div className="flex-1"><label className="block text-[10px] font-bold text-gray-500 uppercase">Armadura</label><input type="text" value={data.armaduraTipica?.nome} onChange={e => updateField('armaduraTipica.nome', e.target.value)} className="w-full bg-transparent outline-none text-sm font-bold border-b border-gray-300" placeholder="Tipo..." /></div><div className="w-12"><label className="block text-[10px] font-bold text-gray-500 uppercase text-center">Val.</label><input type="text" value={data.armaduraTipica?.valor} onChange={e => updateField('armaduraTipica.valor', e.target.value)} className="w-full bg-transparent outline-none text-sm text-center font-bold border-b border-gray-300" /></div></div>
-                                            </div>
-                                        </div>
-
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <div className="border-2 border-red-800 rounded bg-red-50 p-3 flex flex-col items-center justify-center text-center shadow-sm">
-                                                <div className="font-title font-bold text-red-900 text-xs uppercase">PONTOS DE VIDA</div>
-                                                <div className="flex items-center justify-center gap-1 mt-2"><input type="number" value={data.status?.pv.atual} onChange={e => updateField('status.pv.atual', parseInt(e.target.value)||0)} className="w-12 text-center text-2xl font-bold border-b-2 border-red-300 bg-transparent outline-none" /><span className="text-xl">/</span><input type="number" value={data.status?.pv.max} onChange={e => updateField('status.pv.max', parseInt(e.target.value)||0)} className="w-12 text-center text-2xl font-bold border-b-2 border-red-300 bg-transparent outline-none" /></div>
-                                            </div>
-                                            <div className={`border-2 rounded p-3 flex flex-col items-center justify-center text-center shadow-sm transition-opacity ${data.tipoPnj === 'lacaio' ? 'border-gray-300 bg-gray-100 opacity-50' : 'border-blue-800 bg-blue-50'}`}>
-                                                <div className={`font-title font-bold text-xs uppercase ${data.tipoPnj === 'lacaio' ? 'text-gray-500' : 'text-blue-900'}`}>PONTOS DE DET.</div>
-                                                <div className="flex items-center justify-center gap-1 mt-2"><input type="number" disabled={data.tipoPnj === 'lacaio'} value={data.status?.pd.atual} onChange={e => updateField('status.pd.atual', parseInt(e.target.value)||0)} className="w-12 text-center text-2xl font-bold border-b-2 border-blue-300 bg-transparent outline-none disabled:border-transparent" /><span className="text-xl">/</span><input type="number" disabled={data.tipoPnj === 'lacaio'} value={data.status?.pd.max} onChange={e => updateField('status.pd.max', parseInt(e.target.value)||0)} className="w-12 text-center text-2xl font-bold border-b-2 border-blue-300 bg-transparent outline-none disabled:border-transparent" /></div>
-                                                {data.tipoPnj === 'lacaio' && <span className="text-[9px] mt-1 text-gray-500">Lacaios raramente usam PD</span>}
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <div className="flex justify-between items-center bg-gray-200 py-1 px-3 mb-2 rounded-sm border border-gray-300"><h3 className="font-title font-bold text-sm text-gray-700">PERÍCIAS PRINCIPAIS</h3><button onClick={() => addToArray('pericias', { nome: '', valor: '' })} className="text-[10px] bg-gray-500 hover:bg-gray-600 text-white px-2 py-1 rounded flex items-center gap-1 shadow-sm"><SVGIcons.Plus/> Adic.</button></div>
-                                            <div className="space-y-1">
-                                                {data.pericias?.length === 0 && <p className="text-[10px] text-gray-400 italic">Nenhuma perícia adicionada.</p>}
-                                                {(data.pericias || []).map((pericia, index) => (
-                                                    <div key={index} className="flex items-center gap-2 p-1 rounded hover:bg-gray-100"><input type="text" value={pericia.nome} placeholder="Perícia..." onChange={e => updateArrayField('pericias', index, 'nome', e.target.value)} className="flex-1 border-b border-gray-400 outline-none bg-transparent text-sm font-bold min-w-0" /><input type="number" value={pericia.valor} onChange={e => updateArrayField('pericias', index, 'valor', e.target.value)} className="w-12 text-center border-b border-gray-400 outline-none bg-transparent font-bold" /><button onClick={() => removeFromArray('pericias', index)} className="text-red-500 hover:text-red-700"><SVGIcons.Trash/></button></div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="md:col-span-7 space-y-6">
-                                        <div className="mb-6">
-                                            <div className="flex justify-between items-center bg-gray-200 py-1 px-3 mb-2 rounded-sm border border-gray-300"><h3 className="font-title font-bold text-sm text-gray-700">ARMAS E ATAQUES</h3><button onClick={() => addToArray('armas', { nome: '', pericia: '', dano: '' })} className="text-[10px] bg-gray-500 text-white px-2 py-1 rounded flex items-center gap-1 shadow-sm font-bold"><SVGIcons.Plus/> Adic.</button></div>
-                                            <div className="space-y-3">
-                                                {data.armas?.length === 0 && <p className="text-[10px] text-gray-400 italic">Nenhuma arma adicionada.</p>}
-                                                {(data.armas || []).map((arma, index) => (
-                                                    <div key={index} className="border border-gray-300 p-2 rounded bg-gray-50 shadow-sm flex flex-col gap-2"><div className="flex gap-2 items-end"><div className="flex-1"><label className="block text-[9px] font-bold text-gray-500 uppercase">Arma</label><input type="text" value={arma.nome} onChange={e => updateArrayField('armas', index, 'nome', e.target.value)} className="w-full border-b border-gray-400 outline-none text-sm font-bold bg-transparent"/></div><div className="w-16"><label className="block text-[9px] font-bold text-gray-500 uppercase text-center">Nív. Per.</label><input type="number" value={arma.pericia} onChange={e => updateArrayField('armas', index, 'pericia', e.target.value)} className="w-full border-b border-gray-400 outline-none text-sm font-bold bg-transparent text-center"/></div><div className="w-24"><label className="block text-[9px] font-bold text-gray-500 uppercase text-center">Dano</label><input type="text" value={arma.dano} placeholder="Ex: 2d6+d4" onChange={e => updateArrayField('armas', index, 'dano', e.target.value)} className="w-full border-b border-gray-400 outline-none text-sm font-bold bg-transparent text-center text-red-800"/></div><button onClick={() => removeFromArray('armas', index)} className="text-red-500 hover:text-red-700 mb-1 ml-2"><SVGIcons.Trash/></button></div></div>
-                                                ))}
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <div className="flex justify-between items-center bg-gray-200 py-1 px-3 mb-2 rounded-sm border border-gray-300"><h3 className="font-title font-bold text-sm text-gray-700">HABILIDADES E FEITIÇOS</h3><button onClick={() => addToArray('feiticos', { nome: '', desc: '' })} className="text-[10px] bg-gray-500 text-white px-2 py-1 rounded flex items-center gap-1 shadow-sm font-bold"><SVGIcons.Plus/> Adic.</button></div>
-                                            <div className="space-y-2">
-                                                {data.feiticos?.length === 0 && <p className="text-[10px] text-gray-400 italic">Nenhuma habilidade listada.</p>}
-                                                {(data.feiticos || []).map((hab, index) => (
-                                                    <div key={index} className="flex gap-2 items-start p-2 border border-gray-200 rounded bg-gray-50"><div className="flex-1 space-y-1"><input type="text" value={hab.nome} onChange={e => updateArrayField('feiticos', index, 'nome', e.target.value)} className="w-full border-b border-gray-300 bg-transparent font-bold text-sm outline-none" placeholder="Nome do Feitiço/Habilidade..." /><textarea rows="2" value={hab.desc} onChange={e => updateArrayField('feiticos', index, 'desc', e.target.value)} className="w-full bg-transparent outline-none text-xs resize-y" placeholder="Descrição do efeito..."></textarea></div><button onClick={() => removeFromArray('feiticos', index)} className="text-red-500 hover:text-red-700 mt-1"><SVGIcons.Trash/></button></div>
-                                                ))}
-                                            </div>
-                                        </div>
-
-                                        <div><label className="block text-xs font-bold text-gray-500 uppercase mb-1 mt-2">Equipamento & Tesouro</label><textarea rows="4" value={data.equipamento} onChange={e => updateField('equipamento', e.target.value)} className="w-full border-2 border-gray-300 rounded p-2 text-sm outline-none bg-gray-50 resize-y mb-3"></textarea></div>
-                                    </div>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="p-4 md:p-8 space-y-6 bg-white" >
-                                <div className="flex flex-col md:flex-row gap-6 pb-4 border-b-4 border-red-900 items-end">
-                                    <div className="flex-1 w-full"><label className="block text-xs font-bold text-red-900 uppercase tracking-widest mb-1">Nome da Ameaça / Monstro</label><input type="text" value={data.nome} onChange={e => updateField('nome', e.target.value)} className="w-full text-3xl font-title font-bold border-b-2 border-gray-400 focus:border-red-600 outline-none bg-transparent" placeholder="Ex: Troll Antigo, Demônio..." /></div>
-                                    <div className="w-full md:w-48 text-center bg-red-50 border-2 border-red-900 rounded p-2 shadow-sm"><label className="block text-xs font-bold text-red-900 uppercase mb-1" title="Número de ações/cartas de iniciativa por rodada">Ferocidade (Ações)</label><input type="number" value={data.ferocidade} onChange={e => updateField('ferocidade', parseInt(e.target.value)||1)} className="w-full text-center text-3xl font-black bg-transparent outline-none text-red-900" /></div>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-12 gap-8 pt-2">
-                                    <div className="md:col-span-4 space-y-6">
-                                        <div className="border border-gray-300 p-4 bg-gray-50 rounded shadow-sm space-y-4">
-                                            <div><label className="block text-xs font-bold text-gray-500 uppercase mb-1">Tamanho</label><select value={data.tamanho} onChange={e => updateField('tamanho', e.target.value)} className="w-full p-2 border border-gray-300 rounded text-sm font-bold text-gray-800 bg-white outline-none cursor-pointer"><option value="Pequeno">Pequeno</option><option value="Normal">Normal</option><option value="Grande">Grande</option><option value="Enorme">Enorme</option><option value="Enxame">Enxame</option></select></div>
-                                            <div className="grid grid-cols-2 gap-4"><div><label className="block text-xs font-bold text-gray-500 uppercase">Movimento</label><input type="text" value={data.movimento} onChange={e => updateField('movimento', e.target.value)} className="w-full border-b border-gray-400 outline-none bg-transparent font-bold text-center text-lg" /></div><div><label className="block text-xs font-bold text-gray-500 uppercase">Armadura</label><input type="text" value={data.armadura} onChange={e => updateField('armadura', e.target.value)} className="w-full border-b border-gray-400 outline-none bg-transparent font-bold text-center text-lg" placeholder="Ex: 4" /></div></div>
-                                        </div>
-
-                                        <div className="border-2 border-red-900 rounded bg-red-50 p-4 flex flex-col items-center justify-center text-center shadow">
-                                            <div className="font-title font-black text-red-900 text-sm uppercase tracking-widest">PONTOS DE VIDA</div>
-                                            <div className="flex items-center justify-center gap-1 mt-3"><input type="number" value={data.status?.pv.atual} onChange={e => updateField('status.pv.atual', parseInt(e.target.value)||0)} className="w-16 text-center text-4xl font-black border-b-2 border-red-300 bg-transparent outline-none text-red-900" /><span className="text-2xl text-red-900 font-black">/</span><input type="number" value={data.status?.pv.max} onChange={e => updateField('status.pv.max', parseInt(e.target.value)||0)} className="w-16 text-center text-4xl font-black border-b-2 border-red-300 bg-transparent outline-none text-red-900" /></div>
-                                        </div>
-
-                                        <div>
-                                            <div className="flex justify-between items-center bg-gray-200 py-1 px-3 mb-2 rounded-sm border border-gray-300"><h3 className="font-title font-bold text-sm text-gray-700">HABILIDADES ESPECIAIS</h3><button onClick={() => addToArray('habilidades', { nome: '', desc: '' })} className="text-[10px] bg-red-900 text-white px-2 py-1 rounded flex items-center gap-1 shadow-sm font-bold"><SVGIcons.Plus/> Adic.</button></div>
-                                            <div className="space-y-3">
-                                                {data.habilidades?.length === 0 && <p className="text-[10px] text-gray-400 italic">Nenhuma habilidade listada.</p>}
-                                                {(data.habilidades || []).map((hab, index) => (
-                                                    <div key={index} className="flex gap-2 items-start p-2 border border-red-200 rounded bg-red-50/50"><div className="flex-1 space-y-1"><input type="text" value={hab.nome} onChange={e => updateArrayField('habilidades', index, 'nome', e.target.value)} className="w-full border-b border-red-300 bg-transparent font-bold text-sm outline-none text-red-900" placeholder="Ex: Imunidade a Fogo..." /><textarea rows="3" value={hab.desc} onChange={e => updateArrayField('habilidades', index, 'desc', e.target.value)} className="w-full bg-transparent outline-none text-xs resize-y" placeholder="Detalhes..."></textarea></div><button onClick={() => removeFromArray('habilidades', index)} className="text-red-500 hover:text-red-700 mt-1"><SVGIcons.Trash/></button></div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="md:col-span-8">
-                                        <div className="bg-red-900 text-white py-2 px-4 rounded-t-sm shadow-sm flex items-center gap-2"><SVGIcons.Dice /><h2 className="font-title font-bold text-lg tracking-widest uppercase">ATAQUES DO MONSTRO (Role D6)</h2></div>
-                                        <div className="border-x border-b border-red-900 bg-white rounded-b-sm shadow-sm overflow-hidden">
-                                            {[1, 2, 3, 4, 5, 6].map((num, idx) => {
-                                                const ataque = (data.ataques && data.ataques[idx]) || { id: num, descricao: '' };
-                                                return (
-                                                    <div key={num} className={`flex border-b border-gray-200 last:border-0 ${num % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
-                                                        <div className="w-12 md:w-16 flex items-center justify-center font-black text-2xl text-red-900 border-r border-gray-200 bg-red-50/30">{num}</div>
-                                                        <div className="flex-1 p-2"><textarea rows="3" value={ataque.descricao} onChange={e => { const newAtaques = [...(data.ataques || Array(6).fill({descricao:''}))]; newAtaques[idx] = { ...newAtaques[idx], descricao: e.target.value, id: num }; updateField('ataques', newAtaques); }} className="w-full bg-transparent outline-none text-sm resize-y leading-relaxed" placeholder={`Descrição do ataque ${num} (Nome, alvo, dano, efeitos especiais como derrubar, veneno, etc)...`}></textarea></div>
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )
-                    )}
+                    <DragonbaneEditor scope={systemEditorScope} />
                 </div>
             );
         }
