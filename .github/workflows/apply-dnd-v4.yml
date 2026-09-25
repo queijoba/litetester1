@@ -1,0 +1,38 @@
+name: Aplicar refinamento D&D v4
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  apply-dnd-v4:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Instalar dependências
+        run: npm ci
+      - name: Aplicar refinamento
+        run: node scripts/apply-dnd-v4.mjs
+      - name: Limpar arquivos temporários
+        run: rm scripts/apply-dnd-v4.mjs .github/workflows/apply-dnd-v4.yml
+      - name: Verificar projeto
+        run: npm run check
+      - name: Commitar resultado
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Separa Magias e organiza recursos D&D em colunas"
+          git push
