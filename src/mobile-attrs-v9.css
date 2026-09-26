@@ -1,0 +1,153 @@
+/* PJ Lite 0.7.4v Alpha — ajuste fino de atributos mobile.
+ * Escopo: O Som das Seis e Dragonbane.
+ */
+
+@media (max-width: 767px) {
+  /* ------------------------------------------------------------------
+   * Dragonbane — 6 atributos em duas linhas de 3.
+   * ---------------------------------------------------------------- */
+  .db-attributes-strip {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    align-items: start;
+    justify-items: center;
+    gap: 10px 6px !important;
+  }
+
+  .db-attributes-strip .db-attr-medallion {
+    width: 100%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .db-attributes-strip .db-attr-circle {
+    width: 60px;
+    height: 60px;
+    flex: none;
+  }
+
+  .db-attributes-strip .db-condition {
+    width: 100%;
+    max-width: 104px;
+    min-height: 32px;
+    padding-inline: 3px;
+    justify-content: center;
+    text-align: center;
+  }
+
+  /* ------------------------------------------------------------------
+   * O Som das Seis — atributos em cartões 2x2, com 5 marcadores 3+2.
+   * ---------------------------------------------------------------- */
+  .som6-sheet .grid.grid-cols-\[1fr_92px\] {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  .som6-sheet .grid.grid-cols-\[1fr_92px\] > .som6-frame:first-child {
+    padding: 9px !important;
+  }
+
+  .som6-sheet .grid.grid-cols-\[1fr_92px\] > .som6-frame:first-child > .space-y-2\.5 {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px !important;
+  }
+
+  .som6-sheet .grid.grid-cols-\[1fr_92px\] > .som6-frame:first-child > .space-y-2\.5 > div {
+    min-width: 0;
+    min-height: 118px;
+    padding: 10px 7px;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 9px !important;
+    border: 1px solid rgba(246, 239, 213, .2);
+    border-radius: 12px 4px 12px 4px;
+    background: rgba(246, 239, 213, .045);
+  }
+
+  .som6-sheet .grid.grid-cols-\[1fr_92px\] > .som6-frame:first-child > .space-y-2\.5 > div > span {
+    width: 100%;
+    text-align: center;
+    font-size: 16px !important;
+    line-height: 1.05;
+  }
+
+  .som6-sheet .grid.grid-cols-\[1fr_92px\] > .som6-frame:first-child > .space-y-2\.5 > div > div {
+    width: 100%;
+    display: grid !important;
+    grid-template-columns: repeat(3, 30px);
+    justify-content: center;
+    gap: 6px !important;
+  }
+
+  .som6-sheet .grid.grid-cols-\[1fr_92px\] > .som6-frame:first-child .som6-pip {
+    width: 30px !important;
+    height: 30px !important;
+    margin: 0 !important;
+    border-radius: 8px 3px 8px 3px;
+  }
+
+  /* Vida e Defesa lado a lado para compensar a nova área de atributos. */
+  .som6-sheet .grid.grid-cols-\[1fr_92px\] > .space-y-3 {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px !important;
+  }
+
+  .som6-sheet .grid.grid-cols-\[1fr_92px\] > .space-y-3 > .som6-frame {
+    margin: 0 !important;
+  }
+
+  .som6-sheet .grid.grid-cols-\[1fr_92px\] > .space-y-3 .som6-stat-box {
+    height: 100%;
+    min-height: 104px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 390px) {
+  .db-attributes-strip {
+    gap: 9px 4px !important;
+    padding-inline: 3px !important;
+  }
+
+  .db-attributes-strip .db-attr-circle {
+    width: 54px;
+    height: 54px;
+  }
+
+  .db-attributes-strip .db-condition {
+    font-size: 8px;
+    line-height: 1.05;
+  }
+
+  .som6-sheet .grid.grid-cols-\[1fr_92px\] > .som6-frame:first-child > .space-y-2\.5 {
+    gap: 6px !important;
+  }
+
+  .som6-sheet .grid.grid-cols-\[1fr_92px\] > .som6-frame:first-child > .space-y-2\.5 > div {
+    min-height: 110px;
+    padding: 8px 5px;
+  }
+
+  .som6-sheet .grid.grid-cols-\[1fr_92px\] > .som6-frame:first-child > .space-y-2\.5 > div > span {
+    font-size: 14px !important;
+  }
+
+  .som6-sheet .grid.grid-cols-\[1fr_92px\] > .som6-frame:first-child > .space-y-2\.5 > div > div {
+    grid-template-columns: repeat(3, 27px);
+    gap: 5px !important;
+  }
+
+  .som6-sheet .grid.grid-cols-\[1fr_92px\] > .som6-frame:first-child .som6-pip {
+    width: 27px !important;
+    height: 27px !important;
+  }
+}
