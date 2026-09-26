@@ -4,6 +4,7 @@ const requiredFiles = [
   'src/main.jsx',
   'src/PJLiteApp.jsx',
   'src/pjlite.css',
+  'src/mobile-polish.css',
   'src/systems/registry.js',
   'src/systems/dragonbane/index.js',
   'src/systems/dragonbane/components/Editor.jsx',
@@ -42,6 +43,9 @@ if (pdf.subarray(0, 5).toString('ascii') !== '%PDF-') {
 const main = await readFile('src/main.jsx', 'utf8');
 if (!main.includes("./systems/dragonbane/index.js")) {
   throw new Error('main.jsx não está usando o módulo do sistema Dragonbane.');
+}
+if (!main.includes("./mobile-polish.css")) {
+  throw new Error('main.jsx não está carregando o polimento mobile pré-lançamento.');
 }
 
 const app = await readFile('src/PJLiteApp.jsx', 'utf8');
@@ -89,6 +93,25 @@ for (const token of ['@media (max-width: 520px)', '@media (max-width: 430px)', '
     throw new Error(`Revisão mobile D&D incompleta: ${token}`);
   }
 }
+
+const mobilePolish = await readFile('src/mobile-polish.css', 'utf8');
+for (const token of [
+  '.dnd-v6-wrapper .dnd-v3-portrait-tools',
+  '.fabula-portrait-frame > .absolute',
+  '.fabula-bond-panel .bond-row',
+  '.fabula-threat-editor',
+  '.som6-paper > .pj-mobile-tabs',
+  '.som6-sheet > .som6-frame:first-of-type > .grid',
+  '@media (max-width: 430px)',
+]) {
+  if (!mobilePolish.includes(token)) {
+    throw new Error(`Polimento mobile incompleto: ${token}`);
+  }
+}
+if (mobilePolish.includes('.db-')) {
+  throw new Error('O polimento mobile geral não deve alterar seletores próprios de Dragonbane.');
+}
+
 if (!app.includes('D&D 5.5e (2024) • revisado') || app.includes('novo sistema em adaptação')) {
   throw new Error('Textos atuais de D&D ainda indicam uma etapa antiga de adaptação.');
 }
@@ -103,4 +126,4 @@ for (const id of ['dragonbane', 'dnd5e', 'fabulaUltima', 'somDasSeis']) {
   }
 }
 
-console.log('PJ Lite: estrutura essencial, editores modulares, revisão mobile D&D e módulos de sistemas verificados com sucesso.');
+console.log('PJ Lite: estrutura essencial, editores modulares e revisão mobile de D&D/Fabula/Som das Seis verificados com sucesso.');
