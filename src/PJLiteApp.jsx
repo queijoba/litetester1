@@ -2070,7 +2070,7 @@ const { useState, useEffect, useRef } = React;
                                 {showFilters && (
                                     <div style={getWindowStyle()} className="mt-2 max-w-2xl bg-white border border-gray-200 rounded-lg shadow-sm p-3 grid grid-cols-1 sm:grid-cols-3 gap-2">
                                         <select value={systemFilter} onChange={e=>setSystemFilter(e.target.value)} className="border rounded px-2 py-2 text-xs bg-white">
-                                            <option value="all">Todos os sistemas</option><option value="dragonbane">Dragonbane</option><option value="dnd5e">D&D 5e</option><option value="fabula">Fabula Ultima</option><option value="somdas6">O Som das Seis</option>
+                                            <option value="all">Todos os sistemas</option><option value="dragonbane">Dragonbane</option><option value="dnd5e">D&D 5.5e</option><option value="fabula">Fabula Ultima</option><option value="somdas6">O Som das Seis</option>
                                         </select>
                                         <select value={sortMode} onChange={e=>setSortMode(e.target.value)} className="border rounded px-2 py-2 text-xs bg-white">
                                             <option value="recent">Mais recentes</option><option value="name">Nome A–Z</option><option value="system">Por sistema</option>
@@ -2094,7 +2094,7 @@ const { useState, useEffect, useRef } = React;
                                         return (
                                         <div key={char.id} style={getWindowStyle()} className={`pj-card-compact bg-white rounded-md shadow-lg border-2 ${isDnd ? 'border-[#922610]' : isFabula ? 'border-teal-700' : isSom6 ? 'border-red-900' : 'border-dragon-dark'} overflow-hidden flex ${dashboardView==='list'?'flex-row items-stretch':'flex-col'} relative`}>
                                             <div className={`absolute top-0 right-0 text-white text-[9px] font-bold uppercase px-2 py-0.5 rounded-bl shadow-sm z-10 ${isDnd ? 'bg-[#922610]' : isFabula ? 'bg-teal-700' : isSom6 ? 'bg-red-900' : 'bg-dragon-dark'}`}>
-                                                {isDnd ? 'D&D 5e' : isFabula ? 'Fabula Ultima' : isSom6 ? 'O Som das Seis' : 'Dragonbane'}
+                                                {isDnd ? 'D&D 5.5e' : isFabula ? 'Fabula Ultima' : isSom6 ? 'O Som das Seis' : 'Dragonbane'}
                                             </div>
                                             <div className={`${dashboardView==='list'?'flex flex-1 min-w-0 h-24 border-r':'flex h-28 border-b'} border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors`} onClick={() => loadCharacter(char.id)}>
                                                 <div className="w-28 shrink-0 bg-gray-200 border-r border-gray-300">
@@ -2160,7 +2160,7 @@ const { useState, useEffect, useRef } = React;
                                         return (
                                         <div key={threat.id} style={getWindowStyle()} className={`pj-card-compact bg-white rounded-md shadow-lg border-2 ${sys === 'dnd5e' ? 'border-[#922610]' : sys === 'fabula' ? 'border-teal-700' : sys === 'somdas6' ? 'border-red-900' : 'border-gray-500'} overflow-hidden flex ${dashboardView==='list'?'flex-row items-stretch':'flex-col'} relative`}>
                                             <div className={`absolute top-0 right-0 text-white text-[9px] font-bold uppercase px-2 py-0.5 rounded-bl shadow-sm z-10 ${sys === 'dnd5e' ? 'bg-[#922610]' : sys === 'fabula' ? 'bg-teal-700' : sys === 'somdas6' ? 'bg-red-900' : threat.type === 'pnj' ? 'bg-blue-800' : 'bg-red-900'}`}>
-                                                {sys === 'dnd5e' ? 'D&D 5e (Stat Block)' : sys === 'fabula' ? 'Fabula Ultima' : sys === 'somdas6' ? 'O Som das Seis • PDJ' : threat.type === 'pnj' ? 'PNJ (DB)' : 'Monstro (DB)'}
+                                                {sys === 'dnd5e' ? 'D&D 5.5e (Stat Block)' : sys === 'fabula' ? 'Fabula Ultima' : sys === 'somdas6' ? 'O Som das Seis • PDJ' : threat.type === 'pnj' ? 'PNJ (DB)' : 'Monstro (DB)'}
                                             </div>
                                             <div className={`${dashboardView==='list'?'flex flex-1 min-w-0 h-24 border-r':'flex h-24 border-b'} border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors`} onClick={() => loadThreat(threat.id)}>
                                                 <div className="p-3 flex-1 overflow-hidden flex flex-col justify-center">
@@ -2267,8 +2267,8 @@ const { useState, useEffect, useRef } = React;
                                         }} className="bg-white border-2 border-gray-300 hover:border-[#922610] rounded p-4 cursor-pointer hover:shadow-lg transition-all flex items-center gap-4 group">
                                             <div className="w-14 h-14 bg-orange-600 group-hover:bg-[#922610] text-white rounded flex items-center justify-center font-bold font-title text-2xl shadow-inner transition-colors">D&D</div>
                                             <div className="flex-1">
-                                                <h3 className="font-title font-bold text-gray-900 group-hover:text-[#922610] text-lg transition-colors">D&D 5e (2024)</h3>
-                                                <p className="text-xs text-gray-500">Regras do SRD 5.2 • novo sistema em adaptação</p>
+                                                <h3 className="font-title font-bold text-gray-900 group-hover:text-[#922610] text-lg transition-colors">D&D 5.5e (2024)</h3>
+                                                <p className="text-xs text-gray-500">Regras 2024 / SRD 5.2 • ficha revisada do PJ Lite</p>
                                             </div>
                                         </div>
 
@@ -2426,7 +2426,7 @@ const { useState, useEffect, useRef } = React;
                             <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] p-4 transition-opacity">
                                 <div className="bg-white rounded-sm shadow-2xl w-full max-w-2xl border-2 border-[#922610] overflow-hidden flex flex-col max-h-[90vh] animate-fade-in-up">
                                     <div className="bg-[#922610] text-white p-3 flex justify-between items-center shrink-0">
-                                        <div><h2 className="font-title font-bold text-lg">Criar em D&D 5e (2024)</h2><span className="text-[9px] uppercase font-bold tracking-widest text-orange-100">Novo sistema • em adaptação</span></div>
+                                        <div><h2 className="font-title font-bold text-lg">Criar em D&D 5.5e (2024)</h2><span className="text-[9px] uppercase font-bold tracking-widest text-orange-100">Regras 2024 • ficha revisada</span></div>
                                         <button onClick={() => setShowDndModelModal(false)} className="text-gray-400 hover:text-white text-2xl font-bold px-2 leading-none">&times;</button>
                                     </div>
                                     <div className="p-6 bg-gray-100 flex-1 overflow-y-auto space-y-6">
@@ -2436,7 +2436,7 @@ const { useState, useEffect, useRef } = React;
                                                     <h3 className="font-title font-bold text-gray-700 border-b-2 border-gray-300 pb-1 mb-3">Ficha de Personagem (Em Branco)</h3>
                                                     <div onClick={() => loadTemplate(initialDndPcData)} className="bg-white border-2 border-gray-300 hover:border-orange-500 rounded p-4 cursor-pointer flex items-center gap-4">
                                                         <div className="w-12 h-12 bg-orange-600 text-white rounded flex items-center justify-center shrink-0"><SVGIcons.User /></div>
-                                                        <div><h3 className="font-bold text-sm">PC D&D 5e</h3><p className="text-xs text-gray-500">Ficha completa SRD</p></div>
+                                                        <div><h3 className="font-bold text-sm">PC D&D 5.5e</h3><p className="text-xs text-gray-500">Ficha completa para as regras 2024</p></div>
                                                     </div>
                                                 </div>
                                                 <div>
@@ -2453,7 +2453,7 @@ const { useState, useEffect, useRef } = React;
                                         ) : (
                                             <>
                                                 <div>
-                                                    <h3 className="font-title font-bold text-gray-700 border-b-2 border-gray-300 pb-1 mb-3">Stat Block D&D 5e (Em Branco)</h3>
+                                                    <h3 className="font-title font-bold text-gray-700 border-b-2 border-gray-300 pb-1 mb-3">Stat Block D&D 5.5e (Em Branco)</h3>
                                                     <div onClick={() => loadTemplate(initialDndMonsterData)} className="bg-white border-2 border-gray-300 hover:border-[#922610] rounded p-4 cursor-pointer flex items-center gap-4">
                                                         <div className="w-12 h-12 bg-[#922610] text-white rounded flex items-center justify-center shrink-0"><SVGIcons.Skull /></div>
                                                         <div><h3 className="font-bold text-sm">Bestiário D&D</h3><p className="text-xs text-gray-500">Crie seu monstro do zero</p></div>
@@ -2588,7 +2588,7 @@ const { useState, useEffect, useRef } = React;
                                         <button onClick={() => setGuideTab('import')} className={`flex-1 py-2.5 px-4 text-xs font-bold uppercase text-center border-b-4 transition-colors whitespace-nowrap ${guideTab === 'import' ? 'border-gray-800 text-gray-900 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-300'}`}>Salvar & Compartilhar</button>
                                         <button onClick={() => setGuideTab('fichas_db')} className={`flex-1 py-2.5 px-4 text-xs font-bold uppercase text-center border-b-4 transition-colors whitespace-nowrap ${guideTab === 'fichas_db' ? 'border-gray-800 text-gray-900 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-300'}`}>Fichas DB</button>
                                         <button onClick={() => setGuideTab('ameacas_db')} className={`flex-1 py-2.5 px-4 text-xs font-bold uppercase text-center border-b-4 transition-colors whitespace-nowrap ${guideTab === 'ameacas_db' ? 'border-gray-800 text-gray-900 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-300'}`}>Ameaças e PNJs</button>
-                                        <button onClick={() => setGuideTab('dnd5e')} className={`flex-1 py-2.5 px-4 text-xs font-bold uppercase text-center border-b-4 transition-colors whitespace-nowrap ${guideTab === 'dnd5e' ? 'border-orange-600 text-orange-900 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-300'}`}>D&D 5e</button>
+                                        <button onClick={() => setGuideTab('dnd5e')} className={`flex-1 py-2.5 px-4 text-xs font-bold uppercase text-center border-b-4 transition-colors whitespace-nowrap ${guideTab === 'dnd5e' ? 'border-orange-600 text-orange-900 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-300'}`}>D&D 5.5e</button>
                                         <button onClick={() => setGuideTab('fabula')} className={`flex-1 py-2.5 px-4 text-xs font-bold uppercase text-center border-b-4 transition-colors whitespace-nowrap ${guideTab === 'fabula' ? 'border-teal-600 text-teal-900 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-300'}`}>Fabula Ultima</button>
                                         <button onClick={() => setGuideTab('som6')} className={`flex-1 py-2.5 px-4 text-xs font-bold uppercase text-center border-b-4 transition-colors whitespace-nowrap ${guideTab === 'som6' ? 'border-red-900 text-red-950 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-300'}`}>Som das Seis</button>
                                     </div>
@@ -2609,7 +2609,7 @@ const { useState, useEffect, useRef } = React;
                                                     <div className="bg-white border rounded-lg p-4"><strong>3. Entenda onde seus dados ficam</strong><p className="text-xs mt-1">No computador, as fichas priorizam consulta lado a lado; no celular, algumas áreas viram abas. Procure sempre o título da seção antes de editar para evitar colocar a informação no campo errado.</p></div>
                                                     <div className="bg-white border rounded-lg p-4"><strong>4. Salve e faça backup</strong><p className="text-xs mt-1">O autosave ajuda, mas <strong>Salvar</strong> cria um ponto de histórico. Antes de trocar de computador, limpar o navegador ou fazer grandes mudanças, exporte também um ZIP/JSON.</p></div>
                                                     <div className="bg-white border rounded-lg p-4"><strong>5. Compartilhe sem complicação</strong><p className="text-xs mt-1"><strong>Ficha Chat</strong> gera um resumo legível; <strong>Código</strong> serve para importar a ficha em outro navegador; ZIP/JSON é a opção indicada para backup completo.</p></div>
-                                                    <div className="bg-white border rounded-lg p-4"><strong>6. Use o guia do seu sistema</strong><p className="text-xs mt-1">As abas Dragonbane, D&D 5e, Fabula Ultima e Som das Seis explicam uma ordem de preenchimento própria e destacam os recursos especiais de cada ficha.</p></div>
+                                                    <div className="bg-white border rounded-lg p-4"><strong>6. Use o guia do seu sistema</strong><p className="text-xs mt-1">As abas Dragonbane, D&D 5.5e, Fabula Ultima e Som das Seis explicam uma ordem de preenchimento própria e destacam os recursos especiais de cada ficha.</p></div>
                                                 </div>
                                                 <div className="bg-amber-50 border border-amber-300 rounded-lg p-4 space-y-2">
                                                     <h3 className="font-bold text-amber-900">🧭 Se você nunca jogou RPG</h3>
@@ -2679,7 +2679,7 @@ const { useState, useEffect, useRef } = React;
                                                 </div>
 
                                                 <div className="bg-orange-50 border border-orange-200 rounded p-4 space-y-3">
-                                                    <h3 className="font-title font-bold text-[#922610]">🐉 D&D 5e — Bloco de Estatísticas</h3>
+                                                    <h3 className="font-title font-bold text-[#922610]">🐉 D&D 5.5e — Bloco de Estatísticas</h3>
                                                     <p>Em D&D, crie a criatura pela opção <strong>Bestiário/Ameaça</strong>. Comece com <strong>Nome, Tamanho, Tipo, Alinhamento, CA, PV e Deslocamento</strong>. Depois defina os seis atributos: FOR, DES, CON, INT, SAB e CAR.</p>
                                                     <p>Preencha somente quando necessário <strong>Testes de Resistência, Perícias, Vulnerabilidades, Resistências, Imunidades, Sentidos e Idiomas</strong>. Esses campos representam exceções e capacidades especiais do monstro e podem ficar vazios quando não se aplicarem.</p>
                                                     <p><strong>Desafio (CR)</strong> representa aproximadamente o nível de ameaça da criatura e também está relacionado ao bônus de proficiência. Use o campo de XP junto do CR conforme a referência da criatura que estiver adaptando.</p>
@@ -2698,7 +2698,7 @@ const { useState, useEffect, useRef } = React;
                                                     <h3 className="font-bold text-gray-900 mb-2">✅ Fluxo rápido recomendado</h3>
                                                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
                                                         <div className="border rounded p-3"><strong>Dragonbane</strong><br/>1. Escolha PNJ ou Monstro.<br/>2. Defina os valores básicos.<br/>3. Adicione perícias/habilidades.<br/>4. Registre armas ou a tabela D6.<br/>5. Salve e teste em combate.</div>
-                                                        <div className="border rounded p-3"><strong>D&D 5e</strong><br/>1. Defina identidade, CA, PV e movimento.<br/>2. Preencha atributos e CR.<br/>3. Adicione resistências e sentidos úteis.<br/>4. Cadastre traços e ações.<br/>5. Confira o bloco final antes de salvar.</div>
+                                                        <div className="border rounded p-3"><strong>D&D 5.5e</strong><br/>1. Defina identidade, CA, PV e movimento.<br/>2. Preencha atributos e CR.<br/>3. Adicione resistências e sentidos úteis.<br/>4. Cadastre traços e ações.<br/>5. Confira o bloco final antes de salvar.</div>
                                                         <div className="border rounded p-3"><strong>Fabula Ultima</strong><br/>1. Nome, nível, patente e espécie.<br/>2. Atributos e recursos/defesas.<br/>3. Abra “Descrição, Traços & Afinidades” e marque só o necessário.<br/>4. Cadastre ataques visíveis; reordene com ↑/↓.<br/>5. Feitiços, Poderes, Outras Ações e Regras Especiais ficam recolhíveis e também podem ser ordenados.</div>
                                                     </div>
                                                 </div>
@@ -2707,7 +2707,7 @@ const { useState, useEffect, useRef } = React;
 
                                         {guideTab === 'dnd5e' && (
                                             <div className="space-y-5">
-                                                <div className="bg-orange-50 border border-orange-300 rounded p-4"><div className="text-[10px] font-bold uppercase text-orange-700 mb-1">D&D 5e (2024) • em adaptação</div><h3 className="font-title font-bold text-[#922610] mb-2">🐲 Personagem passo a passo</h3><p>Siga esta ordem para não se perder entre os muitos campos da ficha.</p></div>
+                                                <div className="bg-orange-50 border border-orange-300 rounded p-4"><div className="text-[10px] font-bold uppercase text-orange-700 mb-1">D&D 5.5e (2024) • revisado</div><h3 className="font-title font-bold text-[#922610] mb-2">🐲 Personagem passo a passo</h3><p>Siga esta ordem para não se perder entre os muitos campos da ficha.</p></div>
                                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                                     <div className="bg-white border rounded p-4"><strong>1. Identidade</strong><p className="text-xs mt-1">Nome, Jogador, Classe, Nível, Espécie/Linhagem e Antecedente. Você também pode adicionar o retrato por Upload ou URL.</p></div>
                                                     <div className="bg-white border rounded p-4"><strong>2. Atributos</strong><p className="text-xs mt-1">Preencha FOR, DES, CON, INT, SAB e CAR. A ficha calcula os modificadores. Depois marque resistências e níveis de proficiência nas perícias.</p></div>
@@ -2717,11 +2717,11 @@ const { useState, useEffect, useRef } = React;
                                                     <div className="bg-white border rounded p-4"><strong>6. Equipamento & Itens Sincronizados</strong><p className="text-xs mt-1">Use Itens Sincronizados para nome, quantidade e tipo. Se o item for uma Arma, marque <strong>↔ Ataques</strong>: nome, bônus e dano ficam ligados à lista de Ataques em dois sentidos. O inventário livre continua disponível para anotações e itens que você prefere registrar como texto.</p></div>
                                                 </div>
                                                 <div className="bg-white border rounded p-4"><h3 className="font-bold text-gray-900 mb-2">🧭 Ordem prática para jogar rápido</h3><p className="text-xs"><strong>Identidade → Atributos → Perícias/Salvaguardas → CA/PV → Ataques → Classe/Subclasse → Magias (se houver) → Equipamento.</strong> Você não precisa preencher uma área de magia para um personagem que não conjura.</p></div>
-                                                <div className="bg-slate-50 border border-slate-300 rounded p-4"><h3 className="font-bold text-slate-900 mb-2">📱 D&D no celular</h3><p className="text-xs">As abas principais ficam fixas e podem ser deslizadas horizontalmente. Atributos usam uma grade compacta, perícias continuam lado a lado quando houver espaço e os painéis de Classe e Magias viram uma coluna confortável para toque. No grimório, cada magia ocupa um cartão por linha para evitar campos espremidos.</p></div>
+                                                <div className="bg-slate-50 border border-slate-300 rounded p-4"><h3 className="font-bold text-slate-900 mb-2">📱 D&D no celular</h3><p className="text-xs">As abas principais ficam fixas; em telefones estreitos elas viram uma grade para não esconder nenhuma opção e, em telas médias, podem ser deslizadas. Atributos usam uma grade compacta, as perícias passam para uma coluna quando falta espaço e os painéis de Classe e Magias ficam confortáveis para toque. Ataques, inventário e PV também se reorganizam sem criar rolagem lateral; no grimório, cada magia ocupa um cartão por linha.</p></div>
                                                 <div className="bg-red-50 border border-red-200 rounded p-4"><h3 className="font-bold text-red-900 mb-2">↔ Como funciona a sincronização de armas</h3><p className="text-xs">Crie um item, escolha o tipo <strong>Arma</strong> e ative <strong>↔ Ataques</strong>. O PJ Lite cria um ataque ligado a esse item. Se você mudar nome, bônus, dano ou tipo de dano no inventário, o ataque acompanha; se editar o ataque, o item também acompanha. Desativar a opção ou apagar um dos vínculos não apaga o restante do inventário.</p></div>
                                                 <div className="bg-white border rounded p-4 space-y-2"><h3 className="font-bold text-gray-900">📘 Para não se perder em D&D</h3><p className="text-xs">A ficha tem muitos números, mas durante a maior parte do jogo você consulta poucas áreas: modificadores de atributos, perícias, CA, PV, ataques e recursos da classe. Magias e características ficam como referência quando forem usadas.</p><p className="text-xs"><strong>Proficiência:</strong> quando um campo indicar que o personagem é proficiente, registre isso na ficha em vez de tentar memorizar. <strong>PV temporários</strong> ficam separados dos PV normais e <strong>Dados de Vida</strong> também possuem campo próprio.</p></div>
                                                 <div className="bg-orange-50 border border-orange-200 rounded p-4"><h3 className="font-bold text-[#922610] mb-2">🌱 Dica para a primeira ficha</h3><p className="text-xs">Preencha primeiro o que sua classe realmente usa. Um personagem sem magia pode deixar a área de magias de lado; um conjurador pode preencher primeiro as magias mais usadas e completar o restante depois.</p></div>
-                                                <div className="p-4 bg-orange-50 border border-orange-300 rounded"><h3 className="font-title font-bold text-[#922610] mb-2">D&D 5e / SRD 5.2</h3><p className="text-xs">A implementação está em adaptação contínua. O PJ Lite não é um produto oficial da Wizards of the Coast.</p></div>
+                                                <div className="p-4 bg-orange-50 border border-orange-300 rounded"><h3 className="font-title font-bold text-[#922610] mb-2">D&D 5.5e / Regras 2024 / SRD 5.2</h3><p className="text-xs">A ficha do PJ Lite foi revisada para esta prévia e segue em evolução conforme o projeto recebe melhorias. O PJ Lite é um projeto independente e não é um produto oficial da Wizards of the Coast.</p></div>
                                             </div>
                                         )}
 

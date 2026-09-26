@@ -77,18 +77,30 @@ for (const modulePath of [
 }
 
 const dndEditor = await readFile('src/systems/dnd5e/components/CharacterEditor.jsx', 'utf8');
+const dndMobileCss = await readFile('src/systems/dnd5e/dnd-sheet-v7.css', 'utf8');
 if (!dndEditor.includes("../dnd-sheet-v7.css")) {
   throw new Error('O editor D&D não está usando a folha de estilo mobile mais recente.');
 }
 if (!dndEditor.includes('ClassWorkspace') || !dndEditor.includes('SpellWorkspace')) {
   throw new Error('O editor D&D não contém os workspaces separados de classe e magias.');
 }
+for (const token of ['@media (max-width: 520px)', '@media (max-width: 430px)', 'overflow-x: clip', 'font-size: 16px', '.dnd-v6-wrapper .dnd-v3-skills-grid']) {
+  if (!dndMobileCss.includes(token)) {
+    throw new Error(`Revisão mobile D&D incompleta: ${token}`);
+  }
+}
+if (!app.includes('D&D 5.5e (2024) • revisado') || app.includes('novo sistema em adaptação')) {
+  throw new Error('Textos atuais de D&D ainda indicam uma etapa antiga de adaptação.');
+}
 
 const registry = await readFile('src/systems/registry.js', 'utf8');
+if (!registry.includes("{ id: 'dnd5e', name: 'D&D 5.5e', status: 'active', enabled: true }")) {
+  throw new Error('Registro D&D não está identificado como D&D 5.5e.');
+}
 for (const id of ['dragonbane', 'dnd5e', 'fabulaUltima', 'somDasSeis']) {
   if (!registry.includes(`id: '${id}'`)) {
     throw new Error(`Sistema ativo ausente do registro: ${id}`);
   }
 }
 
-console.log('PJ Lite: estrutura essencial, editores modulares, D&D mobile e módulos de sistemas verificados com sucesso.');
+console.log('PJ Lite: estrutura essencial, editores modulares, revisão mobile D&D e módulos de sistemas verificados com sucesso.');

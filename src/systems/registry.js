@@ -1,6 +1,6 @@
 export const SYSTEMS = [
   { id: 'dragonbane', name: 'Dragonbane', status: 'active', enabled: true },
-  { id: 'dnd5e', name: 'D&D 5e', status: 'active', enabled: true },
+  { id: 'dnd5e', name: 'D&D 5.5e', status: 'active', enabled: true },
   { id: 'fabulaUltima', name: 'Fabula Ultima', status: 'active', enabled: true },
   { id: 'somDasSeis', name: 'O Som das Seis', status: 'active', enabled: true },
   { id: 'skyfall', name: 'Skyfall RPG', status: 'planned', enabled: false },
