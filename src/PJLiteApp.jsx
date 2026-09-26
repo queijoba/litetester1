@@ -2662,7 +2662,7 @@ const { useState, useEffect, useRef } = React;
                                             <div className="space-y-5">
                                                 <div className="bg-gray-900 text-white rounded p-4">
                                                     <h3 className="font-title font-bold text-base mb-1">Guia de Ameaças, PNJs e Bestiário</h3>
-                                                    <p className="text-xs text-gray-200">Esta aba reúne as ameaças e personagens do Mestre dos sistemas disponíveis. Dragonbane usa PNJs e monstros; D&D 5e usa blocos de estatísticas; Fabula Ultima usa Ameaças/PNJs; O Som das Seis usa PDJs. Escolha primeiro o sistema e depois preencha apenas o que realmente será consultado em mesa.</p>
+                                                    <p className="text-xs text-gray-200">Esta aba reúne as ameaças e personagens do Mestre dos sistemas disponíveis. Dragonbane usa PNJs e monstros; D&D 5.5e usa blocos de estatísticas; Fabula Ultima usa Ameaças/PNJs; O Som das Seis usa PDJs. Escolha primeiro o sistema e depois preencha apenas o que realmente será consultado em mesa.</p>
                                                 </div>
 
                                                 <div className="bg-emerald-50 border border-emerald-200 rounded p-4 space-y-3">
