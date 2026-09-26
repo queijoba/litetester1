@@ -1,0 +1,489 @@
+/*
+ * PJ Lite — polimento mobile pré-lançamento.
+ * Escopo intencional: D&D 5.5e, Fabula Ultima e O Som das Seis.
+ * Dragonbane não é alterado por este arquivo.
+ */
+
+.dnd-v6-wrapper,
+.fabula-pdf-editor,
+.fabula-threat-editor,
+.som6-paper,
+.som6-sheet {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.dnd-v6-wrapper,
+.fabula-pdf-editor,
+.fabula-threat-editor,
+.som6-paper {
+  overflow-x: clip;
+}
+
+@media (max-width: 767px) {
+  /* ================================================================
+   * D&D 5.5e — retrato maior e controles fora da imagem
+   * ================================================================ */
+  .dnd-v6-wrapper .dnd-v3-header {
+    grid-template-columns: 124px minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .dnd-v6-wrapper .dnd-v3-portrait-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .dnd-v6-wrapper .dnd-v3-portrait {
+    width: 116px;
+    height: auto;
+    aspect-ratio: auto;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .dnd-v6-wrapper .dnd-v3-portrait > img,
+  .dnd-v6-wrapper .dnd-v3-portrait > span:first-child {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    height: auto;
+    min-height: 0;
+    object-fit: cover;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border: 2px solid #922610;
+    border-radius: 12px 4px;
+    background: #eee7dc;
+    box-shadow: 0 0 0 2px #fff, 0 0 0 3px #b9aa9d, 0 4px 12px rgba(0,0,0,.14);
+  }
+
+  .dnd-v6-wrapper .dnd-v3-portrait-tools,
+  .dnd-v6-wrapper .dnd-v3-portrait-tools.show {
+    position: static !important;
+    inset: auto !important;
+    width: 100%;
+    opacity: 1 !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    padding: 0 !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+  }
+
+  .dnd-v6-wrapper .dnd-v3-portrait-tools label,
+  .dnd-v6-wrapper .dnd-v3-portrait-tools button,
+  .dnd-v6-wrapper .dnd-v3-portrait-tools.show button {
+    width: 100% !important;
+    min-width: 0;
+    min-height: 34px;
+    padding: 6px 5px;
+    border-radius: 7px;
+    font-size: 9px;
+    line-height: 1.1;
+  }
+
+  .dnd-v6-wrapper .dnd-v3-portrait-tools .danger {
+    grid-column: 1 / -1;
+  }
+
+  .dnd-v6-wrapper .dnd-v3-portrait-tools.show input {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-width: 0;
+    min-height: 36px;
+    padding: 6px 7px;
+    border-radius: 7px;
+  }
+
+  /* ================================================================
+   * Fabula Ultima — navegação, retrato, cartões e ameaça
+   * ================================================================ */
+  .fabula-pdf-editor > .pj-mobile-tabs {
+    gap: 4px;
+    padding: 4px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+
+  .fabula-pdf-editor > .pj-mobile-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .fabula-pdf-editor > .pj-mobile-tabs button {
+    flex: 0 0 auto;
+    min-width: 112px;
+    min-height: 44px;
+    padding: 8px 10px;
+    border-radius: 9px 9px 4px 4px;
+    white-space: normal;
+    line-height: 1.15;
+    touch-action: manipulation;
+  }
+
+  .fabula-sheet-shell {
+    padding: 10px !important;
+    gap: 10px;
+    border-radius: 15px;
+    overflow: clip;
+  }
+
+  .fabula-profile-layout {
+    gap: 10px;
+  }
+
+  .fabula-profile-layout > .space-y-2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .fabula-portrait-frame {
+    width: min(210px, 62vw);
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .fabula-portrait-frame > img,
+  .fabula-portrait-frame > span:first-child {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    height: auto !important;
+    min-height: 0;
+    object-fit: cover;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border: 3px solid #2d7c79;
+    border-radius: 18px 5px;
+    background: linear-gradient(#eaf8f4 0%, #d8efea 100%);
+    box-shadow: inset 0 0 0 3px rgba(255,255,255,.75), 0 7px 18px rgba(28,86,83,.16);
+  }
+
+  .fabula-portrait-frame > .absolute {
+    position: static !important;
+    inset: auto !important;
+    opacity: 1 !important;
+    width: 100%;
+    min-height: 0;
+    padding: 0 !important;
+    display: flex !important;
+    flex-flow: row wrap !important;
+    align-items: stretch !important;
+    gap: 5px !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+  }
+
+  .fabula-portrait-frame > .absolute > label,
+  .fabula-portrait-frame > .absolute > button {
+    flex: 1 1 82px;
+    width: auto !important;
+    min-height: 36px;
+    padding: 7px 8px !important;
+  }
+
+  .fabula-portrait-frame > .absolute > button.bg-red-600 {
+    flex-basis: 100%;
+  }
+
+  .fabula-portrait-frame > .absolute > div {
+    width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .fabula-profile-layout > .space-y-2 > p {
+    margin-top: 2px;
+    text-align: center !important;
+  }
+
+  .fabula-bond-panel .bond-row {
+    grid-template-columns: minmax(0,1fr) 66px 38px;
+    gap: 6px;
+  }
+
+  .fabula-bond-panel .bond-row > input:nth-child(1) { grid-column: 1; }
+  .fabula-bond-panel .bond-row > input:nth-child(2) { grid-column: 2; }
+  .fabula-bond-panel .bond-row > input:nth-child(3) { grid-column: 1 / -1; grid-row: 2; }
+  .fabula-bond-panel .bond-row > button { grid-column: 3; grid-row: 1; min-width: 38px; }
+
+  .fabula-track-grid,
+  .fabula-small-grid {
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 8px;
+  }
+
+  .fabula-list-card,
+  .fabula-list-card-head,
+  .fabula-list-card-body,
+  .fabula-power-row,
+  .fabula-equipment-row,
+  .fabula-hero-row,
+  .fabula-spell-row,
+  .fabula-ritual-row,
+  .fabula-arcano-card {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .fabula-list-card-head.flex {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .fabula-threat-editor {
+    padding: 8px !important;
+  }
+
+  .fabula-threat-compact {
+    padding: 10px;
+    border-radius: 15px;
+    overflow: clip;
+  }
+
+  .fabula-threat-intro {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .fabula-threat-intro .fabula-mini-badge {
+    align-self: flex-start;
+  }
+
+  .fabula-threat-section-card,
+  .fabula-threat-details,
+  .fabula-threat-attack-card,
+  .fabula-threat-resource,
+  .fabula-affinity-chip {
+    min-width: 0;
+  }
+
+  .fabula-threat-details > summary {
+    gap: 6px;
+  }
+
+  /* ================================================================
+   * O Som das Seis — retrato e blocos mais confortáveis no telefone
+   * ================================================================ */
+  .som6-paper > .pj-mobile-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    overflow: visible;
+  }
+
+  .som6-paper > .pj-mobile-tabs button {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    padding: 9px 8px;
+    touch-action: manipulation;
+  }
+
+  .som6-paper > .p-3,
+  .som6-paper > .md\:p-5 {
+    min-width: 0;
+  }
+
+  .som6-sheet {
+    min-width: 0;
+  }
+
+  .som6-sheet .som6-frame,
+  .som6-sheet .som6-stat-box,
+  .som6-sheet .som6-section,
+  .som6-sheet .som6-cream,
+  .som6-sheet .som6-skill-card {
+    min-width: 0;
+  }
+
+  .som6-sheet .som6-portrait-actions label,
+  .som6-sheet .som6-portrait-actions button,
+  .som6-sheet .som6-order-btn {
+    min-height: 34px;
+    touch-action: manipulation;
+  }
+
+  .som6-sheet .som6-skill-card input,
+  .som6-sheet .som6-skill-card textarea {
+    min-width: 0;
+  }
+
+  /* PDJ: linhas de armas/habilidades deixam de espremer campos. */
+  .som6-paper .som6-sheet > .som6-cream .grid > * {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  /* D&D: cabeçalho vira bloco, retrato ganha presença e não disputa largura. */
+  .dnd-v6-wrapper .dnd-v3-header {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .dnd-v6-wrapper .dnd-v3-portrait-wrap {
+    justify-content: center;
+  }
+
+  .dnd-v6-wrapper .dnd-v3-portrait {
+    width: min(148px, 44vw);
+  }
+
+  .dnd-v6-wrapper .dnd-v3-identity {
+    width: 100%;
+  }
+
+  /* Fabula: ações e cabeçalhos passam a usar a largura inteira. */
+  .fabula-profile-panel {
+    padding: 10px;
+  }
+
+  .fabula-list-card-head.flex {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .fabula-list-card-head.flex > button,
+  .fabula-list-card-head.flex > .flex {
+    width: 100%;
+  }
+
+  .fabula-threat-details > summary span:last-child {
+    display: none;
+  }
+
+  /* Som das Seis: o retrato deixa de ficar preso numa coluna de ~98 px. */
+  .som6-sheet > .som6-frame:first-of-type > .grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .som6-sheet > .som6-frame:first-of-type > .grid > div:first-child {
+    width: min(156px, 48vw);
+    margin-inline: auto;
+  }
+
+  .som6-sheet > .som6-frame:first-of-type .som6-portrait {
+    height: 150px !important;
+  }
+
+  .som6-sheet > .som6-frame:first-of-type .som6-stat-box {
+    width: 100%;
+  }
+
+  .som6-sheet > .flex.items-end.justify-between,
+  .som6-sheet > .flex.items-end.justify-between.gap-3 {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 430px) {
+  /* Evita zoom de formulário e mantém áreas de toque legíveis. */
+  .dnd-v6-wrapper input:not([type='checkbox']):not([type='radio']):not([type='file']),
+  .dnd-v6-wrapper select,
+  .dnd-v6-wrapper textarea,
+  .fabula-pdf-editor input:not([type='checkbox']):not([type='radio']):not([type='file']),
+  .fabula-pdf-editor select,
+  .fabula-pdf-editor textarea,
+  .fabula-threat-editor input:not([type='checkbox']):not([type='radio']):not([type='file']),
+  .fabula-threat-editor select,
+  .fabula-threat-editor textarea,
+  .som6-paper input:not([type='checkbox']):not([type='radio']):not([type='file']),
+  .som6-paper select,
+  .som6-paper textarea {
+    font-size: 16px !important;
+  }
+
+  .dnd-v6-wrapper .dnd-v3-portrait {
+    width: min(156px, 48vw);
+  }
+
+  .fabula-sheet-shell {
+    padding: 8px !important;
+  }
+
+  .fabula-portrait-frame {
+    width: min(196px, 66vw);
+  }
+
+  .fabula-profile-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .fabula-track-grid,
+  .fabula-small-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .fabula-threat-meta-grid,
+  .fabula-threat-resource-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .som6-paper .som6-logo {
+    font-size: 1.65rem !important;
+  }
+
+  .som6-paper .som6-frame {
+    padding: 6px;
+  }
+
+  .som6-paper .som6-stat-box,
+  .som6-paper .som6-cream {
+    padding: 8px;
+  }
+}
+
+@media (max-width: 380px) {
+  .fabula-track-grid,
+  .fabula-small-grid,
+  .fabula-threat-meta-grid,
+  .fabula-threat-resource-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fabula-bond-panel .bond-row {
+    grid-template-columns: minmax(0,1fr) 58px 38px;
+  }
+
+  .som6-sheet .grid.grid-cols-\[1fr_92px\] {
+    grid-template-columns: 1fr !important;
+  }
+
+  .som6-paper .som6-pip {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+body.theme-dark .dnd-v6-wrapper .dnd-v3-portrait > img,
+body.theme-dark .dnd-v6-wrapper .dnd-v3-portrait > span:first-child {
+  background: #171b1f;
+  border-color: #d26b60;
+  box-shadow: 0 0 0 2px #0e1012, 0 0 0 3px #555 !important;
+}
+
+body.theme-dark .fabula-portrait-frame > img,
+body.theme-dark .fabula-portrait-frame > span:first-child {
+  background: linear-gradient(#183336 0%, #11282a 100%);
+  border-color: #4b8f87;
+  box-shadow: none;
+}
