@@ -1,5 +1,7 @@
 # LiteTester1 — PJ Lite React Preview
 
+**Versão atual da prévia:** 0.7.4v Alpha
+
 Ambiente isolado para evoluir e validar o PJ Lite antes de qualquer migração do `pjlite.vercel.app` definitivo.
 
 ## Estado atual
@@ -15,6 +17,7 @@ A prévia React/Vite está funcional e modularizada por sistema:
 - D&D 5.5e possui ficha responsiva, abas de Ficha & Combate, Recursos, Magias e painel dinâmico da classe/subclasse.
 - A folha `src/systems/dnd5e/dnd-sheet-v7.css` contém o polimento mobile atual do D&D.
 - O CI executa verificação estrutural e build em cada push/PR para `main`.
+- Guias e Tutoriais foram atualizados para a 0.7.4v Alpha, com tutorial rápido, orientação de backup/compartilhamento e instruções mais atuais para D&D 5.5e no celular.
 
 ## Estrutura principal
 
@@ -78,3 +81,7 @@ A prévia já serve para desenvolvimento e testes, mas a promoção para o proje
 ## Política da prévia
 
 O `litetester1` continua sendo o laboratório. O projeto oficial não deve ser substituído automaticamente. A decisão de promover a prévia será tomada somente após a revisão funcional final e testes de regressão.
+
+## Código aberto e contato
+
+O PJ Lite continua sendo um projeto gratuito e de código aberto. Para acessar o código, estudar a implementação, adaptar algo ou colaborar, entre em contato com Nick Queijo pelo **Telegram @ralseibaiano** ou **Discord inabakaoru** para receber a orientação e o repositório corretos da versão atual.

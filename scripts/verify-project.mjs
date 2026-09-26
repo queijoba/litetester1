@@ -45,6 +45,23 @@ if (!main.includes("./systems/dragonbane/index.js")) {
 }
 
 const app = await readFile('src/PJLiteApp.jsx', 'utf8');
+if (!app.includes("versao: '0.7.4v Alpha'")) {
+  throw new Error('PJLiteApp.jsx não anuncia a versão 0.7.4v Alpha.');
+}
+if (!app.includes('Tutorial de 3 minutos')) {
+  throw new Error('Guias e Tutoriais não contêm o tutorial rápido da 0.7.4v.');
+}
+if (app.includes('Exibir código-fonte da página')) {
+  throw new Error('A orientação antiga de copiar o HTML ainda está presente.');
+}
+if (!app.includes('@ralseibaiano') || !app.includes('inabakaoru')) {
+  throw new Error('A orientação de contato para o código aberto está incompleta.');
+}
+
+const indexHtml = await readFile('index.html', 'utf8');
+if (!indexHtml.includes('0.7.4v Alpha')) {
+  throw new Error('index.html não anuncia a versão 0.7.4v Alpha.');
+}
 for (const modulePath of [
   './systems/dragonbane/components/Editor.jsx',
   './systems/dnd5e/components/CharacterEditor.jsx',
