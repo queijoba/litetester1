@@ -39,7 +39,8 @@
   }
 
   /* ------------------------------------------------------------------
-   * O Som das Seis — atributos em cartões 2x2, com 5 marcadores 3+2.
+   * O Som das Seis — atributos em cartões 2x2.
+   * Os 5 marcadores permanecem SEMPRE na mesma linha.
    * ---------------------------------------------------------------- */
   .som6-sheet .grid.grid-cols-\[1fr_92px\] {
     grid-template-columns: 1fr !important;
@@ -58,13 +59,13 @@
 
   .som6-sheet .grid.grid-cols-\[1fr_92px\] > .som6-frame:first-child > .space-y-2\.5 > div {
     min-width: 0;
-    min-height: 118px;
-    padding: 10px 7px;
+    min-height: 106px;
+    padding: 9px 5px;
     display: flex !important;
     flex-direction: column;
     align-items: center !important;
     justify-content: center !important;
-    gap: 9px !important;
+    gap: 8px !important;
     border: 1px solid rgba(246, 239, 213, .2);
     border-radius: 12px 4px 12px 4px;
     background: rgba(246, 239, 213, .045);
@@ -73,26 +74,33 @@
   .som6-sheet .grid.grid-cols-\[1fr_92px\] > .som6-frame:first-child > .space-y-2\.5 > div > span {
     width: 100%;
     text-align: center;
-    font-size: 16px !important;
+    font-size: 15px !important;
     line-height: 1.05;
   }
 
+  /* Sobrescreve o flex-wrap do Som6Pips: cinco casas em uma única fileira. */
   .som6-sheet .grid.grid-cols-\[1fr_92px\] > .som6-frame:first-child > .space-y-2\.5 > div > div {
     width: 100%;
+    min-width: 0;
     display: grid !important;
-    grid-template-columns: repeat(3, 30px);
+    grid-template-columns: repeat(5, 26px) !important;
+    grid-auto-flow: column;
     justify-content: center;
-    gap: 6px !important;
+    align-items: center;
+    gap: 4px !important;
+    flex-wrap: nowrap !important;
   }
 
   .som6-sheet .grid.grid-cols-\[1fr_92px\] > .som6-frame:first-child .som6-pip {
-    width: 30px !important;
-    height: 30px !important;
+    width: 26px !important;
+    height: 26px !important;
+    min-width: 26px !important;
     margin: 0 !important;
-    border-radius: 8px 3px 8px 3px;
+    border-radius: 7px 3px 7px 3px;
+    padding: 0 !important;
   }
 
-  /* Vida e Defesa lado a lado para compensar a nova área de atributos. */
+  /* Vida e Defesa lado a lado para manter a ficha compacta. */
   .som6-sheet .grid.grid-cols-\[1fr_92px\] > .space-y-3 {
     display: grid !important;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -112,6 +120,32 @@
   }
 }
 
+@media (max-width: 430px) {
+  .som6-sheet .grid.grid-cols-\[1fr_92px\] > .som6-frame:first-child > .space-y-2\.5 {
+    gap: 6px !important;
+  }
+
+  .som6-sheet .grid.grid-cols-\[1fr_92px\] > .som6-frame:first-child > .space-y-2\.5 > div {
+    min-height: 100px;
+    padding: 8px 3px;
+  }
+
+  .som6-sheet .grid.grid-cols-\[1fr_92px\] > .som6-frame:first-child > .space-y-2\.5 > div > span {
+    font-size: 14px !important;
+  }
+
+  .som6-sheet .grid.grid-cols-\[1fr_92px\] > .som6-frame:first-child > .space-y-2\.5 > div > div {
+    grid-template-columns: repeat(5, 24px) !important;
+    gap: 3px !important;
+  }
+
+  .som6-sheet .grid.grid-cols-\[1fr_92px\] > .som6-frame:first-child .som6-pip {
+    width: 24px !important;
+    height: 24px !important;
+    min-width: 24px !important;
+  }
+}
+
 @media (max-width: 390px) {
   .db-attributes-strip {
     gap: 9px 4px !important;
@@ -128,26 +162,29 @@
     line-height: 1.05;
   }
 
-  .som6-sheet .grid.grid-cols-\[1fr_92px\] > .som6-frame:first-child > .space-y-2\.5 {
-    gap: 6px !important;
-  }
-
-  .som6-sheet .grid.grid-cols-\[1fr_92px\] > .som6-frame:first-child > .space-y-2\.5 > div {
-    min-height: 110px;
-    padding: 8px 5px;
-  }
-
-  .som6-sheet .grid.grid-cols-\[1fr_92px\] > .som6-frame:first-child > .space-y-2\.5 > div > span {
-    font-size: 14px !important;
-  }
-
   .som6-sheet .grid.grid-cols-\[1fr_92px\] > .som6-frame:first-child > .space-y-2\.5 > div > div {
-    grid-template-columns: repeat(3, 27px);
-    gap: 5px !important;
+    grid-template-columns: repeat(5, 22px) !important;
+    gap: 3px !important;
   }
 
   .som6-sheet .grid.grid-cols-\[1fr_92px\] > .som6-frame:first-child .som6-pip {
-    width: 27px !important;
-    height: 27px !important;
+    width: 22px !important;
+    height: 22px !important;
+    min-width: 22px !important;
+    border-radius: 6px 2px 6px 2px;
+  }
+}
+
+@media (max-width: 350px) {
+  /* Mesmo em telas muito estreitas os 5 marcadores continuam juntos. */
+  .som6-sheet .grid.grid-cols-\[1fr_92px\] > .som6-frame:first-child > .space-y-2\.5 > div > div {
+    grid-template-columns: repeat(5, 20px) !important;
+    gap: 2px !important;
+  }
+
+  .som6-sheet .grid.grid-cols-\[1fr_92px\] > .som6-frame:first-child .som6-pip {
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 20px !important;
   }
 }
