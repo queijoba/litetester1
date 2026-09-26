@@ -5,6 +5,7 @@ const requiredFiles = [
   'src/PJLiteApp.jsx',
   'src/pjlite.css',
   'src/mobile-polish.css',
+  'src/mobile-systems-v8.css',
   'src/systems/registry.js',
   'src/systems/dragonbane/index.js',
   'src/systems/dragonbane/components/Editor.jsx',
@@ -46,6 +47,9 @@ if (!main.includes("./systems/dragonbane/index.js")) {
 }
 if (!main.includes("./mobile-polish.css")) {
   throw new Error('main.jsx não está carregando o polimento mobile pré-lançamento.');
+}
+if (!main.includes("./mobile-systems-v8.css")) {
+  throw new Error('main.jsx não está carregando a revisão mobile final dos sistemas.');
 }
 
 const app = await readFile('src/PJLiteApp.jsx', 'utf8');
@@ -112,6 +116,24 @@ if (mobilePolish.includes('.db-')) {
   throw new Error('O polimento mobile geral não deve alterar seletores próprios de Dragonbane.');
 }
 
+const systemsMobileCss = await readFile('src/mobile-systems-v8.css', 'utf8');
+for (const token of [
+  '.db-bio .db-portrait',
+  '.db-attributes-strip',
+  '.fabula-profile-grid',
+  '.fabula-attr-grid',
+  '.fabula-threat-resource-grid',
+  '.som6-paper > .pj-mobile-tabs',
+  '.som6-sheet .grid.grid-cols-\\[1fr_92px\\]',
+  "[class*='grid-cols-[1fr_70px_1fr_22px]']",
+  '@media (max-width: 520px)',
+  '@media (max-width: 400px)',
+]) {
+  if (!systemsMobileCss.includes(token)) {
+    throw new Error(`Revisão mobile final dos sistemas incompleta: ${token}`);
+  }
+}
+
 if (!app.includes('D&D 5.5e (2024) • revisado') || app.includes('novo sistema em adaptação')) {
   throw new Error('Textos atuais de D&D ainda indicam uma etapa antiga de adaptação.');
 }
@@ -126,4 +148,4 @@ for (const id of ['dragonbane', 'dnd5e', 'fabulaUltima', 'somDasSeis']) {
   }
 }
 
-console.log('PJ Lite: estrutura essencial, editores modulares e revisão mobile de D&D/Fabula/Som das Seis verificados com sucesso.');
+console.log('PJ Lite: estrutura essencial, editores modulares e revisões mobile de D&D, Dragonbane, Fabula Ultima e O Som das Seis verificadas com sucesso.');
