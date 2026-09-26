@@ -1,0 +1,715 @@
+/* PJ Lite 0.7.4v Alpha — polimento mobile final dos sistemas não-D&D.
+ * Carregado depois de pjlite.css para preservar o desktop e aplicar somente
+ * ajustes de ergonomia em tablets/celulares.
+ */
+
+.db-paper,
+.fabula-pdf-editor,
+.fabula-threat-editor,
+.som6-paper,
+.som6-sheet {
+  min-width: 0;
+  max-width: 100%;
+}
+
+@media (max-width: 767px) {
+  /* ----------------------------------------------------------------------
+   * DRAGONBANE
+   * ------------------------------------------------------------------- */
+  .md\:hidden.flex.bg-gray-200.border-b.border-gray-300:has(+ .db-paper) {
+    position: sticky;
+    top: 0;
+    z-index: 42;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+    padding: 4px;
+    background: rgba(238, 231, 211, .98) !important;
+    border: 1px solid #a99778 !important;
+    box-shadow: 0 5px 16px rgba(55, 43, 28, .14);
+  }
+
+  .md\:hidden.flex.bg-gray-200.border-b.border-gray-300:has(+ .db-paper) > button {
+    min-width: 0;
+    min-height: 46px;
+    padding: 7px 5px !important;
+    border-radius: 9px 3px 9px 3px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.15;
+    font-size: 9px !important;
+    touch-action: manipulation;
+  }
+
+  .db-paper {
+    overflow-x: clip;
+    padding: 10px !important;
+  }
+
+  .db-brand {
+    margin-bottom: 9px;
+  }
+
+  .db-logo {
+    font-size: 2.35rem;
+  }
+
+  .db-brand-sub {
+    margin-top: 6px;
+    font-size: 8px;
+    letter-spacing: .13em;
+  }
+
+  .db-bio {
+    gap: 10px !important;
+    padding: 10px !important;
+  }
+
+  /* Retrato: no celular a imagem fica livre; Upload/URL/Remover ficam abaixo. */
+  .db-bio .db-portrait {
+    width: min(205px, 62vw) !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    display: flex !important;
+    flex-direction: column;
+    gap: 7px;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .db-bio .db-portrait > img,
+  .db-bio .db-portrait > span:first-child {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 1;
+    object-fit: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: #e7dec8;
+    border: 3px solid #225f53;
+    border-radius: 16px 4px;
+    box-shadow: 0 0 0 2px #c8b996, 0 5px 14px rgba(46, 37, 28, .18);
+  }
+
+  .db-bio .db-portrait > .absolute {
+    position: static !important;
+    inset: auto !important;
+    width: 100%;
+    min-height: 0;
+    opacity: 1 !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px !important;
+    padding: 0 !important;
+    background: transparent !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .db-bio .db-portrait > .absolute > label,
+  .db-bio .db-portrait > .absolute > button {
+    width: 100% !important;
+    min-height: 38px;
+    padding: 7px 8px !important;
+    margin: 0 !important;
+    border-radius: 8px 3px !important;
+    font-size: 10px !important;
+    touch-action: manipulation;
+  }
+
+  .db-bio .db-portrait > .absolute > button.bg-red-600 {
+    grid-column: 1 / -1;
+  }
+
+  .db-bio .db-portrait > .absolute > div {
+    grid-column: 1 / -1;
+    width: 100% !important;
+    padding: 0 !important;
+  }
+
+  .db-bio .db-portrait > .absolute > div input {
+    min-height: 42px;
+    font-size: 16px !important;
+  }
+
+  .db-bio .db-portrait > .absolute > div .flex {
+    width: 100%;
+  }
+
+  .db-bio .db-portrait > .absolute > div button {
+    flex: 1;
+    min-height: 38px;
+  }
+
+  .db-bio > .flex-1 {
+    gap: 9px !important;
+  }
+
+  .db-bio > .flex-1 label {
+    min-width: 0;
+  }
+
+  .db-bio > .flex-1 input {
+    width: 100%;
+    min-width: 0;
+    min-height: 38px;
+  }
+
+  .db-attributes-strip {
+    gap: 9px 6px;
+    margin: 10px 0 8px;
+    padding: 10px 6px;
+  }
+
+  .db-attr-circle {
+    width: 60px;
+    height: 60px;
+  }
+
+  .db-condition {
+    min-height: 30px;
+    justify-content: center;
+    text-align: center;
+    line-height: 1.15;
+  }
+
+  .db-condition input[type='checkbox'],
+  .db-sheet .db-skill-row input[type='checkbox'] {
+    flex: none;
+    width: 18px;
+    height: 18px;
+  }
+
+  .db-derived-strip {
+    gap: 6px;
+  }
+
+  .db-derived-box {
+    min-width: 0;
+    min-height: 67px;
+    padding: 7px 5px;
+  }
+
+  .db-column {
+    min-width: 0;
+    padding: 8px;
+  }
+
+  .db-sheet .space-y-1 > .db-skill-row {
+    min-height: 39px;
+    padding: 6px 4px !important;
+  }
+
+  .db-ability-card,
+  .db-armor-card,
+  .db-weapon-card,
+  .db-inventory-box,
+  .db-death-box {
+    min-width: 0;
+  }
+
+  .db-sheet button,
+  .db-sheet summary,
+  .db-sheet label.cursor-pointer {
+    touch-action: manipulation;
+  }
+
+  /* ----------------------------------------------------------------------
+   * FABULA ULTIMA
+   * ------------------------------------------------------------------- */
+  .fabula-pdf-editor,
+  .fabula-threat-editor {
+    overflow-x: clip;
+  }
+
+  .fabula-pdf-editor > .pj-mobile-tabs {
+    position: sticky;
+    top: 0;
+    z-index: 42;
+    gap: 4px;
+    padding: 4px;
+    scrollbar-width: none;
+    scroll-snap-type: x proximity;
+    overscroll-behavior-x: contain;
+  }
+
+  .fabula-pdf-editor > .pj-mobile-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .fabula-pdf-editor > .pj-mobile-tabs button {
+    flex: 0 0 auto;
+    min-width: 116px;
+    min-height: 46px;
+    padding: 8px 10px !important;
+    border-radius: 10px 10px 4px 4px;
+    white-space: normal;
+    line-height: 1.15;
+    scroll-snap-align: start;
+    touch-action: manipulation;
+  }
+
+  .fabula-sheet-shell {
+    padding: 10px !important;
+    border-radius: 16px;
+    overflow: clip;
+  }
+
+  .fabula-profile-layout {
+    gap: 12px;
+  }
+
+  .fabula-profile-layout > .space-y-2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .fabula-portrait-frame {
+    width: min(226px, 70vw);
+  }
+
+  .fabula-profile-panel,
+  .fabula-subpanel,
+  .fabula-bond-panel,
+  .fabula-track-box,
+  .fabula-small-stat,
+  .fabula-list-card {
+    min-width: 0;
+  }
+
+  /* Perfil: duas colunas úteis sem transformar a tela em uma lista enorme. */
+  .fabula-profile-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  .fabula-profile-grid > label:first-child,
+  .fabula-profile-grid > label:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .fabula-profile-grid input,
+  .fabula-profile-grid select,
+  .fabula-profile-grid textarea {
+    min-width: 0;
+    min-height: 40px;
+  }
+
+  /* Os quatro atributos passam a 2x2 também no celular. */
+  .fabula-attr-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .fabula-attr-card {
+    min-width: 0;
+    padding: 10px;
+  }
+
+  .fabula-die-pair {
+    gap: 6px;
+  }
+
+  .fabula-die-shape {
+    --die-size: 72px;
+  }
+
+  .fabula-die-shape.die-current {
+    --die-size: 42px;
+  }
+
+  .fabula-conditions-grid,
+  .fabula-track-grid,
+  .fabula-small-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .fabula-condition-chip {
+    min-width: 0;
+    min-height: 44px;
+    padding: 8px 9px;
+    font-size: 11px;
+  }
+
+  .fabula-condition-chip input[type='checkbox'] {
+    flex: none;
+    width: 18px;
+    height: 18px;
+  }
+
+  .fabula-bond-panel .bond-row {
+    grid-template-columns: minmax(0, 1fr) 62px 40px;
+    gap: 6px;
+  }
+
+  .fabula-bond-panel .bond-row > input:first-child { grid-column: 1; }
+  .fabula-bond-panel .bond-row > input:nth-child(2) { grid-column: 2; }
+  .fabula-bond-panel .bond-row > input:nth-child(3) { grid-area: 2 / 1 / auto / -1; }
+  .fabula-bond-panel .bond-row > button { grid-area: 1 / 3; min-width: 40px; min-height: 40px; }
+
+  .fabula-list-card-head.flex {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .fabula-action-btn,
+  .fabula-soft-btn,
+  .fabula-move-btn,
+  .fabula-remove-btn {
+    min-height: 40px;
+    touch-action: manipulation;
+  }
+
+  .fabula-threat-editor {
+    padding: 8px !important;
+  }
+
+  .fabula-threat-compact {
+    padding: 10px;
+    border-radius: 15px;
+    overflow: clip;
+  }
+
+  .fabula-threat-intro {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .fabula-threat-intro .fabula-mini-badge {
+    align-self: flex-start;
+  }
+
+  .fabula-threat-meta-grid,
+  .fabula-threat-resource-grid,
+  .fabula-threat-attrs-readable {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .fabula-affinity-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .fabula-threat-attack-card.readable {
+    padding: 9px;
+  }
+
+  /* ----------------------------------------------------------------------
+   * O SOM DAS SEIS
+   * ------------------------------------------------------------------- */
+  .som6-paper {
+    overflow-x: clip;
+  }
+
+  .som6-paper > .pj-mobile-tabs {
+    position: sticky;
+    top: 0;
+    z-index: 42;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+    padding: 4px;
+    overflow: visible;
+  }
+
+  .som6-paper > .pj-mobile-tabs button {
+    width: 100%;
+    min-width: 0;
+    min-height: 46px;
+    padding: 9px 8px !important;
+    border-radius: 9px 9px 4px 4px;
+    touch-action: manipulation;
+  }
+
+  .som6-paper > .p-3,
+  .som6-paper > .md\:p-5 {
+    padding: 9px !important;
+  }
+
+  .som6-sheet {
+    overflow: visible;
+  }
+
+  .som6-sheet > .flex.items-end.justify-between,
+  .som6-sheet > .flex.items-end.justify-between.gap-3 {
+    gap: 7px;
+  }
+
+  .som6-sheet .som6-logo {
+    font-size: 2rem !important;
+    line-height: .88;
+  }
+
+  .som6-frame {
+    min-width: 0;
+    padding: 7px;
+  }
+
+  .som6-stat-box,
+  .som6-section,
+  .som6-cream,
+  .som6-skill-card {
+    min-width: 0;
+  }
+
+  .som6-portrait-actions {
+    gap: 5px;
+  }
+
+  .som6-portrait-actions label,
+  .som6-portrait-actions button {
+    min-height: 38px;
+    padding: 6px;
+    font-size: 10px;
+    touch-action: manipulation;
+  }
+
+  .som6-pip {
+    width: 28px;
+    height: 28px;
+    font-size: 13px;
+    touch-action: manipulation;
+  }
+
+  .som6-skill-card {
+    grid-template-columns: minmax(0, 1fr) 38px !important;
+    gap: 7px !important;
+    padding: 8px;
+  }
+
+  .som6-order-col {
+    gap: 5px;
+  }
+
+  .som6-order-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 13px;
+    touch-action: manipulation;
+  }
+
+  .som6-mini-input {
+    min-width: 0;
+    min-height: 38px !important;
+  }
+
+  .som6-compact-textarea {
+    min-width: 0;
+    min-height: 64px !important;
+  }
+
+  /* PDJs: os seis números principais ficam 2x3 em vez de 3 colunas apertadas. */
+  .som6-paper .som6-sheet .grid.grid-cols-3.sm\:grid-cols-6 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+
+  /* Linhas de arma/habilidade de PDJ deixam de esmagar os campos. */
+  .som6-paper [class*='grid-cols-[1fr_70px_1fr_22px]'],
+  .som6-paper [class*='grid-cols-[.8fr_1.3fr_22px]'] {
+    grid-template-columns: minmax(0, 1fr) 66px 38px !important;
+    gap: 5px !important;
+  }
+
+  .som6-paper [class*='grid-cols-[1fr_70px_1fr_22px]'] > :nth-child(3),
+  .som6-paper [class*='grid-cols-[.8fr_1.3fr_22px]'] > :nth-child(2) {
+    grid-column: 1 / 3;
+  }
+
+  .som6-paper [class*='grid-cols-[1fr_70px_1fr_22px]'] > button,
+  .som6-paper [class*='grid-cols-[.8fr_1.3fr_22px]'] > button {
+    grid-column: 3;
+    grid-row: 1;
+    min-width: 38px;
+    min-height: 38px;
+  }
+}
+
+@media (max-width: 520px) {
+  /* Dragonbane: identidade centralizada e atributos ainda compactos. */
+  .db-bio > .flex:first-child {
+    width: 100% !important;
+  }
+
+  .db-bio > .flex-1 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .db-bio > .flex-1 > div:first-child,
+  .db-bio > .flex-1 > div:nth-child(2),
+  .db-bio > .flex-1 > div:last-child {
+    grid-column: 1 / -1 !important;
+  }
+
+  .db-bio > .flex-1 input:not([type='checkbox']):not([type='radio']):not([type='file']),
+  .db-sheet input:not([type='checkbox']):not([type='radio']):not([type='file']),
+  .db-sheet select,
+  .db-sheet textarea,
+  .fabula-pdf-editor input:not([type='checkbox']):not([type='radio']):not([type='file']),
+  .fabula-pdf-editor select,
+  .fabula-pdf-editor textarea,
+  .fabula-threat-editor input:not([type='checkbox']):not([type='radio']):not([type='file']),
+  .fabula-threat-editor select,
+  .fabula-threat-editor textarea,
+  .som6-paper input:not([type='checkbox']):not([type='radio']):not([type='file']),
+  .som6-paper select,
+  .som6-paper textarea {
+    font-size: 16px !important;
+  }
+
+  /* Fabula: cabeçalho e listas com ações em linhas próprias. */
+  .fabula-profile-panel {
+    padding: 10px;
+  }
+
+  .fabula-list-card-head.flex {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .fabula-list-card-head.flex > button,
+  .fabula-list-card-head.flex > .flex {
+    width: 100%;
+  }
+
+  .fabula-list-card-head.flex > .flex > button {
+    flex: 1;
+  }
+
+  .fabula-threat-details > summary span:last-child {
+    display: none;
+  }
+
+  /* Som das Seis: retrato maior e identidade abaixo, sem apertar o nome. */
+  .som6-sheet > .som6-frame:first-of-type > .grid {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  .som6-sheet > .som6-frame:first-of-type > .grid > div:first-child {
+    width: min(190px, 58vw);
+    margin-inline: auto;
+  }
+
+  .som6-sheet > .som6-frame:first-of-type .som6-portrait {
+    height: 178px !important;
+  }
+
+  .som6-sheet > .som6-frame:first-of-type .som6-stat-box {
+    width: 100%;
+  }
+
+  .som6-sheet > .flex.items-end.justify-between,
+  .som6-sheet > .flex.items-end.justify-between.gap-3 {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  /* Atributos ficam acima; Vida e Defesa passam a dividir uma linha. */
+  .som6-sheet .grid.grid-cols-\[1fr_92px\] {
+    grid-template-columns: 1fr !important;
+  }
+
+  .som6-sheet .grid.grid-cols-\[1fr_92px\] > .space-y-3 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .som6-sheet .grid.grid-cols-\[1fr_92px\] > .space-y-3 > * {
+    margin: 0 !important;
+  }
+
+  .som6-sheet .som6-frame .space-y-2\.5 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px 12px;
+  }
+
+  .som6-sheet .som6-frame .space-y-2\.5 > * {
+    margin: 0 !important;
+  }
+}
+
+@media (max-width: 400px) {
+  /* Dragonbane */
+  .db-bio .db-portrait {
+    width: min(190px, 66vw) !important;
+  }
+
+  .db-attributes-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .db-derived-strip {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* Fabula */
+  .fabula-profile-grid,
+  .fabula-track-grid,
+  .fabula-small-grid,
+  .fabula-threat-meta-grid,
+  .fabula-threat-resource-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .fabula-attr-grid {
+    gap: 6px;
+  }
+
+  .fabula-die-shape {
+    --die-size: 64px;
+  }
+
+  .fabula-bond-panel .bond-row {
+    grid-template-columns: minmax(0, 1fr) 56px 38px;
+  }
+
+  /* Som das Seis */
+  .som6-paper .som6-logo {
+    font-size: 1.65rem !important;
+  }
+
+  .som6-paper .som6-pip {
+    width: 25px;
+    height: 25px;
+  }
+
+  .som6-sheet .grid.grid-cols-\[1fr_92px\] > .space-y-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .som6-paper [class*='grid-cols-[1fr_70px_1fr_22px]'],
+  .som6-paper [class*='grid-cols-[.8fr_1.3fr_22px]'] {
+    grid-template-columns: minmax(0, 1fr) 38px !important;
+  }
+
+  .som6-paper [class*='grid-cols-[1fr_70px_1fr_22px]'] > :nth-child(1),
+  .som6-paper [class*='grid-cols-[1fr_70px_1fr_22px]'] > :nth-child(2),
+  .som6-paper [class*='grid-cols-[1fr_70px_1fr_22px]'] > :nth-child(3),
+  .som6-paper [class*='grid-cols-[.8fr_1.3fr_22px]'] > :nth-child(1),
+  .som6-paper [class*='grid-cols-[.8fr_1.3fr_22px]'] > :nth-child(2) {
+    grid-column: 1;
+  }
+
+  .som6-paper [class*='grid-cols-[1fr_70px_1fr_22px]'] > button,
+  .som6-paper [class*='grid-cols-[.8fr_1.3fr_22px]'] > button {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
+
+body.theme-dark .db-bio .db-portrait > img,
+body.theme-dark .db-bio .db-portrait > span:first-child {
+  background: #18251f;
+  border-color: #5fa292;
+  box-shadow: 0 0 0 2px #0e1512, 0 0 0 3px #51665b !important;
+}
