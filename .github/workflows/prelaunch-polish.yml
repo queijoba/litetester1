@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'scripts/prelaunch-polish.mjs'
+      - '.github/workflows/prelaunch-polish.yml'
 
 permissions:
   contents: write
