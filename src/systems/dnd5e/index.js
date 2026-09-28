@@ -7,3 +7,4 @@ export const dnd5eSystem = {
 
 export { default as DndCharacterEditor } from './components/CharacterEditor.jsx';
 export { default as DndThreatEditor } from './components/ThreatEditor.jsx';
+export { installDndPdfExport } from './pdf/export.js';
