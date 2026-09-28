@@ -2,14 +2,7 @@ import { fillDndPdf } from './map.js';
 
 const STORAGE_KEY = 'dragonbane_saved_characters';
 const PDFLIB_CDN = 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js';
-const PAKO_CDN = 'https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js';
-const TEMPLATE_PARTS = [
-  '/pdfs/dnd55-template.part1.b64?v=20260926',
-  '/pdfs/dnd55-template.part2.b64?v=20260926',
-  '/pdfs/dnd55-template.part3.b64?v=20260926',
-  '/pdfs/dnd55-template.part4.b64?v=20260926',
-  '/pdfs/dnd55-template.part5.b64?v=20260926',
-];
+const TEMPLATE_URL = '/pdfs/dnd5e-template.pdf?v=20260928';
 const BUTTON_ID = 'pjlite-dnd55-pdf-export';
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -41,34 +34,30 @@ function toast(message, type = 'info') {
   toast.timer = setTimeout(() => { el.style.opacity = '0'; }, 4800);
 }
 
-function loadScript(src, marker, check) {
-  if (check()) return Promise.resolve();
-  const existing = document.querySelector(`script[data-${marker}="1"]`);
-  if (existing) {
-    return new Promise((resolve, reject) => {
-      if (check()) return resolve();
-      existing.addEventListener('load', resolve, { once: true });
-      existing.addEventListener('error', () => reject(new Error(`Não foi possível carregar ${marker}.`)), { once: true });
-    });
-  }
+function loadPdfLib() {
+  if (window.PDFLib?.PDFDocument) return Promise.resolve(window.PDFLib);
+  if (loadPdfLib.promise) return loadPdfLib.promise;
 
-  return new Promise((resolve, reject) => {
+  loadPdfLib.promise = new Promise((resolve, reject) => {
+    const existing = document.querySelector('script[data-pjlite-pdflib="1"]');
+    if (existing) {
+      if (window.PDFLib?.PDFDocument) return resolve(window.PDFLib);
+      existing.addEventListener('load', () => resolve(window.PDFLib), { once: true });
+      existing.addEventListener('error', () => reject(new Error('Não foi possível carregar o gerador de PDF.')), { once: true });
+      return;
+    }
+
     const script = document.createElement('script');
-    script.src = src;
+    script.src = PDFLIB_CDN;
     script.async = true;
-    script.dataset[marker] = '1';
-    script.onload = () => check() ? resolve() : reject(new Error(`${marker} não iniciou.`));
-    script.onerror = () => reject(new Error(`Não foi possível carregar ${marker}.`));
+    script.dataset.pjlitePdflib = '1';
+    script.onload = () => window.PDFLib?.PDFDocument
+      ? resolve(window.PDFLib)
+      : reject(new Error('pdf-lib não iniciou.'));
+    script.onerror = () => reject(new Error('Não foi possível carregar o gerador de PDF.'));
     document.head.appendChild(script);
   });
-}
 
-async function loadPdfLib() {
-  if (window.PDFLib?.PDFDocument) return window.PDFLib;
-  if (!loadPdfLib.promise) {
-    loadPdfLib.promise = loadScript(PDFLIB_CDN, 'pjlitePdflib', () => !!window.PDFLib?.PDFDocument)
-      .then(() => window.PDFLib);
-  }
   return loadPdfLib.promise;
 }
 
@@ -123,44 +112,29 @@ function download(bytes, item) {
   setTimeout(() => URL.revokeObjectURL(url), 8000);
 }
 
-function base64ToBytes(base64) {
-  const clean = base64.replace(/\s+/g, '');
-  const binary = atob(clean);
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
-  return bytes;
-}
-
-async function gunzipWithStream(bytes) {
-  const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
-  return new Uint8Array(await new Response(stream).arrayBuffer());
-}
-
-async function gunzip(bytes) {
-  if ('DecompressionStream' in window) return gunzipWithStream(bytes);
-  await loadScript(PAKO_CDN, 'pjlitePako', () => !!window.pako?.ungzip);
-  return window.pako.ungzip(bytes);
-}
-
 async function loadTemplate(PDFLib) {
-  const responses = await Promise.all(TEMPLATE_PARTS.map(url => fetch(url, { cache: 'no-store' })));
-  responses.forEach((response, index) => {
-    if (!response.ok) throw new Error(`Não foi possível abrir a parte ${index + 1} do PDF modelo (${response.status}).`);
-  });
+  const response = await fetch(TEMPLATE_URL, { cache: 'no-store' });
+  if (!response.ok) {
+    throw new Error(`Não foi possível abrir o PDF modelo de D&D (${response.status}).`);
+  }
 
-  const joined = (await Promise.all(responses.map(response => response.text()))).join('');
-  const compressed = base64ToBytes(joined);
-  const bytes = await gunzip(compressed);
-
+  const bytes = new Uint8Array(await response.arrayBuffer());
   if (bytes.length < 5 || String.fromCharCode(...bytes.slice(0, 5)) !== '%PDF-') {
-    throw new Error('O modelo de D&D baixado não é um PDF válido.');
+    throw new Error('O modelo de D&D encontrado não é um PDF válido.');
   }
 
   const doc = await PDFLib.PDFDocument.load(bytes, { ignoreEncryption: true });
   const form = doc.getForm();
-  const names = new Set(form.getFields().map(field => field.getName()));
-  for (const required of ['retrato', 'nome', 'caracteristicas_classe', 'conjuracao_atributo', 'magia_30_notas']) {
-    if (!names.has(required)) throw new Error('O PDF modelo encontrado não é a ficha editável D&D 5.5e esperada do PJ Lite.');
+  const fields = form.getFields();
+  if (!fields.length) {
+    throw new Error('O PDF de D&D não possui campos editáveis.');
+  }
+
+  const names = new Set(fields.map(field => field.getName()));
+  const required = ['retrato', 'nome', 'caracteristicas_classe', 'conjuracao_atributo', 'magia_30_notas'];
+  const missing = required.filter(name => !names.has(name));
+  if (missing.length) {
+    throw new Error(`O PDF não corresponde ao modelo editável esperado do PJ Lite (${missing.join(', ')}).`);
   }
 
   const regular = await doc.embedFont(PDFLib.StandardFonts.Helvetica);
@@ -219,7 +193,7 @@ async function addPortrait(doc, form, item) {
     form.getButton('retrato').setImage(image);
     return true;
   } catch (error) {
-    console.warn('[PJ Lite D&D PDF] Não foi possível inserir o retrato no botão editável.', error);
+    console.warn('[PJ Lite D&D PDF] Não foi possível inserir o retrato no campo editável.', error);
     return false;
   }
 }
@@ -229,16 +203,19 @@ async function exportPdf() {
   await sleep(900);
 
   const item = currentDnd(false);
-  if (!item) throw new Error('Não encontrei a ficha D&D 5.5e atual. Salve a ficha e tente novamente.');
+  if (!item) {
+    throw new Error('Não encontrei a ficha D&D 5.5e atual. Salve a ficha e tente novamente.');
+  }
 
   const PDFLib = await loadPdfLib();
   const { doc, form, regular } = await loadTemplate(PDFLib);
 
   fillDndPdf(form, item);
+
   try {
     form.updateFieldAppearances(regular);
   } catch (error) {
-    console.warn('[PJ Lite D&D PDF] Algumas aparências de campos serão geradas pelo leitor de PDF.', error);
+    console.warn('[PJ Lite D&D PDF] Algumas aparências serão geradas pelo leitor de PDF.', error);
   }
 
   await addPortrait(doc, form, item);
@@ -258,6 +235,7 @@ function isDndEditorOpen() {
     document.querySelector('.dnd-paper'),
     document.querySelector('.dnd-v3-sheet')
   ].filter(Boolean);
+
   if (structural.some(visible)) return true;
   return !!currentDnd(true);
 }
@@ -270,6 +248,7 @@ function findToolbar() {
 
   const toolbar = copy.parentElement;
   if (!toolbar) return null;
+
   const buttons = Array.from(toolbar.querySelectorAll('button'));
   const hasZip = buttons.some(button => /^ZIP$/i.test((button.textContent || '').trim()));
   const hasSave = buttons.some(button => /salvar/i.test(button.textContent || ''));
@@ -294,8 +273,8 @@ function ensureButton() {
     button.dataset.pjlitePdf = 'dnd5e';
     button.type = 'button';
     button.className = copy.className;
-    button.textContent = '📄 PDF D&D';
-    button.title = 'Baixar esta ficha no PDF editável D&D 5.5e / 2024 do PJ Lite.';
+    button.textContent = '📄 Baixar PDF';
+    button.title = 'Baixar esta ficha usando o PDF editável D&D 5.5e / 2024 do PJ Lite.';
     button.style.background = 'rgba(146,38,16,.96)';
     button.style.whiteSpace = 'nowrap';
     button.style.border = '1px solid rgba(255,255,255,.28)';
