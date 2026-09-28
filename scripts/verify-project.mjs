@@ -17,6 +17,8 @@ const requiredFiles = [
   'src/systems/dnd5e/components/CharacterEditorBase.jsx',
   'src/systems/dnd5e/components/ThreatEditor.jsx',
   'src/systems/dnd5e/dnd-sheet-v7.css',
+  'src/systems/dnd5e/pdf/export.js',
+  'src/systems/dnd5e/pdf/map.js',
   'src/systems/fabulaUltima/index.js',
   'src/systems/fabulaUltima/components/CharacterEditor.jsx',
   'src/systems/fabulaUltima/components/ThreatEditor.jsx',
@@ -24,6 +26,7 @@ const requiredFiles = [
   'src/systems/somDasSeis/components/CharacterEditor.jsx',
   'src/systems/somDasSeis/components/ThreatEditor.jsx',
   'public/pdfs/dragonbane-template.pdf',
+  'public/pdfs/dnd5e-template.pdf',
 ];
 
 for (const file of requiredFiles) {
@@ -36,20 +39,30 @@ for (const file of requiredFiles) {
   }
 }
 
-const pdf = await readFile('public/pdfs/dragonbane-template.pdf');
-if (pdf.subarray(0, 5).toString('ascii') !== '%PDF-') {
-  throw new Error('public/pdfs/dragonbane-template.pdf não parece ser um PDF válido.');
+for (const pdfPath of ['public/pdfs/dragonbane-template.pdf', 'public/pdfs/dnd5e-template.pdf']) {
+  const pdf = await readFile(pdfPath);
+  if (pdf.subarray(0, 5).toString('ascii') !== '%PDF-') {
+    throw new Error(`${pdfPath} não parece ser um PDF válido.`);
+  }
 }
 
 const main = await readFile('src/main.jsx', 'utf8');
 if (!main.includes("./systems/dragonbane/index.js")) {
   throw new Error('main.jsx não está usando o módulo do sistema Dragonbane.');
 }
+if (!main.includes("./systems/dnd5e/index.js") || !main.includes('installDndPdfExport')) {
+  throw new Error('main.jsx não está ativando a exportação PDF do D&D 5.5e.');
+}
 if (!main.includes("./mobile-polish.css")) {
   throw new Error('main.jsx não está carregando o polimento mobile pré-lançamento.');
 }
 if (!main.includes("./mobile-systems-v8.css")) {
   throw new Error('main.jsx não está carregando a revisão mobile final dos sistemas.');
+}
+
+const dndPdfExport = await readFile('src/systems/dnd5e/pdf/export.js', 'utf8');
+if (!dndPdfExport.includes("/pdfs/dnd5e-template.pdf") || dndPdfExport.includes('dnd55-template.part')) {
+  throw new Error('Exportador D&D não está usando diretamente o PDF real dnd5e-template.pdf.');
 }
 
 const app = await readFile('src/PJLiteApp.jsx', 'utf8');
@@ -148,4 +161,4 @@ for (const id of ['dragonbane', 'dnd5e', 'fabulaUltima', 'somDasSeis']) {
   }
 }
 
-console.log('PJ Lite: estrutura essencial, editores modulares e revisões mobile de D&D, Dragonbane, Fabula Ultima e O Som das Seis verificadas com sucesso.');
+console.log('PJ Lite: estrutura essencial, PDFs editáveis, editores modulares e revisões mobile verificadas com sucesso.');
