@@ -2,7 +2,7 @@ import { fillFabulaPdf } from './map.js';
 
 const STORAGE_KEY = 'dragonbane_saved_characters';
 const PDFLIB_CDN = 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js';
-const TEMPLATE_URL = '/pdfs/fabula-ultima-template.pdf?v=20260929';
+const TEMPLATE_URL = '/pdfs/FU_Ficha_de_personagemV2.pdf?v=20260929-v2';
 const BUTTON_ID = 'pjlite-fabula-pdf-export';
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -102,7 +102,7 @@ async function loadTemplate(PDFLib) {
   const form = doc.getForm();
   const fields = form.getFields();
   const names = new Set(fields.map(field => field.getName()));
-  const required = ['retrato_personagem', 'bio_nome', 'atributo_des_base', 'feitico_8_desc', 'anotacoes_notas'];
+  const required = ['retrato_personagem', 'Nome', 'Campo testo 10207', 'Campo testo 252', 'Campo testo 236', 'Campo testo 10210'];
   const missing = required.filter(name => !names.has(name));
   if (missing.length) throw new Error(`O PDF não corresponde ao modelo editável esperado de Fabula Ultima (${missing.join(', ')}).`);
   const regular = await doc.embedFont(PDFLib.StandardFonts.Helvetica);
@@ -166,10 +166,10 @@ async function exportPdf() {
   const { doc, form, regular } = await loadTemplate(PDFLib);
   fillFabulaPdf(form, item);
   try { form.updateFieldAppearances(regular); } catch (error) { console.warn('[PJ Lite Fabula PDF] Algumas aparências serão geradas pelo leitor de PDF.', error); }
-  await addPortrait(doc, form, item);
+  const portraitAdded = await addPortrait(doc, form, item);
   const bytes = await doc.save({ useObjectStreams: false, updateFieldAppearances: false });
   download(bytes, item);
-  return { item };
+  return { item, portraitAdded };
 }
 
 function isFabulaEditorOpen() {
@@ -200,7 +200,7 @@ function ensureButton() {
     button.type = 'button';
     button.className = copy.className;
     button.textContent = '📄 Baixar PDF';
-    button.title = 'Baixar esta ficha usando o PDF editável de Fabula Ultima do PJ Lite.';
+    button.title = 'Baixar esta ficha usando a ficha editável de 3 páginas de Fabula Ultima.';
     button.style.background = 'rgba(13,116,104,.96)';
     button.style.whiteSpace = 'nowrap';
     button.style.border = '1px solid rgba(255,255,255,.28)';
@@ -211,8 +211,14 @@ function ensureButton() {
       button.disabled = true;
       button.textContent = '⏳ Gerando PDF...';
       try {
-        const { item } = await exportPdf();
-        toast(`PDF editável de ${item?.bio?.nome || 'Fabula Ultima'} baixado.`, 'success');
+        const { item, portraitAdded } = await exportPdf();
+        const name = item?.bio?.nome || 'Fabula Ultima';
+        const hasPortrait = !!item?.bio?.imagem;
+        if (hasPortrait && !portraitAdded) {
+          toast(`PDF editável de ${name} baixado, mas não foi possível incorporar o retrato.`, 'info');
+        } else {
+          toast(`PDF editável de ${name} baixado${portraitAdded ? ' com retrato' : ''}.`, 'success');
+        }
       } catch (error) {
         console.error('[PJ Lite Fabula PDF]', error);
         toast(String(error?.message || 'Não foi possível gerar o PDF de Fabula Ultima.'), 'error');
