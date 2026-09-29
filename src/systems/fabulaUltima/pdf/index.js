@@ -4,3 +4,5 @@ export {
   FABULA_PDF_FIELDS,
   buildFabulaPdfSnapshot,
 } from './base.js';
+export { fillFabulaPdf } from './map.js';
+export { installFabulaPdfExport } from './export.js';
