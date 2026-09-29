@@ -6,7 +6,11 @@ import './mobile-systems-v8.css';
 import './mobile-attrs-v9.css';
 import { installDragonbanePdfExport } from './systems/dragonbane/index.js';
 import { installDndPdfExport } from './systems/dnd5e/index.js';
+import { installFabulaPdfExport } from './systems/fabulaUltima/index.js';
+import { installSom6PdfExport } from './systems/somDasSeis/index.js';
 
 createRoot(document.getElementById('root')).render(<PJLiteApp />);
 installDragonbanePdfExport();
 installDndPdfExport();
+installFabulaPdfExport();
+installSom6PdfExport();
