@@ -8,9 +8,15 @@ const clampNumber = (value) => {
   return Number.isFinite(parsed) ? parsed : 0;
 };
 
+const normalizeLabel = (value) => String(value || '')
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .trim()
+  .toLocaleLowerCase('pt-BR');
+
 const Field = ({ label, children, className = '' }) => (
   <label className={`block ${className}`}>
-    <span className="block text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-1">{label}</span>
+    <span className="mb-1 block text-[10px] font-black uppercase tracking-widest text-zinc-500">{label}</span>
     {children}
   </label>
 );
@@ -93,12 +99,17 @@ const ListEditor = ({ title, icon, hint, items, onChange, kind = 'vantagem' }) =
 };
 
 export default function TresDeTCharacterEditor({ scope }) {
-  const { data, setData, updateField, optimizeImageFile, showToast } = scope;
+  const { data, updateField, optimizeImageFile, showToast } = scope;
   const [tab, setTab] = useState('ficha');
-  const [imageUrl, setImageUrl] = useState('');
+  const [newCustomSkill, setNewCustomSkill] = useState('');
+  const [editingCustomSkills, setEditingCustomSkills] = useState(false);
 
   useEffect(() => {
-    if (data?.system === '3det') setTab('ficha');
+    if (data?.system === '3det') {
+      setTab('ficha');
+      setNewCustomSkill('');
+      setEditingCustomSkills(false);
+    }
   }, [data?.id]);
 
   if (!data || data.system !== '3det' || data.type !== 'pc') return null;
@@ -106,6 +117,14 @@ export default function TresDeTCharacterEditor({ scope }) {
   const attrs = data.atributos || {};
   const status = data.status || {};
   const skills = data.pericias || {};
+  const customSkills = Array.isArray(data.periciasPersonalizadas) ? data.periciasPersonalizadas : [];
+  const specializations = Array.isArray(data.especializacoes) ? data.especializacoes : [];
+
+  const selectedOfficialSkills = TRESDET_SKILLS.filter(([id]) => !!skills[id]);
+  const selectedCustomSkills = customSkills.filter((entry) => entry?.selecionada !== false && String(entry?.nome || '').trim());
+  const filledSpecializations = specializations.filter((entry) => String(entry?.nome || '').trim());
+  const skillPoints = selectedOfficialSkills.length + selectedCustomSkills.length;
+  const specializationPoints = filledSpecializations.length;
 
   const rarityTotals = { Comum: 0, Incomum: 0, Raro: 0 };
   (data.inventario || []).forEach((item) => {
@@ -114,18 +133,6 @@ export default function TresDeTCharacterEditor({ scope }) {
   });
 
   const setList = (key, value) => updateField(key, value);
-  const patchInventory = (index, key, value) => {
-    const next = JSON.parse(JSON.stringify(data.inventario || []));
-    next[index] = { nome: '', quantidade: 1, raridade: 'Comum', notas: '', ...(next[index] || {}), [key]: value };
-    setList('inventario', next);
-  };
-  const moveInventory = (index, direction) => {
-    const next = [...(data.inventario || [])];
-    const target = index + direction;
-    if (target < 0 || target >= next.length) return;
-    [next[index], next[target]] = [next[target], next[index]];
-    setList('inventario', next);
-  };
 
   const handlePortrait = async (event) => {
     const file = event.target.files?.[0];
@@ -141,12 +148,69 @@ export default function TresDeTCharacterEditor({ scope }) {
     }
   };
 
-  const applyImageUrl = () => {
-    const url = imageUrl.trim();
-    if (!url) return;
-    updateField('bio.imagem', url);
-    setImageUrl('');
-    showToast('Retrato aplicado por URL.');
+  const addCustomSkill = () => {
+    const nome = newCustomSkill.trim();
+    if (!nome) return;
+    const normalized = normalizeLabel(nome);
+    const official = TRESDET_SKILLS.find(([, name]) => normalizeLabel(name) === normalized);
+    if (official) {
+      updateField(`pericias.${official[0]}`, true);
+      setNewCustomSkill('');
+      showToast(`${official[1]} já existe na lista padrão e foi selecionada.`);
+      return;
+    }
+
+    const existingIndex = customSkills.findIndex((entry) => normalizeLabel(entry?.nome) === normalized);
+    if (existingIndex >= 0) {
+      const next = customSkills.map((entry, index) => index === existingIndex ? { ...entry, selecionada: true } : entry);
+      setList('periciasPersonalizadas', next);
+      setNewCustomSkill('');
+      showToast('Perícia personalizada selecionada.');
+      return;
+    }
+
+    const slug = normalized.replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'pericia';
+    setList('periciasPersonalizadas', [
+      ...customSkills,
+      { id: `custom-${slug}-${Date.now().toString(36)}`, nome, selecionada: true },
+    ]);
+    setNewCustomSkill('');
+    showToast('Perícia personalizada adicionada e selecionada.');
+  };
+
+  const toggleCustomSkill = (index, selected) => {
+    const next = customSkills.map((entry, i) => i === index ? { ...entry, selecionada: selected } : entry);
+    setList('periciasPersonalizadas', next);
+  };
+
+  const removeCustomSkill = (index) => {
+    setList('periciasPersonalizadas', customSkills.filter((_, i) => i !== index));
+    showToast('Perícia personalizada removida da lista.');
+  };
+
+  const patchSpecialization = (index, key, value) => {
+    const next = JSON.parse(JSON.stringify(specializations));
+    next[index] = { nome: '', periciaBase: '', notas: '', ...(next[index] || {}), [key]: value };
+    setList('especializacoes', next);
+  };
+
+  const addSpecialization = () => setList('especializacoes', [
+    ...specializations,
+    { nome: '', periciaBase: '', notas: '' },
+  ]);
+
+  const patchInventory = (index, key, value) => {
+    const next = JSON.parse(JSON.stringify(data.inventario || []));
+    next[index] = { nome: '', quantidade: 1, raridade: 'Comum', notas: '', ...(next[index] || {}), [key]: value };
+    setList('inventario', next);
+  };
+
+  const moveInventory = (index, direction) => {
+    const next = [...(data.inventario || [])];
+    const target = index + direction;
+    if (target < 0 || target >= next.length) return;
+    [next[index], next[target]] = [next[target], next[index]];
+    setList('inventario', next);
   };
 
   const tabs = [
@@ -162,12 +226,17 @@ export default function TresDeTCharacterEditor({ scope }) {
     { key: 'resistencia', short: 'R', name: 'Resistência', resource: 'pv', resourceName: 'PV' },
   ];
 
+  const specializationSkillOptions = [
+    ...TRESDET_SKILLS.map(([, name]) => name),
+    ...customSkills.map((entry) => entry.nome).filter(Boolean),
+  ];
+
   return (
     <div className="bg-[#f5f5f2] text-zinc-900">
       <div className="border-b-4 border-amber-400 bg-zinc-950 px-4 py-4 md:px-7">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <div className="text-[10px] font-black uppercase tracking-[0.28em] text-amber-400">PJ Lite • primeira prévia</div>
+            <div className="text-[10px] font-black uppercase tracking-[0.28em] text-amber-400">PJ Lite • prévia 0.8</div>
             <div className="mt-1 flex items-center gap-3">
               <div className="rounded bg-amber-400 px-2 py-1 text-xl font-black italic text-zinc-950 shadow">3DeT</div>
               <div>
@@ -195,13 +264,10 @@ export default function TresDeTCharacterEditor({ scope }) {
                 <div className="absolute bottom-0 left-0 right-0 bg-zinc-950/90 px-2 py-1 text-center text-[9px] font-black uppercase text-amber-400">Personagem</div>
               </div>
               <div className="grid grid-cols-2 gap-2">
-                <label className="cursor-pointer rounded-md bg-zinc-900 px-2 py-2 text-center text-[10px] font-black text-white hover:bg-black">📷 Upload<input type="file" accept="image/*" className="hidden" onChange={handlePortrait} /></label>
+                <label className="cursor-pointer rounded-md bg-zinc-900 px-2 py-2 text-center text-[10px] font-black text-white hover:bg-black">📷 Escolher imagem<input type="file" accept="image/*" className="hidden" onChange={handlePortrait} /></label>
                 <button type="button" onClick={() => updateField('bio.imagem', '')} disabled={!data.bio?.imagem} className="rounded-md border border-zinc-300 bg-white px-2 py-2 text-[10px] font-black text-zinc-600 disabled:opacity-40">Remover</button>
               </div>
-              <div className="flex gap-1">
-                <Input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && applyImageUrl()} placeholder="URL da imagem" className="text-[10px]" />
-                <button type="button" onClick={applyImageUrl} className="rounded-md bg-amber-400 px-3 text-[10px] font-black text-zinc-950">OK</button>
-              </div>
+              <p className="text-center text-[9px] text-zinc-400">A imagem é otimizada e salva junto da ficha, como nos outros modelos do PJ Lite.</p>
             </div>
 
             <div className="space-y-4">
@@ -209,7 +275,7 @@ export default function TresDeTCharacterEditor({ scope }) {
                 <Field label="Nome" className="md:col-span-2"><Input value={data.bio?.nome || ''} onChange={(e) => updateField('bio.nome', e.target.value)} placeholder="Nome do personagem" className="text-base font-black" /></Field>
                 <Field label="Jogador"><Input value={data.bio?.jogador || ''} onChange={(e) => updateField('bio.jogador', e.target.value)} placeholder="Nome do jogador" /></Field>
                 <Field label="Arquétipo"><Input value={data.bio?.arquetipo || ''} onChange={(e) => updateField('bio.arquetipo', e.target.value)} placeholder="Arquétipo" /></Field>
-                <Field label="Kit (opcional)"><Input value={data.bio?.kit || ''} onChange={(e) => updateField('bio.kit', e.target.value)} placeholder="Kit, se estiver usando" /></Field>
+                <Field label="Kit (opcional)"><Input value={data.bio?.kit || ''} onChange={(e) => updateField('bio.kit', e.target.value)} placeholder="Kit, se estiver usando material com Kits" /></Field>
                 <Field label="Escala"><Input value={data.bio?.escala || ''} onChange={(e) => updateField('bio.escala', e.target.value)} placeholder="Escala" /></Field>
                 <Field label="Conceito" className="md:col-span-2"><Textarea rows="3" value={data.bio?.conceito || ''} onChange={(e) => updateField('bio.conceito', e.target.value)} placeholder="Uma frase curta que explique quem é o personagem..." /></Field>
               </div>
@@ -243,16 +309,73 @@ export default function TresDeTCharacterEditor({ scope }) {
           </Section>
 
           <div className="grid gap-5 xl:grid-cols-[1.35fr_0.65fr]">
-            <Section title="Perícias" icon="●" hint="Marque as perícias registradas para o personagem.">
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
-                {TRESDET_SKILLS.map(([id, name]) => (
-                  <label key={id} className={`flex cursor-pointer items-center gap-2 rounded-lg border-2 px-3 py-2 text-xs font-bold transition ${skills[id] ? 'border-amber-500 bg-amber-100 text-zinc-950' : 'border-zinc-200 bg-zinc-50 text-zinc-600 hover:border-amber-300'}`}>
-                    <input type="checkbox" checked={!!skills[id]} onChange={(e) => updateField(`pericias.${id}`, e.target.checked)} className="accent-amber-500" />
-                    {name}
-                  </label>
-                ))}
-              </div>
-            </Section>
+            <div className="space-y-5">
+              <Section
+                title="Perícias"
+                icon="●"
+                hint="As 12 perícias padrão ficam sempre disponíveis. Marque apenas as que o personagem comprou."
+                action={<div className="rounded bg-amber-400 px-2 py-1 text-[10px] font-black text-zinc-950">{skillPoints} pt em perícias</div>}
+              >
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+                  {TRESDET_SKILLS.map(([id, name]) => (
+                    <label key={id} className={`flex cursor-pointer items-center gap-2 rounded-lg border-2 px-3 py-2 text-xs font-bold transition ${skills[id] ? 'border-amber-500 bg-amber-100 text-zinc-950' : 'border-zinc-200 bg-zinc-50 text-zinc-600 hover:border-amber-300'}`}>
+                      <input type="checkbox" checked={!!skills[id]} onChange={(e) => updateField(`pericias.${id}`, e.target.checked)} className="accent-amber-500" />
+                      {name}
+                    </label>
+                  ))}
+                </div>
+
+                <div className="mt-5 border-t border-zinc-200 pt-4">
+                  <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <h3 className="text-xs font-black uppercase tracking-wider text-zinc-800">Perícias personalizadas / da mesa</h3>
+                      <p className="mt-0.5 text-[10px] text-zinc-500">Use quando sua mesa permitir uma perícia além da lista padrão. Ao confirmar, ela já entra selecionada.</p>
+                    </div>
+                    {customSkills.length > 0 && <button type="button" onClick={() => setEditingCustomSkills((value) => !value)} className={`rounded-md border px-3 py-1.5 text-[10px] font-black ${editingCustomSkills ? 'border-amber-500 bg-amber-100 text-amber-900' : 'border-zinc-300 bg-white text-zinc-600'}`}>{editingCustomSkills ? 'Concluir edição' : '✎ Editar'}</button>}
+                  </div>
+
+                  {customSkills.length > 0 && <div className="mb-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+                    {customSkills.map((entry, index) => (
+                      <div key={entry.id || index} className={`flex items-center gap-1 rounded-lg border-2 px-2 py-1.5 transition ${entry.selecionada !== false ? 'border-amber-500 bg-amber-100' : 'border-zinc-200 bg-zinc-50'}`}>
+                        <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 text-xs font-bold">
+                          <input type="checkbox" checked={entry.selecionada !== false} onChange={(e) => toggleCustomSkill(index, e.target.checked)} className="accent-amber-500" />
+                          <span className="truncate" title={entry.nome}>{entry.nome}</span>
+                        </label>
+                        {editingCustomSkills && <button type="button" onClick={() => removeCustomSkill(index)} className="shrink-0 rounded bg-red-100 px-2 py-1 text-[10px] font-black text-red-700" title="Remover esta perícia">×</button>}
+                      </div>
+                    ))}
+                  </div>}
+
+                  <div className="flex flex-col gap-2 sm:flex-row">
+                    <Input value={newCustomSkill} onChange={(e) => setNewCustomSkill(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addCustomSkill(); } }} placeholder="Escreva o nome da nova perícia..." />
+                    <button type="button" onClick={addCustomSkill} disabled={!newCustomSkill.trim()} className="rounded-md bg-zinc-950 px-4 py-2 text-xs font-black text-amber-400 disabled:cursor-not-allowed disabled:opacity-40">✓ Confirmar</button>
+                  </div>
+                </div>
+              </Section>
+
+              <Section
+                title="Especializações"
+                icon="◎"
+                hint="Ficam separadas das perícias. Cada registro representa uma especialização comprada pelo personagem."
+                action={<div className="flex items-center gap-2"><span className="rounded bg-amber-400 px-2 py-1 text-[10px] font-black text-zinc-950">{specializationPoints} pt</span><button type="button" onClick={addSpecialization} className="rounded-md bg-amber-400 px-3 py-1.5 text-[11px] font-black text-zinc-950 hover:bg-amber-300">+ Especialização</button></div>}
+              >
+                {specializations.length === 0 ? (
+                  <button type="button" onClick={addSpecialization} className="w-full rounded-lg border-2 border-dashed border-zinc-300 p-5 text-xs font-bold text-zinc-400 hover:border-amber-400 hover:text-amber-700">Nenhuma especialização. Clique para adicionar.</button>
+                ) : (
+                  <div className="space-y-3">
+                    {specializations.map((entry, index) => (
+                      <div key={index} className="grid gap-2 rounded-lg border border-zinc-200 bg-zinc-50 p-3 md:grid-cols-[1fr_180px_1.4fr_auto] md:items-end">
+                        <Field label="Especialização"><Input value={entry.nome || ''} onChange={(e) => patchSpecialization(index, 'nome', e.target.value)} placeholder="Ex.: Combate à distância" /></Field>
+                        <Field label="Perícia-base (opcional)"><select value={entry.periciaBase || ''} onChange={(e) => patchSpecialization(index, 'periciaBase', e.target.value)} className="w-full rounded-md border border-zinc-300 bg-white px-2 py-2 text-sm outline-none focus:border-amber-500"><option value="">Sem vínculo</option>{specializationSkillOptions.map((name) => <option key={name} value={name}>{name}</option>)}</select></Field>
+                        <Field label="Lembrete"><Input value={entry.notas || ''} onChange={(e) => patchSpecialization(index, 'notas', e.target.value)} placeholder="Uso, estilo, condição..." /></Field>
+                        <button type="button" onClick={() => setList('especializacoes', specializations.filter((_, i) => i !== index))} className="rounded border border-red-200 bg-red-50 px-3 py-2 text-xs font-black text-red-700">×</button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div className="mt-3 rounded-md bg-zinc-100 px-3 py-2 text-[10px] text-zinc-600">Resumo desta área: <strong>{skillPoints + specializationPoints} pt</strong> em perícias + especializações preenchidas. O total geral do personagem continua livre para você controlar conforme a construção usada na mesa.</div>
+              </Section>
+            </div>
 
             <Section title="FA & FD" icon="⚔" hint="Campos livres para registrar a referência usada pela sua mesa.">
               <div className="space-y-3">
@@ -283,7 +406,7 @@ export default function TresDeTCharacterEditor({ scope }) {
         {tab === 'notas' && <Section title="Anotações" icon="✎" hint="Espaço livre para campanha, transformação, forma alternativa ou qualquer detalhe que não caiba nas áreas anteriores."><Textarea rows="16" value={data.notas || ''} onChange={(e) => updateField('notas', e.target.value)} placeholder="Anotações do personagem..." /></Section>}
 
         <div className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-[10px] leading-relaxed text-amber-950">
-          <strong>3DeT Victory no PJ Lite:</strong> esta primeira prévia usa a estrutura das fichas que você forneceu como referência de organização. Os campos permanecem editáveis e evitam automações rígidas para facilitar ajustes da mesa. O livro continua sendo a referência para regras completas.
+          <strong>3DeT Victory no PJ Lite:</strong> as perícias padrão seguem a lista do livro, enquanto perícias personalizadas ficam identificadas como opções da mesa. Especializações possuem uma área própria e o retrato usa o mesmo fluxo de upload das demais fichas.
         </div>
       </div>
     </div>
