@@ -4,6 +4,7 @@ import PJLiteApp from './PJLiteApp.jsx';
 import './mobile-polish.css';
 import './mobile-systems-v8.css';
 import './mobile-attrs-v9.css';
+import './systems/3det/integration.js';
 import { installDragonbanePdfExport } from './systems/dragonbane/index.js';
 import { installDndPdfExport } from './systems/dnd5e/index.js';
 import { installFabulaPdfExport } from './systems/fabulaUltima/index.js';
