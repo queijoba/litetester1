@@ -41,6 +41,8 @@ export const initial3DetPcData = {
     pv: { atual: 0, max: 0 },
   },
   pericias: Object.fromEntries(TRESDET_SKILLS.map(([id]) => [id, false])),
+  periciasPersonalizadas: [],
+  especializacoes: [],
   combate: {
     fa: { atributo: '', ganho: '' },
     fd: { atributo: '', ganho: '' },
@@ -54,6 +56,25 @@ export const initial3DetPcData = {
 
 const clone = (value) => JSON.parse(JSON.stringify(value));
 const listOrEmpty = (value) => (Array.isArray(value) ? value : []);
+const cleanText = (value) => String(value || '').trim();
+
+const normalizeCustomSkills = (value) => {
+  const seen = new Set();
+  return listOrEmpty(value)
+    .map((entry, index) => {
+      const nome = cleanText(entry?.nome ?? entry?.name);
+      if (!nome) return null;
+      const normalizedName = nome.toLocaleLowerCase('pt-BR');
+      if (seen.has(normalizedName)) return null;
+      seen.add(normalizedName);
+      return {
+        id: cleanText(entry?.id) || `custom-${index + 1}`,
+        nome,
+        selecionada: entry?.selecionada !== false,
+      };
+    })
+    .filter(Boolean);
+};
 
 export const normalize3DetPcData = (item) => {
   const source = clone(item || {});
@@ -80,6 +101,14 @@ export const normalize3DetPcData = (item) => {
     source.status[key].max = Number(source.status[key].max ?? 0) || 0;
   });
   TRESDET_SKILLS.forEach(([id]) => { source.pericias[id] = !!source.pericias[id]; });
+
+  source.periciasPersonalizadas = normalizeCustomSkills(source.periciasPersonalizadas);
+  source.especializacoes = listOrEmpty(source.especializacoes).map((entry) => ({
+    nome: '', periciaBase: '', notas: '', ...(entry || {}),
+    nome: cleanText(entry?.nome),
+    periciaBase: cleanText(entry?.periciaBase),
+    notas: String(entry?.notas || ''),
+  }));
 
   source.vantagens = listOrEmpty(source.vantagens).map((entry) => ({
     nome: '', custo: '', desc: '', ...(entry || {}),
