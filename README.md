@@ -1,6 +1,6 @@
 # LiteTester1 — PJ Lite React Preview
 
-**Versão atual da prévia:** 0.7.4v Alpha
+**Versão atual da prévia:** 0.8.0v Alpha
 
 Ambiente isolado para evoluir e validar o PJ Lite antes de qualquer migração do `pjlite.vercel.app` definitivo.
 
@@ -11,13 +11,13 @@ A prévia React/Vite está funcional e modularizada por sistema:
 - React/ReactDOM são empacotados pelo Vite, sem Babel no navegador.
 - JSZip e LZ-String são dependências NPM.
 - O CSS legado continua em `src/pjlite.css`, enquanto sistemas novos podem ter estilos próprios.
-- Dragonbane, D&D 5.5e, Fabula Ultima e O Som das Seis possuem módulos próprios em `src/systems/`.
-- Skyfall, Tormenta20, Ordem Paranormal, 3D&T e Guerra dos Tronos estão reservados no registro para implementação futura.
+- Dragonbane, D&D 5.5e, Fabula Ultima, O Som das Seis e 3DeT Victory possuem módulos próprios em `src/systems/`.
+- Skyfall, Tormenta20, Ordem Paranormal e Guerra dos Tronos continuam reservados no registro para implementação futura.
 - Dragonbane exporta usando o template real em `public/pdfs/dragonbane-template.pdf`.
 - D&D 5.5e possui ficha responsiva, abas de Ficha & Combate, Recursos, Magias e painel dinâmico da classe/subclasse.
-- A folha `src/systems/dnd5e/dnd-sheet-v7.css` contém o polimento mobile atual do D&D.
+- 3DeT Victory entra na 0.8.0 com ficha de personagem modular: retrato opcional, Arquétipo, Kit opcional, Conceito, Escala, Pontos/XP, P/H/R, PA/PM/PV, 12 Perícias, FA/FD, Vantagens, Desvantagens, Técnicas, Inventário por raridade e Anotações.
+- A ficha 3DeT já participa de saves, autosave, histórico, backup, importação, filtros e Ficha Chat. Exportação PDF será tratada em uma etapa própria.
 - O CI executa verificação estrutural e build em cada push/PR para `main`.
-- Guias e Tutoriais foram atualizados para a 0.7.4v Alpha, com tutorial rápido, orientação de backup/compartilhamento e instruções mais atuais para D&D 5.5e no celular.
 
 ## Estrutura principal
 
@@ -45,14 +45,22 @@ src/
    │  └─ components/
    │     ├─ CharacterEditor.jsx
    │     └─ ThreatEditor.jsx
-   └─ somDasSeis/
+   ├─ somDasSeis/
+   │  └─ components/
+   │     ├─ CharacterEditor.jsx
+   │     └─ ThreatEditor.jsx
+   └─ 3det/
+      ├─ data.js
+      ├─ chat.js
       └─ components/
-         ├─ CharacterEditor.jsx
-         └─ ThreatEditor.jsx
+         └─ CharacterEditor.jsx
 
 public/
 └─ pdfs/
-   └─ dragonbane-template.pdf
+   ├─ dragonbane-template.pdf
+   ├─ dnd5e-template.pdf
+   ├─ FU_Ficha_de_personagemV2.pdf
+   └─ som-das-seis-template.pdf
 ```
 
 ## Comandos
@@ -71,7 +79,7 @@ npm run check
 
 A prévia já serve para desenvolvimento e testes, mas a promoção para o projeto definitivo deve acontecer somente depois de uma rodada final de compatibilidade. Pontos ainda recomendados:
 
-1. adicionar testes E2E/smoke para criar, salvar, reabrir, importar e exportar fichas dos quatro sistemas;
+1. adicionar testes E2E/smoke para criar, salvar, reabrir, importar e exportar fichas dos cinco sistemas;
 2. remover trechos legados/duplicados que ainda permanecem em componentes-base durante a transição;
 3. empacotar dependências ainda carregadas externamente, como Tailwind, fontes e `pdf-lib`, reduzindo dependência de CDN;
 4. manter uma migração segura para as chaves antigas de armazenamento antes de qualquer renomeação;
