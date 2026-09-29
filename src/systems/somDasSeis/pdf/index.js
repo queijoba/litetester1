@@ -4,3 +4,5 @@ export {
   SOM6_PDF_FIELDS,
   buildSom6PdfSnapshot,
 } from './base.js';
+export { fillSom6Pdf } from './map.js';
+export { installSom6PdfExport } from './export.js';
