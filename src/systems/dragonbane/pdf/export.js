@@ -2,7 +2,7 @@ import { fillDragonbanePdf } from './map.js';
 
 const STORAGE_KEY = 'dragonbane_saved_characters';
 const PDFLIB_CDN = 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js';
-const TEMPLATE_URL = '/pdfs/dragonbane-template.pdf?v=20260929-photo';
+const TEMPLATE_URL = '/pdfs/dragonbane-template.pdf?v=20260929-photo-v2';
 const BUTTON_ID = 'pjlite-dragonbane-pdf-export';
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -41,6 +41,7 @@ function loadPdfLib() {
   loadPdfLib.promise = new Promise((resolve, reject) => {
     const existing = document.querySelector('script[data-pjlite-pdflib="1"]');
     if (existing) {
+      if (window.PDFLib?.PDFDocument) return resolve(window.PDFLib);
       existing.addEventListener('load', () => resolve(window.PDFLib), { once: true });
       existing.addEventListener('error', () => reject(new Error('Não foi possível carregar o gerador de PDF.')), { once: true });
       return;
@@ -173,7 +174,7 @@ async function imageFromSource(source) {
     const converted = await blobToPngBytes(blob);
     return converted ? { bytes: converted, kind: 'png' } : null;
   } catch (error) {
-    console.warn('[PJ Lite PDF] Retrato indisponível; o PDF continuará editável sem a imagem.', error);
+    console.warn('[PJ Lite Dragonbane PDF] Retrato indisponível; o PDF continuará editável sem a imagem.', error);
     return null;
   }
 }
@@ -187,10 +188,11 @@ async function addPortrait(doc, form, item) {
       ? await doc.embedPng(loaded.bytes)
       : await doc.embedJpg(loaded.bytes);
 
-    form.getButton('retrato_imagem').setImage(image);
+    const portraitField = form.getButton('retrato_imagem');
+    portraitField.setImage(image);
     return true;
   } catch (error) {
-    console.warn('[PJ Lite PDF] Não foi possível inserir o retrato no campo editável; o PDF continuará sem imagem.', error);
+    console.warn('[PJ Lite Dragonbane PDF] Não foi possível inserir o retrato no campo editável; o PDF continuará sem imagem.', error);
     return false;
   }
 }
@@ -212,10 +214,10 @@ async function exportPdf() {
   try {
     form.updateFieldAppearances(regular);
   } catch (error) {
-    console.warn('[PJ Lite PDF] Não foi possível atualizar todas as aparências dos campos:', error);
+    console.warn('[PJ Lite Dragonbane PDF] Não foi possível atualizar todas as aparências dos campos:', error);
   }
 
-  await addPortrait(doc, form, item);
+  const portraitAdded = await addPortrait(doc, form, item);
 
   const bytes = await doc.save({
     useObjectStreams: false,
@@ -223,7 +225,7 @@ async function exportPdf() {
   });
 
   download(bytes, item);
-  return { item };
+  return { item, portraitAdded };
 }
 
 function isDragonbaneEditorOpen() {
@@ -272,7 +274,7 @@ function ensureButton() {
     button.type = 'button';
     button.className = copy.className;
     button.textContent = '📄 Baixar PDF';
-    button.title = 'Baixar a ficha usando o PDF editável do PJ Lite como modelo.';
+    button.title = 'Baixar a ficha usando o PDF editável do PJ Lite como modelo, incluindo o retrato quando disponível.';
     button.style.background = 'rgba(4,120,87,.92)';
     button.style.whiteSpace = 'nowrap';
     button.style.border = '1px solid rgba(255,255,255,.28)';
@@ -285,10 +287,16 @@ function ensureButton() {
       button.textContent = '⏳ Gerando PDF...';
 
       try {
-        const { item } = await exportPdf();
-        toast(`PDF de ${item?.bio?.nome || 'Dragonbane'} baixado com retrato editável.`, 'success');
+        const { item, portraitAdded } = await exportPdf();
+        const name = item?.bio?.nome || 'Dragonbane';
+        const hasPortrait = !!item?.bio?.imagem;
+        if (hasPortrait && !portraitAdded) {
+          toast(`PDF de ${name} baixado, mas não foi possível incorporar o retrato.`, 'info');
+        } else {
+          toast(`PDF de ${name} baixado${portraitAdded ? ' com retrato' : ''}.`, 'success');
+        }
       } catch (error) {
-        console.error('[PJ Lite PDF]', error);
+        console.error('[PJ Lite Dragonbane PDF]', error);
         toast(String(error?.message || 'Não foi possível gerar o PDF.'), 'error');
       } finally {
         button.dataset.busy = '0';
