@@ -22,8 +22,23 @@ export const generate3DetChatText = (item) => {
   text += `Poder ${safe(attrs.poder, 0)} | Habilidade ${safe(attrs.habilidade, 0)} | Resistência ${safe(attrs.resistencia, 0)}\n`;
   text += `PA ${safe(status.pa?.atual, 0)}/${safe(status.pa?.max, 0)} | PM ${safe(status.pm?.atual, 0)}/${safe(status.pm?.max, 0)} | PV ${safe(status.pv?.atual, 0)}/${safe(status.pv?.max, 0)}\n`;
 
-  const skills = TRESDET_SKILLS.filter(([id]) => item?.pericias?.[id]).map(([, name]) => name);
+  const officialSkills = TRESDET_SKILLS.filter(([id]) => item?.pericias?.[id]).map(([, name]) => name);
+  const customSkills = (item?.periciasPersonalizadas || [])
+    .filter((entry) => entry?.selecionada !== false && hasText(entry?.nome))
+    .map((entry) => entry.nome.trim());
+  const skills = [...officialSkills, ...customSkills];
   if (skills.length) text += `\n🎯 PERÍCIAS\n\n${skills.join(' • ')}\n`;
+
+  const specializations = (item?.especializacoes || []).filter((entry) => hasText(entry?.nome));
+  if (specializations.length) {
+    text += `\n🔎 ESPECIALIZAÇÕES\n\n`;
+    specializations.forEach((entry) => {
+      text += `• ${entry.nome}`;
+      if (hasText(entry.periciaBase)) text += ` [${entry.periciaBase}]`;
+      if (hasText(entry.notas)) text += ` — ${compact(entry.notas)}`;
+      text += '\n';
+    });
+  }
 
   const fa = item?.combate?.fa || {};
   const fd = item?.combate?.fd || {};
