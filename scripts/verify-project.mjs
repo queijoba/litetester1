@@ -31,6 +31,10 @@ const requiredFiles = [
   'src/systems/somDasSeis/pdf/base.js',
   'src/systems/somDasSeis/pdf/map.js',
   'src/systems/somDasSeis/pdf/export.js',
+  'src/systems/3det/index.js',
+  'src/systems/3det/data.js',
+  'src/systems/3det/chat.js',
+  'src/systems/3det/components/CharacterEditor.jsx',
   'public/pdfs/dragonbane-template.pdf',
   'public/pdfs/dnd5e-template.pdf',
   'public/pdfs/FU_Ficha_de_personagemV2.pdf',
@@ -75,13 +79,14 @@ const som6PdfExport = await readFile('src/systems/somDasSeis/pdf/export.js', 'ut
 if (!som6PdfExport.includes('/pdfs/som-das-seis-template.pdf')) throw new Error('Exportador O Som das Seis não está usando o template definitivo.');
 
 const app = await readFile('src/PJLiteApp.jsx', 'utf8');
-if (!app.includes("versao: '0.7.4v Alpha'")) throw new Error('PJLiteApp.jsx não anuncia a versão 0.7.4v Alpha.');
-if (!app.includes('Tutorial de 3 minutos')) throw new Error('Guias e Tutoriais não contêm o tutorial rápido da 0.7.4v.');
+if (!app.includes("versao: '0.8.0v Alpha'")) throw new Error('PJLiteApp.jsx não anuncia a versão 0.8.0v Alpha.');
+if (!app.includes('Tutorial de 3 minutos')) throw new Error('Guias e Tutoriais não contêm o tutorial rápido da prévia.');
 if (app.includes('Exibir código-fonte da página')) throw new Error('A orientação antiga de copiar o HTML ainda está presente.');
 if (!app.includes('@ralseibaiano') || !app.includes('inabakaoru')) throw new Error('A orientação de contato para o código aberto está incompleta.');
+if (!app.includes("initial3DetPcData") || !app.includes('TresDeTCharacterEditor') || !app.includes('generate3DetChatText')) throw new Error('PJLiteApp.jsx não está integrando completamente o 3DeT Victory.');
 
 const indexHtml = await readFile('index.html', 'utf8');
-if (!indexHtml.includes('0.7.4v Alpha')) throw new Error('index.html não anuncia a versão 0.7.4v Alpha.');
+if (!indexHtml.includes('0.8.0v Alpha') || !indexHtml.includes('3DeT Victory')) throw new Error('index.html não anuncia a prévia 0.8.0 com 3DeT Victory.');
 for (const modulePath of [
   './systems/dragonbane/components/Editor.jsx',
   './systems/dnd5e/components/CharacterEditor.jsx',
@@ -90,6 +95,7 @@ for (const modulePath of [
   './systems/fabulaUltima/components/ThreatEditor.jsx',
   './systems/somDasSeis/components/CharacterEditor.jsx',
   './systems/somDasSeis/components/ThreatEditor.jsx',
+  './systems/3det/components/CharacterEditor.jsx',
 ]) {
   if (!app.includes(modulePath)) throw new Error(`PJLiteApp.jsx não está usando o editor modular: ${modulePath}`);
 }
@@ -100,6 +106,15 @@ if (!dndEditor.includes('../dnd-sheet-v7.css')) throw new Error('O editor D&D n�
 if (!dndEditor.includes('ClassWorkspace') || !dndEditor.includes('SpellWorkspace')) throw new Error('O editor D&D não contém os workspaces separados de classe e magias.');
 for (const token of ['@media (max-width: 520px)', '@media (max-width: 430px)', 'overflow-x: clip', 'font-size: 16px', '.dnd-v6-wrapper .dnd-v3-skills-grid']) {
   if (!dndMobileCss.includes(token)) throw new Error(`Revisão mobile D&D incompleta: ${token}`);
+}
+
+const tresDetEditor = await readFile('src/systems/3det/components/CharacterEditor.jsx', 'utf8');
+for (const token of ['3DeT', 'Poder', 'Habilidade', 'Resistência', 'TRESDET_SKILLS', 'TRESDET_RARITIES', 'bio.imagem']) {
+  if (!tresDetEditor.includes(token)) throw new Error(`Editor 3DeT incompleto: ${token}`);
+}
+const tresDetData = await readFile('src/systems/3det/data.js', 'utf8');
+for (const token of ['initial3DetPcData', 'normalize3DetPcData', "system: '3det'", 'animais', 'sobrevivencia']) {
+  if (!tresDetData.includes(token)) throw new Error(`Modelo de dados 3DeT incompleto: ${token}`);
 }
 
 const mobilePolish = await readFile('src/mobile-polish.css', 'utf8');
@@ -136,8 +151,9 @@ if (!app.includes('D&D 5.5e (2024) • revisado') || app.includes('novo sistema 
 
 const registry = await readFile('src/systems/registry.js', 'utf8');
 if (!registry.includes("{ id: 'dnd5e', name: 'D&D 5.5e', status: 'active', enabled: true }")) throw new Error('Registro D&D não está identificado como D&D 5.5e.');
-for (const id of ['dragonbane', 'dnd5e', 'fabulaUltima', 'somDasSeis']) {
+for (const id of ['dragonbane', 'dnd5e', 'fabulaUltima', 'somDasSeis', '3det']) {
   if (!registry.includes(`id: '${id}'`)) throw new Error(`Sistema ativo ausente do registro: ${id}`);
 }
+if (!registry.includes("{ id: '3det', name: '3DeT Victory', status: 'active', enabled: true }")) throw new Error('Registro 3DeT Victory não está ativo.');
 
-console.log('PJ Lite: estrutura essencial, quatro exportadores PDF, editores modulares e revisões mobile verificados com sucesso.');
+console.log('PJ Lite: cinco sistemas ativos, quatro exportadores PDF, editores modulares e revisões mobile verificados com sucesso.');
