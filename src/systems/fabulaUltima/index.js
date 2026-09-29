@@ -7,3 +7,4 @@ export const fabulaUltimaSystem = {
 
 export { default as FabulaCharacterEditor } from './components/CharacterEditor.jsx';
 export { default as FabulaThreatEditor } from './components/ThreatEditor.jsx';
+export * from './pdf/index.js';
