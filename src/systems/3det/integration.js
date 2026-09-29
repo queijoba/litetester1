@@ -4,6 +4,7 @@ const THEME_PREF_KEY = 'dragonbane_theme_prefs';
 const THEME_VALUE = '3det';
 const THEME_CLASS = 'theme-3det';
 const GUIDE_BUTTON_ATTR = 'data-pjlite-3det-guide';
+const GUIDE_MODAL_ID = 'pjlite-3det-guide-modal';
 
 const safeStorageGet = (key) => {
   try { return localStorage.getItem(key); } catch { return null; }
@@ -83,22 +84,31 @@ const GUIDE_HTML = `
   </div>
 `;
 
-const setGuideButtonActive = (tabBar, activeButton) => {
-  tabBar.querySelectorAll(':scope > button').forEach((button) => {
-    button.classList.remove(
-      'border-gray-800', 'text-gray-900', 'bg-white',
-      'border-orange-600', 'text-orange-900',
-      'border-teal-600', 'text-teal-900',
-      'border-red-900', 'text-red-950',
-      'border-amber-500', 'text-amber-900',
-    );
-    button.classList.add('border-transparent', 'text-gray-500');
-  });
-  activeButton.classList.remove('border-transparent', 'text-gray-500');
-  activeButton.classList.add('border-amber-500', 'text-amber-900', 'bg-white');
+const closeGuideModal = () => {
+  document.getElementById(GUIDE_MODAL_ID)?.remove();
 };
 
-const ensureGuideTab = () => {
+const openGuideModal = () => {
+  closeGuideModal();
+  const overlay = document.createElement('div');
+  overlay.id = GUIDE_MODAL_ID;
+  overlay.className = 'fixed inset-0 z-[130] flex items-center justify-center bg-black/70 p-3 sm:p-4';
+  overlay.innerHTML = `
+    <div role="dialog" aria-modal="true" aria-label="Guia 3DeT Victory" class="flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-lg border-2 border-amber-400 bg-gray-50 shadow-2xl">
+      <div class="flex shrink-0 items-center justify-between bg-zinc-950 px-4 py-3 text-white">
+        <div><div class="text-[9px] font-black uppercase tracking-widest text-amber-400">Guias e Tutoriais • PJ Lite 0.8.0v Alpha</div><h2 class="font-title text-lg font-black">3DeT Victory</h2></div>
+        <button type="button" data-close-3det-guide class="px-2 text-2xl font-black text-zinc-300 hover:text-white" aria-label="Fechar guia">×</button>
+      </div>
+      <div class="overflow-y-auto p-4 text-sm text-gray-700 sm:p-6">${GUIDE_HTML}</div>
+    </div>
+  `;
+  overlay.addEventListener('click', (event) => {
+    if (event.target === overlay || event.target.closest('[data-close-3det-guide]')) closeGuideModal();
+  });
+  document.body.appendChild(overlay);
+};
+
+const ensureGuideShortcut = () => {
   const heading = [...document.querySelectorAll('h2')]
     .find((node) => node.textContent?.trim() === 'Guias e Tutoriais');
   if (!heading) return;
@@ -121,17 +131,8 @@ const ensureGuideTab = () => {
   button.setAttribute(GUIDE_BUTTON_ATTR, 'true');
   button.type = 'button';
   button.textContent = '3DeT Victory';
-  button.className = 'flex-1 py-2.5 px-4 text-xs font-bold uppercase text-center border-b-4 transition-colors whitespace-nowrap border-transparent text-gray-500 hover:bg-gray-300';
-  button.addEventListener('click', () => {
-    const content = [...modal.querySelectorAll('div')].find((element) => (
-      element.classList.contains('p-6')
-      && element.classList.contains('overflow-y-auto')
-    ));
-    if (!content) return;
-    setGuideButtonActive(tabBar, button);
-    content.innerHTML = GUIDE_HTML;
-    content.scrollTop = 0;
-  });
+  button.className = 'flex-1 whitespace-nowrap border-b-4 border-transparent px-4 py-2.5 text-center text-xs font-bold uppercase text-amber-800 transition-colors hover:border-amber-400 hover:bg-amber-50';
+  button.addEventListener('click', openGuideModal);
 
   const som6 = [...tabBar.children].find((child) => child.textContent?.trim() === 'Som das Seis');
   tabBar.insertBefore(button, som6 || null);
@@ -154,7 +155,7 @@ const scheduleSync = () => {
     syncBodyTheme();
     ensureThemeOption();
     ensure3DetSheetScope();
-    ensureGuideTab();
+    ensureGuideShortcut();
     refreshReleaseLabels();
   });
 };
@@ -168,6 +169,10 @@ const start = () => {
     if (target.value === THEME_VALUE) safeStorageSet(THEME_PREF_KEY, THEME_VALUE);
     setTimeout(scheduleSync, 0);
   }, true);
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && document.getElementById(GUIDE_MODAL_ID)) closeGuideModal();
+  });
 
   const observer = new MutationObserver(scheduleSync);
   observer.observe(document.documentElement, {
