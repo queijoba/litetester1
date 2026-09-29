@@ -1,0 +1,105 @@
+/* Tema próprio do 3DeT Victory no PJ Lite.
+   Mantém a identidade preta/amarela da ficha sem depender do CSS legado. */
+
+body.theme-3det {
+  background-color: #191919 !important;
+  background-image:
+    radial-gradient(circle at 12% 4%, rgba(250, 204, 21, .24), transparent 28%),
+    radial-gradient(circle at 88% 10%, rgba(245, 158, 11, .14), transparent 28%),
+    linear-gradient(155deg, #121212 0%, #242424 48%, #161616 100%) !important;
+  color: #27272a !important;
+}
+
+body.theme-3det .max-w-6xl,
+body.theme-3det .max-w-5xl {
+  background-color: rgba(255, 252, 235, .97) !important;
+  border-color: #d6a900 !important;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .28) !important;
+}
+
+body.theme-3det .bg-dragon-dark {
+  background-color: #171717 !important;
+  color: #fde047 !important;
+}
+body.theme-3det .border-dragon-dark { border-color: #d6a900 !important; }
+body.theme-3det .text-dragon-dark { color: #2b260d !important; }
+body.theme-3det .bg-white { background-color: #fffdf5 !important; color: #27272a !important; }
+body.theme-3det .bg-gray-50,
+body.theme-3det .bg-gray-100,
+body.theme-3det .bg-gray-200 { background-color: #f8f3dc !important; color: #3f3f46 !important; }
+body.theme-3det .border-gray-200,
+body.theme-3det .border-gray-300 { border-color: #d9c879 !important; }
+body.theme-3det .text-gray-900,
+body.theme-3det .text-gray-800,
+body.theme-3det .text-gray-700 { color: #292524 !important; }
+body.theme-3det .text-gray-600,
+body.theme-3det .text-gray-500 { color: #665f43 !important; }
+body.theme-3det input,
+body.theme-3det textarea,
+body.theme-3det select {
+  background-color: #fffef8 !important;
+  color: #27272a !important;
+  border-color: #cfb94e !important;
+}
+body.theme-3det input:focus,
+body.theme-3det textarea:focus,
+body.theme-3det select:focus {
+  border-color: #eab308 !important;
+  box-shadow: 0 0 0 2px rgba(234, 179, 8, .18) !important;
+}
+
+/* Ficha 3DeT: pequenos ajustes quando o tema próprio está ativo. */
+body.theme-3det .tresdet-sheet {
+  background: linear-gradient(180deg, rgba(255, 253, 244, .98), rgba(247, 241, 214, .98)) !important;
+}
+body.theme-3det .tresdet-sheet .bg-zinc-950,
+body.theme-3det .tresdet-sheet .bg-zinc-900 {
+  background-color: #171717 !important;
+}
+body.theme-3det .tresdet-sheet .bg-amber-400 { background-color: #facc15 !important; }
+body.theme-3det .tresdet-sheet .border-amber-400,
+body.theme-3det .tresdet-sheet .border-amber-500 { border-color: #eab308 !important; }
+body.theme-3det .tresdet-sheet .bg-amber-100 { background-color: #fef3c7 !important; }
+body.theme-3det .tresdet-sheet .bg-zinc-50,
+body.theme-3det .tresdet-sheet .bg-zinc-100 { background-color: #faf7e8 !important; }
+body.theme-3det .tresdet-sheet .border-zinc-200,
+body.theme-3det .tresdet-sheet .border-zinc-300 { border-color: #d9cd91 !important; }
+body.theme-3det .tresdet-sheet .shadow,
+body.theme-3det .tresdet-sheet .shadow-sm { box-shadow: 0 5px 15px rgba(54, 45, 5, .12) !important; }
+
+/* O CSS escuro legado trabalha mais com gray do que zinc; estes ajustes
+   garantem que a ficha 3DeT também fique legível no Modo Escuro. */
+body.theme-dark .tresdet-sheet {
+  background: #0d0f12 !important;
+  color: #f4f4f5 !important;
+}
+body.theme-dark .tresdet-sheet .bg-white { background-color: #18181b !important; color: #f4f4f5 !important; }
+body.theme-dark .tresdet-sheet .bg-zinc-50,
+body.theme-dark .tresdet-sheet .bg-zinc-100 { background-color: #27272a !important; color: #f4f4f5 !important; }
+body.theme-dark .tresdet-sheet .bg-zinc-900,
+body.theme-dark .tresdet-sheet .bg-zinc-950 { background-color: #09090b !important; color: #fafafa !important; }
+body.theme-dark .tresdet-sheet .text-zinc-900,
+body.theme-dark .tresdet-sheet .text-zinc-800,
+body.theme-dark .tresdet-sheet .text-zinc-700,
+body.theme-dark .tresdet-sheet .text-zinc-600 { color: #e4e4e7 !important; }
+body.theme-dark .tresdet-sheet .text-zinc-500,
+body.theme-dark .tresdet-sheet .text-zinc-400 { color: #a1a1aa !important; }
+body.theme-dark .tresdet-sheet .border-zinc-200,
+body.theme-dark .tresdet-sheet .border-zinc-300 { border-color: #52525b !important; }
+body.theme-dark .tresdet-sheet .bg-amber-50,
+body.theme-dark .tresdet-sheet .bg-amber-100 { background-color: #3b2f07 !important; color: #fef3c7 !important; }
+body.theme-dark .tresdet-sheet input,
+body.theme-dark .tresdet-sheet textarea,
+body.theme-dark .tresdet-sheet select {
+  background-color: #09090b !important;
+  color: #fafafa !important;
+  border-color: #71717a !important;
+}
+
+@media (max-width: 520px) {
+  body.theme-3det .tresdet-sheet,
+  body.theme-dark .tresdet-sheet { overflow-x: clip; }
+  .tresdet-sheet input,
+  .tresdet-sheet textarea,
+  .tresdet-sheet select { font-size: 16px; }
+}
