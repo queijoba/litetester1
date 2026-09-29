@@ -2,7 +2,7 @@ import { fillDragonbanePdf } from './map.js';
 
 const STORAGE_KEY = 'dragonbane_saved_characters';
 const PDFLIB_CDN = 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js';
-const TEMPLATE_URL = '/pdfs/dragonbane-template.pdf?v=20260925';
+const TEMPLATE_URL = '/pdfs/dragonbane-template.pdf?v=20260929-photo';
 const BUTTON_ID = 'pjlite-dragonbane-pdf-export';
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -124,10 +124,12 @@ async function loadRealTemplate(PDFLib) {
 
   const doc = await PDFLib.PDFDocument.load(bytes, { ignoreEncryption: true });
   const form = doc.getForm();
-  const fieldNames = form.getFields().map(field => field.getName());
+  const fieldNames = new Set(form.getFields().map(field => field.getName()));
+  const required = ['nome', 'nome_pagina_2', 'retrato_imagem'];
+  const missing = required.filter(name => !fieldNames.has(name));
 
-  if (!fieldNames.includes('nome') || !fieldNames.includes('nome_pagina_2')) {
-    throw new Error('O PDF modelo encontrado não é a ficha editável esperada do PJ Lite.');
+  if (missing.length) {
+    throw new Error(`O PDF modelo encontrado não é a ficha editável esperada do PJ Lite (${missing.join(', ')}).`);
   }
 
   const regular = await doc.embedFont(PDFLib.StandardFonts.Helvetica);
@@ -171,12 +173,12 @@ async function imageFromSource(source) {
     const converted = await blobToPngBytes(blob);
     return converted ? { bytes: converted, kind: 'png' } : null;
   } catch (error) {
-    console.warn('[PJ Lite PDF] Retrato indisponível; o PDF continuará sem a imagem.', error);
+    console.warn('[PJ Lite PDF] Retrato indisponível; o PDF continuará editável sem a imagem.', error);
     return null;
   }
 }
 
-async function addPortrait(doc, item, PDFLib) {
+async function addPortrait(doc, form, item) {
   const loaded = await imageFromSource(item?.bio?.imagem);
   if (!loaded) return false;
 
@@ -185,30 +187,10 @@ async function addPortrait(doc, item, PDFLib) {
       ? await doc.embedPng(loaded.bytes)
       : await doc.embedJpg(loaded.bytes);
 
-    const page = doc.getPages()[0];
-    const box = { x: 38, y: 658, width: 73, height: 87 };
-
-    page.drawRectangle({
-      x: box.x,
-      y: box.y,
-      width: box.width,
-      height: box.height,
-      color: PDFLib.rgb(0.965, 0.941, 0.835)
-    });
-
-    const scale = Math.min(box.width / image.width, box.height / image.height);
-    const width = image.width * scale;
-    const height = image.height * scale;
-
-    page.drawImage(image, {
-      x: box.x + (box.width - width) / 2,
-      y: box.y + (box.height - height) / 2,
-      width,
-      height
-    });
+    form.getButton('retrato_imagem').setImage(image);
     return true;
   } catch (error) {
-    console.warn('[PJ Lite PDF] Não foi possível inserir o retrato; o PDF continuará sem imagem.', error);
+    console.warn('[PJ Lite PDF] Não foi possível inserir o retrato no campo editável; o PDF continuará sem imagem.', error);
     return false;
   }
 }
@@ -226,13 +208,14 @@ async function exportPdf() {
   const { doc, form, regular } = await loadRealTemplate(PDFLib);
 
   fillDragonbanePdf(form, item);
-  await addPortrait(doc, item, PDFLib);
 
   try {
     form.updateFieldAppearances(regular);
   } catch (error) {
     console.warn('[PJ Lite PDF] Não foi possível atualizar todas as aparências dos campos:', error);
   }
+
+  await addPortrait(doc, form, item);
 
   const bytes = await doc.save({
     useObjectStreams: false,
@@ -303,7 +286,7 @@ function ensureButton() {
 
       try {
         const { item } = await exportPdf();
-        toast(`PDF de ${item?.bio?.nome || 'Dragonbane'} baixado no modelo correto.`, 'success');
+        toast(`PDF de ${item?.bio?.nome || 'Dragonbane'} baixado com retrato editável.`, 'success');
       } catch (error) {
         console.error('[PJ Lite PDF]', error);
         toast(String(error?.message || 'Não foi possível gerar o PDF.'), 'error');
