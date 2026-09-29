@@ -4,7 +4,7 @@ const THEME_PREF_KEY = 'dragonbane_theme_prefs';
 const THEME_VALUE = '3det';
 const THEME_CLASS = 'theme-3det';
 const GUIDE_BUTTON_ATTR = 'data-pjlite-3det-guide';
-const GUIDE_MODAL_ID = 'pjlite-3det-guide-modal';
+const GUIDE_PANEL_ATTR = 'data-pjlite-3det-guide-panel';
 
 const safeStorageGet = (key) => {
   try { return localStorage.getItem(key); } catch { return null; }
@@ -75,7 +75,7 @@ const GUIDE_HTML = `
     </div>
     <div class="rounded border border-zinc-300 bg-zinc-100 p-4">
       <h3 class="mb-2 font-bold text-zinc-900">🎨 Tema 3DeT Victory</h3>
-      <p class="text-xs">No seletor de temas do topo, escolha <strong>Tema: 3DeT Victory</strong>. O tema usa preto, amarelo e tons de papel, e a ficha também tem tratamento próprio no Modo Escuro e no celular.</p>
+      <p class="text-xs">No seletor de temas do topo, escolha <strong>Tema: 3DeT Victory</strong>. O tema usa preto, amarelo e tons de papel, com tratamento próprio para Modo Escuro e celular.</p>
     </div>
     <div class="rounded border border-amber-300 bg-amber-50 p-4">
       <h3 class="mb-2 font-bold text-amber-950">ℹ️ Sobre regras</h3>
@@ -84,40 +84,15 @@ const GUIDE_HTML = `
   </div>
 `;
 
-const closeGuideModal = () => {
-  document.getElementById(GUIDE_MODAL_ID)?.remove();
-};
+let guideActive = false;
 
-const openGuideModal = () => {
-  closeGuideModal();
-  const overlay = document.createElement('div');
-  overlay.id = GUIDE_MODAL_ID;
-  overlay.className = 'fixed inset-0 z-[130] flex items-center justify-center bg-black/70 p-3 sm:p-4';
-  overlay.innerHTML = `
-    <div role="dialog" aria-modal="true" aria-label="Guia 3DeT Victory" class="flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-lg border-2 border-amber-400 bg-gray-50 shadow-2xl">
-      <div class="flex shrink-0 items-center justify-between bg-zinc-950 px-4 py-3 text-white">
-        <div><div class="text-[9px] font-black uppercase tracking-widest text-amber-400">Guias e Tutoriais • PJ Lite 0.8.0v Alpha</div><h2 class="font-title text-lg font-black">3DeT Victory</h2></div>
-        <button type="button" data-close-3det-guide class="px-2 text-2xl font-black text-zinc-300 hover:text-white" aria-label="Fechar guia">×</button>
-      </div>
-      <div class="overflow-y-auto p-4 text-sm text-gray-700 sm:p-6">${GUIDE_HTML}</div>
-    </div>
-  `;
-  overlay.addEventListener('click', (event) => {
-    if (event.target === overlay || event.target.closest('[data-close-3det-guide]')) closeGuideModal();
-  });
-  document.body.appendChild(overlay);
-};
-
-const ensureGuideShortcut = () => {
+const getGuideParts = () => {
   const heading = [...document.querySelectorAll('h2')]
     .find((node) => node.textContent?.trim() === 'Guias e Tutoriais');
-  if (!heading) return;
+  if (!heading) return {};
 
   const modal = heading.closest('.fixed');
-  if (!modal) return;
-
-  const version = heading.parentElement?.querySelector('.text-\\[9px\\]');
-  if (version && version.textContent?.includes('PJ Lite')) version.textContent = 'PJ Lite 0.8.0v Alpha';
+  if (!modal) return {};
 
   const tabBar = [...modal.querySelectorAll('div')].find((element) => {
     const labels = [...element.children]
@@ -125,17 +100,114 @@ const ensureGuideShortcut = () => {
       .map((child) => child.textContent?.trim());
     return labels.includes('Começando') && labels.includes('Fabula Ultima') && labels.includes('Som das Seis');
   });
-  if (!tabBar || tabBar.querySelector(`[${GUIDE_BUTTON_ATTR}]`)) return;
 
-  const button = document.createElement('button');
-  button.setAttribute(GUIDE_BUTTON_ATTR, 'true');
-  button.type = 'button';
-  button.textContent = '3DeT Victory';
-  button.className = 'flex-1 whitespace-nowrap border-b-4 border-transparent px-4 py-2.5 text-center text-xs font-bold uppercase text-amber-800 transition-colors hover:border-amber-400 hover:bg-amber-50';
-  button.addEventListener('click', openGuideModal);
+  const content = [...modal.querySelectorAll('div')].find((element) => (
+    element.classList.contains('p-6')
+    && element.classList.contains('overflow-y-auto')
+  ));
 
-  const som6 = [...tabBar.children].find((child) => child.textContent?.trim() === 'Som das Seis');
-  tabBar.insertBefore(button, som6 || null);
+  return { heading, modal, tabBar, content };
+};
+
+const setBuiltInTabsInactive = (tabBar, activeButton) => {
+  if (!tabBar) return;
+  [...tabBar.children].forEach((button) => {
+    if (button === activeButton || button.tagName !== 'BUTTON') return;
+    button.classList.remove(
+      'border-gray-800', 'text-gray-900', 'bg-white',
+      'border-orange-600', 'text-orange-900',
+      'border-teal-600', 'text-teal-900',
+      'border-red-900', 'text-red-950',
+      'border-amber-500', 'text-amber-900',
+    );
+    button.classList.add('border-transparent', 'text-gray-500');
+  });
+};
+
+const ensureGuidePanelVisible = () => {
+  if (!guideActive) return;
+  const { tabBar, content } = getGuideParts();
+  if (!tabBar || !content) return;
+
+  const button = tabBar.querySelector(`[${GUIDE_BUTTON_ATTR}]`);
+  if (!button) return;
+
+  let panel = content.querySelector(`[${GUIDE_PANEL_ATTR}]`);
+  if (!panel) {
+    panel = document.createElement('div');
+    panel.setAttribute(GUIDE_PANEL_ATTR, 'true');
+    panel.className = 'pjlite-3det-guide-panel';
+    panel.innerHTML = GUIDE_HTML;
+    content.appendChild(panel);
+  }
+
+  [...content.children].forEach((child) => {
+    if (child === panel) return;
+    child.dataset.pjlite3detHidden = 'true';
+    child.style.display = 'none';
+  });
+  panel.style.display = '';
+  content.scrollTop = 0;
+
+  setBuiltInTabsInactive(tabBar, button);
+  button.classList.remove('border-transparent', 'text-gray-500');
+  button.classList.add('border-amber-500', 'text-amber-900', 'bg-white');
+};
+
+const hideGuidePanel = () => {
+  guideActive = false;
+  const { content } = getGuideParts();
+  if (!content) return;
+
+  const panel = content.querySelector(`[${GUIDE_PANEL_ATTR}]`);
+  if (panel) panel.style.display = 'none';
+
+  [...content.children].forEach((child) => {
+    if (child.dataset?.pjlite3detHidden === 'true') {
+      child.style.display = '';
+      delete child.dataset.pjlite3detHidden;
+    }
+  });
+};
+
+const ensureGuideShortcut = () => {
+  const { heading, tabBar } = getGuideParts();
+  if (!heading || !tabBar) {
+    guideActive = false;
+    return;
+  }
+
+  const version = heading.parentElement?.querySelector('.text-\\[9px\\]');
+  if (version && version.textContent?.includes('PJ Lite')) version.textContent = 'PJ Lite 0.8.0v Alpha';
+
+  let button = tabBar.querySelector(`[${GUIDE_BUTTON_ATTR}]`);
+  if (!button) {
+    button = document.createElement('button');
+    button.setAttribute(GUIDE_BUTTON_ATTR, 'true');
+    button.type = 'button';
+    button.textContent = '3DeT Victory';
+    button.className = 'flex-1 whitespace-nowrap border-b-4 border-transparent px-4 py-2.5 text-center text-xs font-bold uppercase text-gray-500 transition-colors hover:bg-gray-300';
+    button.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      guideActive = true;
+      ensureGuidePanelVisible();
+    });
+
+    const som6 = [...tabBar.children].find((child) => child.textContent?.trim() === 'Som das Seis');
+    tabBar.insertBefore(button, som6 || null);
+  }
+
+  if (!tabBar.dataset.pjlite3detBound) {
+    tabBar.dataset.pjlite3detBound = 'true';
+    tabBar.addEventListener('click', (event) => {
+      const clicked = event.target.closest('button');
+      if (!clicked || clicked.hasAttribute(GUIDE_BUTTON_ATTR)) return;
+      hideGuidePanel();
+    }, true);
+  }
+
+  if (guideActive) ensureGuidePanelVisible();
 };
 
 const refreshReleaseLabels = () => {
@@ -166,13 +238,9 @@ const start = () => {
   document.addEventListener('change', (event) => {
     const target = event.target;
     if (!isThemeSelect(target)) return;
-    if (target.value === THEME_VALUE) safeStorageSet(THEME_PREF_KEY, THEME_VALUE);
+    safeStorageSet(THEME_PREF_KEY, target.value);
     setTimeout(scheduleSync, 0);
   }, true);
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && document.getElementById(GUIDE_MODAL_ID)) closeGuideModal();
-  });
 
   const observer = new MutationObserver(scheduleSync);
   observer.observe(document.documentElement, {
