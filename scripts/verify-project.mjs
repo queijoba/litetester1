@@ -22,24 +22,33 @@ const requiredFiles = [
   'src/systems/fabulaUltima/index.js',
   'src/systems/fabulaUltima/components/CharacterEditor.jsx',
   'src/systems/fabulaUltima/components/ThreatEditor.jsx',
+  'src/systems/fabulaUltima/pdf/base.js',
+  'src/systems/fabulaUltima/pdf/map.js',
+  'src/systems/fabulaUltima/pdf/export.js',
   'src/systems/somDasSeis/index.js',
   'src/systems/somDasSeis/components/CharacterEditor.jsx',
   'src/systems/somDasSeis/components/ThreatEditor.jsx',
+  'src/systems/somDasSeis/pdf/base.js',
+  'src/systems/somDasSeis/pdf/map.js',
+  'src/systems/somDasSeis/pdf/export.js',
   'public/pdfs/dragonbane-template.pdf',
   'public/pdfs/dnd5e-template.pdf',
+  'public/pdfs/fabula-ultima-template.pdf',
+  'public/pdfs/som-das-seis-template.pdf',
 ];
 
 for (const file of requiredFiles) {
   const info = await stat(file).catch(() => null);
-  if (!info?.isFile()) {
-    throw new Error(`Arquivo obrigatório ausente: ${file}`);
-  }
-  if (info.size === 0) {
-    throw new Error(`Arquivo obrigatório vazio: ${file}`);
-  }
+  if (!info?.isFile()) throw new Error(`Arquivo obrigatório ausente: ${file}`);
+  if (info.size === 0) throw new Error(`Arquivo obrigatório vazio: ${file}`);
 }
 
-for (const pdfPath of ['public/pdfs/dragonbane-template.pdf', 'public/pdfs/dnd5e-template.pdf']) {
+for (const pdfPath of [
+  'public/pdfs/dragonbane-template.pdf',
+  'public/pdfs/dnd5e-template.pdf',
+  'public/pdfs/fabula-ultima-template.pdf',
+  'public/pdfs/som-das-seis-template.pdf',
+]) {
   const pdf = await readFile(pdfPath);
   if (pdf.subarray(0, 5).toString('ascii') !== '%PDF-') {
     throw new Error(`${pdfPath} não parece ser um PDF válido.`);
@@ -47,42 +56,28 @@ for (const pdfPath of ['public/pdfs/dragonbane-template.pdf', 'public/pdfs/dnd5e
 }
 
 const main = await readFile('src/main.jsx', 'utf8');
-if (!main.includes("./systems/dragonbane/index.js")) {
-  throw new Error('main.jsx não está usando o módulo do sistema Dragonbane.');
-}
-if (!main.includes("./systems/dnd5e/index.js") || !main.includes('installDndPdfExport')) {
-  throw new Error('main.jsx não está ativando a exportação PDF do D&D 5.5e.');
-}
-if (!main.includes("./mobile-polish.css")) {
-  throw new Error('main.jsx não está carregando o polimento mobile pré-lançamento.');
-}
-if (!main.includes("./mobile-systems-v8.css")) {
-  throw new Error('main.jsx não está carregando a revisão mobile final dos sistemas.');
-}
+if (!main.includes("./systems/dragonbane/index.js")) throw new Error('main.jsx não está usando o módulo do sistema Dragonbane.');
+if (!main.includes("./systems/dnd5e/index.js") || !main.includes('installDndPdfExport')) throw new Error('main.jsx não está ativando a exportação PDF do D&D 5.5e.');
+if (!main.includes("./systems/fabulaUltima/index.js") || !main.includes('installFabulaPdfExport')) throw new Error('main.jsx não está ativando a exportação PDF de Fabula Ultima.');
+if (!main.includes("./systems/somDasSeis/index.js") || !main.includes('installSom6PdfExport')) throw new Error('main.jsx não está ativando a exportação PDF de O Som das Seis.');
+if (!main.includes("./mobile-polish.css")) throw new Error('main.jsx não está carregando o polimento mobile pré-lançamento.');
+if (!main.includes("./mobile-systems-v8.css")) throw new Error('main.jsx não está carregando a revisão mobile final dos sistemas.');
 
 const dndPdfExport = await readFile('src/systems/dnd5e/pdf/export.js', 'utf8');
-if (!dndPdfExport.includes("/pdfs/dnd5e-template.pdf") || dndPdfExport.includes('dnd55-template.part')) {
-  throw new Error('Exportador D&D não está usando diretamente o PDF real dnd5e-template.pdf.');
-}
+if (!dndPdfExport.includes('/pdfs/dnd5e-template.pdf') || dndPdfExport.includes('dnd55-template.part')) throw new Error('Exportador D&D não está usando diretamente o PDF real dnd5e-template.pdf.');
+const fabulaPdfExport = await readFile('src/systems/fabulaUltima/pdf/export.js', 'utf8');
+if (!fabulaPdfExport.includes('/pdfs/fabula-ultima-template.pdf') || !fabulaPdfExport.includes('retrato_personagem')) throw new Error('Exportador Fabula Ultima não está usando o template definitivo com retrato.');
+const som6PdfExport = await readFile('src/systems/somDasSeis/pdf/export.js', 'utf8');
+if (!som6PdfExport.includes('/pdfs/som-das-seis-template.pdf')) throw new Error('Exportador O Som das Seis não está usando o template definitivo.');
 
 const app = await readFile('src/PJLiteApp.jsx', 'utf8');
-if (!app.includes("versao: '0.7.4v Alpha'")) {
-  throw new Error('PJLiteApp.jsx não anuncia a versão 0.7.4v Alpha.');
-}
-if (!app.includes('Tutorial de 3 minutos')) {
-  throw new Error('Guias e Tutoriais não contêm o tutorial rápido da 0.7.4v.');
-}
-if (app.includes('Exibir código-fonte da página')) {
-  throw new Error('A orientação antiga de copiar o HTML ainda está presente.');
-}
-if (!app.includes('@ralseibaiano') || !app.includes('inabakaoru')) {
-  throw new Error('A orientação de contato para o código aberto está incompleta.');
-}
+if (!app.includes("versao: '0.7.4v Alpha'")) throw new Error('PJLiteApp.jsx não anuncia a versão 0.7.4v Alpha.');
+if (!app.includes('Tutorial de 3 minutos')) throw new Error('Guias e Tutoriais não contêm o tutorial rápido da 0.7.4v.');
+if (app.includes('Exibir código-fonte da página')) throw new Error('A orientação antiga de copiar o HTML ainda está presente.');
+if (!app.includes('@ralseibaiano') || !app.includes('inabakaoru')) throw new Error('A orientação de contato para o código aberto está incompleta.');
 
 const indexHtml = await readFile('index.html', 'utf8');
-if (!indexHtml.includes('0.7.4v Alpha')) {
-  throw new Error('index.html não anuncia a versão 0.7.4v Alpha.');
-}
+if (!indexHtml.includes('0.7.4v Alpha')) throw new Error('index.html não anuncia a versão 0.7.4v Alpha.');
 for (const modulePath of [
   './systems/dragonbane/components/Editor.jsx',
   './systems/dnd5e/components/CharacterEditor.jsx',
@@ -92,23 +87,15 @@ for (const modulePath of [
   './systems/somDasSeis/components/CharacterEditor.jsx',
   './systems/somDasSeis/components/ThreatEditor.jsx',
 ]) {
-  if (!app.includes(modulePath)) {
-    throw new Error(`PJLiteApp.jsx não está usando o editor modular: ${modulePath}`);
-  }
+  if (!app.includes(modulePath)) throw new Error(`PJLiteApp.jsx não está usando o editor modular: ${modulePath}`);
 }
 
 const dndEditor = await readFile('src/systems/dnd5e/components/CharacterEditor.jsx', 'utf8');
 const dndMobileCss = await readFile('src/systems/dnd5e/dnd-sheet-v7.css', 'utf8');
-if (!dndEditor.includes("../dnd-sheet-v7.css")) {
-  throw new Error('O editor D&D não está usando a folha de estilo mobile mais recente.');
-}
-if (!dndEditor.includes('ClassWorkspace') || !dndEditor.includes('SpellWorkspace')) {
-  throw new Error('O editor D&D não contém os workspaces separados de classe e magias.');
-}
+if (!dndEditor.includes('../dnd-sheet-v7.css')) throw new Error('O editor D&D não está usando a folha de estilo mobile mais recente.');
+if (!dndEditor.includes('ClassWorkspace') || !dndEditor.includes('SpellWorkspace')) throw new Error('O editor D&D não contém os workspaces separados de classe e magias.');
 for (const token of ['@media (max-width: 520px)', '@media (max-width: 430px)', 'overflow-x: clip', 'font-size: 16px', '.dnd-v6-wrapper .dnd-v3-skills-grid']) {
-  if (!dndMobileCss.includes(token)) {
-    throw new Error(`Revisão mobile D&D incompleta: ${token}`);
-  }
+  if (!dndMobileCss.includes(token)) throw new Error(`Revisão mobile D&D incompleta: ${token}`);
 }
 
 const mobilePolish = await readFile('src/mobile-polish.css', 'utf8');
@@ -121,13 +108,9 @@ for (const token of [
   '.som6-sheet > .som6-frame:first-of-type > .grid',
   '@media (max-width: 430px)',
 ]) {
-  if (!mobilePolish.includes(token)) {
-    throw new Error(`Polimento mobile incompleto: ${token}`);
-  }
+  if (!mobilePolish.includes(token)) throw new Error(`Polimento mobile incompleto: ${token}`);
 }
-if (mobilePolish.includes('.db-')) {
-  throw new Error('O polimento mobile geral não deve alterar seletores próprios de Dragonbane.');
-}
+if (mobilePolish.includes('.db-')) throw new Error('O polimento mobile geral não deve alterar seletores próprios de Dragonbane.');
 
 const systemsMobileCss = await readFile('src/mobile-systems-v8.css', 'utf8');
 for (const token of [
@@ -142,23 +125,15 @@ for (const token of [
   '@media (max-width: 520px)',
   '@media (max-width: 400px)',
 ]) {
-  if (!systemsMobileCss.includes(token)) {
-    throw new Error(`Revisão mobile final dos sistemas incompleta: ${token}`);
-  }
+  if (!systemsMobileCss.includes(token)) throw new Error(`Revisão mobile final dos sistemas incompleta: ${token}`);
 }
 
-if (!app.includes('D&D 5.5e (2024) • revisado') || app.includes('novo sistema em adaptação')) {
-  throw new Error('Textos atuais de D&D ainda indicam uma etapa antiga de adaptação.');
-}
+if (!app.includes('D&D 5.5e (2024) • revisado') || app.includes('novo sistema em adaptação')) throw new Error('Textos atuais de D&D ainda indicam uma etapa antiga de adaptação.');
 
 const registry = await readFile('src/systems/registry.js', 'utf8');
-if (!registry.includes("{ id: 'dnd5e', name: 'D&D 5.5e', status: 'active', enabled: true }")) {
-  throw new Error('Registro D&D não está identificado como D&D 5.5e.');
-}
+if (!registry.includes("{ id: 'dnd5e', name: 'D&D 5.5e', status: 'active', enabled: true }")) throw new Error('Registro D&D não está identificado como D&D 5.5e.');
 for (const id of ['dragonbane', 'dnd5e', 'fabulaUltima', 'somDasSeis']) {
-  if (!registry.includes(`id: '${id}'`)) {
-    throw new Error(`Sistema ativo ausente do registro: ${id}`);
-  }
+  if (!registry.includes(`id: '${id}'`)) throw new Error(`Sistema ativo ausente do registro: ${id}`);
 }
 
-console.log('PJ Lite: estrutura essencial, PDFs editáveis, editores modulares e revisões mobile verificadas com sucesso.');
+console.log('PJ Lite: estrutura essencial, quatro exportadores PDF, editores modulares e revisões mobile verificados com sucesso.');
