@@ -1,0 +1,217 @@
+/* Revisão visual global dos temas do PJ Lite.
+   Carregado depois do CSS legado para corrigir contraste e cores residuais
+   sem alterar a estrutura das fichas ou a identidade de cada sistema. */
+
+/* --------------------------------------------------------------------------
+ * Regras compartilhadas
+ * -------------------------------------------------------------------------- */
+body.theme-default,
+body.theme-classic,
+body.theme-dnd,
+body.theme-fabula,
+body.theme-som6,
+body.theme-3det,
+body.theme-custom {
+  color-scheme: light;
+}
+
+body.theme-dark {
+  color-scheme: dark;
+}
+
+body.theme-default input::placeholder,
+body.theme-default textarea::placeholder,
+body.theme-classic input::placeholder,
+body.theme-classic textarea::placeholder,
+body.theme-dnd input::placeholder,
+body.theme-dnd textarea::placeholder,
+body.theme-fabula input::placeholder,
+body.theme-fabula textarea::placeholder,
+body.theme-som6 input::placeholder,
+body.theme-som6 textarea::placeholder,
+body.theme-3det input::placeholder,
+body.theme-3det textarea::placeholder {
+  opacity: .68;
+}
+
+body.theme-default select option,
+body.theme-classic select option,
+body.theme-dnd select option,
+body.theme-fabula select option,
+body.theme-som6 select option,
+body.theme-3det select option {
+  background: #fff;
+  color: #27272a;
+}
+
+/* --------------------------------------------------------------------------
+ * Padrão PJ Lite
+ * -------------------------------------------------------------------------- */
+body.theme-default .bg-gray-200 { background-color: #e8edf2 !important; }
+body.theme-default .bg-gray-300 { background-color: #dce3ea !important; }
+body.theme-default .border-gray-200,
+body.theme-default .border-gray-300,
+body.theme-default .border-gray-400 { border-color: #c3ccd6 !important; }
+body.theme-default .text-gray-500,
+body.theme-default .text-gray-600 { color: #586574 !important; }
+body.theme-default input::placeholder,
+body.theme-default textarea::placeholder { color: #718096 !important; }
+
+/* --------------------------------------------------------------------------
+ * Dragonbane clássico
+ * -------------------------------------------------------------------------- */
+body.theme-classic .bg-gray-300 { background-color: #e4d8c4 !important; color: #3a332d !important; }
+body.theme-classic .border-gray-200,
+body.theme-classic .border-gray-300,
+body.theme-classic .border-gray-400 { border-color: #bba88d !important; }
+body.theme-classic .text-gray-400 { color: #786c61 !important; }
+body.theme-classic input::placeholder,
+body.theme-classic textarea::placeholder { color: #7e7062 !important; }
+body.theme-classic select option { background: #fffaf0; color: #2d2925; }
+
+/* --------------------------------------------------------------------------
+ * Dungeons & Dragons
+ * -------------------------------------------------------------------------- */
+body.theme-dnd .bg-gray-300 { background-color: #ead9c0 !important; color: #3b2e27 !important; }
+body.theme-dnd .border-gray-200,
+body.theme-dnd .border-gray-300,
+body.theme-dnd .border-gray-400 { border-color: #c6aa8d !important; }
+body.theme-dnd .text-gray-500,
+body.theme-dnd .text-gray-600 { color: #66564c !important; }
+body.theme-dnd input::placeholder,
+body.theme-dnd textarea::placeholder { color: #806c60 !important; }
+body.theme-dnd select option { background: #fff8ea; color: #30251f; }
+
+/* --------------------------------------------------------------------------
+ * Fabula Ultima
+ * -------------------------------------------------------------------------- */
+body.theme-fabula .bg-gray-300 { background-color: #dcece8 !important; color: #20474a !important; }
+body.theme-fabula .border-gray-200,
+body.theme-fabula .border-gray-300,
+body.theme-fabula .border-gray-400 { border-color: #9fc5bf !important; }
+body.theme-fabula .text-gray-400 { color: #678386 !important; }
+body.theme-fabula input::placeholder,
+body.theme-fabula textarea::placeholder { color: #6a8587 !important; }
+body.theme-fabula select option { background: #f8fffd; color: #17383b; }
+
+/* --------------------------------------------------------------------------
+ * O Som das Seis
+ * -------------------------------------------------------------------------- */
+body.theme-som6 .bg-white { background-color: #fffaf0 !important; color: #3f2b1d !important; }
+body.theme-som6 input,
+body.theme-som6 textarea,
+body.theme-som6 select {
+  background-color: #fffaf0 !important;
+  color: #3f2b1d !important;
+  border-color: #b89b73 !important;
+}
+body.theme-som6 input:focus,
+body.theme-som6 textarea:focus,
+body.theme-som6 select:focus {
+  border-color: #7b241c !important;
+  box-shadow: 0 0 0 2px rgba(123, 36, 28, .14) !important;
+}
+body.theme-som6 input::placeholder,
+body.theme-som6 textarea::placeholder { color: #80664f !important; }
+body.theme-som6 .border-gray-400 { border-color: #b99c75 !important; }
+body.theme-som6 .text-gray-400 { color: #806950 !important; }
+body.theme-som6 select option { background: #fffaf0; color: #3f2b1d; }
+
+/* --------------------------------------------------------------------------
+ * 3DeT Victory
+ * -------------------------------------------------------------------------- */
+body.theme-3det .bg-gray-300 { background-color: #eadfae !important; color: #39351f !important; }
+body.theme-3det .border-gray-400 { border-color: #c3ac43 !important; }
+body.theme-3det .text-gray-400 { color: #756d45 !important; }
+body.theme-3det input::placeholder,
+body.theme-3det textarea::placeholder { color: #766d48 !important; }
+body.theme-3det select option { background: #fffdf5; color: #27272a; }
+
+/* --------------------------------------------------------------------------
+ * Modo escuro — cobre classes zinc/amber/teal que escapavam do CSS legado
+ * -------------------------------------------------------------------------- */
+body.theme-dark .bg-zinc-50,
+body.theme-dark .bg-zinc-100,
+body.theme-dark .bg-zinc-200 { background-color: #252f3f !important; color: #f1f5f9 !important; }
+body.theme-dark .bg-zinc-900,
+body.theme-dark .bg-zinc-950 { background-color: #090d14 !important; color: #f8fafc !important; }
+body.theme-dark .text-zinc-900,
+body.theme-dark .text-zinc-800,
+body.theme-dark .text-zinc-700,
+body.theme-dark .text-zinc-600 { color: #e2e8f0 !important; }
+body.theme-dark .text-zinc-500,
+body.theme-dark .text-zinc-400 { color: #aab6c5 !important; }
+body.theme-dark .border-zinc-200,
+body.theme-dark .border-zinc-300,
+body.theme-dark .border-zinc-400 { border-color: #526174 !important; }
+
+body.theme-dark .bg-amber-50,
+body.theme-dark .bg-amber-100,
+body.theme-dark .bg-amber-200 { background-color: #3a300b !important; color: #fef3c7 !important; }
+body.theme-dark .text-amber-950,
+body.theme-dark .text-amber-900,
+body.theme-dark .text-amber-800,
+body.theme-dark .text-amber-700 { color: #fde68a !important; }
+body.theme-dark .border-amber-200,
+body.theme-dark .border-amber-300,
+body.theme-dark .border-amber-400,
+body.theme-dark .border-amber-500 { border-color: #927c2d !important; }
+
+body.theme-dark .bg-teal-50,
+body.theme-dark .bg-teal-100 { background-color: #123033 !important; color: #ccfbf1 !important; }
+body.theme-dark .text-teal-950,
+body.theme-dark .text-teal-900,
+body.theme-dark .text-teal-800,
+body.theme-dark .text-teal-700 { color: #99f6e4 !important; }
+body.theme-dark .border-teal-200,
+body.theme-dark .border-teal-300,
+body.theme-dark .border-teal-600,
+body.theme-dark .border-teal-700 { border-color: #397f79 !important; }
+
+body.theme-dark .bg-purple-50 { background-color: #2c2040 !important; color: #ede9fe !important; }
+body.theme-dark .bg-rose-50 { background-color: #3b1d2a !important; color: #ffe4e6 !important; }
+body.theme-dark .bg-sky-50 { background-color: #132d44 !important; color: #e0f2fe !important; }
+body.theme-dark .text-sky-700,
+body.theme-dark .text-sky-800,
+body.theme-dark .text-sky-900 { color: #7dd3fc !important; }
+body.theme-dark .border-sky-200,
+body.theme-dark .border-sky-300 { border-color: #3f7294 !important; }
+
+body.theme-dark .hover\:bg-white:hover,
+body.theme-dark .hover\:bg-gray-100:hover,
+body.theme-dark .hover\:bg-gray-200:hover,
+body.theme-dark .hover\:bg-gray-300:hover { background-color: #334155 !important; }
+body.theme-dark .hover\:text-gray-900:hover { color: #f8fafc !important; }
+
+/* --------------------------------------------------------------------------
+ * Tema personalizado — evita texto cinza fixo ignorar a cor escolhida
+ * -------------------------------------------------------------------------- */
+body.theme-custom .text-gray-900,
+body.theme-custom .text-gray-800,
+body.theme-custom .text-gray-700,
+body.theme-custom .text-gray-600,
+body.theme-custom .text-gray-500 {
+  color: var(--custom-text-color, #1f2937) !important;
+}
+body.theme-custom input,
+body.theme-custom textarea,
+body.theme-custom select {
+  color: var(--custom-text-color, #1f2937) !important;
+  border-color: color-mix(in srgb, var(--custom-accent-color, #7f1d1d) 48%, #cbd5e1) !important;
+}
+body.theme-custom input::placeholder,
+body.theme-custom textarea::placeholder {
+  color: var(--custom-text-color, #1f2937) !important;
+  opacity: .55;
+}
+body.theme-custom select option {
+  background: var(--custom-window-color, #ffffff);
+  color: var(--custom-text-color, #1f2937);
+}
+
+/* O guia do 3DeT passa a ser conteúdo da mesma janela de Guias e Tutoriais. */
+.pjlite-3det-guide-panel { min-width: 0; }
+@media (max-width: 640px) {
+  .pjlite-3det-guide-panel { font-size: 13px; }
+  .pjlite-3det-guide-panel .grid { grid-template-columns: minmax(0, 1fr) !important; }
+}
