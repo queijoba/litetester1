@@ -62,9 +62,11 @@ for (const token of ['3DeT VICTORY', 'Luta', 'Percepção', 'Pilotagem de Mecha'
 assert(!chat.includes('Culinária Dimensional'), 'Ficha Chat incluiu perícia personalizada desmarcada.');
 
 const integration = await readFile('src/systems/3det/integration.js', 'utf8');
-for (const token of ['Tema: 3DeT Victory', 'Guias e Tutoriais', 'PJ Lite 0.8.0v Alpha', 'MutationObserver', 'GUIDE_MODAL_ID']) {
+for (const token of ['Tema: 3DeT Victory', 'Guias e Tutoriais', 'PJ Lite 0.8.0v Alpha', 'MutationObserver', 'GUIDE_PANEL_ATTR', 'pjlite-3det-guide-panel']) {
   assert(integration.includes(token), `integração visual incompleta: ${token}`);
 }
+assert(!integration.includes('GUIDE_MODAL_ID'), 'o guia 3DeT voltou a criar uma segunda janela/modal.');
+assert(!integration.includes('aria-label="Guia 3DeT Victory"'), 'o guia 3DeT voltou a criar diálogo separado.');
 
 const theme = await readFile('src/systems/3det/3det-theme.css', 'utf8');
 for (const token of ['body.theme-3det', '.tresdet-sheet', 'body.theme-dark .tresdet-sheet', '@media (max-width: 520px)']) {
@@ -73,5 +75,6 @@ for (const token of ['body.theme-3det', '.tresdet-sheet', 'body.theme-dark .tres
 
 const main = await readFile('src/main.jsx', 'utf8');
 assert(main.includes("./systems/3det/integration.js"), 'main.jsx não carrega a integração do tema/guia.');
+assert(main.includes("./theme-polish.css"), 'main.jsx não carrega a revisão visual global dos temas.');
 
-console.log('3DeT Victory: modelo, migração de saves, perícias, especializações, Ficha Chat, tema e guia verificados com sucesso.');
+console.log('3DeT Victory: modelo, migração de saves, perícias, especializações, Ficha Chat, tema e guia integrado verificados com sucesso.');
