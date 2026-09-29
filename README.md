@@ -15,9 +15,9 @@ A prévia React/Vite está funcional e modularizada por sistema:
 - Skyfall, Tormenta20, Ordem Paranormal e Guerra dos Tronos continuam reservados no registro para implementação futura.
 - Dragonbane exporta usando o template real em `public/pdfs/dragonbane-template.pdf`.
 - D&D 5.5e possui ficha responsiva, abas de Ficha & Combate, Recursos, Magias e painel dinâmico da classe/subclasse.
-- 3DeT Victory entra na 0.8.0 com ficha de personagem modular: retrato opcional, Arquétipo, Kit opcional, Conceito, Escala, Pontos/XP, P/H/R, PA/PM/PV, 12 Perícias, FA/FD, Vantagens, Desvantagens, Técnicas, Inventário por raridade e Anotações.
-- A ficha 3DeT já participa de saves, autosave, histórico, backup, importação, filtros e Ficha Chat. Exportação PDF será tratada em uma etapa própria.
-- O CI executa verificação estrutural e build em cada push/PR para `main`.
+- 3DeT Victory entra na 0.8.0 com ficha de personagem modular: retrato opcional, Arquétipo, Kit opcional, Conceito, Escala, Pontos/XP, P/H/R, PA/PM/PV, 12 Perícias padrão clicáveis, Perícias personalizadas, Especializações separadas, FA/FD, Vantagens, Desvantagens, Técnicas, Inventário por raridade e Anotações.
+- A ficha 3DeT já participa de saves, autosave, histórico, backup, importação, filtros e Ficha Chat. Ela também possui tema próprio preto/amarelo, tratamento específico para modo escuro/mobile e guia dedicado em Guias e Tutoriais. Exportação PDF será tratada em uma etapa própria.
+- O CI executa verificação estrutural, uma verificação funcional dedicada ao 3DeT e o build em cada push/PR para `main`.
 
 ## Estrutura principal
 
@@ -52,8 +52,14 @@ src/
    └─ 3det/
       ├─ data.js
       ├─ chat.js
+      ├─ 3det-theme.css
+      ├─ integration.js
       └─ components/
          └─ CharacterEditor.jsx
+
+scripts/
+├─ verify-project.mjs
+└─ verify-3det.mjs
 
 public/
 └─ pdfs/
@@ -73,7 +79,7 @@ npm run build
 npm run check
 ```
 
-`npm run check` executa a verificação estrutural e o build Vite.
+`npm run verify` executa a verificação estrutural geral e a verificação funcional do 3DeT Victory. `npm run check` executa essas verificações e depois o build Vite.
 
 ## Validação antes da migração definitiva
 
