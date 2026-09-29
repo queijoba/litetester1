@@ -10,14 +10,15 @@ A prévia React/Vite está funcional e modularizada por sistema:
 
 - React/ReactDOM são empacotados pelo Vite, sem Babel no navegador.
 - JSZip e LZ-String são dependências NPM.
-- O CSS legado continua em `src/pjlite.css`, enquanto sistemas novos podem ter estilos próprios.
+- O CSS legado continua em `src/pjlite.css`; `src/theme-polish.css` funciona como camada final de revisão de contraste e consistência entre os temas.
 - Dragonbane, D&D 5.5e, Fabula Ultima, O Som das Seis e 3DeT Victory possuem módulos próprios em `src/systems/`.
 - Skyfall, Tormenta20, Ordem Paranormal e Guerra dos Tronos continuam reservados no registro para implementação futura.
 - Dragonbane exporta usando o template real em `public/pdfs/dragonbane-template.pdf`.
 - D&D 5.5e possui ficha responsiva, abas de Ficha & Combate, Recursos, Magias e painel dinâmico da classe/subclasse.
 - 3DeT Victory entra na 0.8.0 com ficha de personagem modular: retrato opcional, Arquétipo, Kit opcional, Conceito, Escala, Pontos/XP, P/H/R, PA/PM/PV, 12 Perícias padrão clicáveis, Perícias personalizadas, Especializações separadas, FA/FD, Vantagens, Desvantagens, Técnicas, Inventário por raridade e Anotações.
-- A ficha 3DeT já participa de saves, autosave, histórico, backup, importação, filtros e Ficha Chat. Ela também possui tema próprio preto/amarelo, tratamento específico para modo escuro/mobile e guia dedicado em Guias e Tutoriais. Exportação PDF será tratada em uma etapa própria.
-- O CI executa verificação estrutural, uma verificação funcional dedicada ao 3DeT e o build em cada push/PR para `main`.
+- A ficha 3DeT já participa de saves, autosave, histórico, backup, importação, filtros e Ficha Chat. Ela também possui tema próprio preto/amarelo, tratamento específico para modo escuro/mobile e guia dedicado dentro da mesma janela de Guias e Tutoriais. Exportação PDF será tratada em uma etapa própria.
+- Os temas Padrão, Clássico DB, D&D, Fabula Ultima, O Som das Seis, 3DeT Victory, Modo Escuro e Personalizado passam por uma camada comum de revisão visual para evitar texto ilegível, fundos claros residuais e contraste inconsistente.
+- O CI executa verificação estrutural, verificação funcional do 3DeT, auditoria dos temas e o build em cada push/PR para `main`.
 
 ## Estrutura principal
 
@@ -26,6 +27,7 @@ src/
 ├─ PJLiteApp.jsx
 ├─ main.jsx
 ├─ pjlite.css
+├─ theme-polish.css
 └─ systems/
    ├─ registry.js
    ├─ dragonbane/
@@ -59,7 +61,8 @@ src/
 
 scripts/
 ├─ verify-project.mjs
-└─ verify-3det.mjs
+├─ verify-3det.mjs
+└─ verify-themes.mjs
 
 public/
 └─ pdfs/
@@ -79,7 +82,7 @@ npm run build
 npm run check
 ```
 
-`npm run verify` executa a verificação estrutural geral e a verificação funcional do 3DeT Victory. `npm run check` executa essas verificações e depois o build Vite.
+`npm run verify` executa a verificação estrutural geral, a verificação funcional do 3DeT Victory e a auditoria de integração dos temas. `npm run check` executa essas verificações e depois o build Vite.
 
 ## Validação antes da migração definitiva
 
