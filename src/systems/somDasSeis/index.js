@@ -7,3 +7,4 @@ export const somDasSeisSystem = {
 
 export { default as Som6CharacterEditor } from './components/CharacterEditor.jsx';
 export { default as Som6ThreatEditor } from './components/ThreatEditor.jsx';
+export * from './pdf/index.js';
