@@ -33,7 +33,7 @@ const requiredFiles = [
   'src/systems/somDasSeis/pdf/export.js',
   'public/pdfs/dragonbane-template.pdf',
   'public/pdfs/dnd5e-template.pdf',
-  'public/pdfs/fabula-ultima-template.pdf',
+  'public/pdfs/FU_Ficha_de_personagemV2.pdf',
   'public/pdfs/som-das-seis-template.pdf',
 ];
 
@@ -46,7 +46,7 @@ for (const file of requiredFiles) {
 for (const pdfPath of [
   'public/pdfs/dragonbane-template.pdf',
   'public/pdfs/dnd5e-template.pdf',
-  'public/pdfs/fabula-ultima-template.pdf',
+  'public/pdfs/FU_Ficha_de_personagemV2.pdf',
   'public/pdfs/som-das-seis-template.pdf',
 ]) {
   const pdf = await readFile(pdfPath);
@@ -66,7 +66,11 @@ if (!main.includes("./mobile-systems-v8.css")) throw new Error('main.jsx não es
 const dndPdfExport = await readFile('src/systems/dnd5e/pdf/export.js', 'utf8');
 if (!dndPdfExport.includes('/pdfs/dnd5e-template.pdf') || dndPdfExport.includes('dnd55-template.part')) throw new Error('Exportador D&D não está usando diretamente o PDF real dnd5e-template.pdf.');
 const fabulaPdfExport = await readFile('src/systems/fabulaUltima/pdf/export.js', 'utf8');
-if (!fabulaPdfExport.includes('/pdfs/fabula-ultima-template.pdf') || !fabulaPdfExport.includes('retrato_personagem')) throw new Error('Exportador Fabula Ultima não está usando o template definitivo com retrato.');
+if (!fabulaPdfExport.includes('/pdfs/FU_Ficha_de_personagemV2.pdf') || !fabulaPdfExport.includes('retrato_personagem') || !fabulaPdfExport.includes('Campo testo 10210')) throw new Error('Exportador Fabula Ultima não está usando a ficha editável V2 de 3 páginas com retrato.');
+const fabulaPdfMap = await readFile('src/systems/fabulaUltima/pdf/map.js', 'utf8');
+for (const token of ['Nome', 'Campo testo 270', 'Campo testo 10207', 'Campo testo 253', 'Campo testo 243', 'Campo testo 10210', 'C208']) {
+  if (!fabulaPdfMap.includes(token)) throw new Error(`Mapeamento do novo PDF Fabula Ultima incompleto: ${token}`);
+}
 const som6PdfExport = await readFile('src/systems/somDasSeis/pdf/export.js', 'utf8');
 if (!som6PdfExport.includes('/pdfs/som-das-seis-template.pdf')) throw new Error('Exportador O Som das Seis não está usando o template definitivo.');
 
