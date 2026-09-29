@@ -1,4 +1,4 @@
-export const FABULA_PDF_TEMPLATE = '/pdfs/fabula-ultima-template.pdf';
+export const FABULA_PDF_TEMPLATE = '/pdfs/FU_Ficha_de_personagemV2.pdf';
 export const FABULA_PDF_SYSTEM_ID = 'fabula';
 
 const asArray = value => Array.isArray(value) ? value : [];
@@ -6,13 +6,15 @@ const obj = value => value && typeof value === 'object' ? value : {};
 
 /**
  * Adapta a ficha atual de Fabula Ultima para um formato estável de exportação.
- * O mapeamento final para os nomes dos campos do PDF será feito quando o
- * template editável for adicionado em public/pdfs/fabula-ultima-template.pdf.
+ * O template V2 de 3 páginas usa AcroForm e possui um campo editável próprio
+ * para retrato na primeira página.
  */
 export function buildFabulaPdfSnapshot(item = {}) {
   const bio = obj(item.bio);
   const atributos = obj(item.atributos);
   const status = obj(item.status);
+  const extras = obj(item.extras);
+  const magia = obj(extras.magia);
 
   return {
     system: FABULA_PDF_SYSTEM_ID,
@@ -58,22 +60,27 @@ export function buildFabulaPdfSnapshot(item = {}) {
     })),
     heroicPowers: asArray(item.poderesHeroicos).map(x => ({ ...obj(x) })),
     equipment: {
-      slots: obj(item.equipamentos),
-      proficiencias: obj(item.proficienciasEquipamento),
+      slots: asArray(item.equipamentos).map(x => ({ ...obj(x) })),
+      equipavel: { ...obj(item.equipavel) },
       inventario: asArray(item.inventario).map(x => ({ ...obj(x) })),
+      mochila: item.mochila || '',
+      caracteristicas: item.caracteristicas || '',
     },
     magic: {
-      disciplinas: item.disciplinasMagicas || item.disciplinas || '',
-      feiticos: asArray(item.feiticos).map(x => ({ ...obj(x) })),
-      rituais: asArray(item.rituais).map(x => ({ ...obj(x) })),
+      disciplinas: asArray(magia.disciplinas),
+      feiticos: asArray(magia.feiticos).map(x => ({ ...obj(x) })),
+      rituais: asArray(magia.rituais).map(x => ({ ...obj(x) })),
     },
     supplements: { ...obj(item.suplementos) },
     extrasAtivos: asArray(item.extrasAtivos),
   };
 }
 
-/**
- * Será preenchido com os nomes reais dos campos AcroForm depois que o PDF
- * definitivo for enviado. Mantê-lo aqui evita espalhar nomes de campos pelo app.
- */
-export const FABULA_PDF_FIELDS = Object.freeze({});
+export const FABULA_PDF_FIELDS = Object.freeze({
+  portrait: 'retrato_personagem',
+  name: 'Nome',
+  namePage2: 'Campo testo 252',
+  namePage3: 'Campo testo 236',
+  level: 'Campo testo 10207',
+  rituals: 'Campo testo 10210',
+});
