@@ -4,6 +4,9 @@ import FabulaCharacterEditor from './systems/fabulaUltima/components/CharacterEd
 import FabulaThreatEditor from './systems/fabulaUltima/components/ThreatEditor.jsx';
 import Som6CharacterEditor from './systems/somDasSeis/components/CharacterEditor.jsx';
 import Som6ThreatEditor from './systems/somDasSeis/components/ThreatEditor.jsx';
+import TresDeTCharacterEditor from './systems/3det/components/CharacterEditor.jsx';
+import { initial3DetPcData, normalize3DetPcData } from './systems/3det/data.js';
+import { generate3DetChatText } from './systems/3det/chat.js';
 import DragonbaneEditor from './systems/dragonbane/components/Editor.jsx';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
@@ -30,6 +33,7 @@ const { useState, useEffect, useRef } = React;
         const SCHEMA_VERSION = 6;
 
         const UPDATE_LOG = [
+            { versao: '0.8.0v Alpha', descricao: '3DeT Victory entra na prévia do PJ Lite com ficha digital modular, retrato opcional, P/H/R, PA/PM/PV, perícias, FA/FD, vantagens, desvantagens, técnicas, inventário por raridade, Kit opcional, Ficha Chat e integração com saves/importação.' },
             { versao: '0.7.4v Alpha', descricao: 'Prévia React pronta para homologação: D&D 5.5e recebeu polimento mobile completo, navegação por abas mais confortável, painel separado de classe/subclasse e grimório por círculos; Guias e Tutoriais foram ampliados com um fluxo rápido para iniciantes, explicações mais claras de salvamento e compartilhamento e instruções atualizadas por sistema; além de revisão estrutural, limpeza de scripts temporários e melhorias de estabilidade antes da avaliação para migração definitiva.' },
             { versao: '0.7.0v Alpha', descricao: 'Marco da linha 0.7: Guias e Tutoriais foram reescritos e ampliados para orientar melhor iniciantes e usuários recorrentes; Fabula Ultima ganhou seleção modular de suplementos e módulos extras por material, mantendo Arcanos, Magia & Rituais e Projetos no Livro Básico; O Som das Seis recebeu revisão visual e de experiência, habilidades mais compactas, reordenação e melhor leitura no desktop e celular; além de revisões gerais de tema, modo escuro, organização, compatibilidade e textos da interface.' },
             { versao: '0.6.9v Alpha', descricao: 'Grande rodada de refinamento visual e usabilidade: Dragonbane, D&D 5e, Fabula Ultima e O Som das Seis ganharam fichas mais próximas de suas identidades originais sem abandonar a proposta Lite. Dragonbane recebeu layout desktop reequilibrado; D&D ganhou visual de ficha clássica e Itens Sincronizados; Fabula Ultima recebeu dados visuais, habilidades e magias em duas colunas, reordenação, consultas rápidas de PI, conjuração, rituais e projetos, além de uma ficha de Ameaça/PNJ mais compacta e intuitiva. Guias e Tutoriais também foram reorganizados para iniciantes.' },
@@ -687,6 +691,8 @@ const { useState, useEffect, useRef } = React;
             };
             let text = '';
 
+            if (sys === '3det' && item.type === 'pc') return generate3DetChatText(item);
+
             // ==========================================================
             // O SOM DAS SEIS — PERSONAGEM / PDJ
             // ==========================================================
@@ -1220,6 +1226,7 @@ const { useState, useEffect, useRef } = React;
             const [showDbModelModal, setShowDbModelModal] = useState(false);
             const [showFabulaModelModal, setShowFabulaModelModal] = useState(false);
             const [showSom6ModelModal, setShowSom6ModelModal] = useState(false);
+            const [show3DetModelModal, setShow3DetModelModal] = useState(false);
             const [dndPcTab, setDndPcTab] = useState('caracteristicas');
             const [fabulaTab, setFabulaTab] = useState('perfil');
             const [som6Tab, setSom6Tab] = useState('perfil');
@@ -1392,6 +1399,7 @@ const { useState, useEffect, useRef } = React;
                     savingData = normalizeFabulaThreatData(savingData);
                     savingData = normalizeSom6PcData(savingData);
                     savingData = normalizeSom6PdjData(savingData);
+                    savingData = normalize3DetPcData(savingData);
                     const now = new Date().toISOString();
                     savingData.dataVersion = SCHEMA_VERSION;
                     savingData.meta.createdAt = savingData.meta.createdAt || now;
@@ -1409,7 +1417,7 @@ const { useState, useEffect, useRef } = React;
                         localStorage.setItem(STORAGE_KEY, JSON.stringify(chars));
                         if (previous) pushHistorySnapshot(previous, savingData);
                         setSavedChars(chars);
-                        if (!silent) showToast(savingData.system === 'fabula' ? 'Personagem Fabula salvo!' : savingData.system === 'somdas6' ? 'Personagem de O Som das Seis salvo!' : 'Personagem salvo!');
+                        if (!silent) showToast(savingData.system === 'fabula' ? 'Personagem Fabula salvo!' : savingData.system === 'somdas6' ? 'Personagem de O Som das Seis salvo!' : savingData.system === '3det' ? 'Personagem 3DeT Victory salvo!' : 'Personagem salvo!');
                     } else {
                         let threats = getSavedThreats();
                         const index = threats.findIndex(t => t.id === savingData.id);
@@ -1459,7 +1467,7 @@ const { useState, useEffect, useRef } = React;
             };
 
             const exportFullBackup = () => {
-                const payload = { pjLiteBackup: true, version: '0.7.4v Alpha', schemaVersion: SCHEMA_VERSION, exportedAt: new Date().toISOString(), characters: getSavedCharacters(), threats: getSavedThreats(), history: getHistory() };
+                const payload = { pjLiteBackup: true, version: '0.8.0v Alpha', schemaVersion: SCHEMA_VERSION, exportedAt: new Date().toISOString(), characters: getSavedCharacters(), threats: getSavedThreats(), history: getHistory() };
                 const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
                 const a = document.createElement('a');
                 a.href = URL.createObjectURL(blob);
@@ -1497,6 +1505,7 @@ const { useState, useEffect, useRef } = React;
                 restored = normalizeFabulaThreatData(restored);
                 restored = normalizeSom6PcData(restored);
                 restored = normalizeSom6PdjData(restored);
+                restored = normalize3DetPcData(restored);
                 // Retratos enviados pelo dispositivo não são duplicados no histórico para economizar espaço.
                 if (restored?.bio && !restored.bio.imagem && data?.bio?.imagem) restored.bio.imagem = data.bio.imagem;
                 if (!restored?.imagem && data?.imagem) restored.imagem = data.imagem;
@@ -1513,7 +1522,7 @@ const { useState, useEffect, useRef } = React;
                     if (systemFilter !== 'all' && sys !== systemFilter) return false;
                     if (onlyFavorites && !item.meta?.favorite) return false;
                     if (!q) return true;
-                    const hay = [item.bio?.nome, item.nome, item.bio?.classe, item.bio?.profissao, item.bio?.identidade, item.bio?.apelido, item.tormento?.tipo, item.reputacao?.titulo, item.meta?.campanha, sys].filter(Boolean).join(' ').toLowerCase();
+                    const hay = [item.bio?.nome, item.nome, item.bio?.classe, item.bio?.profissao, item.bio?.identidade, item.bio?.apelido, item.bio?.arquetipo, item.bio?.kit, item.bio?.conceito, item.tormento?.tipo, item.reputacao?.titulo, item.meta?.campanha, sys].filter(Boolean).join(' ').toLowerCase();
                     return hay.includes(q);
                 }).sort((a,b) => {
                     if (sortMode === 'name') return String(a.bio?.nome || a.nome || '').localeCompare(String(b.bio?.nome || b.nome || ''), 'pt-BR');
@@ -1531,6 +1540,7 @@ const { useState, useEffect, useRef } = React;
                     if (item.system === 'dnd5e' && Number(item.status?.pvMax || 0) <= 0) warnings.push('Defina os PV máximos.');
                     if (item.system === 'fabula' && Number(item.status?.pvMax || 0) <= 0) warnings.push('Defina os PV máximos.');
                     if (item.system === 'somdas6' && Number(item.status?.pvMax || 0) <= 0) warnings.push('Defina os PV máximos.');
+                    if (item.system === '3det' && Number(item.status?.pv?.max || 0) <= 0) warnings.push('Defina os PV máximos.');
                     if ((item.system || 'dragonbane') === 'dragonbane' && Number(item.status?.pv?.max || 0) <= 0) warnings.push('Defina os PV máximos.');
                 }
                 return warnings;
@@ -1623,6 +1633,7 @@ const { useState, useEffect, useRef } = React;
                     normalized = normalizeFabulaThreatData(normalized);
                     normalized = normalizeSom6PcData(normalized);
                     normalized = normalizeSom6PdjData(normalized);
+                    normalized = normalize3DetPcData(normalized);
                     setData(normalized);
                     setDndPcTab('caracteristicas');
                     setFabulaTab('perfil');
@@ -1675,6 +1686,7 @@ const { useState, useEffect, useRef } = React;
                 templateData = normalizeFabulaThreatData(templateData);
                 templateData = normalizeSom6PcData(templateData);
                 templateData = normalizeSom6PdjData(templateData);
+                templateData = normalize3DetPcData(templateData);
                 templateData.id = Date.now().toString();
                 setData(templateData);
                 setShowThreatModal(false);
@@ -1682,6 +1694,7 @@ const { useState, useEffect, useRef } = React;
                 setShowDbModelModal(false);
                 setShowFabulaModelModal(false);
                 setShowSom6ModelModal(false);
+                setShow3DetModelModal(false);
                 setCreateTarget(null);
                 setDndPcTab('caracteristicas');
                 setFabulaTab('perfil');
@@ -1913,6 +1926,7 @@ const { useState, useEffect, useRef } = React;
                 normalizedData = normalizeFabulaThreatData(normalizedData);
                 normalizedData = normalizeSom6PcData(normalizedData);
                 normalizedData = normalizeSom6PdjData(normalizedData);
+                normalizedData = normalize3DetPcData(normalizedData);
                 return normalizedData;
             };
 
@@ -2070,7 +2084,7 @@ const { useState, useEffect, useRef } = React;
                                 {showFilters && (
                                     <div style={getWindowStyle()} className="mt-2 max-w-2xl bg-white border border-gray-200 rounded-lg shadow-sm p-3 grid grid-cols-1 sm:grid-cols-3 gap-2">
                                         <select value={systemFilter} onChange={e=>setSystemFilter(e.target.value)} className="border rounded px-2 py-2 text-xs bg-white">
-                                            <option value="all">Todos os sistemas</option><option value="dragonbane">Dragonbane</option><option value="dnd5e">D&D 5.5e</option><option value="fabula">Fabula Ultima</option><option value="somdas6">O Som das Seis</option>
+                                            <option value="all">Todos os sistemas</option><option value="dragonbane">Dragonbane</option><option value="dnd5e">D&D 5.5e</option><option value="fabula">Fabula Ultima</option><option value="somdas6">O Som das Seis</option><option value="3det">3DeT Victory</option>
                                         </select>
                                         <select value={sortMode} onChange={e=>setSortMode(e.target.value)} className="border rounded px-2 py-2 text-xs bg-white">
                                             <option value="recent">Mais recentes</option><option value="name">Nome A–Z</option><option value="system">Por sistema</option>
@@ -2091,10 +2105,11 @@ const { useState, useEffect, useRef } = React;
                                         const isDnd = char.system === 'dnd5e';
                                         const isFabula = char.system === 'fabula';
                                         const isSom6 = char.system === 'somdas6';
+                                        const is3Det = char.system === '3det';
                                         return (
-                                        <div key={char.id} style={getWindowStyle()} className={`pj-card-compact bg-white rounded-md shadow-lg border-2 ${isDnd ? 'border-[#922610]' : isFabula ? 'border-teal-700' : isSom6 ? 'border-red-900' : 'border-dragon-dark'} overflow-hidden flex ${dashboardView==='list'?'flex-row items-stretch':'flex-col'} relative`}>
-                                            <div className={`absolute top-0 right-0 text-white text-[9px] font-bold uppercase px-2 py-0.5 rounded-bl shadow-sm z-10 ${isDnd ? 'bg-[#922610]' : isFabula ? 'bg-teal-700' : isSom6 ? 'bg-red-900' : 'bg-dragon-dark'}`}>
-                                                {isDnd ? 'D&D 5.5e' : isFabula ? 'Fabula Ultima' : isSom6 ? 'O Som das Seis' : 'Dragonbane'}
+                                        <div key={char.id} style={getWindowStyle()} className={`pj-card-compact bg-white rounded-md shadow-lg border-2 ${isDnd ? 'border-[#922610]' : isFabula ? 'border-teal-700' : isSom6 ? 'border-red-900' : is3Det ? 'border-amber-500' : 'border-dragon-dark'} overflow-hidden flex ${dashboardView==='list'?'flex-row items-stretch':'flex-col'} relative`}>
+                                            <div className={`absolute top-0 right-0 text-white text-[9px] font-bold uppercase px-2 py-0.5 rounded-bl shadow-sm z-10 ${isDnd ? 'bg-[#922610]' : isFabula ? 'bg-teal-700' : isSom6 ? 'bg-red-900' : is3Det ? 'bg-zinc-950' : 'bg-dragon-dark'}`}>
+                                                {isDnd ? 'D&D 5.5e' : isFabula ? 'Fabula Ultima' : isSom6 ? 'O Som das Seis' : is3Det ? '3DeT Victory' : 'Dragonbane'}
                                             </div>
                                             <div className={`${dashboardView==='list'?'flex flex-1 min-w-0 h-24 border-r':'flex h-28 border-b'} border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors`} onClick={() => loadCharacter(char.id)}>
                                                 <div className="w-28 shrink-0 bg-gray-200 border-r border-gray-300">
@@ -2105,11 +2120,11 @@ const { useState, useEffect, useRef } = React;
                                                     )}
                                                 </div>
                                                 <div className="p-3 flex-1 overflow-hidden flex flex-col justify-center">
-                                                    <h3 className={`font-title font-bold text-lg truncate ${isDnd ? 'text-[#922610]' : isFabula ? 'text-teal-800' : isSom6 ? 'text-red-900' : 'text-red-900'}`}>{char.bio?.nome || 'Sem Nome'}</h3>
+                                                    <h3 className={`font-title font-bold text-lg truncate ${isDnd ? 'text-[#922610]' : isFabula ? 'text-teal-800' : isSom6 ? 'text-red-900' : is3Det ? 'text-amber-700' : 'text-red-900'}`}>{char.bio?.nome || 'Sem Nome'}</h3>
                                                     <p className="text-xs text-gray-600 font-bold uppercase mt-1 truncate">
-                                                        {isDnd ? `${char.bio?.linhagem || '?'} • ${char.bio?.classe || '?'}` : isFabula ? `${char.bio?.identidade || 'Sem identidade'} • ${char.bio?.tema || 'Sem tema'}` : isSom6 ? `${char.bio?.apelido || 'Sem apelido'} • ${char.tormento?.tipo || 'Sem tormento'}` : `${char.bio?.ancestralidade || '?'} • ${char.bio?.profissao || '?'}`}
+                                                        {isDnd ? `${char.bio?.linhagem || '?'} • ${char.bio?.classe || '?'}` : isFabula ? `${char.bio?.identidade || 'Sem identidade'} • ${char.bio?.tema || 'Sem tema'}` : isSom6 ? `${char.bio?.apelido || 'Sem apelido'} • ${char.tormento?.tipo || 'Sem tormento'}` : is3Det ? `${char.bio?.arquetipo || 'Sem arquétipo'}${char.bio?.kit ? ` • ${char.bio.kit}` : char.bio?.conceito ? ` • ${char.bio.conceito}` : ''}` : `${char.bio?.ancestralidade || '?'} • ${char.bio?.profissao || '?'}`}
                                                     </p>
-                                                    <p className="text-[10px] text-gray-500 mt-2 truncate italic">Nível {isFabula ? (char.nivel || 5) : isSom6 ? (char.nivel || 1) : (char.bio?.nivel || 1)}</p>
+                                                    <p className="text-[10px] text-gray-500 mt-2 truncate italic">{is3Det ? `Pontos ${char.pontos ?? 0} • XP ${char.xp ?? 0}` : `Nível ${isFabula ? (char.nivel || 5) : isSom6 ? (char.nivel || 1) : (char.bio?.nivel || 1)}`}</p>
                                                     {char.meta?.campanha && <p className="text-[10px] text-indigo-600 mt-1 truncate font-bold">📁 {char.meta.campanha}</p>}
                                                     {char.meta?.updatedAt && <p className="text-[9px] text-gray-400 mt-1">Editado: {new Date(char.meta.updatedAt).toLocaleString('pt-BR')}</p>}
                                                 </div>
@@ -2280,6 +2295,16 @@ const { useState, useEffect, useRef } = React;
                                             </div>
                                         </div>
 
+                                        {createTarget === 'pc' && (
+                                            <div onClick={() => { setShowSystemModal(false); setShow3DetModelModal(true); }} className="bg-white border-2 border-gray-300 hover:border-amber-500 rounded p-4 cursor-pointer hover:shadow-lg transition-all flex items-center gap-4 group">
+                                                <div className="w-14 h-14 bg-zinc-950 group-hover:bg-amber-400 text-amber-400 group-hover:text-zinc-950 rounded flex items-center justify-center font-black font-title text-lg shadow-inner transition-colors">3D&T</div>
+                                                <div className="flex-1">
+                                                    <div className="flex items-center gap-2"><h3 className="font-title font-bold text-gray-900 group-hover:text-amber-700 text-lg transition-colors">3DeT Victory</h3><span className="bg-amber-100 text-amber-900 text-[9px] font-bold uppercase px-2 py-0.5 rounded">Prévia 0.8</span></div>
+                                                    <p className="text-xs text-gray-500">Poder • Habilidade • Resistência • ficha compacta</p>
+                                                </div>
+                                            </div>
+                                        )}
+
                                         <div onClick={() => { setShowSystemModal(false); setShowSom6ModelModal(true); }} className="bg-white border-2 border-gray-300 hover:border-red-900 rounded p-4 cursor-pointer hover:shadow-lg transition-all flex items-center gap-4 group">
                                             <div className="w-14 h-14 bg-red-900 group-hover:bg-red-950 text-amber-50 rounded flex items-center justify-center font-bold font-title text-xl shadow-inner transition-colors">S6</div>
                                             <div className="flex-1">
@@ -2292,6 +2317,24 @@ const { useState, useEffect, useRef } = React;
                             </div>, document.body
                         )}
 
+
+                        {show3DetModelModal && ReactDOM.createPortal(
+                            <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] p-4 transition-opacity">
+                                <div className="bg-white rounded-sm shadow-2xl w-full max-w-2xl border-2 border-amber-500 overflow-hidden flex flex-col max-h-[90vh] animate-fade-in-up">
+                                    <div className="bg-zinc-950 text-white p-3 flex justify-between items-center shrink-0 border-b-4 border-amber-400">
+                                        <div><h2 className="font-title font-black text-lg">Criar em 3DeT Victory</h2><p className="text-[10px] text-amber-300">Primeira prévia modular no PJ Lite</p></div>
+                                        <button onClick={() => { setShow3DetModelModal(false); setCreateTarget(null); }} className="text-zinc-300 hover:text-white text-2xl font-bold px-2 leading-none">&times;</button>
+                                    </div>
+                                    <div className="p-6 bg-zinc-100 flex-1 overflow-y-auto space-y-4">
+                                        <div onClick={() => loadTemplate(initial3DetPcData)} className="bg-white border-2 border-zinc-300 hover:border-amber-500 rounded p-4 cursor-pointer flex items-center gap-4 transition-all hover:shadow-lg">
+                                            <div className="w-14 h-14 bg-zinc-950 text-amber-400 rounded flex items-center justify-center font-black font-title text-lg shadow-inner shrink-0">3D&T</div>
+                                            <div><h3 className="font-bold text-sm text-zinc-950">Novo Personagem</h3><p className="text-xs text-zinc-500 mt-1">Ficha em branco com P/H/R, PA/PM/PV, perícias, vantagens, desvantagens, técnicas e inventário.</p></div>
+                                        </div>
+                                        <div className="rounded border border-amber-300 bg-amber-50 p-3 text-[10px] leading-relaxed text-amber-950"><strong>Primeira prévia:</strong> retrato e Kit são opcionais. Os campos de FA/FD ficam livres para registrar a referência usada pela mesa, sem forçar automações de regra.</div>
+                                    </div>
+                                </div>
+                            </div>, document.body
+                        )}
 
                         {showSom6ModelModal && ReactDOM.createPortal(
                             <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] p-4 transition-opacity">
@@ -2825,7 +2868,8 @@ const { useState, useEffect, useRef } = React;
             const isDnd = data.system === 'dnd5e';
             const isFabula = data.system === 'fabula';
             const isSom6 = data.system === 'somdas6';
-            const topBarColor = isDnd ? 'bg-[#922610]' : isFabula ? 'bg-teal-800' : isSom6 ? 'bg-red-950' : (data.type === 'pnj' ? 'bg-blue-900' : data.type === 'ameaca' ? 'bg-red-900' : 'bg-dragon-dark');
+            const is3Det = data.system === '3det';
+            const topBarColor = isDnd ? 'bg-[#922610]' : isFabula ? 'bg-teal-800' : isSom6 ? 'bg-red-950' : is3Det ? 'bg-zinc-950' : (data.type === 'pnj' ? 'bg-blue-900' : data.type === 'ameaca' ? 'bg-red-900' : 'bg-dragon-dark');
             // Escopo de compatibilidade dos editores modularizados.
             // Será reduzido conforme modelos e lógica forem migrados para cada sistema.
             const systemEditorScope = {
@@ -2938,6 +2982,7 @@ const { useState, useEffect, useRef } = React;
                 isDnd,
                 isFabula,
                 isFabulaExtraUnlocked,
+                is3Det,
                 isSom6,
                 JSZip,
                 loadCharacter,
@@ -3083,14 +3128,14 @@ const { useState, useEffect, useRef } = React;
             };
 
             return (
-                <div style={getWindowStyle()} className={`${(!isDnd && !isFabula && !isSom6 && data.type === 'pc') ? 'max-w-[90rem]' : 'max-w-6xl'} mx-auto bg-white rounded-sm shadow-xl border-2 ${isDnd ? 'border-[#922610]' : isFabula ? 'border-teal-700' : isSom6 ? 'border-red-900' : 'border-gray-500'} transition-all duration-300`}>
-                    <div style={(isDnd || isFabula || isSom6) ? {} : getBarStyle()} className={`no-print p-3 flex flex-wrap justify-between items-center rounded-t-sm gap-2 text-white ${topBarColor}`}>
+                <div style={getWindowStyle()} className={`${(!isDnd && !isFabula && !isSom6 && !is3Det && data.type === 'pc') ? 'max-w-[90rem]' : 'max-w-6xl'} mx-auto bg-white rounded-sm shadow-xl border-2 ${isDnd ? 'border-[#922610]' : isFabula ? 'border-teal-700' : isSom6 ? 'border-red-900' : is3Det ? 'border-amber-500' : 'border-gray-500'} transition-all duration-300`}>
+                    <div style={(isDnd || isFabula || isSom6 || is3Det) ? {} : getBarStyle()} className={`no-print p-3 flex flex-wrap justify-between items-center rounded-t-sm gap-2 text-white ${topBarColor}`}>
                         <div className="flex items-center gap-4">
                             <button onClick={returnToDashboard} className="flex items-center gap-1 transition-colors text-sm font-bold text-gray-300 hover:text-white">
                                 <SVGIcons.ArrowLeft /> <span className="hidden sm:inline">Voltar</span>
                             </button>
                             <span className="font-title font-bold text-lg md:text-xl tracking-wider uppercase">
-                                {isDnd ? (data.type === 'pc' ? 'D&D 5.5e / 2024 - Personagem' : 'D&D 5.5e / 2024 - Bestiário') : isFabula ? (data.type === 'pc' ? 'FABULA ULTIMA • PERSONAGEM • INTEGRADO' : 'FABULA ULTIMA • AMEAÇA / PNJ • INTEGRADO') : isSom6 ? (data.type === 'pc' ? 'O SOM DAS SEIS • PERSONAGEM • INTEGRADO' : 'O SOM DAS SEIS • PDJ • INTEGRADO') : (data.type === 'pc' ? 'DRAGONBANE' : data.type === 'pnj' ? 'PNJ (DB)' : 'AMEAÇA (DB)')}
+                                {isDnd ? (data.type === 'pc' ? 'D&D 5.5e / 2024 - Personagem' : 'D&D 5.5e / 2024 - Bestiário') : isFabula ? (data.type === 'pc' ? 'FABULA ULTIMA • PERSONAGEM • INTEGRADO' : 'FABULA ULTIMA • AMEAÇA / PNJ • INTEGRADO') : isSom6 ? (data.type === 'pc' ? 'O SOM DAS SEIS • PERSONAGEM • INTEGRADO' : 'O SOM DAS SEIS • PDJ • INTEGRADO') : is3Det ? '3DeT VICTORY • PERSONAGEM • PRÉVIA' : (data.type === 'pc' ? 'DRAGONBANE' : data.type === 'pnj' ? 'PNJ (DB)' : 'AMEAÇA (DB)')}
                             </span>
                         </div>
                         <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end items-center">
@@ -3151,8 +3196,11 @@ const { useState, useEffect, useRef } = React;
 
                     <DndThreatEditor scope={systemEditorScope} />
 
+                    {/* 3DeT Victory — primeira prévia modular */}
+                    <TresDeTCharacterEditor scope={systemEditorScope} />
+
                     {/* Editor Dragonbane (Intacto) */}
-                    {!['dragonbane','dnd5e','fabula','somdas6'].includes(data.system || 'dragonbane') && (
+                    {!['dragonbane','dnd5e','fabula','somdas6','3det'].includes(data.system || 'dragonbane') && (
                         <div className="p-6 md:p-10 bg-amber-50 border-y border-amber-300 text-amber-950">
                             <h2 className="font-title font-bold text-lg">⚠ Formato de ficha não reconhecido</h2>
                             <p className="text-sm mt-2">Esta ficha parece ter vindo de uma versão ou sistema que o PJ Lite atual não reconhece. Os dados não foram apagados. Exporte um backup antes de editar e confira o campo de sistema na origem da ficha.</p>

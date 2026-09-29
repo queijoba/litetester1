@@ -111,6 +111,7 @@ export default function DragonbaneEditor({ scope }) {
     isDnd,
     isFabula,
     isFabulaExtraUnlocked,
+    is3Det,
     isSom6,
     JSZip,
     loadCharacter,
@@ -257,7 +258,7 @@ export default function DragonbaneEditor({ scope }) {
 
   return (
     <>
-      {!isDnd && !isFabula && !isSom6 && (
+      {!isDnd && !isFabula && !isSom6 && !is3Det && (
                               data.type === 'pc' ? (
                                   <React.Fragment>
                                       {/* Mobile Tabs for PC */}

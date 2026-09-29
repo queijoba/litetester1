@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { TRESDET_RARITIES, TRESDET_SKILLS } from '../data.js';
 
-const { useEffect, useMemo, useState } = React;
+const { useEffect, useState } = React;
 
 const clampNumber = (value) => {
   const parsed = Number(value);
@@ -107,14 +107,11 @@ export default function TresDeTCharacterEditor({ scope }) {
   const status = data.status || {};
   const skills = data.pericias || {};
 
-  const rarityTotals = useMemo(() => {
-    const totals = { Comum: 0, Incomum: 0, Raro: 0 };
-    (data.inventario || []).forEach((item) => {
-      const rarity = TRESDET_RARITIES.includes(item?.raridade) ? item.raridade : 'Comum';
-      totals[rarity] += Math.max(0, Number(item?.quantidade || 0));
-    });
-    return totals;
-  }, [data.inventario]);
+  const rarityTotals = { Comum: 0, Incomum: 0, Raro: 0 };
+  (data.inventario || []).forEach((item) => {
+    const rarity = TRESDET_RARITIES.includes(item?.raridade) ? item.raridade : 'Comum';
+    rarityTotals[rarity] += Math.max(0, Number(item?.quantidade || 0));
+  });
 
   const setList = (key, value) => updateField(key, value);
   const patchInventory = (index, key, value) => {
