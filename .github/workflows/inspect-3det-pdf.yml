@@ -21,7 +21,7 @@ jobs:
           python-version: '3.12'
       - name: Instalar pypdf
         run: pip install pypdf
-      - name: Listar campos
+      - name: Listar campos e texto
         run: |
           python - <<'PY'
           from pypdf import PdfReader
@@ -32,7 +32,9 @@ jobs:
           fields = r.get_fields() or {}
           print('FIELD_COUNT', len(fields))
           for name, field in fields.items():
-              print(f"FIELD|{name}|FT={field.get('/FT')}|V={field.get('/V')}|Ff={field.get('/Ff')}")
+              print(f"FIELD|{name}|FT={field.get('/FT')}|V={field.get('/V')}|Ff={field.get('/Ff')}|OPT={field.get('/Opt')}")
+          print('--- PAGE TEXT ---')
+          print(r.pages[0].extract_text() or '')
           print('--- WIDGETS ---')
           for page_index, page in enumerate(r.pages):
               for ref in page.get('/Annots', []) or []:
