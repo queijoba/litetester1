@@ -1,31 +1,32 @@
 const SYSTEM_ICONS = {
   Dragonbane: {
-    src: '/system-icons/dragonbane.webp?v=20260930f',
-    label: '',
+    src: '/system-icons/dragonbane.webp?v=20260930g',
+    fallback: 'DB',
     position: 'center',
-    size: 'cover',
+    fit: 'cover',
     background: '#eef0df',
   },
   'D&D 5.5e (2024)': {
-    src: '/system-icons/dnd5e.webp?v=20260930f',
-    label: '',
+    src: '/system-icons/dnd5e.webp?v=20260930g',
+    fallback: 'D&D',
     position: 'center',
-    size: 'cover',
+    fit: 'cover',
     background: '#090909',
   },
   'Fabula Ultima': {
-    src: '/system-icons/fabula.webp?v=20260930f',
-    label: 'FU',
+    src: '/system-icons/fabula.webp?v=20260930g',
+    fallback: 'FU',
+    overlay: 'FU',
     position: 'center',
-    size: 'cover',
+    fit: 'cover',
     background: '#e9f4f1',
   },
-  // 3DeT fica fora daqui de propósito: usa novamente o ícone clássico preto + 3D&T do próprio PJ Lite.
+  // 3DeT fica fora daqui de propósito: mantém o ícone clássico preto + 3D&T do próprio PJ Lite.
   'O Som das Seis': {
-    src: '/system-icons/som6.webp?v=20260930f',
-    label: '',
+    src: '/system-icons/som6.webp?v=20260930g',
+    fallback: 'S6',
     position: 'center',
-    size: 'contain',
+    fit: 'contain',
     background: '#250707',
   },
 };
@@ -39,52 +40,109 @@ function findConfig(title) {
   return Object.entries(SYSTEM_ICONS).find(([name]) => normalize(name) === normalized)?.[1] || null;
 }
 
-function polishSom6Card(card, title) {
-  if (normalize(title?.textContent) !== 'o som das seis') return;
+function polishCard(card, title) {
+  if (!(card instanceof HTMLElement) || !(title instanceof HTMLElement)) return;
+
+  card.style.minHeight = '82px';
+  card.style.alignItems = 'center';
+
+  const content = title.closest('.flex-1');
+  if (content instanceof HTMLElement) content.style.minWidth = '0';
+
   const row = title.parentElement;
   if (row instanceof HTMLElement) {
+    row.style.display = 'flex';
+    row.style.alignItems = 'center';
     row.style.flexWrap = 'wrap';
-    row.style.rowGap = '3px';
+    row.style.columnGap = '7px';
+    row.style.rowGap = '4px';
   }
-  title.style.whiteSpace = 'nowrap';
-  title.style.fontSize = '17px';
-  title.style.lineHeight = '1.05';
+
+  title.style.lineHeight = '1.08';
+  title.style.margin = '0';
+
   const badge = title.nextElementSibling;
-  if (badge instanceof HTMLElement) {
+  if (badge instanceof HTMLElement && badge.tagName === 'SPAN') {
     badge.style.flexShrink = '0';
     badge.style.whiteSpace = 'nowrap';
+    badge.style.lineHeight = '1.1';
+  }
+
+  const description = content?.querySelector('p');
+  if (description instanceof HTMLElement) {
+    description.style.marginTop = '4px';
+    description.style.lineHeight = '1.25';
+  }
+
+  if (normalize(title.textContent) === 'o som das seis') {
+    title.style.whiteSpace = 'nowrap';
+    title.style.fontSize = '17px';
   }
 }
 
+function renderIcon(icon, config) {
+  icon.textContent = '';
+  icon.style.position = 'relative';
+  icon.style.background = config.background || '#111827';
+  icon.style.border = '1px solid rgba(17,24,39,.20)';
+  icon.style.overflow = 'hidden';
+  icon.style.display = 'flex';
+  icon.style.alignItems = 'center';
+  icon.style.justifyContent = 'center';
+
+  const img = document.createElement('img');
+  img.src = config.src;
+  img.alt = '';
+  img.setAttribute('aria-hidden', 'true');
+  Object.assign(img.style, {
+    position: 'absolute',
+    inset: '0',
+    width: '100%',
+    height: '100%',
+    objectFit: config.fit || 'cover',
+    objectPosition: config.position || 'center',
+    display: 'block',
+  });
+
+  const label = document.createElement('span');
+  label.textContent = config.overlay || '';
+  Object.assign(label.style, {
+    position: 'relative',
+    zIndex: '2',
+    color: '#fff',
+    fontWeight: '800',
+    fontFamily: 'Georgia, serif',
+    fontSize: config.overlay ? '20px' : '16px',
+    textShadow: config.overlay ? '0 1px 3px rgba(0,0,0,.95), 0 0 5px rgba(0,0,0,.75)' : 'none',
+    pointerEvents: 'none',
+  });
+
+  img.addEventListener('error', () => {
+    img.remove();
+    label.textContent = config.fallback || '';
+  }, { once: true });
+
+  icon.appendChild(img);
+  icon.appendChild(label);
+}
+
 function decorateCard(card) {
-  if (!(card instanceof HTMLElement) || card.dataset.systemIconReady === '1') return;
+  if (!(card instanceof HTMLElement)) return;
   const title = card.querySelector('h3');
   if (!title) return;
 
-  polishSom6Card(card, title);
+  polishCard(card, title);
 
   const config = findConfig(title.textContent);
-  if (!config) return;
+  if (!config || card.dataset.systemIconReady === '2') return;
 
   const icon = Array.from(card.children).find((child) =>
     child instanceof HTMLElement && /\bw-12\b/.test(child.className || '') && /\bh-12\b/.test(child.className || '')
   );
   if (!icon) return;
 
-  const hasLabel = Boolean(config.label);
-  icon.textContent = config.label || '';
-  icon.style.backgroundColor = config.background || '#111827';
-  icon.style.backgroundImage = hasLabel
-    ? `linear-gradient(rgba(0,0,0,.10), rgba(0,0,0,.38)), url("${config.src}")`
-    : `url("${config.src}")`;
-  icon.style.backgroundSize = config.size || 'cover';
-  icon.style.backgroundPosition = config.position || 'center';
-  icon.style.backgroundRepeat = 'no-repeat';
-  icon.style.color = '#fff';
-  icon.style.textShadow = hasLabel ? '0 1px 3px rgba(0,0,0,.95), 0 0 5px rgba(0,0,0,.75)' : 'none';
-  icon.style.border = '1px solid rgba(17,24,39,.22)';
-  icon.style.overflow = 'hidden';
-  card.dataset.systemIconReady = '1';
+  renderIcon(icon, config);
+  card.dataset.systemIconReady = '2';
 }
 
 function decorateSystemSelector() {
