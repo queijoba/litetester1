@@ -1,0 +1,50 @@
+name: Corrigir PDF 3DeT atual
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/fix-3det-pdf-current.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Corrigir exportação da ficha aberta
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/systems/3det/pdf/export.js')
+          text = path.read_text(encoding='utf-8')
+          old = """async function exportPdf() {\n  document.activeElement?.blur?.();\n  await sleep(900);\n\n  const item = current3Det(false);\n  if (!item) throw new Error('Não encontrei a ficha 3DeT Victory atual. Salve a ficha e tente novamente.');\n"""
+          new = """async function saveVisible3DetBeforeExport() {\n  const found = findToolbar();\n  if (!found) return;\n  const saveButton = Array.from(found.toolbar.querySelectorAll('button')).find(\n    button => visible(button) && /salvar/i.test((button.textContent || '').replace(/\\s+/g, ' ').trim())\n  );\n  if (!saveButton || saveButton.disabled) return;\n  saveButton.click();\n  await sleep(550);\n}\n\nasync function exportPdf() {\n  document.activeElement?.blur?.();\n  await sleep(120);\n  await saveVisible3DetBeforeExport();\n  await sleep(280);\n\n  const item = current3Det(false);\n  if (!item) throw new Error('Não encontrei a ficha 3DeT Victory atual. Salve a ficha e tente novamente.');\n"""
+          if old not in text:
+              raise SystemExit('Trecho alvo do exportador não encontrado; nenhuma alteração feita.')
+          path.write_text(text.replace(old, new), encoding='utf-8')
+
+          verify = Path('scripts/verify-3det-pdf.mjs')
+          v = verify.read_text(encoding='utf-8')
+          marker = "  'fill3DetPdf',\n"
+          replacement = "  'fill3DetPdf',\n  'saveVisible3DetBeforeExport',\n  'saveButton.click()',\n"
+          if 'saveVisible3DetBeforeExport' not in v:
+              if marker not in v:
+                  raise SystemExit('Marcador do verificador não encontrado.')
+              v = v.replace(marker, replacement)
+              verify.write_text(v, encoding='utf-8')
+          PY
+
+      - name: Commit
+        run: |
+          git config user.name 'Nick'
+          git config user.email '90225335+queijoba@users.noreply.github.com'
+          git add src/systems/3det/pdf/export.js scripts/verify-3det-pdf.mjs
+          git commit -m 'Corrige PDF 3DeT para exportar a ficha aberta'
+          git push origin HEAD:main
