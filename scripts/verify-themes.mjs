@@ -37,9 +37,7 @@ for (const token of [
 }
 
 assert(polish.includes('.pjlite-3det-guide-panel'), 'guia 3DeT sem ajuste responsivo na revisão visual.');
-// main.jsx agora separa PJ Lite e DM Lite por rota. O tema do PJ pode ser carregado via import dinâmico,
-// desde que continue depois da integração do 3DeT e apenas na rota principal.
-assert(main.includes('./theme-polish.css'), 'theme-polish.css não está carregado no app.');
-assert(main.indexOf('./theme-polish.css') > main.indexOf('./systems/3det/integration.js'), 'revisão visual deve ser carregada depois do tema 3DeT.');
+assert(main.includes("import './theme-polish.css';"), 'theme-polish.css não está carregado no app.');
+assert(main.indexOf("./theme-polish.css") > main.indexOf("./systems/3det/integration.js"), 'revisão visual deve ser carregada depois do tema 3DeT.');
 
 console.log('Temas: Padrão, Clássico DB, D&D, Fabula Ultima, O Som das Seis, 3DeT Victory, Modo Escuro e Personalizado verificados.');
