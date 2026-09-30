@@ -1,5 +1,6 @@
 import { readFile, writeFile } from 'node:fs/promises';
 
+// Patch pontual: o cartão 3DeT deve aparecer tanto para personagens quanto para ameaças/PNJs.
 const path = 'src/PJLiteApp.jsx';
 let source = await readFile(path, 'utf8');
 
