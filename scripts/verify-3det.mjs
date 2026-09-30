@@ -111,5 +111,8 @@ assert(main.includes("./theme-polish.css"), 'main.jsx não carrega a revisão vi
 const app = await readFile('src/PJLiteApp.jsx', 'utf8');
 assert(app.includes("./systems/3det/models.js"), 'PJLiteApp não importa os modelos prontos do 3DeT.');
 assert(app.includes('MODELOS_3DET_PC.map'), 'modal de criação não exibe os modelos prontos do 3DeT.');
+assert(app.includes('MODELOS_3DET_NPCS.map') && app.includes('MODELOS_3DET_CRIATURAS.map'), 'modal de ameaças não exibe NPCs e criaturas prontas do 3DeT.');
+assert(app.includes("createTarget === 'pc' ? 'Poder • Habilidade • Resistência • ficha compacta' : 'NPCs • criaturas • rivais • chefes'"), 'cartão 3DeT não diferencia personagem de ameaça.');
+assert(!/\{createTarget === 'pc' && \(\s*<div onClick=\{\(\) => \{ setShowSystemModal\(false\); setShow3DetModelModal\(true\); \}\}/.test(app), 'cartão 3DeT voltou a ficar escondido no fluxo de Ameaça/PNJ.');
 
-console.log('3DeT Victory: modelo, migração de saves, perícias, especializações, Ficha Chat, tema, guia, rolagem mobile e quatro modelos prontos verificados com sucesso.');
+console.log('3DeT Victory: personagem, ameaças/NPCs, modelos prontos, seletor de criação, saves, perícias, Ficha Chat, tema, guia e mobile verificados com sucesso.');
