@@ -48,7 +48,9 @@ const ensure3DetSheetScope = () => {
   document.querySelectorAll('div').forEach((element) => {
     if (!element.classList.contains('bg-[#f5f5f2]')) return;
     const text = element.textContent || '';
-    if (text.includes('3DeT') && text.includes('Victory')) element.classList.add('tresdet-sheet');
+    if (text.includes('3DeT') && text.includes('Victory') && !element.classList.contains('tresdet-sheet')) {
+      element.classList.add('tresdet-sheet');
+    }
   });
 };
 
@@ -85,6 +87,7 @@ const GUIDE_HTML = `
 `;
 
 let guideActive = false;
+let guideNeedsInitialScroll = false;
 
 const getGuideParts = () => {
   const heading = [...document.querySelectorAll('h2')]
@@ -124,6 +127,13 @@ const setBuiltInTabsInactive = (tabBar, activeButton) => {
   });
 };
 
+const prepareGuideScroller = (content) => {
+  if (!content) return;
+  content.style.touchAction = 'pan-y';
+  content.style.overscrollBehaviorY = 'contain';
+  content.style.WebkitOverflowScrolling = 'touch';
+};
+
 const ensureGuidePanelVisible = () => {
   if (!guideActive) return;
   const { tabBar, content } = getGuideParts();
@@ -143,11 +153,19 @@ const ensureGuidePanelVisible = () => {
 
   [...content.children].forEach((child) => {
     if (child === panel) return;
-    child.dataset.pjlite3detHidden = 'true';
-    child.style.display = 'none';
+    if (child.dataset.pjlite3detHidden !== 'true') {
+      child.dataset.pjlite3detHidden = 'true';
+      child.style.display = 'none';
+    }
   });
-  panel.style.display = '';
-  content.scrollTop = 0;
+
+  if (panel.style.display === 'none') panel.style.display = '';
+  prepareGuideScroller(content);
+
+  if (guideNeedsInitialScroll) {
+    content.scrollTop = 0;
+    guideNeedsInitialScroll = false;
+  }
 
   setBuiltInTabsInactive(tabBar, button);
   button.classList.remove('border-transparent', 'text-gray-500');
@@ -156,6 +174,7 @@ const ensureGuidePanelVisible = () => {
 
 const hideGuidePanel = () => {
   guideActive = false;
+  guideNeedsInitialScroll = false;
   const { content } = getGuideParts();
   if (!content) return;
 
@@ -174,6 +193,7 @@ const ensureGuideShortcut = () => {
   const { heading, tabBar } = getGuideParts();
   if (!heading || !tabBar) {
     guideActive = false;
+    guideNeedsInitialScroll = false;
     return;
   }
 
@@ -191,6 +211,7 @@ const ensureGuideShortcut = () => {
       event.preventDefault();
       event.stopPropagation();
       guideActive = true;
+      guideNeedsInitialScroll = true;
       ensureGuidePanelVisible();
     });
 
@@ -242,12 +263,12 @@ const start = () => {
     setTimeout(scheduleSync, 0);
   }, true);
 
+  // Observa apenas criação/remoção de nós. Mudanças de classe feitas pelo próprio
+  // guia não devem reexecutar a sincronização durante a rolagem no celular.
   const observer = new MutationObserver(scheduleSync);
   observer.observe(document.documentElement, {
     subtree: true,
     childList: true,
-    attributes: true,
-    attributeFilter: ['class'],
   });
 };
 
