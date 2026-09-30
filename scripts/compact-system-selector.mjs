@@ -1,5 +1,6 @@
 import { readFile, writeFile } from 'node:fs/promises';
 
+// Patch pontual do modal de seleção: mais compacto no desktop e responsivo no celular.
 const path = 'src/PJLiteApp.jsx';
 let source = await readFile(path, 'utf8');
 
