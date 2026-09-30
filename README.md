@@ -16,6 +16,7 @@ A prévia React/Vite está funcional e modularizada por sistema:
 - Dragonbane exporta usando o template real em `public/pdfs/dragonbane-template.pdf`.
 - D&D 5.5e possui ficha responsiva, abas de Ficha & Combate, Recursos, Magias e painel dinâmico da classe/subclasse.
 - 3DeT Victory entra na 0.8.0 com ficha de personagem modular: retrato opcional, Arquétipo, Kit opcional, Conceito, Escala, Pontos/XP, P/H/R, PA/PM/PV, 12 Perícias padrão clicáveis, Perícias personalizadas, Especializações separadas, FA/FD, Vantagens, Desvantagens, Técnicas, Inventário por raridade e Anotações.
+- O modal de criação do 3DeT oferece quatro adaptações de fã de 10 pontos como modelos prontos: Sans, Saitama, Jotaro Kujo e Maka Albarn. Eles servem como exemplos editáveis e não incluem retratos.
 - A ficha 3DeT já participa de saves, autosave, histórico, backup, importação, filtros e Ficha Chat. Ela também possui tema próprio preto/amarelo, tratamento específico para modo escuro/mobile e guia dedicado dentro da mesma janela de Guias e Tutoriais. Exportação PDF será tratada em uma etapa própria.
 - Os temas Padrão, Clássico DB, D&D, Fabula Ultima, O Som das Seis, 3DeT Victory, Modo Escuro e Personalizado passam por uma camada comum de revisão visual para evitar texto ilegível, fundos claros residuais e contraste inconsistente.
 - O CI executa verificação estrutural, verificação funcional do 3DeT, auditoria dos temas e o build em cada push/PR para `main`.
@@ -53,6 +54,7 @@ src/
    │     └─ ThreatEditor.jsx
    └─ 3det/
       ├─ data.js
+      ├─ models.js
       ├─ chat.js
       ├─ 3det-theme.css
       ├─ integration.js
