@@ -2269,18 +2269,18 @@ const { useState, useEffect, useRef } = React;
                         {}
                         {showSystemModal && ReactDOM.createPortal(
                             <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] p-4 transition-opacity">
-                                <div className="bg-white rounded-sm shadow-2xl w-full max-w-md border-2 border-dragon-dark overflow-hidden animate-fade-in-up">
+                                <div className="bg-white rounded-sm shadow-2xl w-full max-w-3xl max-h-[88vh] border-2 border-dragon-dark overflow-hidden animate-fade-in-up flex flex-col">
                                     <div style={getBarStyle()} className="bg-dragon-dark text-white p-3 flex justify-between items-center">
                                         <h2 className="font-title font-bold text-lg uppercase tracking-wide">Selecionar Sistema</h2>
                                         <button onClick={() => { setShowSystemModal(false); setCreateTarget(null); }} className="text-gray-400 hover:text-white text-2xl font-bold px-2 leading-none">&times;</button>
                                     </div>
-                                    <div className="p-6 bg-gray-100 flex flex-col gap-4">
+                                    <div className="p-4 bg-gray-100 grid grid-cols-1 sm:grid-cols-2 gap-3 overflow-y-auto min-h-0">
                                         <div onClick={() => { 
                                             setShowSystemModal(false); 
                                             if (createTarget === 'pc') { setShowDbModelModal(true); }
                                             else { setShowThreatModal(true); }
-                                        }} className="bg-white border-2 border-gray-300 hover:border-red-800 rounded p-4 cursor-pointer hover:shadow-lg transition-all flex items-center gap-4 group">
-                                            <div style={getBarStyle()} className="w-14 h-14 bg-dragon-dark group-hover:bg-red-800 text-white rounded flex items-center justify-center font-bold font-title text-2xl shadow-inner transition-colors">DB</div>
+                                        }} className="bg-white border-2 border-gray-300 hover:border-red-800 rounded p-3 cursor-pointer hover:shadow-md transition-all flex items-center gap-3 group min-h-[82px]">
+                                            <div style={getBarStyle()} className="w-12 h-12 bg-dragon-dark group-hover:bg-red-800 text-white rounded flex items-center justify-center font-bold font-title text-2xl shadow-inner transition-colors">DB</div>
                                             <div className="flex-1">
                                                 <h3 className="font-title font-bold text-gray-900 group-hover:text-red-900 text-lg transition-colors">Dragonbane</h3>
                                                 <p className="text-xs text-gray-500">Mitos, Magia e Aventuras Clássicas</p>
@@ -2290,16 +2290,16 @@ const { useState, useEffect, useRef } = React;
                                         <div onClick={() => { 
                                             setShowSystemModal(false); 
                                             setShowDndModelModal(true);
-                                        }} className="bg-white border-2 border-gray-300 hover:border-[#922610] rounded p-4 cursor-pointer hover:shadow-lg transition-all flex items-center gap-4 group">
-                                            <div className="w-14 h-14 bg-orange-600 group-hover:bg-[#922610] text-white rounded flex items-center justify-center font-bold font-title text-2xl shadow-inner transition-colors">D&D</div>
+                                        }} className="bg-white border-2 border-gray-300 hover:border-[#922610] rounded p-3 cursor-pointer hover:shadow-md transition-all flex items-center gap-3 group min-h-[82px]">
+                                            <div className="w-12 h-12 bg-orange-600 group-hover:bg-[#922610] text-white rounded flex items-center justify-center font-bold font-title text-2xl shadow-inner transition-colors">D&D</div>
                                             <div className="flex-1">
                                                 <h3 className="font-title font-bold text-gray-900 group-hover:text-[#922610] text-lg transition-colors">D&D 5.5e (2024)</h3>
                                                 <p className="text-xs text-gray-500">Regras 2024 / SRD 5.2 • ficha revisada do PJ Lite</p>
                                             </div>
                                         </div>
 
-                                        <div onClick={() => { setShowSystemModal(false); setFabulaCreateSupplements({ ...FABULA_DEFAULT_SUPPLEMENTS }); setShowFabulaModelModal(true); }} className="bg-white border-2 border-gray-300 hover:border-teal-700 rounded p-4 cursor-pointer hover:shadow-lg transition-all flex items-center gap-4 group">
-                                            <div className="w-14 h-14 bg-teal-700 group-hover:bg-teal-800 text-white rounded flex items-center justify-center font-bold font-title text-xl shadow-inner transition-colors">FU</div>
+                                        <div onClick={() => { setShowSystemModal(false); setFabulaCreateSupplements({ ...FABULA_DEFAULT_SUPPLEMENTS }); setShowFabulaModelModal(true); }} className="bg-white border-2 border-gray-300 hover:border-teal-700 rounded p-3 cursor-pointer hover:shadow-md transition-all flex items-center gap-3 group min-h-[82px]">
+                                            <div className="w-12 h-12 bg-teal-700 group-hover:bg-teal-800 text-white rounded flex items-center justify-center font-bold font-title text-xl shadow-inner transition-colors">FU</div>
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-2"><h3 className="font-title font-bold text-gray-900 group-hover:text-teal-800 text-lg transition-colors">Fabula Ultima</h3><span className="bg-teal-100 text-teal-800 text-[9px] font-bold uppercase px-2 py-0.5 rounded">Integrado</span></div>
                                                 <p className="text-xs text-gray-500">{createTarget === 'pc' ? 'Personagem + modelos prontos' : 'Ameaça / PNJ + bestiário'}</p>
@@ -2307,8 +2307,8 @@ const { useState, useEffect, useRef } = React;
                                         </div>
 
                                         {(
-                                            <div onClick={() => { setShowSystemModal(false); setShow3DetModelModal(true); }} className="bg-white border-2 border-gray-300 hover:border-amber-500 rounded p-4 cursor-pointer hover:shadow-lg transition-all flex items-center gap-4 group">
-                                                <div className="w-14 h-14 bg-zinc-950 group-hover:bg-amber-400 text-amber-400 group-hover:text-zinc-950 rounded flex items-center justify-center font-black font-title text-lg shadow-inner transition-colors">3D&T</div>
+                                            <div onClick={() => { setShowSystemModal(false); setShow3DetModelModal(true); }} className="bg-white border-2 border-gray-300 hover:border-amber-500 rounded p-3 cursor-pointer hover:shadow-md transition-all flex items-center gap-3 group min-h-[82px]">
+                                                <div className="w-12 h-12 bg-zinc-950 group-hover:bg-amber-400 text-amber-400 group-hover:text-zinc-950 rounded flex items-center justify-center font-black font-title text-lg shadow-inner transition-colors">3D&T</div>
                                                 <div className="flex-1">
                                                     <div className="flex items-center gap-2"><h3 className="font-title font-bold text-gray-900 group-hover:text-amber-700 text-lg transition-colors">3DeT Victory</h3><span className="bg-amber-100 text-amber-900 text-[9px] font-bold uppercase px-2 py-0.5 rounded">Prévia 0.8</span></div>
                                                     <p className="text-xs text-gray-500">{createTarget === 'pc' ? 'Poder • Habilidade • Resistência • ficha compacta' : 'NPCs • criaturas • rivais • chefes'}</p>
@@ -2316,8 +2316,8 @@ const { useState, useEffect, useRef } = React;
                                             </div>
                                         )}
 
-                                        <div onClick={() => { setShowSystemModal(false); setShowSom6ModelModal(true); }} className="bg-white border-2 border-gray-300 hover:border-red-900 rounded p-4 cursor-pointer hover:shadow-lg transition-all flex items-center gap-4 group">
-                                            <div className="w-14 h-14 bg-red-900 group-hover:bg-red-950 text-amber-50 rounded flex items-center justify-center font-bold font-title text-xl shadow-inner transition-colors">S6</div>
+                                        <div onClick={() => { setShowSystemModal(false); setShowSom6ModelModal(true); }} className="bg-white border-2 border-gray-300 hover:border-red-900 rounded p-3 cursor-pointer hover:shadow-md transition-all flex items-center gap-3 group min-h-[82px]">
+                                            <div className="w-12 h-12 bg-red-900 group-hover:bg-red-950 text-amber-50 rounded flex items-center justify-center font-bold font-title text-xl shadow-inner transition-colors">S6</div>
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-2"><h3 className="font-title font-bold text-gray-900 group-hover:text-red-900 text-lg transition-colors">O Som das Seis</h3><span className="bg-amber-100 text-red-900 text-[9px] font-bold uppercase px-2 py-0.5 rounded">Integrado 0.7.4v</span></div>
                                                 <p className="text-xs text-gray-500">{createTarget === 'pc' ? 'Faroeste • personagem, Sina e montaria' : 'PDJs simplificados por Nível de Poder'}</p>
