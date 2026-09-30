@@ -1,0 +1,59 @@
+name: Normalizar PDF 3DeT
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/normalize-3det-pdf.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  normalize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Atualizar referências e remover nome antigo
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          replacements = {
+              'src/systems/3det/pdf/export.js': [
+                  ('/pdfs/3DeT_Victory_PJlite_A4_Horizontal_Editavel%20(2).pdf?v=20260930', '/pdfs/3det-template.pdf?v=20260930'),
+              ],
+              'scripts/verify-3det-pdf.mjs': [
+                  ('public/pdfs/3DeT_Victory_PJlite_A4_Horizontal_Editavel (2).pdf', 'public/pdfs/3det-template.pdf'),
+                  ('3DeT_Victory_PJlite_A4_Horizontal_Editavel%20(2).pdf', '3det-template.pdf'),
+              ],
+              'public/pdfs/README.md': [
+                  ('3DeT_Victory_PJlite_A4_Horizontal_Editavel (2).pdf', '3det-template.pdf'),
+              ],
+          }
+
+          for filename, pairs in replacements.items():
+              path = Path(filename)
+              text = path.read_text(encoding='utf-8')
+              for old, new in pairs:
+                  text = text.replace(old, new)
+              path.write_text(text, encoding='utf-8')
+          PY
+
+          rm -f 'public/pdfs/3DeT_Victory_PJlite_A4_Horizontal_Editavel (2).pdf'
+
+      - name: Commit
+        run: |
+          git config user.name 'Nick'
+          git config user.email '90225335+queijoba@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'Sem alterações.'
+          else
+            git commit -m 'Usa 3det-template.pdf como template oficial'
+            git push origin HEAD:main
+          fi
