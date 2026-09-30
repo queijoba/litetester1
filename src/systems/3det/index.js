@@ -13,3 +13,4 @@ export { MODELOS_3DET_PC } from './models.js';
 export { MODELOS_3DET_NPCS, MODELOS_3DET_CRIATURAS, MODELOS_3DET_AMEACAS } from './threatModels.js';
 export { generate3DetChatText } from './chat.js';
 export { generate3DetThreatChatText } from './threatChat.js';
+export { install3DetPdfExport } from './pdf/export.js';
