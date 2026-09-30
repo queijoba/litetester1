@@ -1,9 +1,9 @@
 const SYSTEM_ICONS = {
-  Dragonbane: { src: '/system-icons/dragonbane.webp', label: 'DB', position: 'center 40%' },
-  'D&D 5.5e (2024)': { src: '/system-icons/dnd5e.webp', label: 'D&D', position: 'center' },
+  Dragonbane: { src: '/system-icons/dragonbane.webp', label: '', position: 'center' },
+  'D&D 5.5e (2024)': { src: '/system-icons/dnd5e.webp', label: '', position: 'center' },
   'Fabula Ultima': { src: '/system-icons/fabula.webp', label: 'FU', position: 'center' },
-  '3DeT Victory': { src: '/system-icons/3det.webp', label: '3D&T', position: 'center 32%' },
-  'O Som das Seis': { src: '/system-icons/som6.webp', label: '6', position: 'center' },
+  '3DeT Victory': { src: '/system-icons/3det.webp', label: '', position: 'center' },
+  'O Som das Seis': { src: '/system-icons/som6.webp', label: '', position: 'center' },
 };
 
 function normalize(value = '') {
@@ -27,15 +27,18 @@ function decorateCard(card) {
   );
   if (!icon) return;
 
-  icon.textContent = config.label;
+  const hasLabel = Boolean(config.label);
+  icon.textContent = config.label || '';
   icon.style.backgroundColor = '#111827';
-  icon.style.backgroundImage = `linear-gradient(rgba(0,0,0,.24), rgba(0,0,0,.58)), url("${config.src}")`;
+  icon.style.backgroundImage = hasLabel
+    ? `linear-gradient(rgba(0,0,0,.10), rgba(0,0,0,.38)), url("${config.src}")`
+    : `url("${config.src}")`;
   icon.style.backgroundSize = 'cover';
   icon.style.backgroundPosition = config.position || 'center';
   icon.style.backgroundRepeat = 'no-repeat';
   icon.style.color = '#fff';
-  icon.style.textShadow = '0 1px 3px rgba(0,0,0,.95), 0 0 6px rgba(0,0,0,.75)';
-  icon.style.border = '1px solid rgba(255,255,255,.16)';
+  icon.style.textShadow = hasLabel ? '0 1px 3px rgba(0,0,0,.95), 0 0 5px rgba(0,0,0,.75)' : 'none';
+  icon.style.border = '1px solid rgba(17,24,39,.22)';
   icon.style.overflow = 'hidden';
   card.dataset.systemIconReady = '1';
 }
