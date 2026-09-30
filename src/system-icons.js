@@ -1,9 +1,33 @@
 const SYSTEM_ICONS = {
-  Dragonbane: { src: '/system-icons/dragonbane.webp', label: '', position: 'center' },
-  'D&D 5.5e (2024)': { src: '/system-icons/dnd5e.webp', label: '', position: 'center' },
-  'Fabula Ultima': { src: '/system-icons/fabula.webp', label: 'FU', position: 'center' },
-  '3DeT Victory': { src: '/system-icons/3det.webp', label: '', position: 'center' },
-  'O Som das Seis': { src: '/system-icons/som6.webp', label: '', position: 'center' },
+  Dragonbane: {
+    src: '/system-icons/dragonbane.webp?v=20260930f',
+    label: '',
+    position: 'center',
+    size: 'cover',
+    background: '#eef0df',
+  },
+  'D&D 5.5e (2024)': {
+    src: '/system-icons/dnd5e.webp?v=20260930f',
+    label: '',
+    position: 'center',
+    size: 'cover',
+    background: '#090909',
+  },
+  'Fabula Ultima': {
+    src: '/system-icons/fabula.webp?v=20260930f',
+    label: 'FU',
+    position: 'center',
+    size: 'cover',
+    background: '#e9f4f1',
+  },
+  // 3DeT fica fora daqui de propósito: usa novamente o ícone clássico preto + 3D&T do próprio PJ Lite.
+  'O Som das Seis': {
+    src: '/system-icons/som6.webp?v=20260930f',
+    label: '',
+    position: 'center',
+    size: 'contain',
+    background: '#250707',
+  },
 };
 
 function normalize(value = '') {
@@ -15,10 +39,30 @@ function findConfig(title) {
   return Object.entries(SYSTEM_ICONS).find(([name]) => normalize(name) === normalized)?.[1] || null;
 }
 
+function polishSom6Card(card, title) {
+  if (normalize(title?.textContent) !== 'o som das seis') return;
+  const row = title.parentElement;
+  if (row instanceof HTMLElement) {
+    row.style.flexWrap = 'wrap';
+    row.style.rowGap = '3px';
+  }
+  title.style.whiteSpace = 'nowrap';
+  title.style.fontSize = '17px';
+  title.style.lineHeight = '1.05';
+  const badge = title.nextElementSibling;
+  if (badge instanceof HTMLElement) {
+    badge.style.flexShrink = '0';
+    badge.style.whiteSpace = 'nowrap';
+  }
+}
+
 function decorateCard(card) {
   if (!(card instanceof HTMLElement) || card.dataset.systemIconReady === '1') return;
   const title = card.querySelector('h3');
   if (!title) return;
+
+  polishSom6Card(card, title);
+
   const config = findConfig(title.textContent);
   if (!config) return;
 
@@ -29,11 +73,11 @@ function decorateCard(card) {
 
   const hasLabel = Boolean(config.label);
   icon.textContent = config.label || '';
-  icon.style.backgroundColor = '#111827';
+  icon.style.backgroundColor = config.background || '#111827';
   icon.style.backgroundImage = hasLabel
     ? `linear-gradient(rgba(0,0,0,.10), rgba(0,0,0,.38)), url("${config.src}")`
     : `url("${config.src}")`;
-  icon.style.backgroundSize = 'cover';
+  icon.style.backgroundSize = config.size || 'cover';
   icon.style.backgroundPosition = config.position || 'center';
   icon.style.backgroundRepeat = 'no-repeat';
   icon.style.color = '#fff';
