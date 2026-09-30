@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "verify": "node scripts/verify-project.mjs && node scripts/verify-3det.mjs && node scripts/verify-3det-threats.mjs && node scripts/verify-themes.mjs",
+    "verify": "node scripts/verify-project.mjs && node scripts/verify-3det.mjs && node scripts/verify-3det-pdf.mjs && node scripts/verify-3det-threats.mjs && node scripts/verify-themes.mjs",
     "build": "vite build",
     "check": "npm run verify && npm run build",
     "preview": "vite preview"
