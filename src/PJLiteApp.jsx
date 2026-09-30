@@ -2306,7 +2306,7 @@ const { useState, useEffect, useRef } = React;
                                             </div>
                                         </div>
 
-                                        {createTarget === 'pc' && (
+                                        {(
                                             <div onClick={() => { setShowSystemModal(false); setShow3DetModelModal(true); }} className="bg-white border-2 border-gray-300 hover:border-amber-500 rounded p-4 cursor-pointer hover:shadow-lg transition-all flex items-center gap-4 group">
                                                 <div className="w-14 h-14 bg-zinc-950 group-hover:bg-amber-400 text-amber-400 group-hover:text-zinc-950 rounded flex items-center justify-center font-black font-title text-lg shadow-inner transition-colors">3D&T</div>
                                                 <div className="flex-1">
