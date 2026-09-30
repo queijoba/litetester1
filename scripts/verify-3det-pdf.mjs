@@ -4,14 +4,14 @@ const assert = (condition, message) => {
   if (!condition) throw new Error(`3DeT PDF: ${message}`);
 };
 
-const templatePath = 'public/pdfs/3DeT_Victory_PJlite_A4_Horizontal_Editavel (2).pdf';
+const templatePath = 'public/pdfs/3det-template.pdf';
 const template = await readFile(templatePath);
 assert(template.subarray(0, 5).toString('ascii') === '%PDF-', 'template não é um PDF válido.');
 assert(template.length > 100_000, 'template parece incompleto ou vazio.');
 
 const exportSource = await readFile('src/systems/3det/pdf/export.js', 'utf8');
 for (const token of [
-  '3DeT_Victory_PJlite_A4_Horizontal_Editavel%20(2).pdf',
+  '3det-template.pdf',
   'retrato_personagem',
   'bio_nome',
   'pericia_linha_1',
