@@ -221,3 +221,5 @@ function schedule() {
 new MutationObserver(schedule).observe(document.documentElement, { childList: true, subtree: true });
 addEventListener('resize', schedule, { passive: true });
 setTimeout(schedule, 0);
+
+// Deploy retry: no functional change; used to republish the validated selector revision.
