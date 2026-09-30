@@ -1,7 +1,0 @@
-{
-  "rewrites": [
-    { "source": "/dm", "destination": "/index.html" },
-    { "source": "/dm/", "destination": "/index.html" },
-    { "source": "/dm/:path*", "destination": "/index.html" }
-  ]
-}
