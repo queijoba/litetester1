@@ -2,7 +2,7 @@ import { fill3DetPdf } from './map.js';
 
 const STORAGE_KEY = 'dragonbane_saved_characters';
 const PDFLIB_CDN = 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js';
-const TEMPLATE_URL = '/pdfs/3det-template.pdf?v=20260930';
+const TEMPLATE_URL = '/pdfs/3det-template.pdf?v=20260930c';
 const BUTTON_ID = 'pjlite-3det-pdf-export';
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -214,7 +214,7 @@ async function exportPdf() {
   catch (error) { console.warn('[PJ Lite 3DeT PDF] Algumas aparências serão geradas pelo leitor de PDF.', error); }
 
   const portraitAdded = await addPortrait(doc, form, item);
-  const bytes = await doc.save({ useObjectStreams: false, updateFieldAppearances: false });
+  const bytes = await doc.save({ useObjectStreams: true, updateFieldAppearances: false });
   download(bytes, item);
   return { item, portraitAdded };
 }
