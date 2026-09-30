@@ -25,13 +25,18 @@ for (const token of ['Meus Escudos', 'Importar do PJ Lite', 'dm-workspace--mobil
   if (!app.includes(token)) throw new Error(`DM Lite: recurso obrigatório ausente: ${token}`);
 }
 
+const constants = await readFile('src/dm/constants.js', 'utf8');
+for (const token of ['dmlite_shields_v1', 'dmlite_current_shield_v1', 'dragonbane_saved_characters', 'dragonbane_saved_threats']) {
+  if (!constants.includes(token)) throw new Error(`DM Lite: chave de armazenamento ausente: ${token}`);
+}
+
 const storage = await readFile('src/dm/storage.js', 'utf8');
-for (const token of ['dmlite_shields_v1', 'DMLITE2:', 'DMLITE1:', 'migrateShield']) {
+for (const token of ['DMLITE2:', 'DMLITE1:', 'migrateShield']) {
   if (!storage.includes(token)) throw new Error(`DM Lite: persistência/migração incompleta: ${token}`);
 }
 
 const bridge = await readFile('src/dm/pjLiteBridge.js', 'utf8');
-for (const token of ['dragonbane_saved_characters', 'dragonbane_saved_threats', 'decodePJLiteSeed', 'buildPJQuick']) {
+for (const token of ['decodePJLiteSeed', 'buildPJQuick', 'readPJLiteSaves']) {
   if (!bridge.includes(token)) throw new Error(`DM Lite: integração PJ Lite incompleta: ${token}`);
 }
 
