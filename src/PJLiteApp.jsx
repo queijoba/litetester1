@@ -5,9 +5,13 @@ import FabulaThreatEditor from './systems/fabulaUltima/components/ThreatEditor.j
 import Som6CharacterEditor from './systems/somDasSeis/components/CharacterEditor.jsx';
 import Som6ThreatEditor from './systems/somDasSeis/components/ThreatEditor.jsx';
 import TresDeTCharacterEditor from './systems/3det/components/CharacterEditor.jsx';
+import TresDeTThreatEditor from './systems/3det/components/ThreatEditor.jsx';
 import { initial3DetPcData, normalize3DetPcData } from './systems/3det/data.js';
+import { initial3DetThreatData, normalize3DetThreatData } from './systems/3det/threatData.js';
 import { MODELOS_3DET_PC } from './systems/3det/models.js';
+import { MODELOS_3DET_NPCS, MODELOS_3DET_CRIATURAS } from './systems/3det/threatModels.js';
 import { generate3DetChatText } from './systems/3det/chat.js';
+import { generate3DetThreatChatText } from './systems/3det/threatChat.js';
 import DragonbaneEditor from './systems/dragonbane/components/Editor.jsx';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
@@ -693,6 +697,7 @@ const { useState, useEffect, useRef } = React;
             let text = '';
 
             if (sys === '3det' && item.type === 'pc') return generate3DetChatText(item);
+            if (sys === '3det' && item.type !== 'pc') return generate3DetThreatChatText(item);
 
             // ==========================================================
             // O SOM DAS SEIS — PERSONAGEM / PDJ
@@ -1401,6 +1406,7 @@ const { useState, useEffect, useRef } = React;
                     savingData = normalizeSom6PcData(savingData);
                     savingData = normalizeSom6PdjData(savingData);
                     savingData = normalize3DetPcData(savingData);
+                    savingData = normalize3DetThreatData(savingData);
                     const now = new Date().toISOString();
                     savingData.dataVersion = SCHEMA_VERSION;
                     savingData.meta.createdAt = savingData.meta.createdAt || now;
@@ -1507,6 +1513,7 @@ const { useState, useEffect, useRef } = React;
                 restored = normalizeSom6PcData(restored);
                 restored = normalizeSom6PdjData(restored);
                 restored = normalize3DetPcData(restored);
+                restored = normalize3DetThreatData(restored);
                 // Retratos enviados pelo dispositivo não são duplicados no histórico para economizar espaço.
                 if (restored?.bio && !restored.bio.imagem && data?.bio?.imagem) restored.bio.imagem = data.bio.imagem;
                 if (!restored?.imagem && data?.imagem) restored.imagem = data.imagem;
@@ -1523,7 +1530,7 @@ const { useState, useEffect, useRef } = React;
                     if (systemFilter !== 'all' && sys !== systemFilter) return false;
                     if (onlyFavorites && !item.meta?.favorite) return false;
                     if (!q) return true;
-                    const hay = [item.bio?.nome, item.nome, item.bio?.classe, item.bio?.profissao, item.bio?.identidade, item.bio?.apelido, item.bio?.arquetipo, item.bio?.kit, item.bio?.conceito, item.tormento?.tipo, item.reputacao?.titulo, item.meta?.campanha, sys].filter(Boolean).join(' ').toLowerCase();
+                    const hay = [item.bio?.nome, item.nome, item.bio?.classe, item.bio?.profissao, item.bio?.identidade, item.bio?.apelido, item.bio?.arquetipo, item.bio?.kit, item.bio?.conceito, item.conceito, item.categoria, item.papel, item.tormento?.tipo, item.reputacao?.titulo, item.meta?.campanha, sys].filter(Boolean).join(' ').toLowerCase();
                     return hay.includes(q);
                 }).sort((a,b) => {
                     if (sortMode === 'name') return String(a.bio?.nome || a.nome || '').localeCompare(String(b.bio?.nome || b.nome || ''), 'pt-BR');
@@ -1635,6 +1642,7 @@ const { useState, useEffect, useRef } = React;
                     normalized = normalizeSom6PcData(normalized);
                     normalized = normalizeSom6PdjData(normalized);
                     normalized = normalize3DetPcData(normalized);
+                    normalized = normalize3DetThreatData(normalized);
                     setData(normalized);
                     setDndPcTab('caracteristicas');
                     setFabulaTab('perfil');
@@ -1688,6 +1696,7 @@ const { useState, useEffect, useRef } = React;
                 templateData = normalizeSom6PcData(templateData);
                 templateData = normalizeSom6PdjData(templateData);
                 templateData = normalize3DetPcData(templateData);
+                templateData = normalize3DetThreatData(templateData);
                 templateData.id = Date.now().toString();
                 setData(templateData);
                 setShowThreatModal(false);
@@ -1928,6 +1937,7 @@ const { useState, useEffect, useRef } = React;
                 normalizedData = normalizeSom6PcData(normalizedData);
                 normalizedData = normalizeSom6PdjData(normalizedData);
                 normalizedData = normalize3DetPcData(normalizedData);
+                normalizedData = normalize3DetThreatData(normalizedData);
                 return normalizedData;
             };
 
@@ -2174,15 +2184,15 @@ const { useState, useEffect, useRef } = React;
                                     {filterAndSortItems(savedThreats).map(threat => {
                                         const sys = threat.system || 'dragonbane';
                                         return (
-                                        <div key={threat.id} style={getWindowStyle()} className={`pj-card-compact bg-white rounded-md shadow-lg border-2 ${sys === 'dnd5e' ? 'border-[#922610]' : sys === 'fabula' ? 'border-teal-700' : sys === 'somdas6' ? 'border-red-900' : 'border-gray-500'} overflow-hidden flex ${dashboardView==='list'?'flex-row items-stretch':'flex-col'} relative`}>
-                                            <div className={`absolute top-0 right-0 text-white text-[9px] font-bold uppercase px-2 py-0.5 rounded-bl shadow-sm z-10 ${sys === 'dnd5e' ? 'bg-[#922610]' : sys === 'fabula' ? 'bg-teal-700' : sys === 'somdas6' ? 'bg-red-900' : threat.type === 'pnj' ? 'bg-blue-800' : 'bg-red-900'}`}>
-                                                {sys === 'dnd5e' ? 'D&D 5.5e (Stat Block)' : sys === 'fabula' ? 'Fabula Ultima' : sys === 'somdas6' ? 'O Som das Seis • PDJ' : threat.type === 'pnj' ? 'PNJ (DB)' : 'Monstro (DB)'}
+                                        <div key={threat.id} style={getWindowStyle()} className={`pj-card-compact bg-white rounded-md shadow-lg border-2 ${sys === 'dnd5e' ? 'border-[#922610]' : sys === 'fabula' ? 'border-teal-700' : sys === 'somdas6' ? 'border-red-900' : sys === '3det' ? 'border-amber-500' : 'border-gray-500'} overflow-hidden flex ${dashboardView==='list'?'flex-row items-stretch':'flex-col'} relative`}>
+                                            <div className={`absolute top-0 right-0 text-white text-[9px] font-bold uppercase px-2 py-0.5 rounded-bl shadow-sm z-10 ${sys === 'dnd5e' ? 'bg-[#922610]' : sys === 'fabula' ? 'bg-teal-700' : sys === 'somdas6' ? 'bg-red-900' : sys === '3det' ? 'bg-zinc-950' : threat.type === 'pnj' ? 'bg-blue-800' : 'bg-red-900'}`}>
+                                                {sys === 'dnd5e' ? 'D&D 5.5e (Stat Block)' : sys === 'fabula' ? 'Fabula Ultima' : sys === 'somdas6' ? 'O Som das Seis • PDJ' : sys === '3det' ? '3DeT Victory • Ameaça' : threat.type === 'pnj' ? 'PNJ (DB)' : 'Monstro (DB)'}
                                             </div>
                                             <div className={`${dashboardView==='list'?'flex flex-1 min-w-0 h-24 border-r':'flex h-24 border-b'} border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors`} onClick={() => loadThreat(threat.id)}>
                                                 <div className="p-3 flex-1 overflow-hidden flex flex-col justify-center">
-                                                    <h3 className={`font-title font-bold text-lg truncate ${sys === 'dnd5e' ? 'text-[#7a200d]' : sys === 'fabula' ? 'text-teal-800' : sys === 'somdas6' ? 'text-red-900' : 'text-gray-900'}`}>{threat.nome || 'Sem Nome'}</h3>
+                                                    <h3 className={`font-title font-bold text-lg truncate ${sys === 'dnd5e' ? 'text-[#7a200d]' : sys === 'fabula' ? 'text-teal-800' : sys === 'somdas6' ? 'text-red-900' : sys === '3det' ? 'text-amber-800' : 'text-gray-900'}`}>{threat.nome || 'Sem Nome'}</h3>
                                                     <p className="text-xs text-gray-600 font-bold uppercase mt-1 truncate">
-                                                        {sys === 'dnd5e' ? `${threat.tamanho} ${threat.tipo}` : sys === 'fabula' ? `Nível ${threat.nivel || 5} • ${threat.patente || 'Soldado'} • ${threat.especie || '?'}` : sys === 'somdas6' ? `NP ${threat.np || 1} • ${threat.tipoPdj || 'Comum'} • ${threat.status?.acoes || 1} ação(ões)` : threat.type === 'pnj' ? `${threat.ancestralidade || '?'} • ${threat.profissao || '?'}` : `Ferocidade ${threat.ferocidade} • ${threat.tamanho}`}
+                                                        {sys === 'dnd5e' ? `${threat.tamanho} ${threat.tipo}` : sys === 'fabula' ? `Nível ${threat.nivel || 5} • ${threat.patente || 'Soldado'} • ${threat.especie || '?'}` : sys === 'somdas6' ? `NP ${threat.np || 1} • ${threat.tipoPdj || 'Comum'} • ${threat.status?.acoes || 1} ação(ões)` : sys === '3det' ? `${threat.categoria || 'Criatura'} • ${threat.papel || 'Comum'} • ${threat.pontos || 0} pts` : threat.type === 'pnj' ? `${threat.ancestralidade || '?'} • ${threat.profissao || '?'}` : `Ferocidade ${threat.ferocidade} • ${threat.tamanho}`}
                                                     </p>
                                                     {threat.meta?.campanha && <p className="text-[10px] text-indigo-600 mt-1 truncate font-bold">📁 {threat.meta.campanha}</p>}
                                                     {threat.meta?.updatedAt && <p className="text-[9px] text-gray-400 mt-1">Editado: {new Date(threat.meta.updatedAt).toLocaleString('pt-BR')}</p>}
@@ -2301,7 +2311,7 @@ const { useState, useEffect, useRef } = React;
                                                 <div className="w-14 h-14 bg-zinc-950 group-hover:bg-amber-400 text-amber-400 group-hover:text-zinc-950 rounded flex items-center justify-center font-black font-title text-lg shadow-inner transition-colors">3D&T</div>
                                                 <div className="flex-1">
                                                     <div className="flex items-center gap-2"><h3 className="font-title font-bold text-gray-900 group-hover:text-amber-700 text-lg transition-colors">3DeT Victory</h3><span className="bg-amber-100 text-amber-900 text-[9px] font-bold uppercase px-2 py-0.5 rounded">Prévia 0.8</span></div>
-                                                    <p className="text-xs text-gray-500">Poder • Habilidade • Resistência • ficha compacta</p>
+                                                    <p className="text-xs text-gray-500">{createTarget === 'pc' ? 'Poder • Habilidade • Resistência • ficha compacta' : 'NPCs • criaturas • rivais • chefes'}</p>
                                                 </div>
                                             </div>
                                         )}
@@ -2321,40 +2331,31 @@ const { useState, useEffect, useRef } = React;
 
                         {show3DetModelModal && ReactDOM.createPortal(
                             <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] p-4 transition-opacity">
-                                <div className="bg-white rounded-sm shadow-2xl w-full max-w-2xl border-2 border-amber-500 overflow-hidden flex flex-col max-h-[90vh] animate-fade-in-up">
+                                <div className="bg-white rounded-sm shadow-2xl w-full max-w-3xl border-2 border-amber-500 overflow-hidden flex flex-col max-h-[90vh] animate-fade-in-up">
                                     <div className="bg-zinc-950 text-white p-3 flex justify-between items-center shrink-0 border-b-4 border-amber-400">
-                                        <div><h2 className="font-title font-black text-lg">Criar em 3DeT Victory</h2><p className="text-[10px] text-amber-300">Primeira prévia modular no PJ Lite</p></div>
+                                        <div><h2 className="font-title font-black text-lg">{createTarget === 'pc' ? 'Criar Personagem em 3DeT Victory' : 'Criar Ameaça / NPC em 3DeT Victory'}</h2><p className="text-[10px] text-amber-300">PJ Lite 0.8 • módulo completo de personagem e mestre</p></div>
                                         <button onClick={() => { setShow3DetModelModal(false); setCreateTarget(null); }} className="text-zinc-300 hover:text-white text-2xl font-bold px-2 leading-none">&times;</button>
                                     </div>
-                                    <div className="p-6 bg-zinc-100 flex-1 overflow-y-auto space-y-4">
-                                        <div onClick={() => loadTemplate(initial3DetPcData)} className="bg-white border-2 border-zinc-300 hover:border-amber-500 rounded p-4 cursor-pointer flex items-center gap-4 transition-all hover:shadow-lg">
-                                            <div className="w-14 h-14 bg-zinc-950 text-amber-400 rounded flex items-center justify-center font-black font-title text-lg shadow-inner shrink-0">3D&T</div>
-                                            <div><h3 className="font-bold text-sm text-zinc-950">Novo Personagem</h3><p className="text-xs text-zinc-500 mt-1">Ficha em branco com P/H/R, PA/PM/PV, perícias, vantagens, desvantagens, técnicas e inventário.</p></div>
-                                        </div>
-                                        <div>
-                                            <div className="flex flex-wrap items-end justify-between gap-2 border-b-2 border-amber-200 pb-1 mb-3">
-                                                <div><h3 className="font-title font-black text-zinc-900">Modelos Prontos • adaptações de fã</h3><p className="text-[10px] text-zinc-500 mt-1">Quatro exemplos jogáveis de 10 pontos para aprender a ficha. Você pode editar tudo depois.</p></div>
-                                                <span className="text-[9px] font-black uppercase tracking-widest rounded-full bg-amber-100 text-amber-900 px-2 py-1">10 pts</span>
+                                    <div className="p-4 sm:p-6 bg-zinc-100 flex-1 overflow-y-auto space-y-5">
+                                        {createTarget === 'pc' ? <>
+                                            <div onClick={() => loadTemplate(initial3DetPcData)} className="bg-white border-2 border-zinc-300 hover:border-amber-500 rounded p-4 cursor-pointer flex items-center gap-4 transition-all hover:shadow-lg">
+                                                <div className="w-14 h-14 bg-zinc-950 text-amber-400 rounded flex items-center justify-center font-black font-title text-lg shadow-inner shrink-0">3D&T</div>
+                                                <div><h3 className="font-bold text-sm text-zinc-950">Novo Personagem</h3><p className="text-xs text-zinc-500 mt-1">Ficha em branco com P/H/R, PA/PM/PV, perícias, vantagens, desvantagens, técnicas e inventário.</p></div>
                                             </div>
-                                            <div className="grid sm:grid-cols-2 gap-3">
-                                                {MODELOS_3DET_PC.map((modelo, idx) => (
-                                                    <div key={idx} onClick={() => loadTemplate(modelo)} className="bg-white border-2 border-amber-200 hover:border-amber-500 rounded p-3 cursor-pointer hover:shadow-md transition-all">
-                                                        <div className="flex items-start justify-between gap-2">
-                                                            <div className="min-w-0"><div className="font-black text-zinc-950 truncate">{modelo.bio.nome}</div><div className="text-[10px] text-zinc-500 mt-0.5">{modelo.bio.arquetipo} • {modelo.bio.escala}</div></div>
-                                                            <span className="shrink-0 rounded bg-zinc-950 text-amber-300 text-[9px] font-black px-2 py-1">{modelo.pontos} pts</span>
-                                                        </div>
-                                                        <p className="text-[10px] text-zinc-600 mt-2 leading-relaxed line-clamp-3">{modelo.bio.conceito}</p>
-                                                        <div className="mt-2 flex flex-wrap gap-1 text-[9px] font-bold text-zinc-600">
-                                                            <span className="rounded bg-zinc-100 px-1.5 py-0.5">P{modelo.atributos.poder}</span>
-                                                            <span className="rounded bg-zinc-100 px-1.5 py-0.5">H{modelo.atributos.habilidade}</span>
-                                                            <span className="rounded bg-zinc-100 px-1.5 py-0.5">R{modelo.atributos.resistencia}</span>
-                                                        </div>
-                                                    </div>
-                                                ))}
+                                            <div>
+                                                <div className="flex flex-wrap items-end justify-between gap-2 border-b-2 border-amber-200 pb-1 mb-3"><div><h3 className="font-title font-black text-zinc-900">Modelos Prontos • adaptações de fã</h3><p className="text-[10px] text-zinc-500 mt-1">Quatro exemplos jogáveis de 10 pontos para aprender a ficha. Você pode editar tudo depois.</p></div><span className="text-[9px] font-black uppercase tracking-widest rounded-full bg-amber-100 text-amber-900 px-2 py-1">10 pts</span></div>
+                                                <div className="grid sm:grid-cols-2 gap-3">{MODELOS_3DET_PC.map((modelo, idx) => <div key={idx} onClick={() => loadTemplate(modelo)} className="bg-white border-2 border-amber-200 hover:border-amber-500 rounded p-3 cursor-pointer hover:shadow-md transition-all"><div className="flex items-start justify-between gap-2"><div className="min-w-0"><div className="font-black text-zinc-950 truncate">{modelo.bio.nome}</div><div className="text-[10px] text-zinc-500 mt-0.5">{modelo.bio.arquetipo} • {modelo.bio.escala}</div></div><span className="shrink-0 rounded bg-zinc-950 text-amber-300 text-[9px] font-black px-2 py-1">{modelo.pontos} pts</span></div><p className="text-[10px] text-zinc-600 mt-2 leading-relaxed line-clamp-3">{modelo.bio.conceito}</p><div className="mt-2 flex flex-wrap gap-1 text-[9px] font-bold text-zinc-600"><span className="rounded bg-zinc-100 px-1.5 py-0.5">P{modelo.atributos.poder}</span><span className="rounded bg-zinc-100 px-1.5 py-0.5">H{modelo.atributos.habilidade}</span><span className="rounded bg-zinc-100 px-1.5 py-0.5">R{modelo.atributos.resistencia}</span></div></div>)}</div>
+                                                <p className="text-[9px] text-zinc-500 mt-2">Modelos de fã sem retratos embutidos; todos podem ser alterados livremente.</p>
                                             </div>
-                                            <p className="text-[9px] text-zinc-500 mt-2">Sans, Saitama, Jotaro Kujo e Maka Albarn são usados aqui apenas como referências de adaptação de fã. Retratos não são incluídos nos modelos.</p>
-                                        </div>
-                                        <div className="rounded border border-amber-300 bg-amber-50 p-3 text-[10px] leading-relaxed text-amber-950"><strong>Primeira prévia:</strong> retrato e Kit são opcionais. Os campos de FA/FD ficam livres para registrar a referência usada pela mesa, sem forçar automações de regra.</div>
+                                        </> : <>
+                                            <div onClick={() => loadTemplate(initial3DetThreatData)} className="bg-white border-2 border-zinc-300 hover:border-amber-500 rounded p-4 cursor-pointer flex items-center gap-4 transition-all hover:shadow-lg">
+                                                <div className="w-14 h-14 bg-zinc-950 text-amber-400 rounded flex items-center justify-center text-2xl shadow-inner shrink-0">👾</div>
+                                                <div><h3 className="font-bold text-sm text-zinc-950">Nova Ameaça / NPC</h3><p className="text-xs text-zinc-500 mt-1">Ficha em branco e compacta para aliados, inimigos, monstros, rivais e chefes.</p></div>
+                                            </div>
+                                            <div><div className="border-b-2 border-amber-200 pb-1 mb-3"><h3 className="font-title font-black text-zinc-900">NPCs rápidos • Compêndio</h3><p className="text-[10px] text-zinc-500 mt-1">Perfis leves inspirados nas faixas do Compêndio de NPCs do Manual Básico.</p></div><div className="grid sm:grid-cols-2 gap-3">{MODELOS_3DET_NPCS.map((modelo, idx) => <div key={idx} onClick={() => loadTemplate(modelo)} className="bg-white border-2 border-zinc-200 hover:border-amber-500 rounded p-3 cursor-pointer hover:shadow-md"><div className="flex justify-between gap-2"><div><div className="font-black text-zinc-950">{modelo.nome}</div><div className="text-[10px] text-zinc-500">{modelo.papel} • {modelo.categoria}</div></div><span className="text-[9px] font-black rounded bg-zinc-950 text-amber-300 px-2 py-1 h-fit">{modelo.pontos} pts</span></div><p className="mt-2 text-[10px] text-zinc-600 line-clamp-2">{modelo.conceito}</p></div>)}</div></div>
+                                            <div><div className="border-b-2 border-amber-200 pb-1 mb-3"><h3 className="font-title font-black text-zinc-900">Criaturas prontas para mesa</h3><p className="text-[10px] text-zinc-500 mt-1">Exemplos originais construídos com as mesmas peças de regra do Victory; ajuste livremente para sua campanha.</p></div><div className="grid sm:grid-cols-2 gap-3">{MODELOS_3DET_CRIATURAS.map((modelo, idx) => <div key={idx} onClick={() => loadTemplate(modelo)} className="bg-white border-2 border-amber-200 hover:border-amber-500 rounded p-3 cursor-pointer hover:shadow-md"><div className="flex justify-between gap-2"><div><div className="font-black text-zinc-950">{modelo.nome}</div><div className="text-[10px] text-zinc-500">{modelo.papel} • {modelo.escala}</div></div><span className="text-[9px] font-black rounded bg-amber-100 text-amber-900 px-2 py-1 h-fit">{modelo.pontos} pts</span></div><p className="mt-2 text-[10px] text-zinc-600 line-clamp-2">{modelo.conceito}</p></div>)}</div></div>
+                                            <div className="rounded border border-amber-300 bg-amber-50 p-3 text-[10px] leading-relaxed text-amber-950"><strong>Modo Mestre:</strong> a pontuação funciona como referência de poder; a ficha permite ajustar recursos e capacidades sem obrigar o NPC a seguir a criação de personagem ao pé da letra.</div>
+                                        </>}
                                     </div>
                                 </div>
                             </div>, document.body
@@ -3220,8 +3221,9 @@ const { useState, useEffect, useRef } = React;
 
                     <DndThreatEditor scope={systemEditorScope} />
 
-                    {/* 3DeT Victory — primeira prévia modular */}
+                    {/* 3DeT Victory — personagem e ameaças modularizados */}
                     <TresDeTCharacterEditor scope={systemEditorScope} />
+                    <TresDeTThreatEditor scope={systemEditorScope} />
 
                     {/* Editor Dragonbane (Intacto) */}
                     {!['dragonbane','dnd5e','fabula','somdas6','3det'].includes(data.system || 'dragonbane') && (
