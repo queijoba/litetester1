@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { TRESDET_SKILLS, initial3DetPcData, normalize3DetPcData } from '../src/systems/3det/data.js';
+import { MODELOS_3DET_PC } from '../src/systems/3det/models.js';
 import { generate3DetChatText } from '../src/systems/3det/chat.js';
 
 const assert = (condition, message) => {
@@ -10,6 +11,24 @@ assert(TRESDET_SKILLS.length === 12, 'a lista padrão deve manter 12 perícias.'
 assert(initial3DetPcData.system === '3det' && initial3DetPcData.type === 'pc', 'modelo inicial inválido.');
 assert(Array.isArray(initial3DetPcData.periciasPersonalizadas), 'modelo inicial sem perícias personalizadas.');
 assert(Array.isArray(initial3DetPcData.especializacoes), 'modelo inicial sem especializações.');
+
+assert(MODELOS_3DET_PC.length === 4, 'devem existir quatro modelos prontos de personagem.');
+const expectedModels = ['Sans', 'Saitama', 'Jotaro Kujo', 'Maka Albarn'];
+for (const nome of expectedModels) {
+  const model = MODELOS_3DET_PC.find((entry) => entry.bio?.nome === nome);
+  assert(model, `modelo pronto ausente: ${nome}.`);
+  assert(model.system === '3det' && model.type === 'pc', `${nome} não é uma ficha 3DeT de personagem.`);
+  assert(model.pontos === 10, `${nome} deve permanecer como adaptação iniciante de 10 pontos.`);
+  assert(model.status?.pa?.max === Math.max(1, Number(model.atributos?.poder || 0)), `${nome} tem PA incompatível com Poder.`);
+  assert(model.status?.pm?.max === Math.max(1, Number(model.atributos?.habilidade || 0) * 5), `${nome} tem PM incompatível com Habilidade.`);
+  assert(model.status?.pv?.max === Math.max(1, Number(model.atributos?.resistencia || 0) * 5), `${nome} tem PV incompatível com Resistência.`);
+  assert(Array.isArray(model.vantagens) && model.vantagens.length > 0, `${nome} precisa ter ao menos uma vantagem.`);
+  assert(Array.isArray(model.desvantagens) && model.desvantagens.length > 0, `${nome} precisa ter ao menos uma desvantagem.`);
+}
+
+const sans = MODELOS_3DET_PC.find((entry) => entry.bio?.nome === 'Sans');
+assert(sans.atributos.resistencia === 0 && sans.status.pv.max === 1, 'Sans deve preservar a adaptação frágil com R0/1PV.');
+assert(sans.pericias.mistica && sans.pericias.percepcao, 'Sans perdeu suas perícias principais.');
 
 const legacy = normalize3DetPcData({
   id: 'legacy-test',
@@ -89,4 +108,8 @@ const main = await readFile('src/main.jsx', 'utf8');
 assert(main.includes("./systems/3det/integration.js"), 'main.jsx não carrega a integração do tema/guia.');
 assert(main.includes("./theme-polish.css"), 'main.jsx não carrega a revisão visual global dos temas.');
 
-console.log('3DeT Victory: modelo, migração de saves, perícias, especializações, Ficha Chat, tema, guia integrado e rolagem mobile verificados com sucesso.');
+const app = await readFile('src/PJLiteApp.jsx', 'utf8');
+assert(app.includes("./systems/3det/models.js"), 'PJLiteApp não importa os modelos prontos do 3DeT.');
+assert(app.includes('MODELOS_3DET_PC.map'), 'modal de criação não exibe os modelos prontos do 3DeT.');
+
+console.log('3DeT Victory: modelo, migração de saves, perícias, especializações, Ficha Chat, tema, guia, rolagem mobile e quatro modelos prontos verificados com sucesso.');
