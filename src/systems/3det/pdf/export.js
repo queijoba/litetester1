@@ -186,9 +186,22 @@ async function addPortrait(doc, form, item) {
   }
 }
 
+async function saveVisible3DetBeforeExport() {
+  const found = findToolbar();
+  if (!found) return;
+  const saveButton = Array.from(found.toolbar.querySelectorAll('button')).find(
+    button => visible(button) && /salvar/i.test((button.textContent || '').replace(/\s+/g, ' ').trim())
+  );
+  if (!saveButton || saveButton.disabled) return;
+  saveButton.click();
+  await sleep(550);
+}
+
 async function exportPdf() {
   document.activeElement?.blur?.();
-  await sleep(900);
+  await sleep(120);
+  await saveVisible3DetBeforeExport();
+  await sleep(280);
 
   const item = current3Det(false);
   if (!item) throw new Error('Não encontrei a ficha 3DeT Victory atual. Salve a ficha e tente novamente.');

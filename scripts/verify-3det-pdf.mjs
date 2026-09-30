@@ -17,6 +17,8 @@ for (const token of [
   'pericia_linha_1',
   'install3DetPdfExport',
   'fill3DetPdf',
+  'saveVisible3DetBeforeExport',
+  'saveButton.click()',
 ]) {
   assert(exportSource.includes(token), `exportador incompleto: ${token}`);
 }
