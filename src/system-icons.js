@@ -1,33 +1,45 @@
 const SYSTEM_ICONS = {
   Dragonbane: {
-    src: '/system-icons/dragonbane.webp?v=20260930g',
-    fallback: 'DB',
-    position: 'center',
-    fit: 'cover',
-    background: '#eef0df',
+    mode: 'text',
+    text: 'DB',
+    color: '#b91c1c',
+    background: '#f3ead8',
+    fontSize: '20px',
+    fontFamily: 'Georgia, serif',
   },
   'D&D 5.5e (2024)': {
-    src: '/system-icons/dnd5e.webp?v=20260930g',
+    mode: 'image',
+    src: '/system-icons/dnd5e.webp?v=20260930h',
     fallback: 'D&D',
     position: 'center',
     fit: 'cover',
     background: '#090909',
   },
   'Fabula Ultima': {
-    src: '/system-icons/fabula.webp?v=20260930g',
+    mode: 'image',
+    src: '/system-icons/fabula.webp?v=20260930h',
     fallback: 'FU',
     overlay: 'FU',
     position: 'center',
     fit: 'cover',
     background: '#e9f4f1',
   },
-  // 3DeT fica fora daqui de propósito: mantém o ícone clássico preto + 3D&T do próprio PJ Lite.
+  '3DeT Victory': {
+    mode: 'text',
+    text: '3D&T',
+    color: '#f5b000',
+    background: '#090909',
+    fontSize: '14px',
+    fontFamily: 'Arial Black, Arial, sans-serif',
+    letterSpacing: '-0.8px',
+  },
   'O Som das Seis': {
-    src: '/system-icons/som6.webp?v=20260930g',
-    fallback: 'S6',
-    position: 'center',
-    fit: 'contain',
-    background: '#250707',
+    mode: 'text',
+    text: '🌵',
+    color: '#5b3a16',
+    background: '#f4e6c7',
+    fontSize: '25px',
+    fontFamily: 'system-ui, sans-serif',
   },
 };
 
@@ -45,6 +57,18 @@ function polishCard(card, title) {
 
   card.style.minHeight = '82px';
   card.style.alignItems = 'center';
+
+  const icon = Array.from(card.children).find((child) =>
+    child instanceof HTMLElement && /\bw-12\b/.test(child.className || '') && /\bh-12\b/.test(child.className || '')
+  );
+  if (icon instanceof HTMLElement) {
+    icon.style.flex = '0 0 48px';
+    icon.style.width = '48px';
+    icon.style.height = '48px';
+    icon.style.minWidth = '48px';
+    icon.style.maxWidth = '48px';
+    icon.style.boxSizing = 'border-box';
+  }
 
   const content = title.closest('.flex-1');
   if (content instanceof HTMLElement) content.style.minWidth = '0';
@@ -80,7 +104,7 @@ function polishCard(card, title) {
   }
 }
 
-function renderIcon(icon, config) {
+function prepareIconBox(icon, config) {
   icon.textContent = '';
   icon.style.position = 'relative';
   icon.style.background = config.background || '#111827';
@@ -89,6 +113,34 @@ function renderIcon(icon, config) {
   icon.style.display = 'flex';
   icon.style.alignItems = 'center';
   icon.style.justifyContent = 'center';
+  icon.style.padding = '0';
+  icon.style.lineHeight = '1';
+  icon.style.boxSizing = 'border-box';
+}
+
+function renderTextIcon(icon, config) {
+  prepareIconBox(icon, config);
+  const label = document.createElement('span');
+  label.textContent = config.text || config.fallback || '';
+  Object.assign(label.style, {
+    display: 'block',
+    maxWidth: '42px',
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textAlign: 'center',
+    color: config.color || '#fff',
+    fontWeight: '900',
+    fontFamily: config.fontFamily || 'Georgia, serif',
+    fontSize: config.fontSize || '18px',
+    letterSpacing: config.letterSpacing || '0',
+    lineHeight: '1',
+    pointerEvents: 'none',
+  });
+  icon.appendChild(label);
+}
+
+function renderImageIcon(icon, config) {
+  prepareIconBox(icon, config);
 
   const img = document.createElement('img');
   img.src = config.src;
@@ -112,7 +164,7 @@ function renderIcon(icon, config) {
     color: '#fff',
     fontWeight: '800',
     fontFamily: 'Georgia, serif',
-    fontSize: config.overlay ? '20px' : '16px',
+    fontSize: config.overlay ? '20px' : '14px',
     textShadow: config.overlay ? '0 1px 3px rgba(0,0,0,.95), 0 0 5px rgba(0,0,0,.75)' : 'none',
     pointerEvents: 'none',
   });
@@ -134,15 +186,17 @@ function decorateCard(card) {
   polishCard(card, title);
 
   const config = findConfig(title.textContent);
-  if (!config || card.dataset.systemIconReady === '2') return;
+  if (!config || card.dataset.systemIconReady === '3') return;
 
   const icon = Array.from(card.children).find((child) =>
     child instanceof HTMLElement && /\bw-12\b/.test(child.className || '') && /\bh-12\b/.test(child.className || '')
   );
   if (!icon) return;
 
-  renderIcon(icon, config);
-  card.dataset.systemIconReady = '2';
+  if (config.mode === 'image') renderImageIcon(icon, config);
+  else renderTextIcon(icon, config);
+
+  card.dataset.systemIconReady = '3';
 }
 
 function decorateSystemSelector() {
