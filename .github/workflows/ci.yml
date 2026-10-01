@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   validate:
@@ -35,3 +35,20 @@ jobs:
           path: dist/
           if-no-files-found: error
           retention-days: 3
+
+      - name: Publicar snapshot 0.9.1 para produção
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          rm -rf /tmp/pjlite-dist
+          mkdir -p /tmp/pjlite-dist
+          cp -a dist/. /tmp/pjlite-dist/
+          git config user.name "PJ Lite CI"
+          git config user.email "actions@users.noreply.github.com"
+          git checkout --orphan production-dist
+          git rm -rf . || true
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -a /tmp/pjlite-dist/. .
+          printf "PJ Lite 0.9.1v Alpha\nSource: %s\n" "$GITHUB_SHA" > .pjlite-release
+          git add -A
+          git commit -m "Build PJ Lite 0.9.1v Alpha ($GITHUB_SHA)"
+          git push --force origin HEAD:production-dist
