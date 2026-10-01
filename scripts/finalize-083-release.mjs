@@ -30,4 +30,11 @@ let html=await readFile(indexPath,'utf8');
 html=html.replaceAll('0.8.0v Alpha','0.8.3v Alpha').replaceAll('0.8.0v','0.8.3v');
 html=html.replace(/Dragonbane, D&amp;D 5\.5e, Fabula Ultima, O Som das Seis e 3DeT Victory/g,'Dragonbane, D&amp;D 5.5e, Fabula Ultima, 3DeT Victory, O Som das Seis, Skyfall RPG e Ordem Paranormal');
 await writeFile(indexPath,html,'utf8');
+
+// Atualiza verificações legadas para reconhecer a base 0.8.3 durante o próprio prepare.
+const verifyPath='scripts/verify-project.mjs';
+let verify=await readFile(verifyPath,'utf8');
+verify=verify.replaceAll('0.8.0v Alpha','0.8.3v Alpha').replaceAll('prévia 0.8.0','base 0.8.3');
+await writeFile(verifyPath,verify,'utf8');
+
 console.log('✓ 0.8.3v Alpha definida como base oficial; Novidades, Guias e metadados atualizados.');
