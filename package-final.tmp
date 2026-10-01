@@ -1,0 +1,24 @@
+{
+  "name": "litetester1",
+  "private": true,
+  "version": "0.7.4-alpha.1",
+  "type": "module",
+  "scripts": {
+    "prepare:final": "node scripts/apply-final-systems.mjs",
+    "dev": "npm run prepare:final && vite",
+    "verify": "npm run prepare:final && node scripts/verify-project.mjs && node scripts/verify-3det.mjs && node scripts/verify-3det-pdf.mjs && node scripts/verify-3det-threats.mjs && node scripts/verify-themes.mjs && node scripts/verify-final-systems.mjs",
+    "build": "npm run prepare:final && vite build",
+    "check": "npm run verify && npm run build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "jszip": "^3.10.1",
+    "lz-string": "^1.5.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.1.0",
+    "vite": "^8.2.2"
+  }
+}
