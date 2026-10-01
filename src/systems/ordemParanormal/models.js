@@ -1,0 +1,7 @@
+import { initialOrdemPcData } from './data.js';
+const c=v=>JSON.parse(JSON.stringify(v)); const mk=(bio,attrs,extra={})=>({...c(initialOrdemPcData),bio:{...c(initialOrdemPcData.bio),...bio},atributos:{...c(initialOrdemPcData.atributos),...attrs},...extra});
+export const MODELOS_ORDEM_PC=[
+ mk({nome:'Agente Investigador',origem:'Investigador',classe:'Especialista',trilha:'',nex:10,patente:'Recruta'},{agi:1,for:1,int:3,pre:2,vig:1},{status:{...c(initialOrdemPcData.status),pvAtual:12,pvMax:12,peAtual:8,peMax:8,sanAtual:18,sanMax:18},habilidades:[{nome:'Leitura de Cena',tipo:'Exemplo PJ Lite',custo:'',desc:'Espaço para registrar um poder ou habilidade escolhido no livro.'}]}),
+ mk({nome:'Operador de Campo',origem:'Militar',classe:'Combatente',trilha:'',nex:10,patente:'Recruta'},{agi:2,for:3,int:1,pre:1,vig:2},{status:{...c(initialOrdemPcData.status),pvAtual:20,pvMax:20,peAtual:6,peMax:6,sanAtual:12,sanMax:12},ataques:[{nome:'Arma de serviço',teste:'Pontaria',dano:'',critico:'',alcance:'',tipo:'',municao:''}]}),
+ mk({nome:'Ocultista Forense',origem:'Acadêmico',classe:'Ocultista',trilha:'',nex:10,patente:'Recruta'},{agi:1,for:1,int:3,pre:3,vig:1},{status:{...c(initialOrdemPcData.status),pvAtual:10,pvMax:10,peAtual:12,peMax:12,sanAtual:20,sanMax:20},rituais:[{nome:'Ritual conhecido',circulo:1,elemento:'',execucao:'',alcance:'',duracao:'',resistencia:'',desc:'Consulte o livro para preencher o ritual escolhido.'}]}),
+];

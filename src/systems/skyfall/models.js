@@ -1,0 +1,8 @@
+import { initialSkyfallPcData } from './data.js';
+const c=v=>JSON.parse(JSON.stringify(v));
+const mk=(bio, attrs, extra={})=>({...c(initialSkyfallPcData), bio:{...c(initialSkyfallPcData.bio),...bio}, atributos:{...c(initialSkyfallPcData.atributos),...attrs}, ...extra});
+export const MODELOS_SKYFALL_PC = [
+  mk({nome:'Exploradora das Quedas',legado:'Humani',antecedente:'Exploradora',classe:'Especialista',trilha:'Protetora dos Ermos',nivel:1,melancolia:'As Quedas sempre levam algo embora.'},{for:9,con:12,des:14,sab:14,int:12,car:10},{recursos:{...c(initialSkyfallPcData.recursos),pv:{atual:11,max:11,temp:0},enfase:{atual:2,max:2},catarse:{atual:1,max:1}},habilidades:[{nome:'Olhos de Exploradora',origem:'Conceito PJ Lite',desc:'Lembrete narrativo para observação, deslocamento e sobrevivência.'}]}),
+  mk({nome:'Guardião de Guilda',legado:'Draco',antecedente:'Mercenário',classe:'Combatente',trilha:'Mestre das Armas',nivel:1,melancolia:'Toda vitória cobra um preço.'},{for:15,con:14,des:12,sab:10,int:9,car:10},{recursos:{...c(initialSkyfallPcData.recursos),pv:{atual:14,max:14,temp:0},enfase:{atual:1,max:1},catarse:{atual:1,max:1}},ataques:[{nome:'Lâmina de guilda',bonus:'+4',dano:'1d8+2',tipo:'cortante',alcance:'corpo a corpo',notas:''}]}),
+  mk({nome:'Ocultista do Aetherium',legado:'Kishin',antecedente:'Estudioso',classe:'Ocultista',trilha:'Elementalista',nivel:1,melancolia:'Conhecer o fim não significa aceitá-lo.'},{for:8,con:10,des:12,sab:13,int:15,car:12},{recursos:{...c(initialSkyfallPcData.recursos),pv:{atual:9,max:9,temp:0},sombra:1,fragmentos:{atual:1,max:2}},magias:[{nome:'Manifestação Arcana',camada:'Superficial',alcance:'variável',duracao:'instantânea',descritores:'Aetherium',desc:'Exemplo de espaço para uma magia escolhida no livro.'}]}),
+];

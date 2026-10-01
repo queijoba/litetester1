@@ -4,9 +4,10 @@
   "version": "0.7.4-alpha.1",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "verify": "node scripts/verify-project.mjs && node scripts/verify-3det.mjs && node scripts/verify-3det-pdf.mjs && node scripts/verify-3det-threats.mjs && node scripts/verify-themes.mjs",
-    "build": "vite build",
+    "prepare:final": "node scripts/apply-final-systems.mjs",
+    "dev": "npm run prepare:final && vite",
+    "verify": "npm run prepare:final && node scripts/verify-project.mjs && node scripts/verify-3det.mjs && node scripts/verify-3det-pdf.mjs && node scripts/verify-3det-threats.mjs && node scripts/verify-themes.mjs && node scripts/verify-final-systems.mjs",
+    "build": "npm run prepare:final && vite build",
     "check": "npm run verify && npm run build",
     "preview": "vite preview"
   },
