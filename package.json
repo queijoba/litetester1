@@ -4,9 +4,9 @@
   "version": "0.8.3-alpha.0",
   "type": "module",
   "scripts": {
-    "prepare:final": "node scripts/prepare-final-systems.mjs && node scripts/apply-final-systems.mjs && node scripts/polish-final-systems.mjs && node scripts/fix-final-mobile.mjs && node scripts/fix-final-runtime.mjs && node scripts/refine-skyfall-spells-order.mjs && node scripts/prepare-083-data.mjs && node scripts/refine-083-alpha.mjs && node scripts/refine-083-completeness.mjs",
+    "prepare:final": "node scripts/prepare-final-systems.mjs && node scripts/apply-final-systems.mjs && node scripts/polish-final-systems.mjs && node scripts/fix-final-mobile.mjs && node scripts/fix-final-runtime.mjs && node scripts/refine-skyfall-spells-order.mjs && node scripts/prepare-083-data.mjs && node scripts/refine-083-alpha.mjs && node scripts/refine-083-completeness.mjs && node scripts/refine-083-automation.mjs",
     "dev": "npm run prepare:final && vite",
-    "verify": "npm run prepare:final && node scripts/verify-project.mjs && node scripts/verify-3det.mjs && node scripts/verify-3det-pdf.mjs && node scripts/verify-3det-threats.mjs && node scripts/verify-themes.mjs && node scripts/verify-final-systems.mjs && node scripts/verify-083-alpha.mjs && node scripts/verify-083-completeness.mjs",
+    "verify": "npm run prepare:final && node scripts/verify-project.mjs && node scripts/verify-3det.mjs && node scripts/verify-3det-pdf.mjs && node scripts/verify-3det-threats.mjs && node scripts/verify-themes.mjs && node scripts/verify-final-systems.mjs && node scripts/verify-083-alpha.mjs && node scripts/verify-083-completeness.mjs && node scripts/verify-083-automation.mjs",
     "build": "npm run prepare:final && vite build",
     "check": "npm run verify && npm run build",
     "preview": "vite preview"
