@@ -13,7 +13,7 @@ const requiredTokens = [
   "theme === 'skyfall'","theme === 'ordem'","data.system === 'ordemParanormal'",
   'initialSkyfallPcData','initialSkyfallThreatData','initialOrdemPcData','initialOrdemThreatData',
   'MODELOS_SKYFALL_PC','MODELOS_SKYFALL_AMEACAS','MODELOS_ORDEM_PC','MODELOS_ORDEM_AMEACAS',
-  "setGuideTab('skyfall')","setGuideTab('ordem')",'Skyfall RPG • Personagem','Ordem Paranormal • Agente'
+  "setGuideTab('skyfall')","setGuideTab('ordem')",'SKYFALL RPG • PERSONAGEM','ORDEM PARANORMAL • AGENTE'
 ];
 for (const token of requiredTokens) if (!app.includes(token)) throw new Error(`Integração final ausente: ${token}`);
 if (app.includes("if (sys === 'ordem')")) throw new Error('ID antigo "ordem" ainda está sendo usado como sistema no roteamento.');
