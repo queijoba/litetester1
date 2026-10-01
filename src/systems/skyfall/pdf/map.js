@@ -1,0 +1,17 @@
+const s=v=>String(v??'');
+const text=(form,name,value)=>{try{form.getTextField(name).setText(s(value));}catch{}};
+const select=(form,name,value)=>{try{form.getDropdown(name).select(s(value));}catch{try{form.getOptionList(name).select(s(value));}catch{}}};
+const n=v=>Number(v)||0;
+const attrMod=v=>Math.floor((n(v)-10)/2);
+const prot=(item,k)=>10+attrMod(item?.atributos?.[k])+((item?.protecoes?.[k]?.proficiente)?n(item?.proficiencia):0)+n(item?.protecoes?.[k]?.bonus);
+export function fillSkyfallPdf(form,item){const b=item.bio||{},a=item.atributos||{},r=item.recursos||{},c=item.combate||{},cj=item.conjuracao||{};
+ text(form,'CampoNome',b.nome);text(form,'CampoPronomes',b.pronomes);text(form,'CampoJogadore',b.jogador);text(form,'CampoNível',b.nivel);text(form,'CampoClasse',b.classe);text(form,'CampoLegado',b.legado);text(form,'CampoHerança',b.heranca);text(form,'CampoAntecedente',b.antecedente);text(form,'CampoMaldicao',b.maldicao);text(form,'CampoMelancolia',b.melancolia);
+ [['for','CampoFor','ProtFor'],['des','CampoDes','ProtDes'],['con','CampoCon','ProtCon'],['int','CampoInt','ProtInt'],['sab','CampoSab','ProtSab'],['car','CampoCar','ProtCar']].forEach(([k,f,p])=>{text(form,f,a[k]);text(form,p,prot(item,k));});
+ text(form,'Prof',item.proficiencia);text(form,'CampoCatarse',r.catarse?.atual);text(form,'PEAtual',r.enfase?.atual);text(form,'PETotal',r.enfase?.max);text(form,'CampoIniciativa',c.iniciativa);text(form,'CampoRD',c.reducaoDano);text(form,'CampoDesloc',c.deslocamento);text(form,'CampoTamanho',c.tamanho);text(form,'CampoPVMax',r.pv?.max);text(form,'CampoPVAt',r.pv?.atual);text(form,'CampoPVTemp',r.pv?.temp);text(form,'CampoDadosdeVidaTotais',r.dadosVida?.totais);text(form,'CampoDadosdeVidaUsados',r.dadosVida?.usados);
+ text(form,'FragAtual',r.fragmentos?.atual);text(form,'FragTotal',r.fragmentos?.max);text(form,'VolAtual',r.volume?.atual);text(form,'VolTotal',r.volume?.max);text(form,'CampoTrilha 2',b.trilha);text(form,'CampoClasse 2',b.classe);text(form,'CampoNível 2',b.nivel);
+ const atk=item.ataques||[];for(let i=0;i<5;i++){const x=atk[i]||{};text(form,`Campo de texto ${110+i*3}`,x.nome);text(form,`Campo de texto ${111+i*3}`,x.bonus);text(form,`Campo de texto ${112+i*3}`,x.dano);}
+ text(form,'Campo de texto 126',item.idiomas);text(form,'Campo de texto 125',(item.equipamentos||[]).map(x=>`${x.nome||''}${x.quantidade?` x${x.quantidade}`:''}${x.volume?` • Vol ${x.volume}`:''}${x.fragmentos?` • Frag ${x.fragmentos}`:''}${x.descritores?` — ${x.descritores}`:''}`).filter(Boolean).join('\n'));
+ (item.equipamentos||[]).slice(0,24).forEach((x,i)=>{const suffix=i?' '+i:'';text(form,`ItemNome${suffix}`,x.nome);text(form,`ItemVol${suffix}`,x.volume);text(form,`ItemFrag${suffix}`,x.fragmentos);text(form,`ItemDescritores${suffix}`,x.descritores);});
+ ['AtributoConj','AtributoConj 2','AtributoConj 3'].forEach(nm=>select(form,nm,cj.atributoChave));['BonusConj','BonusConj 2','BonusConj 3'].forEach(nm=>text(form,nm,cj.bonusAtaque));
+ const spellNames=[...Array.from({length:9},(_,i)=>13+i),...Array.from({length:9},(_,i)=>22+i),31,32,33,34,35,36,64,65,66];const descNums=[...Array.from({length:27},(_,i)=>413+i)];(item.magias||[]).slice(0,27).forEach((x,i)=>{text(form,`nome habilidade ${spellNames[i]}`,x.nome);text(form,`Campo de texto ${descNums[i]}`,[x.descritores,x.alcance&&`Alcance: ${x.alcance}`,x.duracao&&`Duração: ${x.duracao}`,x.desc].filter(Boolean).join('\n'));});
+}
