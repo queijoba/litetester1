@@ -4,7 +4,7 @@
   "version": "0.7.4-alpha.1",
   "type": "module",
   "scripts": {
-    "prepare:final": "node scripts/prepare-final-systems.mjs && node scripts/apply-final-systems.mjs",
+    "prepare:final": "node scripts/prepare-final-systems.mjs && node scripts/apply-final-systems.mjs && node scripts/polish-final-systems.mjs",
     "dev": "npm run prepare:final && vite",
     "verify": "npm run prepare:final && node scripts/verify-project.mjs && node scripts/verify-3det.mjs && node scripts/verify-3det-pdf.mjs && node scripts/verify-3det-threats.mjs && node scripts/verify-themes.mjs && node scripts/verify-final-systems.mjs",
     "build": "npm run prepare:final && vite build",
