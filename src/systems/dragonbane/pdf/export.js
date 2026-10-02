@@ -1,94 +1,35 @@
-/* PJ LITE 0.9.1 DRAGONBANE PORTRAIT FIX */
+/* PJ LITE 0.9.1 DRAGONBANE PORTRAIT FIX V2 */
 import { fillDragonbanePdf } from './map.js';
 
-const STORAGE_KEY = 'dragonbane_saved_characters';
-const PDFLIB_CDN = 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js';
-const TEMPLATE_URL = '/pdfs/dragonbane-template.pdf?v=20261002-photo-v3';
-const BUTTON_ID = 'pjlite-dragonbane-pdf-export';
+const STORAGE_KEY='dragonbane_saved_characters';
+const PDFLIB_CDN='https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js';
+const TEMPLATE_URL='/pdfs/dragonbane-template.pdf?v=20261002-photo-v4';
+const BUTTON_ID='pjlite-dragonbane-pdf-export';
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+function visible(el){if(!el)return false;const s=getComputedStyle(el),r=el.getBoundingClientRect();return s.display!=='none'&&s.visibility!=='hidden'&&r.width>0&&r.height>0;}
+function toast(message,type='info'){let el=document.getElementById('pjlite-pdf-toast');if(!el){el=document.createElement('div');el.id='pjlite-pdf-toast';Object.assign(el.style,{position:'fixed',right:'18px',bottom:'18px',zIndex:'99999',maxWidth:'420px',padding:'10px 14px',borderRadius:'10px',color:'#fff',font:'700 12px system-ui,sans-serif',boxShadow:'0 10px 28px rgba(0,0,0,.28)',transition:'opacity .2s ease'});document.body.appendChild(el);}el.style.background=type==='error'?'#991b1b':type==='success'?'#166534':'#1f2937';el.textContent=message;el.style.opacity='1';clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.style.opacity='0',5200);}
+function loadPdfLib(){if(window.PDFLib?.PDFDocument)return Promise.resolve(window.PDFLib);if(loadPdfLib.promise)return loadPdfLib.promise;loadPdfLib.promise=new Promise((resolve,reject)=>{const old=document.querySelector('script[data-pjlite-pdflib="1"]');if(old){if(window.PDFLib?.PDFDocument)return resolve(window.PDFLib);old.addEventListener('load',()=>resolve(window.PDFLib),{once:true});old.addEventListener('error',()=>reject(new Error('Não foi possível carregar o gerador de PDF.')),{once:true});return;}const s=document.createElement('script');s.src=PDFLIB_CDN;s.async=true;s.dataset.pjlitePdflib='1';s.onload=()=>window.PDFLib?.PDFDocument?resolve(window.PDFLib):reject(new Error('pdf-lib não iniciou.'));s.onerror=()=>reject(new Error('Não foi possível carregar o gerador de PDF.'));document.head.appendChild(s);});return loadPdfLib.promise;}
+function readCharacters(){try{const a=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');return Array.isArray(a)?a:[];}catch{return[];}}
+function time(x){const t=Date.parse(x?.meta?.updatedAt||x?.meta?.createdAt||'');return Number.isFinite(t)?t:0;}
+function currentDragonbane(requireVisibleMatch=false){const chars=readCharacters().filter(x=>(x?.system||'dragonbane')==='dragonbane'&&(x?.type||'pc')==='pc');if(!chars.length)return null;const values=new Set(Array.from(document.querySelectorAll('input,textarea')).filter(visible).map(x=>String(x.value||'').trim()).filter(Boolean));const matches=chars.filter(x=>x?.bio?.nome&&values.has(String(x.bio.nome).trim()));if(requireVisibleMatch&&!matches.length)return null;return[...(matches.length?matches:chars)].sort((a,b)=>time(b)-time(a))[0]||null;}
+function filename(item){const n=String(item?.bio?.nome||'Personagem').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9_-]+/g,'_').replace(/^_+|_+$/g,'')||'Personagem';return`PJ_Lite_Dragonbane_${n}.pdf`;}
+function download(bytes,item){const url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'})),a=document.createElement('a');a.href=url;a.download=filename(item);document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),8000);}
+async function loadRealTemplate(PDFLib){const r=await fetch(TEMPLATE_URL,{cache:'no-store'});if(!r.ok)throw new Error(`Não foi possível abrir o PDF modelo (${r.status}).`);const bytes=new Uint8Array(await r.arrayBuffer());if(bytes.length<5||String.fromCharCode(...bytes.slice(0,5))!=='%PDF-')throw new Error('O arquivo de modelo não é um PDF válido.');const doc=await PDFLib.PDFDocument.load(bytes,{ignoreEncryption:true}),form=doc.getForm(),names=new Set(form.getFields().map(f=>f.getName()));const missing=['nome','nome_pagina_2','retrato_imagem'].filter(n=>!names.has(n));if(missing.length)throw new Error(`O PDF modelo não é a ficha editável esperada (${missing.join(', ')}).`);const regular=await doc.embedFont(PDFLib.StandardFonts.Helvetica);return{doc,form,regular};}
 
-function visible(el) {
-  if (!el) return false;
-  const style = getComputedStyle(el);
-  const rect = el.getBoundingClientRect();
-  return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
-}
-
-function toast(message, type = 'info') {
-  let el = document.getElementById('pjlite-pdf-toast');
-  if (!el) {
-    el = document.createElement('div');
-    el.id = 'pjlite-pdf-toast';
-    Object.assign(el.style, { position:'fixed', right:'18px', bottom:'18px', zIndex:'99999', maxWidth:'360px', padding:'10px 14px', borderRadius:'10px', color:'#fff', font:'700 12px system-ui,sans-serif', boxShadow:'0 10px 28px rgba(0,0,0,.28)', transition:'opacity .2s ease' });
-    document.body.appendChild(el);
-  }
-  el.style.background = type === 'error' ? '#991b1b' : type === 'success' ? '#166534' : '#1f2937';
-  el.textContent = message; el.style.opacity = '1'; clearTimeout(toast.timer);
-  toast.timer = setTimeout(() => { el.style.opacity = '0'; }, 4600);
-}
-
-function loadPdfLib() {
-  if (window.PDFLib?.PDFDocument) return Promise.resolve(window.PDFLib);
-  if (loadPdfLib.promise) return loadPdfLib.promise;
-  loadPdfLib.promise = new Promise((resolve, reject) => {
-    const existing = document.querySelector('script[data-pjlite-pdflib="1"]');
-    if (existing) {
-      if (window.PDFLib?.PDFDocument) return resolve(window.PDFLib);
-      existing.addEventListener('load', () => resolve(window.PDFLib), { once:true });
-      existing.addEventListener('error', () => reject(new Error('Não foi possível carregar o gerador de PDF.')), { once:true });
-      return;
-    }
-    const script = document.createElement('script'); script.src = PDFLIB_CDN; script.async = true; script.dataset.pjlitePdflib='1';
-    script.onload = () => window.PDFLib?.PDFDocument ? resolve(window.PDFLib) : reject(new Error('pdf-lib não iniciou.'));
-    script.onerror = () => reject(new Error('Não foi possível carregar o gerador de PDF.')); document.head.appendChild(script);
-  });
-  return loadPdfLib.promise;
-}
-
-function readCharacters() { try { const list=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); return Array.isArray(list)?list:[]; } catch { return []; } }
-function time(item) { const t=Date.parse(item?.meta?.updatedAt||item?.meta?.createdAt||''); return Number.isFinite(t)?t:0; }
-function currentDragonbane(requireVisibleMatch=false) {
-  const chars=readCharacters().filter(x=>(x?.system||'dragonbane')==='dragonbane'&&(x?.type||'pc')==='pc'); if(!chars.length)return null;
-  const values=new Set(Array.from(document.querySelectorAll('input,textarea')).filter(visible).map(x=>String(x.value||'').trim()).filter(Boolean));
-  const matches=chars.filter(x=>x?.bio?.nome&&values.has(String(x.bio.nome).trim())); if(requireVisibleMatch&&!matches.length)return null;
-  return [...(matches.length?matches:chars)].sort((a,b)=>time(b)-time(a))[0]||null;
-}
-function filename(item){const name=String(item?.bio?.nome||'Personagem').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9_-]+/g,'_').replace(/^_+|_+$/g,'')||'Personagem';return `PJ_Lite_Dragonbane_${name}.pdf`;}
-function download(bytes,item){const url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'}));const a=document.createElement('a');a.href=url;a.download=filename(item);document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),8000);}
-
-async function loadRealTemplate(PDFLib){
-  const response=await fetch(TEMPLATE_URL,{cache:'no-store'}); if(!response.ok)throw new Error(`Não foi possível abrir o PDF modelo (${response.status}).`);
-  const bytes=new Uint8Array(await response.arrayBuffer()); if(bytes.length<5||String.fromCharCode(...bytes.slice(0,5))!=='%PDF-')throw new Error('O arquivo de modelo não é um PDF válido.');
-  const doc=await PDFLib.PDFDocument.load(bytes,{ignoreEncryption:true}); const form=doc.getForm(); const fieldNames=new Set(form.getFields().map(field=>field.getName()));
-  const required=['nome','nome_pagina_2','retrato_imagem']; const missing=required.filter(name=>!fieldNames.has(name)); if(missing.length)throw new Error(`O PDF modelo encontrado não é a ficha editável esperada do PJ Lite (${missing.join(', ')}).`);
-  const regular=await doc.embedFont(PDFLib.StandardFonts.Helvetica); return {doc,form,regular};
-}
-
-async function blobToPngBytes(blob) {
-  const canvasBytes=async(source,width,height,cleanup=null)=>{try{const max=1400;const scale=Math.min(1,max/Math.max(width,height));const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(width*scale));canvas.height=Math.max(1,Math.round(height*scale));const ctx=canvas.getContext('2d');if(!ctx)return null;ctx.drawImage(source,0,0,canvas.width,canvas.height);const pngBlob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));cleanup?.();return pngBlob?new Uint8Array(await pngBlob.arrayBuffer()):null;}catch{cleanup?.();return null;}};
-  if(typeof createImageBitmap==='function'){try{const bitmap=await createImageBitmap(blob);const result=await canvasBytes(bitmap,bitmap.width,bitmap.height,()=>bitmap.close?.());if(result)return result;}catch{}}
-  try{const url=URL.createObjectURL(blob);const img=new Image();await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=reject;img.src=url;});return await canvasBytes(img,img.naturalWidth||img.width,img.naturalHeight||img.height,()=>URL.revokeObjectURL(url));}catch{return null;}
-}
-
-async function imageFromSource(source){
-  if(!source||typeof source!=='string')return null; const value=source.trim(); if(!/^(data:image\/|https?:|blob:)/i.test(value))return null;
-  try{const response=await fetch(value,/^https?:/i.test(value)?{mode:'cors'}:undefined);if(!response.ok)return null;const blob=await response.blob();const type=(blob.type||response.headers.get('content-type')||'').toLowerCase();const bytes=new Uint8Array(await blob.arrayBuffer());if(type.includes('png'))return{bytes,kind:'png'};if(type.includes('jpeg')||type.includes('jpg'))return{bytes,kind:'jpg'};const converted=await blobToPngBytes(blob);return converted?{bytes:converted,kind:'png'}:null;}catch(error){console.warn('[PJ Lite Dragonbane PDF] Retrato indisponível; o PDF continuará editável sem a imagem.',error);return null;}
-}
-
-function currentPortraitSource(item){const live=Array.from(document.querySelectorAll('.db-portrait img')).find(visible);return live?.currentSrc||live?.src||item?.bio?.imagem||'';}
-async function addPortrait(doc,form,item,PDFLib){
-  const loaded=await imageFromSource(currentPortraitSource(item)); if(!loaded)return false;
-  try{
-    const image=loaded.kind==='png'?await doc.embedPng(loaded.bytes):await doc.embedJpg(loaded.bytes); const portraitField=form.getButton('retrato_imagem'); try{portraitField.setImage(image);}catch{}
-    const widget=portraitField.acroField?.getWidgets?.()?.[0]; const rect=widget?.getRectangle?.(); const page=doc.getPages()[0];
-    if(page&&rect&&rect.width>0&&rect.height>0){const inset=2.5;const boxW=Math.max(1,rect.width-inset*2);const boxH=Math.max(1,rect.height-inset*2);const dims=image.scale(1);const scale=Math.min(boxW/dims.width,boxH/dims.height);const width=dims.width*scale;const height=dims.height*scale;page.drawRectangle({x:rect.x,y:rect.y,width:rect.width,height:rect.height,color:PDFLib.rgb(0.96,0.93,0.84)});page.drawImage(image,{x:rect.x+(rect.width-width)/2,y:rect.y+(rect.height-height)/2,width,height});try{form.removeField(portraitField);}catch{}}
-    return true;
-  }catch(error){console.warn('[PJ Lite Dragonbane PDF] Não foi possível inserir o retrato no PDF; os demais campos serão mantidos.',error);return false;}
-}
-
-async function exportPdf(){document.activeElement?.blur?.();await sleep(900);const item=currentDragonbane(false);if(!item)throw new Error('Não encontrei a ficha Dragonbane atual. Salve a ficha e tente novamente.');const PDFLib=await loadPdfLib();const{doc,form,regular}=await loadRealTemplate(PDFLib);fillDragonbanePdf(form,item);try{form.updateFieldAppearances(regular);}catch(error){console.warn('[PJ Lite Dragonbane PDF] Não foi possível atualizar todas as aparências dos campos:',error);}const portraitAdded=await addPortrait(doc,form,item,PDFLib);const bytes=await doc.save({useObjectStreams:false,updateFieldAppearances:false});download(bytes,item);return{item,portraitAdded};}
-function isDragonbaneEditorOpen(){const structural=[document.querySelector('.db-sheet'),document.querySelector('.db-logo'),document.querySelector('.db-brand'),document.querySelector('.db-layout')].filter(Boolean);if(structural.some(visible))return true;return!!currentDragonbane(true);}
-function findToolbar(){const copy=Array.from(document.querySelectorAll('button')).find(b=>visible(b)&&/copiar\s*ficha/i.test((b.textContent||'').replace(/\s+/g,' ').trim()));if(!copy)return null;const toolbar=copy.parentElement;if(!toolbar)return null;const buttons=Array.from(toolbar.querySelectorAll('button'));const hasZip=buttons.some(b=>/^ZIP$/i.test((b.textContent||'').trim()));const hasSave=buttons.some(b=>/salvar/i.test(b.textContent||''));return hasZip&&hasSave?{copy,toolbar}:null;}
-function ensureButton(){let button=document.getElementById(BUTTON_ID);if(!isDragonbaneEditorOpen()){button?.remove();return;}const found=findToolbar();if(!found)return;const{copy,toolbar}=found;if(!button){button=document.createElement('button');button.id=BUTTON_ID;button.dataset.pjlitePdf='dragonbane';button.type='button';button.className=copy.className;button.textContent='📄 Baixar PDF';button.title='Baixar a ficha usando o PDF editável do PJ Lite como modelo, incluindo o retrato quando disponível.';button.style.background='rgba(4,120,87,.92)';button.style.whiteSpace='nowrap';button.style.border='1px solid rgba(255,255,255,.28)';button.onclick=async()=>{if(button.dataset.busy==='1')return;const original=button.textContent;button.dataset.busy='1';button.disabled=true;button.textContent='⏳ Gerando PDF...';try{const{item,portraitAdded}=await exportPdf();const name=item?.bio?.nome||'Dragonbane';const hasPortrait=!!currentPortraitSource(item);if(hasPortrait&&!portraitAdded)toast(`PDF de ${name} baixado, mas não foi possível incorporar o retrato.`,'info');else toast(`PDF de ${name} baixado${portraitAdded?' com retrato':''}.`,'success');}catch(error){console.error('[PJ Lite Dragonbane PDF]',error);toast(String(error?.message||'Não foi possível gerar o PDF.'),'error');}finally{button.dataset.busy='0';button.disabled=false;button.textContent=original;}};}if(button.parentElement!==toolbar||button.previousElementSibling!==copy)toolbar.insertBefore(button,copy.nextSibling);}
+function dataUrlBytes(value){const m=/^data:([^;,]+)?(;base64)?,(.*)$/i.exec(value||'');if(!m)return null;try{const mime=(m[1]||'').toLowerCase(),raw=m[2]?atob(m[3]):decodeURIComponent(m[3]),bytes=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);return{bytes,mime};}catch{return null;}}
+async function elementToPng(img){try{if(!img?.complete||!(img.naturalWidth||img.width))await new Promise((res,rej)=>{img.addEventListener('load',res,{once:true});img.addEventListener('error',rej,{once:true});});const w=img.naturalWidth||img.width,h=img.naturalHeight||img.height,max=1400,scale=Math.min(1,max/Math.max(w,h)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(w*scale));c.height=Math.max(1,Math.round(h*scale));const ctx=c.getContext('2d');if(!ctx)return null;ctx.drawImage(img,0,0,c.width,c.height);const blob=await new Promise(r=>c.toBlob(r,'image/png'));return blob?new Uint8Array(await blob.arrayBuffer()):null;}catch(e){console.warn('[PJ Lite Dragonbane PDF] Canvas do retrato indisponível.',e);return null;}}
+async function blobToPng(blob){try{const url=URL.createObjectURL(blob),img=new Image();await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src=url;});const out=await elementToPng(img);URL.revokeObjectURL(url);return out;}catch{return null;}}
+function livePortrait(){return Array.from(document.querySelectorAll('.db-portrait img')).find(visible)||null;}
+function portraitSource(item){const img=livePortrait();return img?.currentSrc||img?.src||item?.bio?.imagem||'';}
+async function loadPortrait(item){const live=livePortrait();if(live){const png=await elementToPng(live);if(png)return{bytes:png,kind:'png',source:'visible'};}
+ const value=String(item?.bio?.imagem||'').trim();if(!value)return null;
+ if(/^data:image\//i.test(value)){const d=dataUrlBytes(value);if(d){if(d.mime.includes('png'))return{bytes:d.bytes,kind:'png',source:'saved-data'};if(d.mime.includes('jpeg')||d.mime.includes('jpg'))return{bytes:d.bytes,kind:'jpg',source:'saved-data'};try{const blob=new Blob([d.bytes],{type:d.mime||'image/webp'}),png=await blobToPng(blob);if(png)return{bytes:png,kind:'png',source:'saved-data-converted'};}catch{}}}
+ if(/^(blob:|https?:)/i.test(value)){try{const r=await fetch(value,/^https?:/i.test(value)?{mode:'cors',cache:'no-store'}:undefined);if(r.ok){const blob=await r.blob(),type=(blob.type||r.headers.get('content-type')||'').toLowerCase(),bytes=new Uint8Array(await blob.arrayBuffer());if(type.includes('png'))return{bytes,kind:'png',source:'url'};if(type.includes('jpeg')||type.includes('jpg'))return{bytes,kind:'jpg',source:'url'};const png=await blobToPng(blob);if(png)return{bytes:png,kind:'png',source:'url-converted'};}}catch(e){console.warn('[PJ Lite Dragonbane PDF] URL do retrato indisponível.',e);}}
+ return null;}
+async function addPortrait(doc,form,item,PDFLib){const loaded=await loadPortrait(item);if(!loaded)return{ok:false,reason:'source'};try{const image=loaded.kind==='png'?await doc.embedPng(loaded.bytes):await doc.embedJpg(loaded.bytes);let field=null;try{field=form.getField('retrato_imagem');}catch{}let rect=null;try{rect=field?.acroField?.getWidgets?.()?.[0]?.getRectangle?.()||null;}catch{}const page=doc.getPages()[0];if(!page)throw new Error('Página 1 ausente.');if(!rect||!(rect.width>0&&rect.height>0))rect={x:40,y:613,width:68,height:75};const inset=2.5,boxW=Math.max(1,rect.width-inset*2),boxH=Math.max(1,rect.height-inset*2),dims=image.scale(1),scale=Math.min(boxW/dims.width,boxH/dims.height),width=dims.width*scale,height=dims.height*scale;page.drawRectangle({x:rect.x,y:rect.y,width:rect.width,height:rect.height,color:PDFLib.rgb(0.96,0.93,0.84)});page.drawImage(image,{x:rect.x+(rect.width-width)/2,y:rect.y+(rect.height-height)/2,width,height});if(field)try{form.removeField(field);}catch{}return{ok:true,source:loaded.source};}catch(error){console.error('[PJ Lite Dragonbane PDF] Falha ao incorporar retrato.',error);return{ok:false,reason:'embed'};}}
+async function exportPdf(){document.activeElement?.blur?.();await sleep(300);const item=currentDragonbane(false);if(!item)throw new Error('Não encontrei a ficha Dragonbane atual. Salve a ficha e tente novamente.');const PDFLib=await loadPdfLib(),{doc,form,regular}=await loadRealTemplate(PDFLib);fillDragonbanePdf(form,item);try{form.updateFieldAppearances(regular);}catch{}const portrait=await addPortrait(doc,form,item,PDFLib);const bytes=await doc.save({useObjectStreams:false,updateFieldAppearances:false});download(bytes,item);return{item,portrait};}
+function isDragonbaneEditorOpen(){const structural=[document.querySelector('.db-sheet'),document.querySelector('.db-logo'),document.querySelector('.db-brand'),document.querySelector('.db-layout')].filter(Boolean);return structural.some(visible)||!!currentDragonbane(true);}
+function findToolbar(){const copy=Array.from(document.querySelectorAll('button')).find(b=>visible(b)&&/copiar\s*ficha/i.test((b.textContent||'').replace(/\s+/g,' ').trim()));if(!copy)return null;const toolbar=copy.parentElement;if(!toolbar)return null;const buttons=Array.from(toolbar.querySelectorAll('button'));return buttons.some(b=>/^ZIP$/i.test((b.textContent||'').trim()))&&buttons.some(b=>/salvar/i.test(b.textContent||''))?{copy,toolbar}:null;}
+function ensureButton(){let button=document.getElementById(BUTTON_ID);if(!isDragonbaneEditorOpen()){button?.remove();return;}const found=findToolbar();if(!found)return;const{copy,toolbar}=found;if(!button){button=document.createElement('button');button.id=BUTTON_ID;button.dataset.pjlitePdf='dragonbane';button.type='button';button.className=copy.className;button.textContent='📄 Baixar PDF';button.title='Baixar a ficha editável incluindo o retrato.';button.style.background='rgba(4,120,87,.92)';button.style.whiteSpace='nowrap';button.style.border='1px solid rgba(255,255,255,.28)';button.onclick=async()=>{if(button.dataset.busy==='1')return;const original=button.textContent;button.dataset.busy='1';button.disabled=true;button.textContent='⏳ Gerando PDF...';try{const{item,portrait}=await exportPdf(),name=item?.bio?.nome||'Dragonbane',hasPortrait=!!portraitSource(item);if(hasPortrait&&!portrait.ok)toast(`PDF de ${name} baixado, mas o retrato falhou (${portrait.reason}).`,'error');else toast(`PDF de ${name} baixado${portrait.ok?' com retrato':''}.`,'success');}catch(error){console.error('[PJ Lite Dragonbane PDF]',error);toast(String(error?.message||'Não foi possível gerar o PDF.'),'error');}finally{button.dataset.busy='0';button.disabled=false;button.textContent=original;}};}if(button.parentElement!==toolbar||button.previousElementSibling!==copy)toolbar.insertBefore(button,copy.nextSibling);}
 export function installDragonbanePdfExport(){if(window.__pjliteDragonbanePdfExportInstalled)return;window.__pjliteDragonbanePdfExportInstalled=true;let pending=false;const schedule=()=>{if(pending)return;pending=true;requestAnimationFrame(()=>{pending=false;ensureButton();});};new MutationObserver(schedule).observe(document.documentElement,{childList:true,subtree:true});addEventListener('resize',schedule,{passive:true});addEventListener('focus',schedule,{passive:true});setInterval(ensureButton,750);setTimeout(ensureButton,0);setTimeout(ensureButton,250);setTimeout(ensureButton,1000);}
