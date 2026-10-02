@@ -13,11 +13,12 @@ const [db, app, threeDet] = await Promise.all([
 ]);
 
 must(db, [
-  'PJ LITE 0.9.1 DRAGONBANE PORTRAIT FIX',
+  'PJ LITE 0.9.1 DRAGONBANE PORTRAIT FIX V2',
   "document.querySelectorAll('.db-portrait img')",
-  'URL.createObjectURL(blob)',
+  'dataUrlBytes',
+  'elementToPng',
   'page.drawImage(image',
-  'form.removeField(portraitField)',
+  'form.removeField(field)',
   'PDFLib',
 ], 'Dragonbane PDF');
 
@@ -38,4 +39,4 @@ must(threeDet, [
   'Crédito editorial:',
 ], 'Guia 3DeT');
 
-console.log('✓ Retrato do PDF Dragonbane e créditos/links oficiais verificados.');
+console.log('✓ Retrato Dragonbane V2 e créditos/links oficiais verificados.');
