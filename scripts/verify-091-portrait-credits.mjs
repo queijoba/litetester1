@@ -18,8 +18,12 @@ must(db, [
   'URL.createObjectURL(blob)',
   'page.drawImage(image',
   'form.removeField(portraitField)',
-  'addPortrait(doc, form, item, PDFLib)',
+  'PDFLib',
 ], 'Dragonbane PDF');
+
+if (!/addPortrait\s*\(\s*doc\s*,\s*form\s*,\s*item\s*,\s*PDFLib\s*\)/.test(db)) {
+  throw new Error('Dragonbane PDF: chamada addPortrait(doc, form, item, PDFLib) ausente');
+}
 
 must(app, [
   'PJ LITE 0.9.1 OFFICIAL MATERIAL CREDITS',
