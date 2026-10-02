@@ -2,7 +2,7 @@ import { fillFabulaPdf } from './map.js';
 
 const STORAGE_KEY = 'dragonbane_saved_characters';
 const PDFLIB_CDN = 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js';
-const TEMPLATE_URL = '/pdfs/FU_Ficha_de_personagemV2.pdf?v=20260929-v2';
+const TEMPLATE_URL = '/pdfs/FU_Ficha_de_personagemV2.pdf?v=20261002-photo-v2';
 const BUTTON_ID = 'pjlite-fabula-pdf-export';
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -109,19 +109,64 @@ async function loadTemplate(PDFLib) {
   return { doc, form, regular };
 }
 
-async function blobToPngBytes(blob) {
+async function canvasToPngBytes(source, width, height) {
   try {
-    const bitmap = await createImageBitmap(blob);
     const max = 1400;
-    const scale = Math.min(1, max / Math.max(bitmap.width, bitmap.height));
+    const scale = Math.min(1, max / Math.max(width, height));
     const canvas = document.createElement('canvas');
-    canvas.width = Math.max(1, Math.round(bitmap.width * scale));
-    canvas.height = Math.max(1, Math.round(bitmap.height * scale));
-    canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-    bitmap.close?.();
+    canvas.width = Math.max(1, Math.round(width * scale));
+    canvas.height = Math.max(1, Math.round(height * scale));
+    const context = canvas.getContext('2d');
+    if (!context) return null;
+    context.drawImage(source, 0, 0, canvas.width, canvas.height);
     const png = await new Promise(resolve => canvas.toBlob(resolve, 'image/png', 0.92));
     return png ? new Uint8Array(await png.arrayBuffer()) : null;
-  } catch { return null; }
+  } catch {
+    return null;
+  }
+}
+
+async function blobToPngBytes(blob) {
+  if (typeof createImageBitmap === 'function') {
+    try {
+      const bitmap = await createImageBitmap(blob);
+      const result = await canvasToPngBytes(bitmap, bitmap.width, bitmap.height);
+      bitmap.close?.();
+      if (result) return result;
+    } catch {}
+  }
+
+  try {
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+    await new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = reject;
+      img.src = url;
+    });
+    const result = await canvasToPngBytes(img, img.naturalWidth || img.width, img.naturalHeight || img.height);
+    URL.revokeObjectURL(url);
+    return result;
+  } catch {
+    return null;
+  }
+}
+
+async function imageFromElement(img) {
+  if (!img) return null;
+  try {
+    if (!img.complete) await new Promise((resolve, reject) => {
+      img.addEventListener('load', resolve, { once: true });
+      img.addEventListener('error', reject, { once: true });
+    });
+    const width = img.naturalWidth || img.width;
+    const height = img.naturalHeight || img.height;
+    if (!width || !height) return null;
+    const bytes = await canvasToPngBytes(img, width, height);
+    return bytes ? { bytes, kind: 'png' } : null;
+  } catch {
+    return null;
+  }
 }
 
 async function imageFromSource(source) {
@@ -139,20 +184,49 @@ async function imageFromSource(source) {
     const converted = await blobToPngBytes(blob);
     return converted ? { bytes: converted, kind: 'png' } : null;
   } catch (error) {
-    console.warn('[PJ Lite Fabula PDF] Retrato indisponível; o PDF continuará sem imagem.', error);
+    console.warn('[PJ Lite Fabula PDF] Retrato indisponível pela fonte salva.', error);
     return null;
   }
 }
 
-async function addPortrait(doc, form, item) {
-  const loaded = await imageFromSource(item?.bio?.imagem);
+function currentPortraitElement() {
+  return Array.from(document.querySelectorAll('.fabula-portrait-frame img')).find(visible) || null;
+}
+
+async function addPortrait(doc, form, item, PDFLib) {
+  const live = currentPortraitElement();
+  const loaded = await imageFromElement(live)
+    || await imageFromSource(live?.currentSrc || live?.src || item?.bio?.imagem || '');
   if (!loaded) return false;
+
   try {
     const image = loaded.kind === 'png' ? await doc.embedPng(loaded.bytes) : await doc.embedJpg(loaded.bytes);
-    form.getButton('retrato_personagem').setImage(image);
+    const portraitField = form.getButton('retrato_personagem');
+    try { portraitField.setImage(image); } catch {}
+
+    const widget = portraitField.acroField?.getWidgets?.()?.[0];
+    const rect = widget?.getRectangle?.();
+    const page = doc.getPages()[0];
+    if (!page || !rect || rect.width <= 0 || rect.height <= 0) return false;
+
+    const inset = 2.5;
+    const boxW = Math.max(1, rect.width - inset * 2);
+    const boxH = Math.max(1, rect.height - inset * 2);
+    const dims = image.scale(1);
+    const scale = Math.min(boxW / dims.width, boxH / dims.height);
+    const width = dims.width * scale;
+    const height = dims.height * scale;
+
+    page.drawImage(image, {
+      x: rect.x + (rect.width - width) / 2,
+      y: rect.y + (rect.height - height) / 2,
+      width,
+      height,
+    });
+    try { form.removeField(portraitField); } catch {}
     return true;
   } catch (error) {
-    console.warn('[PJ Lite Fabula PDF] Não foi possível inserir o retrato no campo editável.', error);
+    console.warn('[PJ Lite Fabula PDF] Não foi possível incorporar o retrato diretamente no PDF.', error);
     return false;
   }
 }
@@ -166,7 +240,7 @@ async function exportPdf() {
   const { doc, form, regular } = await loadTemplate(PDFLib);
   fillFabulaPdf(form, item);
   try { form.updateFieldAppearances(regular); } catch (error) { console.warn('[PJ Lite Fabula PDF] Algumas aparências serão geradas pelo leitor de PDF.', error); }
-  const portraitAdded = await addPortrait(doc, form, item);
+  const portraitAdded = await addPortrait(doc, form, item, PDFLib);
   const bytes = await doc.save({ useObjectStreams: false, updateFieldAppearances: false });
   download(bytes, item);
   return { item, portraitAdded };
@@ -213,7 +287,7 @@ function ensureButton() {
       try {
         const { item, portraitAdded } = await exportPdf();
         const name = item?.bio?.nome || 'Fabula Ultima';
-        const hasPortrait = !!item?.bio?.imagem;
+        const hasPortrait = !!currentPortraitElement() || !!item?.bio?.imagem;
         if (hasPortrait && !portraitAdded) {
           toast(`PDF editável de ${name} baixado, mas não foi possível incorporar o retrato.`, 'info');
         } else {
