@@ -15,12 +15,13 @@ if (!sky.includes('PJ LITE SKYFALL SPELL ORDER V1')) {
   const moveAnchor = " const move=(field,i,dir)=>{const arr=[...(data[field]||[])];const j=i+dir;if(j<0||j>=arr.length)return;[arr[i],arr[j]]=[arr[j],arr[i]];updateField(field,arr);};";
   sky = replaceOnce(sky, moveAnchor, `${moveAnchor}\n /* PJ LITE SKYFALL SPELL ORDER V1 */\n const moveMagic=(index,dir)=>{const spells=[...(data.magias||[])];const layer=spells[index]?.camada||'Truque';const indices=spells.map((m,i)=>({m,i})).filter(({m})=>(m.camada||'Truque')===layer).map(({i})=>i);const pos=indices.indexOf(index);const target=pos+dir;if(pos<0||target<0||target>=indices.length)return;const targetIndex=indices[target];[spells[index],spells[targetIndex]]=[spells[targetIndex],spells[index]];updateField('magias',spells);};\n const sortMagicLayer=(layer)=>{const spells=[...(data.magias||[])];const indices=spells.map((m,i)=>({m,i})).filter(({m})=>(m.camada||'Truque')===layer).map(({i})=>i);if(indices.length<2)return;const ordered=indices.map(i=>spells[i]).sort((x,y)=>String(x?.nome||'').localeCompare(String(y?.nome||''),'pt-BR',{sensitivity:'base'}));indices.forEach((idx,pos)=>{spells[idx]=ordered[pos];});updateField('magias',spells);};`, 'helpers Skyfall');
 
-  const oldAttributes = `   <section className="skyfall-card"><h3>Atributos</h3><div className="skyfall-attributes">{SKYFALL_ATTRIBUTES.map(([k,abbr,n])=><label key={k} className="skyfall-attr"><span>{abbr}</span><input type="number" value={a[k]??10} onChange={e=>updateField(\`atributos.\${k}\`,num(e.target.value))}/><small>{mod(a[k])}</small><em>{n}</em></label>)}</div></section>\n`;
-  sky = replaceOnce(sky, oldAttributes, '', 'remove atributos antigos');
-
-  const tabsAnchor = `  <div className="skyfall-tabs">{tabs.map(([id,n])=><button key={id} onClick={()=>setTab(id)} className={tab===id?'active':''}>{n}</button>)}</div>`;
-  const topAttributes = `  <section className="skyfall-card skyfall-attributes-top"><h3>Atributos</h3><div className="skyfall-attributes">{SKYFALL_ATTRIBUTES.map(([k,abbr,n])=><label key={k} className="skyfall-attr"><span>{abbr}</span><input type="number" value={a[k]??10} onChange={e=>updateField(\`atributos.\${k}\`,num(e.target.value))}/><small>{mod(a[k])}</small><em>{n}</em></label>)}</div></section>\n  ${tabsAnchor}`;
-  sky = replaceOnce(sky, tabsAnchor, topAttributes, 'atributos no topo');
+  // Atributos devem permanecer na aba Perícias, imediatamente acima da lista de perícias.
+  // A versão antiga deste script removia esse bloco e o recolocava acima das abas,
+  // desfazendo a organização solicitada no editor fonte durante cada build.
+  const desiredAttributesLocation = `{tab==='pericias'&&<div className="space-y-4">\n   <section className="skyfall-card"><h3>Atributos</h3>`;
+  if (!sky.includes(desiredAttributesLocation)) {
+    throw new Error('Refino final: atributos do Skyfall não estão acima das perícias na aba Perícias.');
+  }
 
   const magicStart = sky.indexOf(`   {SKYFALL_MAGIC_LAYERS.map(layer=>`);
   const magicEndAnchor = `   <section className="skyfall-card"><label><span>Observações de Conjuração</span>`;
@@ -58,4 +59,4 @@ if (!ordemCss.includes('.ordem-order-actions')) {
   await writeFile(ordemCssPath, ordemCss, 'utf8');
 }
 
-console.log('✓ Atributos Skyfall no topo; magias e rituais com ordenação manual/A–Z.');
+console.log('✓ Atributos Skyfall preservados na aba Perícias; magias e rituais com ordenação manual/A–Z.');
