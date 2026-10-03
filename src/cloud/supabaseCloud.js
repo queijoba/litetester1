@@ -1,7 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
 
-const url = String(import.meta.env.VITE_SUPABASE_URL || '').trim();
-const key = String(import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY || '').trim();
+const DEFAULT_SUPABASE_URL = 'https://jkwlsfkuxaelqjqrirdd.supabase.co';
+const DEFAULT_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_3p5Jio7t415Lv75rjEVFCg_rlG3ryfJ';
+
+const url = String(import.meta.env.VITE_SUPABASE_URL || DEFAULT_SUPABASE_URL).trim();
+const key = String(import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_PUBLISHABLE_KEY).trim();
 
 export const isSupabaseConfigured = Boolean(url && key);
 export const supabase = isSupabaseConfigured
@@ -37,6 +40,17 @@ export async function signInWithGoogle() {
   const { data, error } = await client.auth.signInWithOAuth({
     provider: 'google',
     options: { redirectTo },
+  });
+  if (error) throw error;
+  return data;
+}
+
+export async function signInWithOtp(email) {
+  const client = requireClient();
+  const redirectTo = window.location.origin + window.location.pathname;
+  const { data, error } = await client.auth.signInWithOtp({
+    email: String(email || '').trim().toLowerCase(),
+    options: { emailRedirectTo: redirectTo },
   });
   if (error) throw error;
   return data;
@@ -157,11 +171,6 @@ export async function createGroup(name) {
     .select('*')
     .single();
   if (error) throw error;
-
-  const { error: memberError } = await client
-    .from('group_members')
-    .upsert({ group_id: group.id, user_id: user.id, role: 'owner' }, { onConflict: 'group_id,user_id' });
-  if (memberError) throw memberError;
   return group;
 }
 
