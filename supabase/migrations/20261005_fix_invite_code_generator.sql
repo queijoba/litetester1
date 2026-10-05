@@ -1,6 +1,6 @@
 -- Corrige a geração dos códigos de convite LITE-XXXXXX.
--- A migração de hardening fixa search_path=public; por isso não dependemos
--- mais de gen_random_bytes() do pgcrypto para gerar o código.
+-- O pgcrypto do Supabase vive no schema "extensions". Como o hardening
+-- fixa search_path=public, qualificamos gen_random_bytes explicitamente.
 
 create or replace function public.pjlite_invite_code()
 returns text
@@ -11,7 +11,7 @@ declare
   candidate text;
 begin
   loop
-    candidate := 'LITE-' || upper(substr(md5(random()::text || clock_timestamp()::text), 1, 6));
+    candidate := 'LITE-' || upper(substr(encode(extensions.gen_random_bytes(4), 'hex'), 1, 6));
     exit when not exists (
       select 1
       from public.groups
