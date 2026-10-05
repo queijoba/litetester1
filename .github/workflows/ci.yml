@@ -2,7 +2,7 @@ name: PJ Lite CI
 
 on:
   push:
-    branches: [ main, preview/cloud-sync, preview/cloud-real ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
