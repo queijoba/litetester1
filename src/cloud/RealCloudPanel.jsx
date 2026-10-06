@@ -20,6 +20,7 @@ import {
   markShareImported,
   dismissShare,
 } from './supabaseCloud.js';
+import AdminCloudPanel from './AdminCloudPanel.jsx';
 
 const STORAGE_KEY = 'dragonbane_saved_characters';
 const THREAT_STORAGE_KEY = 'dragonbane_saved_threats';
@@ -68,6 +69,8 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
     name: profile?.display_name || session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'Jogador',
     avatar: profile?.avatar_url || session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture || '',
   } : null;
+
+  const isAdmin = String(account?.email || '').trim().toLowerCase() === 'nickreisgg55@gmail.com';
 
   const pendingInbox = inbox.filter(item => item.status === 'pending');
   const allSheets = [
@@ -359,6 +362,7 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
           <button type="button" className={tab==='sync'?'active':''} onClick={()=>setTab('sync')}>☁ Sincronização</button>
           <button type="button" className={tab==='groups'?'active':''} onClick={()=>setTab('groups')}>♟ Grupos</button>
           <button type="button" className={tab==='inbox'?'active':''} onClick={()=>setTab('inbox')}>✉ Recebidos {pendingInbox.length>0&&<span className="pjlite-cloud-tab-badge">{pendingInbox.length}</span>}</button>
+          {isAdmin&&<button type="button" className={tab==='admin'?'active':''} onClick={()=>setTab('admin')}>⚙ Administração</button>}
         </div>
         <div className="pjlite-cloud-settings__content">
           {!account ? <>
@@ -379,7 +383,7 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
             <div className="pjlite-cloud-settings__group"><h3>Compartilhar ficha</h3><p>Envie uma cópia para uma pessoa que já tenha Conta Lite ou para um grupo inteiro.</p><div className="pjlite-cloud-form-stack"><label><span>Ficha</span><select value={shareDraft.sheetId} onChange={e=>setShareDraft(v=>({...v,sheetId:e.target.value}))}><option value="">Escolha uma ficha…</option>{allSheets.map(entry=><option key={entry.key} value={entry.key}>{sheetName(entry.item)} • {systemName(entry.item)}</option>)}</select></label><div className="pjlite-cloud-form-split"><label><span>Grupo</span><select value={shareDraft.groupId} onChange={e=>setShareDraft(v=>({...v,groupId:e.target.value,email:e.target.value?'':v.email}))}><option value="">Nenhum grupo</option>{groups.map(group=><option key={group.id} value={group.id}>{group.name} ({group.members?.length||0})</option>)}</select></label><label><span>Ou enviar para</span><input type="email" disabled={!!shareDraft.groupId} value={shareDraft.email} onChange={e=>setShareDraft(v=>({...v,email:e.target.value,groupId:''}))} placeholder="jogador@gmail.com"/></label></div><button type="button" className="pjlite-cloud-primary" onClick={handleShare}>Enviar cópia da ficha</button></div></div>
             <div className="pjlite-cloud-settings__group"><h3>Entrar em um grupo</h3><p>Digite o código recebido do mestre ou de outro jogador.</p><div className="pjlite-cloud-invite-join"><input value={inviteCode} onChange={e=>setInviteCode(e.target.value.toUpperCase())} placeholder="LITE-XXXXXX" maxLength={11}/><button type="button" className="pjlite-cloud-primary" onClick={handleJoin}>Entrar</button></div></div>
             <div className="pjlite-cloud-settings__group"><h3>Meus grupos</h3><div className="pjlite-cloud-form-stack"><label><span>Nome do grupo</span><input value={groupName} onChange={e=>setGroupName(e.target.value)} placeholder="Ex.: Mesa de sexta"/></label><button type="button" className="secondary" onClick={handleCreateGroup}>+ Criar grupo</button></div><div className="pjlite-cloud-groups-list">{groups.length===0?<div className="pjlite-cloud-empty">Nenhum grupo ainda.</div>:groups.map(group=><article key={group.id} className="pjlite-cloud-group-card"><div><strong>{group.name}</strong><small>{group.members?.length||0} {(group.members?.length||0)===1?'membro':'membros'}</small></div><div className="pjlite-cloud-invite"><div><span>Código de convite</span><code>{group.invite_code}</code></div><div className="pjlite-cloud-invite-actions"><button type="button" onClick={()=>navigator.clipboard?.writeText(group.invite_code).then(()=>showToast('Código copiado.'))}>Copiar</button>{group.isOwner&&<button type="button" onClick={()=>handleRotate(group)}>↻ Novo código</button>}</div></div>{group.isOwner&&<button type="button" className="pjlite-cloud-icon-action" onClick={()=>handleDeleteGroup(group)} title="Remover grupo">×</button>}</article>)}</div></div>
-          </> : <>
+          </> : tab==='admin'&&isAdmin ? <AdminCloudPanel account={account} showToast={showToast} /> : <>
             <div className="pjlite-cloud-settings__group"><h3>Fichas recebidas</h3><p>As fichas compartilhadas aparecem aqui antes de serem incluídas na sua biblioteca.</p><div className="pjlite-cloud-inbox">{pendingInbox.length===0?<div className="pjlite-cloud-empty"><strong>Nenhuma ficha nova.</strong><span>Novos compartilhamentos aparecerão aqui.</span></div>:pendingInbox.map(packet=><article key={packet.id} className="pjlite-cloud-inbox-card is-new"><div className="pjlite-cloud-inbox-icon">✉</div><div className="pjlite-cloud-inbox-main"><strong>{packet.name||sheetName(packet.payload)}</strong><span>{packet.system||systemName(packet.payload)}</span><small>Recebida em {new Date(packet.sent_at).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})}</small><div className="pjlite-cloud-inbox-actions"><button type="button" className="pjlite-cloud-primary" onClick={()=>handleImport(packet)}>Incluir nas fichas</button><button type="button" className="secondary" onClick={()=>handleDismiss(packet)}>Descartar</button></div></div></article>)}</div></div>
           </>}
         </div>
