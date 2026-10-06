@@ -8,7 +8,7 @@ const Field=({label,children,className=''})=><label className={'rz-field '+class
 const Panel=({title,right,children,className=''})=><section className={'rz-panel '+className}><header><h2>{title}</h2>{right}</header><div className="body">{children}</div></section>;
 
 export default function RotaZeroCharacterEditor({scope}){
-  const {data,updateField,optimizeImageFile,showToast}=scope;
+  const {data,updateField,setData,optimizeImageFile,showToast}=scope;
   const [tab,setTab]=useState('ficha');
   useEffect(()=>{
     if(data?.system!=='rotaZero')return;
@@ -30,11 +30,13 @@ export default function RotaZeroCharacterEditor({scope}){
 
   const setAttr=(key,value)=>{
     const n=clamp(value,1,3);
-    const next=syncRotaZeroResources({...data,atributos:{...attrs,[key]:n}});
-    updateField('atributos.'+key,n);
-    updateField('recursos.adrenalina',next.recursos.adrenalina);
-    updateField('recursos.foco',next.recursos.foco);
-    updateField('recursos.vitalidade',next.recursos.vitalidade);
+    setData(prev=>{
+      if(!prev||prev.system!=='rotaZero') return prev;
+      return syncRotaZeroResources({
+        ...prev,
+        atributos:{...(prev.atributos||{}),[key]:n}
+      });
+    });
   };
   const stepAttr=(key,delta)=>setAttr(key,(Number(attrs[key])||1)+delta);
   const toggleList=(key,id,on)=>{
@@ -48,12 +50,19 @@ export default function RotaZeroCharacterEditor({scope}){
     }
   };
   const applyKit=(kit)=>{
-    updateField('bio.kit',kit.nome);
-    Object.entries(kit.attrs).forEach(([k,v])=>setAttr(k,v));
     const skills={}; RZ_SKILLS.forEach(([id])=>skills[id]=kit.skills.includes(id));
-    updateField('pericias',skills);
-    updateField('vantagens',kit.advantages);
-    updateField('inventario.0',kit.item||'');
+    setData(prev=>{
+      if(!prev||prev.system!=='rotaZero') return prev;
+      const next={
+        ...prev,
+        bio:{...(prev.bio||{}),kit:kit.nome},
+        atributos:{...(prev.atributos||{}),...kit.attrs},
+        pericias:skills,
+        vantagens:[...(kit.advantages||[])],
+        inventario:[kit.item||'',...((prev.inventario||[]).slice(1))]
+      };
+      return syncRotaZeroResources(next);
+    });
     showToast('Kit '+kit.nome+' aplicado. Confira os Créditos antes de salvar.');
   };
   const handlePortrait=async(e)=>{
