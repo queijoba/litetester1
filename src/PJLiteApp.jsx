@@ -6,6 +6,9 @@ import Som6CharacterEditor from './systems/somDasSeis/components/CharacterEditor
 import Som6ThreatEditor from './systems/somDasSeis/components/ThreatEditor.jsx';
 import TresDeTCharacterEditor from './systems/3det/components/CharacterEditor.jsx';
 import TresDeTThreatEditor from './systems/3det/components/ThreatEditor.jsx';
+import RotaZeroCharacterEditor from './systems/rotaZero/components/CharacterEditor.jsx';
+import { initialRotaZeroPcData, normalizeRotaZeroPcData } from './systems/rotaZero/data.js';
+import { MODELOS_ROTA_ZERO_PC } from './systems/rotaZero/models.js';
 import { initial3DetPcData, normalize3DetPcData } from './systems/3det/data.js';
 import { initial3DetThreatData, normalize3DetThreatData } from './systems/3det/threatData.js';
 import { MODELOS_3DET_PC } from './systems/3det/models.js';
@@ -1205,6 +1208,7 @@ const { useState, useEffect, useRef } = React;
             const [data, setData] = useState(initialData);
             
             const [theme, setTheme] = useState(() => { try { return localStorage.getItem(THEME_PREF_KEY) || 'default'; } catch { return 'default'; } });
+            const [rotaZeroUnlocked] = useState(() => { try { return localStorage.getItem('pjlite_rz_theme_unlocked_v1') === '1'; } catch { return false; } });
             const [customBgUrl, setCustomBgUrl] = useState(() => { try { return localStorage.getItem(CUSTOM_BG_KEY) || ''; } catch { return ''; } });
             const [customBgLink, setCustomBgLink] = useState('');
             const [customWinColor, setCustomWinColor] = useState(() => { try { return localStorage.getItem(CUSTOM_WIN_COLOR_KEY) || '#ffffff'; } catch { return '#ffffff'; } });
@@ -1233,6 +1237,7 @@ const { useState, useEffect, useRef } = React;
             const [showFabulaModelModal, setShowFabulaModelModal] = useState(false);
             const [showSom6ModelModal, setShowSom6ModelModal] = useState(false);
             const [show3DetModelModal, setShow3DetModelModal] = useState(false);
+            const [showRotaZeroModelModal, setShowRotaZeroModelModal] = useState(false);
             const [dndPcTab, setDndPcTab] = useState('caracteristicas');
             const [fabulaTab, setFabulaTab] = useState('perfil');
             const [som6Tab, setSom6Tab] = useState('perfil');
@@ -1275,7 +1280,7 @@ const { useState, useEffect, useRef } = React;
 
             useEffect(() => {
                 try { localStorage.setItem(THEME_PREF_KEY, theme); } catch {}
-                document.body.className = `font-body text-gray-800 antialiased p-4 md:p-8 ${theme === 'classic' ? 'theme-classic' : theme === 'dnd' ? 'theme-dnd' : theme === 'fabula' ? 'theme-fabula' : theme === 'som6' ? 'theme-som6' : theme === 'dark' ? 'theme-dark' : theme === 'custom' ? 'theme-custom' : 'theme-default'}`;
+                document.body.className = `font-body text-gray-800 antialiased p-4 md:p-8 ${theme === 'classic' ? 'theme-classic' : theme === 'dnd' ? 'theme-dnd' : theme === 'fabula' ? 'theme-fabula' : theme === 'som6' ? 'theme-som6' : theme === 'rotazero' ? 'theme-rotazero' : theme === 'dark' ? 'theme-dark' : theme === 'custom' ? 'theme-custom' : 'theme-default'}`;
             }, [theme]);
 
             useEffect(() => {
@@ -1424,7 +1429,7 @@ const { useState, useEffect, useRef } = React;
                         localStorage.setItem(STORAGE_KEY, JSON.stringify(chars));
                         if (previous) pushHistorySnapshot(previous, savingData);
                         setSavedChars(chars);
-                        if (!silent) showToast(savingData.system === 'fabula' ? 'Personagem Fabula salvo!' : savingData.system === 'somdas6' ? 'Personagem de O Som das Seis salvo!' : savingData.system === '3det' ? 'Personagem 3DeT Victory salvo!' : 'Personagem salvo!');
+                        if (!silent) showToast(savingData.system === 'fabula' ? 'Personagem Fabula salvo!' : savingData.system === 'somdas6' ? 'Personagem de O Som das Seis salvo!' : savingData.system === '3det' ? 'Personagem 3DeT Victory salvo!' : savingData.system === 'rotaZero' ? 'Funcionário Rota Zero salvo!' : 'Personagem salvo!');
                     } else {
                         let threats = getSavedThreats();
                         const index = threats.findIndex(t => t.id === savingData.id);
@@ -1643,6 +1648,7 @@ const { useState, useEffect, useRef } = React;
                     normalized = normalizeSom6PdjData(normalized);
                     normalized = normalize3DetPcData(normalized);
                     normalized = normalize3DetThreatData(normalized);
+                    normalized = normalizeRotaZeroPcData(normalized);
                     setData(normalized);
                     setDndPcTab('caracteristicas');
                     setFabulaTab('perfil');
@@ -1691,6 +1697,7 @@ const { useState, useEffect, useRef } = React;
             const loadTemplate = (modelo) => {
                 let templateData = normalizeMetaItem(modelo);
                 templateData = normalizeDndPcData(templateData);
+                templateData = normalizeRotaZeroPcData(templateData);
                 templateData = normalizeFabulaPcData(templateData);
                 templateData = normalizeFabulaThreatData(templateData);
                 templateData = normalizeSom6PcData(templateData);
@@ -2024,12 +2031,14 @@ const { useState, useEffect, useRef } = React;
                             <div className="mb-4 flex flex-wrap items-center gap-2 no-print">
                                 <div className="flex items-center gap-1 bg-gray-200 border border-gray-300 rounded px-2 py-1.5 shadow-sm">
                                     <SVGIcons.Palette />
+                                    {rotaZeroUnlocked && <span className="rz-model-status">Modelo RZ {theme === 'rotazero' ? 'ON' : 'desativado'}</span>}
                                     <select value={theme} onChange={(e) => { if (e.target.value === 'custom') setShowCustomBgModal(true); else setTheme(e.target.value); }} className="bg-transparent text-gray-700 font-bold text-xs outline-none cursor-pointer">
                                         <option value="default">Tema: Padrão</option>
                                         <option value="classic">Tema: Clássico DB</option>
                                         <option value="dnd">Tema: Dungeons & Dragons</option>
                                         <option value="fabula">Tema: Fabula Ultima</option>
                                         <option value="som6">Tema: O Som das Seis</option>
+                                        {rotaZeroUnlocked && <option value="rotazero">Tema: Rota Zero</option>}
                                         <option value="dark">Tema: Modo Escuro</option>
                                         <option value="custom">Tema: Personalizado...</option>
                                     </select>
@@ -2095,7 +2104,7 @@ const { useState, useEffect, useRef } = React;
                                 {showFilters && (
                                     <div style={getWindowStyle()} className="mt-2 max-w-2xl bg-white border border-gray-200 rounded-lg shadow-sm p-3 grid grid-cols-1 sm:grid-cols-3 gap-2">
                                         <select value={systemFilter} onChange={e=>setSystemFilter(e.target.value)} className="border rounded px-2 py-2 text-xs bg-white">
-                                            <option value="all">Todos os sistemas</option><option value="dragonbane">Dragonbane</option><option value="dnd5e">D&D 5.5e</option><option value="fabula">Fabula Ultima</option><option value="somdas6">O Som das Seis</option><option value="3det">3DeT Victory</option>
+                                            <option value="all">Todos os sistemas</option><option value="dragonbane">Dragonbane</option><option value="dnd5e">D&D 5.5e</option><option value="fabula">Fabula Ultima</option><option value="somdas6">O Som das Seis</option><option value="3det">3DeT Victory</option>{rotaZeroUnlocked && <option value="rotaZero">Rota Zero</option>}
                                         </select>
                                         <select value={sortMode} onChange={e=>setSortMode(e.target.value)} className="border rounded px-2 py-2 text-xs bg-white">
                                             <option value="recent">Mais recentes</option><option value="name">Nome A–Z</option><option value="system">Por sistema</option>
@@ -2117,10 +2126,11 @@ const { useState, useEffect, useRef } = React;
                                         const isFabula = char.system === 'fabula';
                                         const isSom6 = char.system === 'somdas6';
                                         const is3Det = char.system === '3det';
+                                        const isRotaZero = char.system === 'rotaZero';
                                         return (
-                                        <div key={char.id} style={getWindowStyle()} className={`pj-card-compact bg-white rounded-md shadow-lg border-2 ${isDnd ? 'border-[#922610]' : isFabula ? 'border-teal-700' : isSom6 ? 'border-red-900' : is3Det ? 'border-amber-500' : 'border-dragon-dark'} overflow-hidden flex ${dashboardView==='list'?'flex-row items-stretch':'flex-col'} relative`}>
-                                            <div className={`absolute top-0 right-0 text-white text-[9px] font-bold uppercase px-2 py-0.5 rounded-bl shadow-sm z-10 ${isDnd ? 'bg-[#922610]' : isFabula ? 'bg-teal-700' : isSom6 ? 'bg-red-900' : is3Det ? 'bg-zinc-950' : 'bg-dragon-dark'}`}>
-                                                {isDnd ? 'D&D 5.5e' : isFabula ? 'Fabula Ultima' : isSom6 ? 'O Som das Seis' : is3Det ? '3DeT Victory' : 'Dragonbane'}
+                                        <div key={char.id} style={getWindowStyle()} className={`pj-card-compact bg-white rounded-md shadow-lg border-2 ${isDnd ? 'border-[#922610]' : isFabula ? 'border-teal-700' : isSom6 ? 'border-red-900' : is3Det ? 'border-amber-500' : isRotaZero ? 'border-[#506055]' : 'border-dragon-dark'} overflow-hidden flex ${dashboardView==='list'?'flex-row items-stretch':'flex-col'} relative`}>
+                                            <div className={`absolute top-0 right-0 text-white text-[9px] font-bold uppercase px-2 py-0.5 rounded-bl shadow-sm z-10 ${isDnd ? 'bg-[#922610]' : isFabula ? 'bg-teal-700' : isSom6 ? 'bg-red-900' : is3Det ? 'bg-zinc-950' : isRotaZero ? 'bg-[#18201c]' : 'bg-dragon-dark'}`}>
+                                                {isDnd ? 'D&D 5.5e' : isFabula ? 'Fabula Ultima' : isSom6 ? 'O Som das Seis' : is3Det ? '3DeT Victory' : isRotaZero ? 'ROTA ZERO' : 'Dragonbane'}
                                             </div>
                                             <div className={`${dashboardView==='list'?'flex flex-1 min-w-0 h-24 border-r':'flex h-28 border-b'} border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors`} onClick={() => loadCharacter(char.id)}>
                                                 <div className="w-28 shrink-0 bg-gray-200 border-r border-gray-300">
@@ -2131,11 +2141,11 @@ const { useState, useEffect, useRef } = React;
                                                     )}
                                                 </div>
                                                 <div className="p-3 flex-1 overflow-hidden flex flex-col justify-center">
-                                                    <h3 className={`font-title font-bold text-lg truncate ${isDnd ? 'text-[#922610]' : isFabula ? 'text-teal-800' : isSom6 ? 'text-red-900' : is3Det ? 'text-amber-700' : 'text-red-900'}`}>{char.bio?.nome || 'Sem Nome'}</h3>
+                                                    <h3 className={`font-title font-bold text-lg truncate ${isDnd ? 'text-[#922610]' : isFabula ? 'text-teal-800' : isSom6 ? 'text-red-900' : is3Det ? 'text-amber-700' : isRotaZero ? 'text-[#35483b]' : 'text-red-900'}`}>{char.bio?.nome || 'Sem Nome'}</h3>
                                                     <p className="text-xs text-gray-600 font-bold uppercase mt-1 truncate">
-                                                        {isDnd ? `${char.bio?.linhagem || '?'} • ${char.bio?.classe || '?'}` : isFabula ? `${char.bio?.identidade || 'Sem identidade'} • ${char.bio?.tema || 'Sem tema'}` : isSom6 ? `${char.bio?.apelido || 'Sem apelido'} • ${char.tormento?.tipo || 'Sem tormento'}` : is3Det ? `${char.bio?.arquetipo || 'Sem arquétipo'}${char.bio?.kit ? ` • ${char.bio.kit}` : char.bio?.conceito ? ` • ${char.bio.conceito}` : ''}` : `${char.bio?.ancestralidade || '?'} • ${char.bio?.profissao || '?'}`}
+                                                        {isDnd ? `${char.bio?.linhagem || '?'} • ${char.bio?.classe || '?'}` : isFabula ? `${char.bio?.identidade || 'Sem identidade'} • ${char.bio?.tema || 'Sem tema'}` : isSom6 ? `${char.bio?.apelido || 'Sem apelido'} • ${char.tormento?.tipo || 'Sem tormento'}` : is3Det ? `${char.bio?.arquetipo || 'Sem arquétipo'}${char.bio?.kit ? ` • ${char.bio.kit}` : char.bio?.conceito ? ` • ${char.bio.conceito}` : ''}` : isRotaZero ? `${char.bio?.kit || 'Funcionário'} • ${char.bio?.conceito || 'Sem conceito'}` : `${char.bio?.ancestralidade || '?'} • ${char.bio?.profissao || '?'}`}
                                                     </p>
-                                                    <p className="text-[10px] text-gray-500 mt-2 truncate italic">{is3Det ? `Pontos ${char.pontos ?? 0} • XP ${char.xp ?? 0}` : `Nível ${isFabula ? (char.nivel || 5) : isSom6 ? (char.nivel || 1) : (char.bio?.nivel || 1)}`}</p>
+                                                    <p className="text-[10px] text-gray-500 mt-2 truncate italic">{is3Det ? `Pontos ${char.pontos ?? 0} • XP ${char.xp ?? 0}` : isRotaZero ? `P${char.atributos?.pulso ?? 1} • T${char.atributos?.tecnica ?? 1} • F${char.atributos?.firmeza ?? 1}` : `Nível ${isFabula ? (char.nivel || 5) : isSom6 ? (char.nivel || 1) : (char.bio?.nivel || 1)}`}</p>
                                                     {char.meta?.campanha && <p className="text-[10px] text-indigo-600 mt-1 truncate font-bold">📁 {char.meta.campanha}</p>}
                                                     {char.meta?.updatedAt && <p className="text-[9px] text-gray-400 mt-1">Editado: {new Date(char.meta.updatedAt).toLocaleString('pt-BR')}</p>}
                                                 </div>
@@ -2316,6 +2326,16 @@ const { useState, useEffect, useRef } = React;
                                             </div>
                                         )}
 
+                                        {rotaZeroUnlocked && createTarget === 'pc' && (
+                                            <div onClick={() => { setShowSystemModal(false); setShowRotaZeroModelModal(true); }} className="bg-[#ecebe4] border-2 border-[#7a857d] hover:border-[#34473b] rounded p-3 cursor-pointer hover:shadow-md transition-all flex items-center gap-3 group min-h-[82px]">
+                                                <div className="w-12 h-12 bg-[#18201c] text-[#c7d2c9] rounded flex items-center justify-center font-black text-lg shadow-inner">RZ</div>
+                                                <div className="flex-1">
+                                                    <div className="flex items-center gap-2"><h3 className="font-bold text-[#18201c] text-lg">Rota Zero</h3><span className="bg-[#d8dfda] text-[#33443a] text-[9px] font-bold uppercase px-2 py-0.5 rounded">RZ-088</span></div>
+                                                    <p className="text-xs text-[#647069]">Funcionário • 6 Créditos • veículo opcional</p>
+                                                </div>
+                                            </div>
+                                        )}
+
                                         <div onClick={() => { setShowSystemModal(false); setShowSom6ModelModal(true); }} className="bg-white border-2 border-gray-300 hover:border-red-900 rounded p-3 cursor-pointer hover:shadow-md transition-all flex items-center gap-3 group min-h-[82px]">
                                             <div className="w-12 h-12 bg-red-900 group-hover:bg-red-950 text-amber-50 rounded flex items-center justify-center font-bold font-title text-xl shadow-inner transition-colors">S6</div>
                                             <div className="flex-1">
@@ -2328,6 +2348,26 @@ const { useState, useEffect, useRef } = React;
                             </div>, document.body
                         )}
 
+
+                        {showRotaZeroModelModal && ReactDOM.createPortal(
+                            <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[110] p-4">
+                                <div className="bg-[#e9e8e1] rounded-lg shadow-2xl w-full max-w-3xl border border-[#69756d] overflow-hidden max-h-[90vh] flex flex-col">
+                                    <div className="bg-[#111615] text-white p-4 flex justify-between items-center border-b-4 border-[#6b7e70]">
+                                        <div><div className="text-[9px] tracking-[.2em] text-[#9eb0a4] font-bold">ROTA ZERO DELIVERY CO.</div><h2 className="font-mono font-black text-lg">NOVO FUNCIONÁRIO</h2></div>
+                                        <button onClick={() => { setShowRotaZeroModelModal(false); setCreateTarget(null); }} className="text-2xl px-2">&times;</button>
+                                    </div>
+                                    <div className="p-4 overflow-y-auto space-y-4">
+                                        <button onClick={() => loadTemplate(initialRotaZeroPcData)} className="w-full text-left bg-[#f7f5ed] border-2 border-[#9ca39e] hover:border-[#43564a] rounded p-4">
+                                            <b>Ficha em branco</b><div className="text-xs text-[#667169] mt-1">Pulso 1 • Técnica 1 • Firmeza 1 • 6 Créditos de Contratação.</div>
+                                        </button>
+                                        <div><h3 className="font-black text-sm text-[#263129] mb-2">FUNCIONÁRIOS PRONTOS</h3><div className="grid sm:grid-cols-2 gap-3">
+                                            {MODELOS_ROTA_ZERO_PC.map((m,i)=><button key={i} onClick={() => loadTemplate(m)} className="text-left bg-[#f7f5ed] border border-[#a7aaa5] hover:border-[#43564a] rounded p-3"><div className="flex justify-between gap-2"><b>{m.bio.nome}</b><span className="text-[9px] bg-[#18201c] text-white rounded px-2 py-1">P{m.atributos.pulso} T{m.atributos.tecnica} F{m.atributos.firmeza}</span></div><p className="text-[10px] text-[#657068] mt-2">{m.bio.conceito}</p></button>)}
+                                        </div></div>
+                                        <p className="text-[10px] text-[#667169]">Até 2 Defeitos podem conceder +1 Crédito cada. O total final deve fechar.</p>
+                                    </div>
+                                </div>
+                            </div>, document.body
+                        )}
 
                         {show3DetModelModal && ReactDOM.createPortal(
                             <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] p-4 transition-opacity">
@@ -2894,7 +2934,8 @@ const { useState, useEffect, useRef } = React;
             const isFabula = data.system === 'fabula';
             const isSom6 = data.system === 'somdas6';
             const is3Det = data.system === '3det';
-            const topBarColor = isDnd ? 'bg-[#922610]' : isFabula ? 'bg-teal-800' : isSom6 ? 'bg-red-950' : is3Det ? 'bg-zinc-950' : (data.type === 'pnj' ? 'bg-blue-900' : data.type === 'ameaca' ? 'bg-red-900' : 'bg-dragon-dark');
+            const isRotaZero = data.system === 'rotaZero';
+            const topBarColor = isDnd ? 'bg-[#922610]' : isFabula ? 'bg-teal-800' : isSom6 ? 'bg-red-950' : is3Det ? 'bg-zinc-950' : isRotaZero ? 'bg-[#111615]' : (data.type === 'pnj' ? 'bg-blue-900' : data.type === 'ameaca' ? 'bg-red-900' : 'bg-dragon-dark');
             // Escopo de compatibilidade dos editores modularizados.
             // Será reduzido conforme modelos e lógica forem migrados para cada sistema.
             const systemEditorScope = {
@@ -3224,9 +3265,10 @@ const { useState, useEffect, useRef } = React;
                     {/* 3DeT Victory — personagem e ameaças modularizados */}
                     <TresDeTCharacterEditor scope={systemEditorScope} />
                     <TresDeTThreatEditor scope={systemEditorScope} />
+                    <RotaZeroCharacterEditor scope={systemEditorScope} />
 
                     {/* Editor Dragonbane (Intacto) */}
-                    {!['dragonbane','dnd5e','fabula','somdas6','3det'].includes(data.system || 'dragonbane') && (
+                    {!['dragonbane','dnd5e','fabula','somdas6','3det','rotaZero'].includes(data.system || 'dragonbane') && (
                         <div className="p-6 md:p-10 bg-amber-50 border-y border-amber-300 text-amber-950">
                             <h2 className="font-title font-bold text-lg">⚠ Formato de ficha não reconhecido</h2>
                             <p className="text-sm mt-2">Esta ficha parece ter vindo de uma versão ou sistema que o PJ Lite atual não reconhece. Os dados não foram apagados. Exporte um backup antes de editar e confira o campo de sistema na origem da ficha.</p>
