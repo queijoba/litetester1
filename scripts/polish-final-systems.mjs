@@ -14,7 +14,11 @@ s=s.replaceAll("'skyfall','ordem'].includes", "'skyfall','ordemParanormal'].incl
 s=s.replace("(!isDnd && !isFabula && !isSom6 && !is3Det && data.type === 'pc')", "(!isDnd && !isFabula && !isSom6 && !is3Det && !isSkyfall && !isOrdem && data.type === 'pc')");
 s=s.replace("is3Det ? 'border-amber-500' : 'border-gray-500'", "is3Det ? 'border-amber-500' : isSkyfall ? 'border-violet-700' : isOrdem ? 'border-red-950' : 'border-gray-500'");
 s=s.replace("(isDnd || isFabula || isSom6 || is3Det) ? {}", "(isDnd || isFabula || isSom6 || is3Det || isSkyfall || isOrdem) ? {}");
-s=s.replace("is3Det ? '3DeT VICTORY • PERSONAGEM • PRÉVIA' : (data.type", "is3Det ? (data.type === 'pc' ? '3DeT VICTORY • PERSONAGEM' : '3DeT VICTORY • AMEAÇA / NPC') : isSkyfall ? (data.type === 'pc' ? 'SKYFALL RPG • PERSONAGEM' : 'SKYFALL RPG • AMEAÇA') : isOrdem ? (data.type === 'pc' ? 'ORDEM PARANORMAL • AGENTE' : 'ORDEM PARANORMAL • AMEAÇA') : (data.type");
+if (s.includes("is3Det ? '3DeT VICTORY • PERSONAGEM • PRÉVIA' : isRotaZero ? 'ROTA ZERO • FUNCIONÁRIO' : (data.type")) {
+  s=s.replace("is3Det ? '3DeT VICTORY • PERSONAGEM • PRÉVIA' : isRotaZero ? 'ROTA ZERO • FUNCIONÁRIO' : (data.type", "is3Det ? (data.type === 'pc' ? '3DeT VICTORY • PERSONAGEM' : '3DeT VICTORY • AMEAÇA / NPC') : isSkyfall ? (data.type === 'pc' ? 'SKYFALL RPG • PERSONAGEM' : 'SKYFALL RPG • AMEAÇA') : isOrdem ? (data.type === 'pc' ? 'ORDEM PARANORMAL • AGENTE' : 'ORDEM PARANORMAL • AMEAÇA') : isRotaZero ? 'ROTA ZERO • FUNCIONÁRIO' : (data.type");
+} else {
+  s=s.replace("is3Det ? '3DeT VICTORY • PERSONAGEM • PRÉVIA' : (data.type", "is3Det ? (data.type === 'pc' ? '3DeT VICTORY • PERSONAGEM' : '3DeT VICTORY • AMEAÇA / NPC') : isSkyfall ? (data.type === 'pc' ? 'SKYFALL RPG • PERSONAGEM' : 'SKYFALL RPG • AMEAÇA') : isOrdem ? (data.type === 'pc' ? 'ORDEM PARANORMAL • AGENTE' : 'ORDEM PARANORMAL • AMEAÇA') : (data.type");
+}
 
 // Dashboard de personagens: reconhecer os dois sistemas.
 rep("const is3Det = char.system === '3det';", "const is3Det = char.system === '3det';\n                                        const isSkyfall = char.system === 'skyfall';\n                                        const isOrdem = char.system === 'ordemParanormal';", 'dashboard flags');
