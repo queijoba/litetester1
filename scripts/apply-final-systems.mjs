@@ -35,7 +35,9 @@ if (s.includes("theme === 'som6' ? 'theme-som6' : theme === 'rotazero' ? 'theme-
 } else {
   rep("theme === 'som6' ? 'theme-som6' : theme === 'dark' ? 'theme-dark'", "theme === 'som6' ? 'theme-som6' : theme === 'skyfall' ? 'theme-skyfall' : theme === 'ordem' ? 'theme-ordem' : theme === 'dark' ? 'theme-dark'", 'theme body');
 }
-if (s.includes(`<option value="som6">Tema: O Som das Seis</option>\n                                        {rotaZeroUnlocked && <option value="rotazero">Tema: Rota Zero</option>}\n                                        <option value="dark">`)) {
+if (s.includes('<option value="skyfall">Tema: Skyfall RPG</option>') && s.includes('<option value="ordem">Tema: Ordem Paranormal</option>')) {
+  // Temas finais já presentes; mantém a ordem atual, inclusive o Tema Rota Zero.
+} else if (s.includes(`<option value="som6">Tema: O Som das Seis</option>\n                                        {rotaZeroUnlocked && <option value="rotazero">Tema: Rota Zero</option>}\n                                        <option value="dark">`)) {
   s=s.replace(`<option value="som6">Tema: O Som das Seis</option>\n                                        {rotaZeroUnlocked && <option value="rotazero">Tema: Rota Zero</option>}\n                                        <option value="dark">`, `<option value="som6">Tema: O Som das Seis</option>
                                         <option value="skyfall">Tema: Skyfall RPG</option>
                                         <option value="ordem">Tema: Ordem Paranormal</option>
