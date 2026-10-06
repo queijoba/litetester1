@@ -2326,6 +2326,16 @@ const { useState, useEffect, useRef } = React;
                                             </div>
                                         )}
 
+                                        {rotaZeroUnlocked && createTarget === 'pc' && (
+                                            <div onClick={() => { setShowSystemModal(false); setShowRotaZeroModelModal(true); }} className="bg-[#ecebe4] border-2 border-[#7a857d] hover:border-[#34473b] rounded p-3 cursor-pointer hover:shadow-md transition-all flex items-center gap-3 group min-h-[82px]">
+                                                <div className="w-12 h-12 bg-[#18201c] text-[#c7d2c9] rounded flex items-center justify-center font-black text-lg shadow-inner">RZ</div>
+                                                <div className="flex-1">
+                                                    <div className="flex items-center gap-2"><h3 className="font-bold text-[#18201c] text-lg">Rota Zero</h3><span className="bg-[#d8dfda] text-[#33443a] text-[9px] font-bold uppercase px-2 py-0.5 rounded">RZ-088</span></div>
+                                                    <p className="text-xs text-[#647069]">Funcionário • 6 Créditos • veículo opcional</p>
+                                                </div>
+                                            </div>
+                                        )}
+
                                         <div onClick={() => { setShowSystemModal(false); setShowSom6ModelModal(true); }} className="bg-white border-2 border-gray-300 hover:border-red-900 rounded p-3 cursor-pointer hover:shadow-md transition-all flex items-center gap-3 group min-h-[82px]">
                                             <div className="w-12 h-12 bg-red-900 group-hover:bg-red-950 text-amber-50 rounded flex items-center justify-center font-bold font-title text-xl shadow-inner transition-colors">S6</div>
                                             <div className="flex-1">
