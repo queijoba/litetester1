@@ -150,10 +150,17 @@ export default function RotaZeroCharacterEditor({scope}){
 
     {tab==='contratacao'&&<>
       <div className="rz-contract-summary">
-        <div><span className="rz-contract-kicker">CRÉDITOS DE CONTRATAÇÃO</span><strong>{costs.remaining}</strong><small>restantes de {costs.available}</small></div>
-        <p>Comece com P/T/F 1. Gaste 6 CR em Atributos, Perícias e Vantagens. Até 2 Defeitos devolvem +1 CR cada.</p>
+        <div className="rz-credit-summary">
+          <span className="rz-contract-kicker">CRÉDITOS DE CONTRATAÇÃO</span>
+          <strong>{costs.remaining}</strong><small>restantes de {costs.available}</small>
+          <button type="button" className={'rz-overtime-toggle '+(data.contratacao?.horaExtra?'on':'')} onClick={()=>updateField('contratacao.horaExtra',!data.contratacao?.horaExtra)}>HORA EXTRA</button>
+        </div>
+        <div className="rz-contract-copy">
+          <p>Comece com P/T/F 1. Gaste 6 CR em Atributos, Perícias e Vantagens. Até 2 Defeitos devolvem +1 CR cada.</p>
+          {data.contratacao?.horaExtra&&<div className="rz-overtime-box"><div><b>Créditos extras de campanha</b><span>Para grupos que começam acima do nível de contratação comum.</span></div><div className="rz-overtime-step"><button type="button" className="rz-step" onClick={()=>updateField('contratacao.creditosExtras',Math.max(0,(Number(data.contratacao?.creditosExtras)||0)-1))}>-</button><input type="number" min="0" max="99" value={data.contratacao?.creditosExtras??0} onChange={e=>updateField('contratacao.creditosExtras',Math.max(0,Math.min(99,Number(e.target.value)||0)))}/><button type="button" className="rz-step" onClick={()=>updateField('contratacao.creditosExtras',Math.min(99,(Number(data.contratacao?.creditosExtras)||0)+1))}>+</button></div></div>}
+        </div>
       </div>
-      <div className="rz-credit"><span>BASE <b>6</b></span><span>DEFEITOS +<b>{costs.defectGain}</b></span><span>ATRIBUTOS −<b>{costs.attrCost}</b></span><span>PERÍCIAS −<b>{costs.skillCost}</b></span><span>VANTAGENS −<b>{costs.advantageCost}</b></span><span>RESTAM <b className={costs.remaining<0?'bad':''}>{costs.remaining}</b></span></div>
+      <div className="rz-credit"><span>BASE <b>6</b></span><span>DEFEITOS +<b>{costs.defectGain}</b></span>{data.contratacao?.horaExtra&&<span>HORA EXTRA +<b>{costs.extraCredits}</b></span>}<span>ATRIBUTOS −<b>{costs.attrCost}</b></span><span>PERÍCIAS −<b>{costs.skillCost}</b></span><span>VANTAGENS −<b>{costs.advantageCost}</b></span><span>RESTAM <b className={costs.remaining<0?'bad':''}>{costs.remaining}</b></span></div>
 
       <Panel title="KITS DE FUNÇÃO // ATALHOS"><div className="rz-grid rz-kits">{RZ_KITS.map(k=><button key={k.id} className="rz-btn secondary" onClick={()=>applyKit(k)}><b>{k.nome}</b><span className="rz-note">{k.item}</span></button>)}</div></Panel>
 
