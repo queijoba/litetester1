@@ -37,10 +37,18 @@ s=s.replace("sys === '3det' ? 'text-amber-800' : 'text-gray-900'", "sys === '3de
 s=s.replace("sys === '3det' ? `${threat.categoria || 'Criatura'} • ${threat.papel || 'Comum'} • ${threat.pontos || 0} pts` : threat.type", "sys === '3det' ? `${threat.categoria || 'Criatura'} • ${threat.papel || 'Comum'} • ${threat.pontos || 0} pts` : sys === 'skyfall' ? `ND ${threat.nd ?? 0} • ${threat.tipo || 'Ameaça'}` : sys === 'ordemParanormal' ? `VD ${threat.vd ?? 0} • ${threat.tipo || threat.categoria || 'Ameaça'}` : threat.type");
 
 // Guias: abas + conteúdo compacto, sem duplicar regras do livro.
-rep(">Som das Seis</button>\n                                    </div>", `>Som das Seis</button>
+const extraGuideButtons = `
                                         <button onClick={() => setGuideTab('skyfall')} className={\`flex-1 py-2.5 px-4 text-xs font-bold uppercase text-center border-b-4 transition-colors whitespace-nowrap \${guideTab === 'skyfall' ? 'border-violet-700 text-violet-950 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-300'}\`}>Skyfall RPG</button>
-                                        <button onClick={() => setGuideTab('ordem')} className={\`flex-1 py-2.5 px-4 text-xs font-bold uppercase text-center border-b-4 transition-colors whitespace-nowrap \${guideTab === 'ordem' ? 'border-red-900 text-red-950 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-300'}\`}>Ordem Paranormal</button>
+                                        <button onClick={() => setGuideTab('ordem')} className={\`flex-1 py-2.5 px-4 text-xs font-bold uppercase text-center border-b-4 transition-colors whitespace-nowrap \${guideTab === 'ordem' ? 'border-red-900 text-red-950 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-300'}\`}>Ordem Paranormal</button>`;
+
+const rzGuideClose = ">Rota Zero</button>}\n                                    </div>";
+if (s.includes(rzGuideClose)) {
+  s=s.replace(rzGuideClose, `>Rota Zero</button>}${extraGuideButtons}
+                                    </div>`);
+} else {
+  rep(">Som das Seis</button>\n                                    </div>", `>Som das Seis</button>${extraGuideButtons}
                                     </div>`, 'guide buttons');
+}
 
 rep("                                        {guideTab === 'som6' && (", `                                        {guideTab === 'skyfall' && (
                                             <div className="space-y-5"><div className="bg-violet-950 text-white rounded p-4"><div className="text-[10px] font-bold uppercase text-violet-200">Livro Básico 1.25</div><h3 className="font-title font-bold text-lg">☄️ Skyfall RPG — Guia da ficha</h3><p className="text-xs mt-1">O PJ Lite organiza a ficha; custos, escolhas e efeitos completos continuam seguindo o livro.</p></div><div className="grid sm:grid-cols-2 gap-3 text-xs"><div className="bg-white border rounded p-3"><strong>1. Identidade</strong><p>Preencha Legado, Herança, Antecedente, Maldição, Melancolia, Classe e Trilha.</p></div><div className="bg-white border rounded p-3"><strong>2. Recursos</strong><p>Confira PV, Catarse, Ênfase, Sombra, Fragmentos Arcanos e Volume.</p></div><div className="bg-white border rounded p-3"><strong>3. Perícias</strong><p>Marque proficiência e Ênfase e registre ajustes somente quando necessários.</p></div><div className="bg-white border rounded p-3"><strong>4. Combate</strong><p>Registre Proteção, redução de dano, iniciativa, movimento e ataques usados em mesa.</p></div><div className="bg-white border rounded p-3"><strong>5. Habilidades & Magias</strong><p>Guarde nomes e lembretes curtos das opções escolhidas no livro.</p></div><div className="bg-white border rounded p-3"><strong>6. Inventário</strong><p>Acompanhe equipamentos, Volume, Fragmentos, Peças e Trocados.</p></div></div></div>
