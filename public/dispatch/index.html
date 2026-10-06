@@ -152,6 +152,11 @@ não responda."</div>
       <h2>Cadastro de colaborador</h2>
       <p class="sub">Preencha com sinceridade. Algumas respostas serão utilizadas para montar seu perfil operacional interno.</p>
       <div class="notice"><strong>CONTATO:</strong> use o mesmo contato usado nos Lite, por favor. Se você estiver autenticado na Conta Lite, o sistema tentará validar o mesmo e-mail.</div>
+      <div id="liteAuthGate" class="recruit" style="display:none;margin:14px 0">
+        <h3>IDENTIFICAÇÃO LITE NECESSÁRIA</h3>
+        <p class="sub">Entre com sua Conta Lite. Depois do Google, você volta automaticamente para este currículo — sem reiniciar o protocolo.</p>
+        <button id="liteLoginBtn" type="button">ENTRAR COM CONTA LITE / GOOGLE</button>
+      </div>
       <div class="formbox">
         <div class="grid2">
           <div><label>NOME / CONTA GOOGLE</label><input id="rzUser" placeholder="nome detectado na Conta Lite"></div>
@@ -285,6 +290,8 @@ function liteAccountProfile(){
 function liteAccountEmail(){ return liteAccountProfile().email; }
 const liteProfile=liteAccountProfile();
 const liteEmail=liteProfile.email;
+const liteAuthGate=document.getElementById('liteAuthGate');
+const liteLoginBtn=document.getElementById('liteLoginBtn');
 if(liteEmail){
   document.getElementById('rzEmail').value=liteEmail;
   document.getElementById('rzEmail').readOnly=true;
@@ -294,11 +301,33 @@ if(liteEmail){
   document.getElementById('ageHint').textContent=liteProfile.age
     ? 'Dado exposto pela autenticação da Conta Google.'
     : 'A Conta Google autenticada não expôs idade/data de nascimento. O sistema não inventa esse dado.';
+  if(liteAuthGate) liteAuthGate.style.display='none';
 }else{
-  document.getElementById('mailHint').textContent='Entre primeiro em Conta & Nuvem no PJ Lite e volte aqui. O currículo precisa usar o mesmo contato Lite.';
+  document.getElementById('mailHint').textContent='Autentique a Conta Lite abaixo. Depois do login você retorna exatamente para esta etapa.';
   document.getElementById('rzAge').value='CONTA LITE NÃO AUTENTICADA';
+  if(liteAuthGate) liteAuthGate.style.display='block';
+}
+if(liteLoginBtn){
+  liteLoginBtn.onclick=()=>{
+    try{
+      localStorage.setItem('pjlite_auth_return_v1','/dispatch/?resume=application');
+      localStorage.setItem('pjlite_rz_resume_v1','application');
+    }catch{}
+    window.location.href='/?openAccount=1&from=rota-zero';
+  };
 }
 document.getElementById('applyBtn').onclick=()=>showStep(4);
+try{
+  const params=new URLSearchParams(window.location.search);
+  const resume=params.get('resume')||localStorage.getItem('pjlite_rz_resume_v1')||'';
+  if(resume==='application'){
+    localStorage.removeItem('pjlite_rz_resume_v1');
+    setTimeout(()=>{
+      showStep(4);
+      try{history.replaceState(null,'','/dispatch/');}catch{}
+    },80);
+  }
+}catch{}
 
 const RZ_BUILDS={
   'Motorista de Rota':{attrs:{pulso:1,tecnica:3,firmeza:2},skills:['conducao','navegacao'],adv:'reflexosEntrega'},
