@@ -134,6 +134,23 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
   }, [session?.user?.id, savedChars, savedThreats, showToast]);
 
   React.useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('openAccount') === '1') setOpen(true);
+    } catch {}
+  }, []);
+
+  React.useEffect(() => {
+    if (!session?.user) return;
+    let returnTo = '';
+    try { returnTo = String(localStorage.getItem('pjlite_auth_return_v1') || ''); } catch {}
+    if (!returnTo || !returnTo.startsWith('/')) return;
+    try { localStorage.removeItem('pjlite_auth_return_v1'); } catch {}
+    const timer = setTimeout(() => window.location.replace(returnTo), 220);
+    return () => clearTimeout(timer);
+  }, [session?.user?.id]);
+
+  React.useEffect(() => {
     let active = true;
     getSession().then(next => { if (active) setSession(next); }).catch(error => console.error('Conta Lite: sessão', error));
     const unsubscribe = onAuthStateChange(next => {
