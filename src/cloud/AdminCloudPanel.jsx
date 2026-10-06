@@ -29,6 +29,18 @@ const activityLabel = value => ({
   inactive: 'Sem login recente',
 }[value] || 'Sem login recente');
 
+const tagsOf = user => Array.isArray(user?.achievementTags) ? user.achievementTags : [];
+
+const AchievementTags = ({ user, compact = false }) => {
+  const tags = tagsOf(user);
+  if (!tags.length) return <span className="pjlite-admin__no-tags">Sem conquistas</span>;
+  return <div className={'pjlite-admin__tags '+(compact?'is-compact':'')}>
+    {tags.map(tag=><span key={tag.id||tag.label} className={'pjlite-admin__achievement pjlite-admin__achievement--'+String(tag.id||'').replace(/[^a-z0-9-]/gi,'').toLowerCase()} title={(tag.name||tag.label)+(tag.unlockedAt?' • '+dateTime(tag.unlockedAt):'')}>
+      <b>{tag.label}</b>{!compact&&<small>{tag.name||'Conquista'}</small>}
+    </span>)}
+  </div>;
+};
+
 export default function AdminCloudPanel({ account, showToast }) {
   const [view, setView] = React.useState('overview');
   const [data, setData] = React.useState(null);
@@ -69,7 +81,8 @@ export default function AdminCloudPanel({ account, showToast }) {
     if (!normalizedQuery) return true;
     return String(user.email || '').toLowerCase().includes(normalizedQuery)
       || String(user.name || '').toLowerCase().includes(normalizedQuery)
-      || String(user.provider || '').toLowerCase().includes(normalizedQuery);
+      || String(user.provider || '').toLowerCase().includes(normalizedQuery)
+      || tagsOf(user).some(tag => String(tag.label||'').toLowerCase().includes(normalizedQuery) || String(tag.name||'').toLowerCase().includes(normalizedQuery));
   });
   const selectedUser = users.find(user => user.id === selectedUserId) || null;
 
@@ -103,6 +116,7 @@ export default function AdminCloudPanel({ account, showToast }) {
         <article><span>Fichas na nuvem</span><strong>{overview.totalSheets ?? 0}</strong><small>PJ Lite Cloud</small></article>
         <article><span>Grupos</span><strong>{overview.totalGroups ?? 0}</strong><small>mesas/grupos criados</small></article>
         <article><span>Compartilhamentos</span><strong>{overview.totalShares ?? 0}</strong><small>envios registrados</small></article>
+        <article className="pjlite-admin__card-achievements"><span>Contas com conquistas</span><strong>{overview.taggedAccounts ?? 0}</strong><small>{overview.totalAchievementTags ?? 0} tags liberadas</small></article>
       </div>
       <div className="pjlite-admin__note">
         <strong>Sobre “online agora”</strong>
@@ -119,16 +133,17 @@ export default function AdminCloudPanel({ account, showToast }) {
       <div className="pjlite-admin__toolbar">
         <label>
           <span>Pesquisar conta</span>
-          <input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Nome, e-mail ou provedor…" />
+          <input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Nome, e-mail, provedor ou conquista…" />
         </label>
         <strong>{filteredUsers.length} {filteredUsers.length===1?'conta':'contas'}</strong>
       </div>
       <div className="pjlite-admin__table-wrap">
         <table className="pjlite-admin__table">
-          <thead><tr><th>Conta</th><th>Provedor</th><th>Criada em</th><th>Confirmada</th></tr></thead>
+          <thead><tr><th>Conta</th><th>Conquistas</th><th>Provedor</th><th>Criada em</th><th>Confirmada</th></tr></thead>
           <tbody>
             {filteredUsers.map(user=><tr key={user.id} onClick={()=>setSelectedUserId(user.id)} className={selectedUserId===user.id?'is-selected':''}>
               <td><div className="pjlite-admin__person">{user.avatar?<img src={user.avatar} alt="" />:<span>{String(user.name||user.email||'?').charAt(0).toUpperCase()}</span>}<div><strong>{user.name}</strong><small>{user.email}</small></div></div></td>
+              <td><AchievementTags user={user} compact /></td>
               <td><code>{user.provider || 'email'}</code></td>
               <td>{dateOnly(user.createdAt)}</td>
               <td>{user.emailConfirmedAt ? '✓ Sim' : '—'}</td>
@@ -136,19 +151,25 @@ export default function AdminCloudPanel({ account, showToast }) {
           </tbody>
         </table>
       </div>
-      {selectedUser && <div className="pjlite-admin__detail">
+      {selectedUser && <>
+      <div className="pjlite-admin__detail">
         <div><span>Conta selecionada</span><strong>{selectedUser.name}</strong><small>{selectedUser.email}</small></div>
         <div><span>Último login</span><strong>{dateTime(selectedUser.lastSignInAt)}</strong><small>{activityLabel(selectedUser.activity)}</small></div>
         <div><span>Fichas</span><strong>{selectedUser.sheetCount}</strong><small>na nuvem</small></div>
         <div><span>Grupos</span><strong>{selectedUser.groupCount}</strong><small>participações</small></div>
-      </div>}
+      </div>
+      <div className="pjlite-admin__achievement-panel">
+        <div><span className="pjlite-admin__eyebrow">CONQUISTAS DA CONTA</span><strong>Tags liberadas</strong><small>As conquistas são vinculadas à Conta Lite e aparecem automaticamente aqui.</small></div>
+        <AchievementTags user={selectedUser} />
+      </div>
+      </>}
     </>}
 
     {data && view==='users' && <>
       <div className="pjlite-admin__toolbar">
         <label>
           <span>Pesquisar usuário</span>
-          <input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Nome ou e-mail…" />
+          <input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Nome, e-mail ou conquista…" />
         </label>
         <strong>{filteredUsers.length} {filteredUsers.length===1?'usuário':'usuários'}</strong>
       </div>
@@ -156,7 +177,7 @@ export default function AdminCloudPanel({ account, showToast }) {
         {filteredUsers.map(user=><article key={user.id}>
           <div className="pjlite-admin__person">
             {user.avatar?<img src={user.avatar} alt="" />:<span>{String(user.name||user.email||'?').charAt(0).toUpperCase()}</span>}
-            <div><strong>{user.name}</strong><small>{user.email}</small></div>
+            <div><strong>{user.name}</strong><small>{user.email}</small><AchievementTags user={user} compact /></div>
           </div>
           <span className={'pjlite-admin__activity is-'+user.activity}>{activityLabel(user.activity)}</span>
           <div className="pjlite-admin__user-stats">
