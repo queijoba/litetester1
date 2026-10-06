@@ -14,6 +14,7 @@ import { installSom6PdfExport } from './systems/somDasSeis/index.js';
 import { install3DetPdfExport } from './systems/3det/index.js';
 import { installSkyfallPdfExport } from './systems/skyfall/index.js';
 import { installOrdemPdfExport } from './systems/ordemParanormal/index.js';
+import { installRotaZeroPdfExport } from './systems/rotaZero/index.js';
 
 createRoot(document.getElementById('root')).render(<PJLiteApp />);
 installDragonbanePdfExport();
@@ -23,3 +24,4 @@ installSom6PdfExport();
 install3DetPdfExport();
 installSkyfallPdfExport();
 installOrdemPdfExport();
+installRotaZeroPdfExport();

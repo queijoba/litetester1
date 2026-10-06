@@ -6,6 +6,9 @@ import Som6CharacterEditor from './systems/somDasSeis/components/CharacterEditor
 import Som6ThreatEditor from './systems/somDasSeis/components/ThreatEditor.jsx';
 import TresDeTCharacterEditor from './systems/3det/components/CharacterEditor.jsx';
 import TresDeTThreatEditor from './systems/3det/components/ThreatEditor.jsx';
+import RotaZeroCharacterEditor from './systems/rotaZero/components/CharacterEditor.jsx';
+import { initialRotaZeroPcData, normalizeRotaZeroPcData } from './systems/rotaZero/data.js';
+import { MODELOS_ROTA_ZERO_PC } from './systems/rotaZero/models.js';
 import { initial3DetPcData, normalize3DetPcData } from './systems/3det/data.js';
 import { initial3DetThreatData, normalize3DetThreatData } from './systems/3det/threatData.js';
 import { MODELOS_3DET_PC } from './systems/3det/models.js';
@@ -1205,6 +1208,7 @@ const { useState, useEffect, useRef } = React;
             const [data, setData] = useState(initialData);
             
             const [theme, setTheme] = useState(() => { try { return localStorage.getItem(THEME_PREF_KEY) || 'default'; } catch { return 'default'; } });
+            const [rotaZeroUnlocked] = useState(() => { try { return localStorage.getItem('pjlite_rz_theme_unlocked_v1') === '1'; } catch { return false; } });
             const [customBgUrl, setCustomBgUrl] = useState(() => { try { return localStorage.getItem(CUSTOM_BG_KEY) || ''; } catch { return ''; } });
             const [customBgLink, setCustomBgLink] = useState('');
             const [customWinColor, setCustomWinColor] = useState(() => { try { return localStorage.getItem(CUSTOM_WIN_COLOR_KEY) || '#ffffff'; } catch { return '#ffffff'; } });
@@ -1233,6 +1237,7 @@ const { useState, useEffect, useRef } = React;
             const [showFabulaModelModal, setShowFabulaModelModal] = useState(false);
             const [showSom6ModelModal, setShowSom6ModelModal] = useState(false);
             const [show3DetModelModal, setShow3DetModelModal] = useState(false);
+            const [showRotaZeroModelModal, setShowRotaZeroModelModal] = useState(false);
             const [dndPcTab, setDndPcTab] = useState('caracteristicas');
             const [fabulaTab, setFabulaTab] = useState('perfil');
             const [som6Tab, setSom6Tab] = useState('perfil');
@@ -1275,7 +1280,7 @@ const { useState, useEffect, useRef } = React;
 
             useEffect(() => {
                 try { localStorage.setItem(THEME_PREF_KEY, theme); } catch {}
-                document.body.className = `font-body text-gray-800 antialiased p-4 md:p-8 ${theme === 'classic' ? 'theme-classic' : theme === 'dnd' ? 'theme-dnd' : theme === 'fabula' ? 'theme-fabula' : theme === 'som6' ? 'theme-som6' : theme === 'dark' ? 'theme-dark' : theme === 'custom' ? 'theme-custom' : 'theme-default'}`;
+                document.body.className = `font-body text-gray-800 antialiased p-4 md:p-8 ${theme === 'classic' ? 'theme-classic' : theme === 'dnd' ? 'theme-dnd' : theme === 'fabula' ? 'theme-fabula' : theme === 'som6' ? 'theme-som6' : theme === 'rotazero' ? 'theme-rotazero' : theme === 'dark' ? 'theme-dark' : theme === 'custom' ? 'theme-custom' : 'theme-default'}`;
             }, [theme]);
 
             useEffect(() => {
@@ -1424,7 +1429,7 @@ const { useState, useEffect, useRef } = React;
                         localStorage.setItem(STORAGE_KEY, JSON.stringify(chars));
                         if (previous) pushHistorySnapshot(previous, savingData);
                         setSavedChars(chars);
-                        if (!silent) showToast(savingData.system === 'fabula' ? 'Personagem Fabula salvo!' : savingData.system === 'somdas6' ? 'Personagem de O Som das Seis salvo!' : savingData.system === '3det' ? 'Personagem 3DeT Victory salvo!' : 'Personagem salvo!');
+                        if (!silent) showToast(savingData.system === 'fabula' ? 'Personagem Fabula salvo!' : savingData.system === 'somdas6' ? 'Personagem de O Som das Seis salvo!' : savingData.system === '3det' ? 'Personagem 3DeT Victory salvo!' : savingData.system === 'rotaZero' ? 'Funcionário Rota Zero salvo!' : 'Personagem salvo!');
                     } else {
                         let threats = getSavedThreats();
                         const index = threats.findIndex(t => t.id === savingData.id);
@@ -1643,6 +1648,7 @@ const { useState, useEffect, useRef } = React;
                     normalized = normalizeSom6PdjData(normalized);
                     normalized = normalize3DetPcData(normalized);
                     normalized = normalize3DetThreatData(normalized);
+                    normalized = normalizeRotaZeroPcData(normalized);
                     setData(normalized);
                     setDndPcTab('caracteristicas');
                     setFabulaTab('perfil');
@@ -1691,6 +1697,7 @@ const { useState, useEffect, useRef } = React;
             const loadTemplate = (modelo) => {
                 let templateData = normalizeMetaItem(modelo);
                 templateData = normalizeDndPcData(templateData);
+                templateData = normalizeRotaZeroPcData(templateData);
                 templateData = normalizeFabulaPcData(templateData);
                 templateData = normalizeFabulaThreatData(templateData);
                 templateData = normalizeSom6PcData(templateData);
@@ -1729,13 +1736,16 @@ const { useState, useEffect, useRef } = React;
             };
 
             const updateField = (path, value) => {
-                const newData = JSON.parse(JSON.stringify(data));
-                let current = newData;
-                const keys = path.split('.');
-                const lastKey = keys.pop();
-                keys.forEach(key => { if (!current[key]) current[key] = {}; current = current[key]; });
-                current[lastKey] = value;
-                setData(newData);
+                setData(prevData => {
+                    if (!prevData) return prevData;
+                    const newData = JSON.parse(JSON.stringify(prevData));
+                    let current = newData;
+                    const keys = path.split('.');
+                    const lastKey = keys.pop();
+                    keys.forEach(key => { if (!current[key]) current[key] = {}; current = current[key]; });
+                    current[lastKey] = value;
+                    return newData;
+                });
             };
 
             const updateArrayField = (arrayName, index, field, value) => {
@@ -1846,11 +1856,15 @@ const { useState, useEffect, useRef } = React;
             };
 
             const returnToDashboard = () => {
+                const wasRotaZero = data?.system === 'rotaZero';
                 if (view === 'editor' && data) {
                     const ok = saveToLocal(data, true);
                     if (!ok) { showToast('Não foi possível sair: salve um backup ou libere espaço no navegador.'); return; }
                 }
                 setView('dashboard');
+                // O editor Rota Zero injeta uma identidade visual própria. Limpar a ficha
+                // ativa ao voltar impede cabeçalho/barra do sistema de sobreviver na Home.
+                if (wasRotaZero) setTimeout(() => setData(null), 0);
             };
 
             /* Dragonbane Específicos */
@@ -2022,17 +2036,21 @@ const { useState, useEffect, useRef } = React;
                                 </span>
                             </div>
                             <div className="mb-4 flex flex-wrap items-center gap-2 no-print">
-                                <div className="flex items-center gap-1 bg-gray-200 border border-gray-300 rounded px-2 py-1.5 shadow-sm">
-                                    <SVGIcons.Palette />
-                                    <select value={theme} onChange={(e) => { if (e.target.value === 'custom') setShowCustomBgModal(true); else setTheme(e.target.value); }} className="bg-transparent text-gray-700 font-bold text-xs outline-none cursor-pointer">
-                                        <option value="default">Tema: Padrão</option>
-                                        <option value="classic">Tema: Clássico DB</option>
-                                        <option value="dnd">Tema: Dungeons & Dragons</option>
-                                        <option value="fabula">Tema: Fabula Ultima</option>
-                                        <option value="som6">Tema: O Som das Seis</option>
-                                        <option value="dark">Tema: Modo Escuro</option>
-                                        <option value="custom">Tema: Personalizado...</option>
-                                    </select>
+                                <div className="flex items-end gap-2 bg-gray-200 border border-gray-300 rounded px-2 py-1.5 shadow-sm">
+                                    <div className="pb-1"><SVGIcons.Palette /></div>
+                                    <div className="flex flex-col min-w-0">
+                                        {rotaZeroUnlocked && <span className="rz-model-status">Modelo RZ: {theme === 'rotazero' ? 'ATIVADO / ON' : 'DESATIVADO / OFF'}</span>}
+                                        <select value={theme} onChange={(e) => { if (e.target.value === 'custom') setShowCustomBgModal(true); else setTheme(e.target.value); }} className="bg-transparent text-gray-700 font-bold text-xs outline-none cursor-pointer min-w-[160px]">
+                                            <option value="default">Tema: Padrão</option>
+                                            <option value="classic">Tema: Clássico DB</option>
+                                            <option value="dnd">Tema: Dungeons & Dragons</option>
+                                            <option value="fabula">Tema: Fabula Ultima</option>
+                                            <option value="som6">Tema: O Som das Seis</option>
+                                            {rotaZeroUnlocked && <option value="rotazero">Tema: Rota Zero</option>}
+                                            <option value="dark">Tema: Modo Escuro</option>
+                                            <option value="custom">Tema: Personalizado...</option>
+                                        </select>
+                                    </div>
                                     {theme === 'custom' && <button type="button" onClick={() => setShowCustomBgModal(true)} className="ml-1 px-1.5 py-0.5 rounded border border-gray-400 text-[10px] font-bold hover:bg-white" title="Editar tema personalizado" aria-label="Editar tema personalizado">⚙</button>}
                                 </div>
                                 <button onClick={() => { setGuideTab('inicio'); setShowGuideModal(true); }} className="flex items-center gap-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded shadow transition-colors font-bold text-sm">
@@ -2095,7 +2113,7 @@ const { useState, useEffect, useRef } = React;
                                 {showFilters && (
                                     <div style={getWindowStyle()} className="mt-2 max-w-2xl bg-white border border-gray-200 rounded-lg shadow-sm p-3 grid grid-cols-1 sm:grid-cols-3 gap-2">
                                         <select value={systemFilter} onChange={e=>setSystemFilter(e.target.value)} className="border rounded px-2 py-2 text-xs bg-white">
-                                            <option value="all">Todos os sistemas</option><option value="dragonbane">Dragonbane</option><option value="dnd5e">D&D 5.5e</option><option value="fabula">Fabula Ultima</option><option value="somdas6">O Som das Seis</option><option value="3det">3DeT Victory</option>
+                                            <option value="all">Todos os sistemas</option><option value="dragonbane">Dragonbane</option><option value="dnd5e">D&D 5.5e</option><option value="fabula">Fabula Ultima</option><option value="somdas6">O Som das Seis</option><option value="3det">3DeT Victory</option>{rotaZeroUnlocked && <option value="rotaZero">Rota Zero</option>}
                                         </select>
                                         <select value={sortMode} onChange={e=>setSortMode(e.target.value)} className="border rounded px-2 py-2 text-xs bg-white">
                                             <option value="recent">Mais recentes</option><option value="name">Nome A–Z</option><option value="system">Por sistema</option>
@@ -2117,30 +2135,31 @@ const { useState, useEffect, useRef } = React;
                                         const isFabula = char.system === 'fabula';
                                         const isSom6 = char.system === 'somdas6';
                                         const is3Det = char.system === '3det';
+                                        const isRotaZero = char.system === 'rotaZero';
                                         return (
-                                        <div key={char.id} style={getWindowStyle()} className={`pj-card-compact bg-white rounded-md shadow-lg border-2 ${isDnd ? 'border-[#922610]' : isFabula ? 'border-teal-700' : isSom6 ? 'border-red-900' : is3Det ? 'border-amber-500' : 'border-dragon-dark'} overflow-hidden flex ${dashboardView==='list'?'flex-row items-stretch':'flex-col'} relative`}>
-                                            <div className={`absolute top-0 right-0 text-white text-[9px] font-bold uppercase px-2 py-0.5 rounded-bl shadow-sm z-10 ${isDnd ? 'bg-[#922610]' : isFabula ? 'bg-teal-700' : isSom6 ? 'bg-red-900' : is3Det ? 'bg-zinc-950' : 'bg-dragon-dark'}`}>
-                                                {isDnd ? 'D&D 5.5e' : isFabula ? 'Fabula Ultima' : isSom6 ? 'O Som das Seis' : is3Det ? '3DeT Victory' : 'Dragonbane'}
+                                        <div key={char.id} style={getWindowStyle()} className={`pj-card-compact ${isRotaZero?'rz-dashboard-card ':''}bg-white rounded-md shadow-lg border-2 ${isDnd ? 'border-[#922610]' : isFabula ? 'border-teal-700' : isSom6 ? 'border-red-900' : is3Det ? 'border-amber-500' : isRotaZero ? 'border-[#506055]' : 'border-dragon-dark'} overflow-hidden flex ${dashboardView==='list'?'flex-row items-stretch':'flex-col'} relative`}>
+                                            <div className={`absolute top-0 right-0 text-white text-[9px] font-bold uppercase px-2 py-0.5 rounded-bl shadow-sm z-10 ${isDnd ? 'bg-[#922610]' : isFabula ? 'bg-teal-700' : isSom6 ? 'bg-red-900' : is3Det ? 'bg-zinc-950' : isRotaZero ? 'bg-[#18201c]' : 'bg-dragon-dark'}`}>
+                                                {isDnd ? 'D&D 5.5e' : isFabula ? 'Fabula Ultima' : isSom6 ? 'O Som das Seis' : is3Det ? '3DeT Victory' : isRotaZero ? 'ROTA ZERO' : 'Dragonbane'}
                                             </div>
-                                            <div className={`${dashboardView==='list'?'flex flex-1 min-w-0 h-24 border-r':'flex h-28 border-b'} border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors`} onClick={() => loadCharacter(char.id)}>
-                                                <div className="w-28 shrink-0 bg-gray-200 border-r border-gray-300">
+                                            <div className={`${dashboardView==='list'?'flex flex-1 min-w-0 h-24 border-r':'flex h-28 border-b'} ${isRotaZero?'rz-card-main ':''}border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors`} onClick={() => loadCharacter(char.id)}>
+                                                <div className={`w-28 shrink-0 bg-gray-200 border-r border-gray-300 ${isRotaZero?'rz-card-media':''}`}>
                                                     {char.bio?.imagem ? (
                                                         <img src={char.bio.imagem} alt={char.bio.nome} className="w-full h-full object-cover" />
                                                     ) : (
-                                                        <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-100"><SVGIcons.User /></div>
+                                                        <div className={`w-full h-full flex items-center justify-center text-gray-400 bg-gray-100 ${isRotaZero?'rz-card-empty':''}`}><SVGIcons.User /></div>
                                                     )}
                                                 </div>
                                                 <div className="p-3 flex-1 overflow-hidden flex flex-col justify-center">
-                                                    <h3 className={`font-title font-bold text-lg truncate ${isDnd ? 'text-[#922610]' : isFabula ? 'text-teal-800' : isSom6 ? 'text-red-900' : is3Det ? 'text-amber-700' : 'text-red-900'}`}>{char.bio?.nome || 'Sem Nome'}</h3>
+                                                    <h3 className={`font-title font-bold text-lg truncate ${isRotaZero?'rz-card-id ':''}${isDnd ? 'text-[#922610]' : isFabula ? 'text-teal-800' : isSom6 ? 'text-red-900' : is3Det ? 'text-amber-700' : isRotaZero ? 'text-[#35483b]' : 'text-red-900'}`}>{char.bio?.nome || 'Sem Nome'}</h3>
                                                     <p className="text-xs text-gray-600 font-bold uppercase mt-1 truncate">
-                                                        {isDnd ? `${char.bio?.linhagem || '?'} • ${char.bio?.classe || '?'}` : isFabula ? `${char.bio?.identidade || 'Sem identidade'} • ${char.bio?.tema || 'Sem tema'}` : isSom6 ? `${char.bio?.apelido || 'Sem apelido'} • ${char.tormento?.tipo || 'Sem tormento'}` : is3Det ? `${char.bio?.arquetipo || 'Sem arquétipo'}${char.bio?.kit ? ` • ${char.bio.kit}` : char.bio?.conceito ? ` • ${char.bio.conceito}` : ''}` : `${char.bio?.ancestralidade || '?'} • ${char.bio?.profissao || '?'}`}
+                                                        {isDnd ? `${char.bio?.linhagem || '?'} • ${char.bio?.classe || '?'}` : isFabula ? `${char.bio?.identidade || 'Sem identidade'} • ${char.bio?.tema || 'Sem tema'}` : isSom6 ? `${char.bio?.apelido || 'Sem apelido'} • ${char.tormento?.tipo || 'Sem tormento'}` : is3Det ? `${char.bio?.arquetipo || 'Sem arquétipo'}${char.bio?.kit ? ` • ${char.bio.kit}` : char.bio?.conceito ? ` • ${char.bio.conceito}` : ''}` : isRotaZero ? `${char.bio?.kit || 'Funcionário'} • ${char.bio?.conceito || 'Sem conceito'}` : `${char.bio?.ancestralidade || '?'} • ${char.bio?.profissao || '?'}`}
                                                     </p>
-                                                    <p className="text-[10px] text-gray-500 mt-2 truncate italic">{is3Det ? `Pontos ${char.pontos ?? 0} • XP ${char.xp ?? 0}` : `Nível ${isFabula ? (char.nivel || 5) : isSom6 ? (char.nivel || 1) : (char.bio?.nivel || 1)}`}</p>
+                                                    <p className={`text-[10px] text-gray-500 mt-2 truncate italic ${isRotaZero?'rz-card-stat':''}`}>{is3Det ? `Pontos ${char.pontos ?? 0} • XP ${char.xp ?? 0}` : isRotaZero ? `P${char.atributos?.pulso ?? 1} • T${char.atributos?.tecnica ?? 1} • F${char.atributos?.firmeza ?? 1}${char.veiculoAtivo?' • VEÍCULO ON':''}` : `Nível ${isFabula ? (char.nivel || 5) : isSom6 ? (char.nivel || 1) : (char.bio?.nivel || 1)}`}</p>
                                                     {char.meta?.campanha && <p className="text-[10px] text-indigo-600 mt-1 truncate font-bold">📁 {char.meta.campanha}</p>}
                                                     {char.meta?.updatedAt && <p className="text-[9px] text-gray-400 mt-1">Editado: {new Date(char.meta.updatedAt).toLocaleString('pt-BR')}</p>}
                                                 </div>
                                             </div>
-                                            <div className={`${dashboardView==='list'?'bg-gray-100 p-2 flex items-center':'bg-gray-100 p-2 flex justify-between items-center'} text-xs`}>
+                                            <div className={`${dashboardView==='list'?'bg-gray-100 p-2 flex items-center':'bg-gray-100 p-2 flex justify-between items-center'} ${isRotaZero?'rz-card-footer ':''}text-xs`}>
                                                 <div className="flex gap-1 flex-wrap">
                                                     <button onClick={() => handleExport(char)} className="text-gray-700 hover:text-black font-bold px-2 py-1 bg-gray-200 rounded border border-gray-300 shadow-sm"><SVGIcons.Save/></button>
                                                     <button onClick={() => openCodeExport(char)} className="text-gray-700 hover:text-black font-bold px-2 py-1 bg-gray-200 rounded border border-gray-300 shadow-sm"><SVGIcons.Code/></button>
@@ -2316,6 +2335,16 @@ const { useState, useEffect, useRef } = React;
                                             </div>
                                         )}
 
+                                        {rotaZeroUnlocked && createTarget === 'pc' && (
+                                            <div onClick={() => { setShowSystemModal(false); setShowRotaZeroModelModal(true); }} className="bg-[#ecebe4] border-2 border-[#7a857d] hover:border-[#34473b] rounded p-3 cursor-pointer hover:shadow-md transition-all flex items-center gap-3 group min-h-[82px]">
+                                                <div className="w-12 h-12 bg-[#18201c] text-[#c7d2c9] rounded flex items-center justify-center font-black text-lg shadow-inner">RZ</div>
+                                                <div className="flex-1">
+                                                    <div className="flex items-center gap-2"><h3 className="font-bold text-[#18201c] text-lg">Rota Zero</h3><span className="bg-[#d8dfda] text-[#33443a] text-[9px] font-bold uppercase px-2 py-0.5 rounded">RZ-088</span></div>
+                                                    <p className="text-xs text-[#647069]">Funcionário • 6 Créditos • veículo opcional</p>
+                                                </div>
+                                            </div>
+                                        )}
+
                                         <div onClick={() => { setShowSystemModal(false); setShowSom6ModelModal(true); }} className="bg-white border-2 border-gray-300 hover:border-red-900 rounded p-3 cursor-pointer hover:shadow-md transition-all flex items-center gap-3 group min-h-[82px]">
                                             <div className="w-12 h-12 bg-red-900 group-hover:bg-red-950 text-amber-50 rounded flex items-center justify-center font-bold font-title text-xl shadow-inner transition-colors">S6</div>
                                             <div className="flex-1">
@@ -2328,6 +2357,37 @@ const { useState, useEffect, useRef } = React;
                             </div>, document.body
                         )}
 
+
+                        {showRotaZeroModelModal && ReactDOM.createPortal(
+                            <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[110] p-4">
+                                <div className="bg-[#e9e8e1] rounded-lg shadow-2xl w-full max-w-3xl border border-[#69756d] overflow-hidden max-h-[90vh] flex flex-col">
+                                    <div className="bg-[#111615] text-white p-4 flex justify-between items-center border-b-4 border-[#6b7e70]">
+                                        <div><div className="text-[9px] tracking-[.2em] text-[#9eb0a4] font-bold">ROTA ZERO DELIVERY CO.</div><h2 className="font-mono font-black text-lg">NOVO FUNCIONÁRIO</h2></div>
+                                        <button onClick={() => { setShowRotaZeroModelModal(false); setCreateTarget(null); }} className="text-2xl px-2">&times;</button>
+                                    </div>
+                                    <div className="p-4 overflow-y-auto space-y-4">
+                                        <div className="rounded-lg border border-[#8f9a92] bg-[#f3f2ea] p-4">
+                                            <div className="flex flex-wrap items-end justify-between gap-3">
+                                                <div><div className="text-[9px] tracking-[.16em] font-black text-[#68766d]">CRÉDITOS DE CONTRATAÇÃO</div><div className="text-3xl font-black font-mono text-[#1f2b24]">6 CR</div><div className="text-[10px] text-[#667169]">+1 CR por Defeito, até 2.</div></div>
+                                                <div className="text-[10px] text-[#526158] leading-relaxed max-w-sm">Aumentar um Atributo em +1 custa 1 CR. Cada Perícia custa 1 CR. Vantagens custam 1 ou 2 CR.</div>
+                                            </div>
+                                        </div>
+                                        <button onClick={() => loadTemplate(initialRotaZeroPcData)} className="w-full text-left bg-[#f7f5ed] border-2 border-[#9ca39e] hover:border-[#43564a] rounded p-4">
+                                            <b>Ficha em branco / montar com 6 Créditos</b><div className="text-xs text-[#667169] mt-1">Abre diretamente em CONTRATAÇÃO para você distribuir os pontos com as tabelas de Perícias, Vantagens e Defeitos.</div>
+                                        </button>
+                                        <div className="grid md:grid-cols-3 gap-3 text-[10px]">
+                                            <div className="border border-[#a7aaa5] bg-[#fbfaf5] rounded p-3"><b>PERÍCIAS</b><p className="mt-1 text-[#657068]">Condução, Manutenção, Navegação, Observação, Sobrevivência, Influência, Infiltração, Logística, Pesquisa e Primeiros Socorros.</p><strong className="text-[#314238]">1 CR cada</strong></div>
+                                            <div className="border border-[#a7aaa5] bg-[#fbfaf5] rounded p-3"><b>VANTAGENS</b><p className="mt-1 text-[#657068]">A criação mostra nome, tipo/efeito e custo para comparar as opções sem consultar outra página.</p><strong className="text-[#314238]">1–2 CR</strong></div>
+                                            <div className="border border-[#a7aaa5] bg-[#fbfaf5] rounded p-3"><b>DEFEITOS</b><p className="mt-1 text-[#657068]">Mostra o efeito mecânico e o ganho de Crédito. Máximo de dois na criação.</p><strong className="text-[#314238]">+1 CR cada</strong></div>
+                                        </div>
+                                        <div><h3 className="font-black text-sm text-[#263129] mb-2">FUNCIONÁRIOS PRONTOS</h3><div className="grid sm:grid-cols-2 gap-3">
+                                            {MODELOS_ROTA_ZERO_PC.map((m,i)=><button key={i} onClick={() => loadTemplate(m)} className="text-left bg-[#f7f5ed] border border-[#a7aaa5] hover:border-[#43564a] rounded p-3"><div className="flex justify-between gap-2"><b>{m.bio.nome}</b><span className="text-[9px] bg-[#18201c] text-white rounded px-2 py-1">P{m.atributos.pulso} T{m.atributos.tecnica} F{m.atributos.firmeza}</span></div><p className="text-[10px] text-[#657068] mt-2">{m.bio.conceito}</p></button>)}
+                                        </div></div>
+                                        <p className="text-[10px] text-[#667169]">A ficha de Veículo RZ-02 é opcional e fica dentro da ficha do personagem, sem criar um cartão separado na Home.</p>
+                                    </div>
+                                </div>
+                            </div>, document.body
+                        )}
 
                         {show3DetModelModal && ReactDOM.createPortal(
                             <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] p-4 transition-opacity">
@@ -2894,7 +2954,8 @@ const { useState, useEffect, useRef } = React;
             const isFabula = data.system === 'fabula';
             const isSom6 = data.system === 'somdas6';
             const is3Det = data.system === '3det';
-            const topBarColor = isDnd ? 'bg-[#922610]' : isFabula ? 'bg-teal-800' : isSom6 ? 'bg-red-950' : is3Det ? 'bg-zinc-950' : (data.type === 'pnj' ? 'bg-blue-900' : data.type === 'ameaca' ? 'bg-red-900' : 'bg-dragon-dark');
+            const isRotaZero = data.system === 'rotaZero';
+            const topBarColor = isDnd ? 'bg-[#922610]' : isFabula ? 'bg-teal-800' : isSom6 ? 'bg-red-950' : is3Det ? 'bg-zinc-950' : isRotaZero ? 'bg-[#111615]' : (data.type === 'pnj' ? 'bg-blue-900' : data.type === 'ameaca' ? 'bg-red-900' : 'bg-dragon-dark');
             // Escopo de compatibilidade dos editores modularizados.
             // Será reduzido conforme modelos e lógica forem migrados para cada sistema.
             const systemEditorScope = {
@@ -3153,14 +3214,14 @@ const { useState, useEffect, useRef } = React;
             };
 
             return (
-                <div style={getWindowStyle()} className={`${(!isDnd && !isFabula && !isSom6 && !is3Det && data.type === 'pc') ? 'max-w-[90rem]' : 'max-w-6xl'} mx-auto bg-white rounded-sm shadow-xl border-2 ${isDnd ? 'border-[#922610]' : isFabula ? 'border-teal-700' : isSom6 ? 'border-red-900' : is3Det ? 'border-amber-500' : 'border-gray-500'} transition-all duration-300`}>
-                    <div style={(isDnd || isFabula || isSom6 || is3Det) ? {} : getBarStyle()} className={`no-print p-3 flex flex-wrap justify-between items-center rounded-t-sm gap-2 text-white ${topBarColor}`}>
+                <div style={getWindowStyle()} className={`${isRotaZero ? 'max-w-6xl rz-shell' : (!isDnd && !isFabula && !isSom6 && !is3Det && data.type === 'pc') ? 'max-w-[90rem]' : 'max-w-6xl'} mx-auto bg-white rounded-sm shadow-xl border-2 ${isDnd ? 'border-[#922610]' : isFabula ? 'border-teal-700' : isSom6 ? 'border-red-900' : is3Det ? 'border-amber-500' : isRotaZero ? 'border-[#53685c]' : 'border-gray-500'} transition-all duration-300`}>
+                    <div style={(isDnd || isFabula || isSom6 || is3Det || isRotaZero) ? {} : getBarStyle()} className={`no-print p-3 flex flex-wrap justify-between items-center rounded-t-sm gap-2 text-white ${topBarColor}`}>
                         <div className="flex items-center gap-4">
                             <button onClick={returnToDashboard} className="flex items-center gap-1 transition-colors text-sm font-bold text-gray-300 hover:text-white">
                                 <SVGIcons.ArrowLeft /> <span className="hidden sm:inline">Voltar</span>
                             </button>
                             <span className="font-title font-bold text-lg md:text-xl tracking-wider uppercase">
-                                {isDnd ? (data.type === 'pc' ? 'D&D 5.5e / 2024 - Personagem' : 'D&D 5.5e / 2024 - Bestiário') : isFabula ? (data.type === 'pc' ? 'FABULA ULTIMA • PERSONAGEM • INTEGRADO' : 'FABULA ULTIMA • AMEAÇA / PNJ • INTEGRADO') : isSom6 ? (data.type === 'pc' ? 'O SOM DAS SEIS • PERSONAGEM • INTEGRADO' : 'O SOM DAS SEIS • PDJ • INTEGRADO') : is3Det ? '3DeT VICTORY • PERSONAGEM • PRÉVIA' : (data.type === 'pc' ? 'DRAGONBANE' : data.type === 'pnj' ? 'PNJ (DB)' : 'AMEAÇA (DB)')}
+                                {isDnd ? (data.type === 'pc' ? 'D&D 5.5e / 2024 - Personagem' : 'D&D 5.5e / 2024 - Bestiário') : isFabula ? (data.type === 'pc' ? 'FABULA ULTIMA • PERSONAGEM • INTEGRADO' : 'FABULA ULTIMA • AMEAÇA / PNJ • INTEGRADO') : isSom6 ? (data.type === 'pc' ? 'O SOM DAS SEIS • PERSONAGEM • INTEGRADO' : 'O SOM DAS SEIS • PDJ • INTEGRADO') : is3Det ? '3DeT VICTORY • PERSONAGEM • PRÉVIA' : isRotaZero ? 'ROTA ZERO • FUNCIONÁRIO' : (data.type === 'pc' ? 'DRAGONBANE' : data.type === 'pnj' ? 'PNJ (DB)' : 'AMEAÇA (DB)')}
                             </span>
                         </div>
                         <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end items-center">
@@ -3224,9 +3285,10 @@ const { useState, useEffect, useRef } = React;
                     {/* 3DeT Victory — personagem e ameaças modularizados */}
                     <TresDeTCharacterEditor scope={systemEditorScope} />
                     <TresDeTThreatEditor scope={systemEditorScope} />
+                    <RotaZeroCharacterEditor scope={systemEditorScope} />
 
                     {/* Editor Dragonbane (Intacto) */}
-                    {!['dragonbane','dnd5e','fabula','somdas6','3det'].includes(data.system || 'dragonbane') && (
+                    {!['dragonbane','dnd5e','fabula','somdas6','3det','rotaZero'].includes(data.system || 'dragonbane') && (
                         <div className="p-6 md:p-10 bg-amber-50 border-y border-amber-300 text-amber-950">
                             <h2 className="font-title font-bold text-lg">⚠ Formato de ficha não reconhecido</h2>
                             <p className="text-sm mt-2">Esta ficha parece ter vindo de uma versão ou sistema que o PJ Lite atual não reconhece. Os dados não foram apagados. Exporte um backup antes de editar e confira o campo de sistema na origem da ficha.</p>

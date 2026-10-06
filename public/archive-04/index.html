@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>ARQUIVO 04</title>
+  <style>
+    :root{color-scheme:dark}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;background:#070b12;color:#cbd5e1;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;display:grid;place-items:center;padding:24px}
+    .shell{width:min(900px,100%);border:1px solid #263244;background:#0a101a;box-shadow:0 24px 80px rgba(0,0,0,.45);border-radius:14px;overflow:hidden}
+    .bar{display:flex;justify-content:space-between;gap:16px;padding:12px 16px;border-bottom:1px solid #263244;background:#0d1522;color:#8291a8;font-size:12px;letter-spacing:.12em}
+    main{padding:clamp(24px,5vw,54px)}
+    h1{margin:0 0 12px;color:#e2e8f0;font-size:clamp(25px,4vw,46px);letter-spacing:.06em}
+    .red{color:#ef4444}.dim{color:#64748b}.line{height:1px;background:#263244;margin:28px 0}
+    .log{white-space:pre-wrap;line-height:1.8;color:#94a3b8}
+    .challenge{margin-top:28px;border-left:3px solid #ef4444;padding:4px 0 4px 18px}
+    label{display:block;color:#94a3b8;margin:18px 0 8px}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    input{min-width:180px;flex:1;background:#060a10;border:1px solid #334155;color:#e2e8f0;border-radius:8px;padding:12px 14px;font:inherit;letter-spacing:.14em;text-transform:uppercase}
+    button,a.button{background:#172033;border:1px solid #3b4a63;color:#e2e8f0;border-radius:8px;padding:12px 16px;font:700 13px ui-monospace,monospace;cursor:pointer;text-decoration:none}
+    button:hover,a.button:hover{border-color:#ef4444}
+    #result{display:none;margin-top:26px;padding:18px;border:1px solid #7f1d1d;background:#170b0d;border-radius:10px}
+    .blink{animation:b 1s steps(1) infinite}@keyframes b{50%{opacity:.18}}
+    .tiny{font-size:11px;color:#475569;margin-top:28px}
+  </style>
+</head>
+<body>
+  <section class="shell">
+    <div class="bar"><span>LITE NETWORK // NODE 04</span><span>RECOVERED: 09.5</span></div>
+    <main>
+      <div class="dim">[ transmissão parcial ]</div>
+      <h1>ARQUIVO <span class="red">04</span><span class="blink">_</span></h1>
+      <p class="log">08:31:04  handshake aceito
+08:31:05  nó identificado: PJ
+08:31:05  versão observada: 0.9.5
+08:31:06  módulos conhecidos: carregados
+08:31:06  módulos desconhecidos: 1
+08:31:07  origem do pacote: ████████████
+08:31:08  mensagem: "a rede é maior do que a interface"</p>
+
+      <div class="line"></div>
+
+      <div class="challenge">
+        <strong>CHAVE DE RECUPERAÇÃO</strong>
+        <p>Retire os pontos e as letras da versão atual. Preserve o zero inicial.</p>
+        <label for="key">CHAVE</label>
+        <div class="row">
+          <input id="key" maxlength="6" autocomplete="off" spellcheck="false" placeholder="___">
+          <button id="open">DECODIFICAR</button>
+        </div>
+      </div>
+
+      <div id="result">
+        <div class="red">ACCESS GRANTED // FRAGMENT 01</div>
+        <p class="log">PROJECT: █████████
+STATUS: DORMANT
+CHANNEL: ECHO
+NOTE: "não será apenas uma ficha."</p>
+        <a class="button" href="/archive-04/echo.html">ABRIR ECO →</a>
+      </div>
+
+      <p class="tiny">Isto é uma prévia fictícia de ARG. Nenhum dado da Conta Lite é usado nesta experiência.</p>
+    </main>
+  </section>
+<script>
+  const key=document.getElementById('key');
+  const result=document.getElementById('result');
+  const open=()=>{if(key.value.replace(/\s/g,'')==='095'){result.style.display='block';key.blur();}else{key.value='';key.placeholder='CHAVE INVÁLIDA';}};
+  document.getElementById('open').addEventListener('click',open);
+  key.addEventListener('keydown',e=>{if(e.key==='Enter')open()});
+</script>
+</body>
+</html>
