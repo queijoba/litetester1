@@ -2029,19 +2029,21 @@ const { useState, useEffect, useRef } = React;
                                 </span>
                             </div>
                             <div className="mb-4 flex flex-wrap items-center gap-2 no-print">
-                                <div className="flex items-center gap-1 bg-gray-200 border border-gray-300 rounded px-2 py-1.5 shadow-sm">
-                                    <SVGIcons.Palette />
-                                    {rotaZeroUnlocked && <span className="rz-model-status">Modelo RZ {theme === 'rotazero' ? 'ON' : 'desativado'}</span>}
-                                    <select value={theme} onChange={(e) => { if (e.target.value === 'custom') setShowCustomBgModal(true); else setTheme(e.target.value); }} className="bg-transparent text-gray-700 font-bold text-xs outline-none cursor-pointer">
-                                        <option value="default">Tema: Padrão</option>
-                                        <option value="classic">Tema: Clássico DB</option>
-                                        <option value="dnd">Tema: Dungeons & Dragons</option>
-                                        <option value="fabula">Tema: Fabula Ultima</option>
-                                        <option value="som6">Tema: O Som das Seis</option>
-                                        {rotaZeroUnlocked && <option value="rotazero">Tema: Rota Zero</option>}
-                                        <option value="dark">Tema: Modo Escuro</option>
-                                        <option value="custom">Tema: Personalizado...</option>
-                                    </select>
+                                <div className="flex items-end gap-2 bg-gray-200 border border-gray-300 rounded px-2 py-1.5 shadow-sm">
+                                    <div className="pb-1"><SVGIcons.Palette /></div>
+                                    <div className="flex flex-col min-w-0">
+                                        {rotaZeroUnlocked && <span className="rz-model-status">Modelo RZ: {theme === 'rotazero' ? 'ATIVADO / ON' : 'DESATIVADO / OFF'}</span>}
+                                        <select value={theme} onChange={(e) => { if (e.target.value === 'custom') setShowCustomBgModal(true); else setTheme(e.target.value); }} className="bg-transparent text-gray-700 font-bold text-xs outline-none cursor-pointer min-w-[160px]">
+                                            <option value="default">Tema: Padrão</option>
+                                            <option value="classic">Tema: Clássico DB</option>
+                                            <option value="dnd">Tema: Dungeons & Dragons</option>
+                                            <option value="fabula">Tema: Fabula Ultima</option>
+                                            <option value="som6">Tema: O Som das Seis</option>
+                                            {rotaZeroUnlocked && <option value="rotazero">Tema: Rota Zero</option>}
+                                            <option value="dark">Tema: Modo Escuro</option>
+                                            <option value="custom">Tema: Personalizado...</option>
+                                        </select>
+                                    </div>
                                     {theme === 'custom' && <button type="button" onClick={() => setShowCustomBgModal(true)} className="ml-1 px-1.5 py-0.5 rounded border border-gray-400 text-[10px] font-bold hover:bg-white" title="Editar tema personalizado" aria-label="Editar tema personalizado">⚙</button>}
                                 </div>
                                 <button onClick={() => { setGuideTab('inicio'); setShowGuideModal(true); }} className="flex items-center gap-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded shadow transition-colors font-bold text-sm">
@@ -2128,29 +2130,29 @@ const { useState, useEffect, useRef } = React;
                                         const is3Det = char.system === '3det';
                                         const isRotaZero = char.system === 'rotaZero';
                                         return (
-                                        <div key={char.id} style={getWindowStyle()} className={`pj-card-compact bg-white rounded-md shadow-lg border-2 ${isDnd ? 'border-[#922610]' : isFabula ? 'border-teal-700' : isSom6 ? 'border-red-900' : is3Det ? 'border-amber-500' : isRotaZero ? 'border-[#506055]' : 'border-dragon-dark'} overflow-hidden flex ${dashboardView==='list'?'flex-row items-stretch':'flex-col'} relative`}>
+                                        <div key={char.id} style={getWindowStyle()} className={`pj-card-compact ${isRotaZero?'rz-dashboard-card ':''}bg-white rounded-md shadow-lg border-2 ${isDnd ? 'border-[#922610]' : isFabula ? 'border-teal-700' : isSom6 ? 'border-red-900' : is3Det ? 'border-amber-500' : isRotaZero ? 'border-[#506055]' : 'border-dragon-dark'} overflow-hidden flex ${dashboardView==='list'?'flex-row items-stretch':'flex-col'} relative`}>
                                             <div className={`absolute top-0 right-0 text-white text-[9px] font-bold uppercase px-2 py-0.5 rounded-bl shadow-sm z-10 ${isDnd ? 'bg-[#922610]' : isFabula ? 'bg-teal-700' : isSom6 ? 'bg-red-900' : is3Det ? 'bg-zinc-950' : isRotaZero ? 'bg-[#18201c]' : 'bg-dragon-dark'}`}>
                                                 {isDnd ? 'D&D 5.5e' : isFabula ? 'Fabula Ultima' : isSom6 ? 'O Som das Seis' : is3Det ? '3DeT Victory' : isRotaZero ? 'ROTA ZERO' : 'Dragonbane'}
                                             </div>
-                                            <div className={`${dashboardView==='list'?'flex flex-1 min-w-0 h-24 border-r':'flex h-28 border-b'} border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors`} onClick={() => loadCharacter(char.id)}>
-                                                <div className="w-28 shrink-0 bg-gray-200 border-r border-gray-300">
+                                            <div className={`${dashboardView==='list'?'flex flex-1 min-w-0 h-24 border-r':'flex h-28 border-b'} ${isRotaZero?'rz-card-main ':''}border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors`} onClick={() => loadCharacter(char.id)}>
+                                                <div className={`w-28 shrink-0 bg-gray-200 border-r border-gray-300 ${isRotaZero?'rz-card-media':''}`}>
                                                     {char.bio?.imagem ? (
                                                         <img src={char.bio.imagem} alt={char.bio.nome} className="w-full h-full object-cover" />
                                                     ) : (
-                                                        <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-100"><SVGIcons.User /></div>
+                                                        <div className={`w-full h-full flex items-center justify-center text-gray-400 bg-gray-100 ${isRotaZero?'rz-card-empty':''}`}><SVGIcons.User /></div>
                                                     )}
                                                 </div>
                                                 <div className="p-3 flex-1 overflow-hidden flex flex-col justify-center">
-                                                    <h3 className={`font-title font-bold text-lg truncate ${isDnd ? 'text-[#922610]' : isFabula ? 'text-teal-800' : isSom6 ? 'text-red-900' : is3Det ? 'text-amber-700' : isRotaZero ? 'text-[#35483b]' : 'text-red-900'}`}>{char.bio?.nome || 'Sem Nome'}</h3>
+                                                    <h3 className={`font-title font-bold text-lg truncate ${isRotaZero?'rz-card-id ':''}${isDnd ? 'text-[#922610]' : isFabula ? 'text-teal-800' : isSom6 ? 'text-red-900' : is3Det ? 'text-amber-700' : isRotaZero ? 'text-[#35483b]' : 'text-red-900'}`}>{char.bio?.nome || 'Sem Nome'}</h3>
                                                     <p className="text-xs text-gray-600 font-bold uppercase mt-1 truncate">
                                                         {isDnd ? `${char.bio?.linhagem || '?'} • ${char.bio?.classe || '?'}` : isFabula ? `${char.bio?.identidade || 'Sem identidade'} • ${char.bio?.tema || 'Sem tema'}` : isSom6 ? `${char.bio?.apelido || 'Sem apelido'} • ${char.tormento?.tipo || 'Sem tormento'}` : is3Det ? `${char.bio?.arquetipo || 'Sem arquétipo'}${char.bio?.kit ? ` • ${char.bio.kit}` : char.bio?.conceito ? ` • ${char.bio.conceito}` : ''}` : isRotaZero ? `${char.bio?.kit || 'Funcionário'} • ${char.bio?.conceito || 'Sem conceito'}` : `${char.bio?.ancestralidade || '?'} • ${char.bio?.profissao || '?'}`}
                                                     </p>
-                                                    <p className="text-[10px] text-gray-500 mt-2 truncate italic">{is3Det ? `Pontos ${char.pontos ?? 0} • XP ${char.xp ?? 0}` : isRotaZero ? `P${char.atributos?.pulso ?? 1} • T${char.atributos?.tecnica ?? 1} • F${char.atributos?.firmeza ?? 1}` : `Nível ${isFabula ? (char.nivel || 5) : isSom6 ? (char.nivel || 1) : (char.bio?.nivel || 1)}`}</p>
+                                                    <p className={`text-[10px] text-gray-500 mt-2 truncate italic ${isRotaZero?'rz-card-stat':''}`}>{is3Det ? `Pontos ${char.pontos ?? 0} • XP ${char.xp ?? 0}` : isRotaZero ? `P${char.atributos?.pulso ?? 1} • T${char.atributos?.tecnica ?? 1} • F${char.atributos?.firmeza ?? 1}${char.veiculoAtivo?' • VEÍCULO ON':''}` : `Nível ${isFabula ? (char.nivel || 5) : isSom6 ? (char.nivel || 1) : (char.bio?.nivel || 1)}`}</p>
                                                     {char.meta?.campanha && <p className="text-[10px] text-indigo-600 mt-1 truncate font-bold">📁 {char.meta.campanha}</p>}
                                                     {char.meta?.updatedAt && <p className="text-[9px] text-gray-400 mt-1">Editado: {new Date(char.meta.updatedAt).toLocaleString('pt-BR')}</p>}
                                                 </div>
                                             </div>
-                                            <div className={`${dashboardView==='list'?'bg-gray-100 p-2 flex items-center':'bg-gray-100 p-2 flex justify-between items-center'} text-xs`}>
+                                            <div className={`${dashboardView==='list'?'bg-gray-100 p-2 flex items-center':'bg-gray-100 p-2 flex justify-between items-center'} ${isRotaZero?'rz-card-footer ':''}text-xs`}>
                                                 <div className="flex gap-1 flex-wrap">
                                                     <button onClick={() => handleExport(char)} className="text-gray-700 hover:text-black font-bold px-2 py-1 bg-gray-200 rounded border border-gray-300 shadow-sm"><SVGIcons.Save/></button>
                                                     <button onClick={() => openCodeExport(char)} className="text-gray-700 hover:text-black font-bold px-2 py-1 bg-gray-200 rounded border border-gray-300 shadow-sm"><SVGIcons.Code/></button>
