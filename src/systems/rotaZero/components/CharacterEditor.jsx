@@ -10,7 +10,17 @@ const Panel=({title,right,children})=><section className="rz-panel"><header><h2>
 export default function RotaZeroCharacterEditor({scope}){
   const {data,updateField,optimizeImageFile,showToast}=scope;
   const [tab,setTab]=useState('ficha');
-  useEffect(()=>{if(data?.system==='rotaZero')setTab('ficha')},[data?.id]);
+  useEffect(()=>{
+    if(data?.system!=='rotaZero')return;
+    const hasBuild=Boolean(
+      data.bio?.nome ||
+      data.bio?.kit ||
+      Object.values(data.pericias||{}).some(Boolean) ||
+      (data.vantagens||[]).length ||
+      (data.defeitos||[]).length
+    );
+    setTab(hasBuild?'ficha':'contratacao');
+  },[data?.id]);
   if(!data||data.system!=='rotaZero'||data.type!=='pc')return null;
   const costs=calcRotaZeroCosts(data);
   const attrs=data.atributos||{}; const res=data.recursos||{};
@@ -37,7 +47,7 @@ export default function RotaZeroCharacterEditor({scope}){
   };
   const handlePortrait=async(e)=>{const file=e.target.files?.[0];e.target.value='';if(!file)return;try{const img=await optimizeImageFile(file,900,.84);updateField('bio.imagem',img)}catch{showToast('Não foi possível usar essa imagem.')}};
   const toggleTrack=(key,index)=>{const list=[...(data[key]||[])];list[index]=!list[index];updateField(key,list)};
-  const tabs=[['ficha','FICHA'],['contratacao','CONTRATAÇÃO'],['veiculo','VEÍCULO'],['notas','NOTAS']];
+  const tabs=[['ficha','FICHA'],['contratacao','CONTRATAÇÃO'],['veiculo','VEÍCULO OPCIONAL'],['notas','NOTAS']];
   return <div className="rz-sheet">
     <div className="rz-head"><div className="rz-eyebrow">ROTA ZERO DELIVERY CO. // EMPLOYEE FILE</div><div className="rz-title">FICHA DE FUNCIONÁRIO</div></div>
     <nav className="rz-tabs no-print">{tabs.map(([id,label])=><button key={id} className={tab===id?'on':''} onClick={()=>setTab(id)}>{label}</button>)}</nav>
@@ -62,6 +72,10 @@ export default function RotaZeroCharacterEditor({scope}){
     </>}
 
     {tab==='contratacao'&&<>
+      <div className="rz-contract-summary">
+        <div><span className="rz-contract-kicker">CRÉDITOS DE CONTRATAÇÃO</span><strong>{costs.remaining}</strong><small>restantes de {costs.available} disponíveis</small></div>
+        <p>Distribua seus pontos entre Atributos, Perícias e Vantagens. Cada Defeito escolhido devolve +1 CR, até o máximo de 2.</p>
+      </div>
       <div className="rz-credit"><span>BASE <b>6 CR</b></span><span>DEFEITOS +<b>{costs.defectGain}</b></span><span>ATRIBUTOS -<b>{costs.attrCost}</b></span><span>PERÍCIAS -<b>{costs.skillCost}</b></span><span>VANTAGENS -<b>{costs.advantageCost}</b></span><span>RESTANTE <b className={costs.remaining<0?'bad':''}>{costs.remaining}</b></span></div>
       <Panel title="KITS DE FUNÇÃO // ATALHOS"><div className="rz-grid">{RZ_KITS.map(k=><button key={k.id} className="rz-btn secondary" onClick={()=>applyKit(k)} style={{textAlign:'left'}}><b>{k.nome}</b><br/><span className="rz-note">{k.item}</span></button>)}</div><p className="rz-note" style={{marginTop:10}}>Kit não é classe; é só uma sugestão de gasto dos 6 Créditos de Contratação.</p></Panel>
       <Panel title="PERÍCIAS // 1 CRÉDITO CADA"><table className="rz-table"><thead><tr><th>Sel.</th><th>Perícia</th><th>Serve para</th><th>Custo</th></tr></thead><tbody>{RZ_SKILLS.map(([id,nome,desc])=><tr key={id}><td><input type="checkbox" checked={!!data.pericias?.[id]} onChange={e=>updateField('pericias.'+id,e.target.checked)}/></td><td><b>{nome}</b></td><td>{desc}</td><td>1 CR</td></tr>)}</tbody></table></Panel>
@@ -70,7 +84,7 @@ export default function RotaZeroCharacterEditor({scope}){
     </>}
 
     {tab==='veiculo'&&<>
-      <div className="rz-vehicle-switch"><div><b>FICHA DE VEÍCULO RZ-02</b><div className="rz-note">Opcional, como a Montaria em O Som das Seis. Fica dentro desta ficha.</div></div><label className="rz-pick"><input type="checkbox" checked={!!data.veiculoAtivo} onChange={e=>updateField('veiculoAtivo',e.target.checked)}/><b>{data.veiculoAtivo?'ATIVO':'DESATIVADO'}</b></label></div>
+      <div className="rz-vehicle-switch"><div><b>INCLUIR VEÍCULO NA FICHA</b><div className="rz-note">Módulo opcional RZ-02, como a Montaria em O Som das Seis. O veículo fica vinculado a este funcionário e não vira uma ficha separada na Home.</div></div><label className="rz-pick"><input type="checkbox" checked={!!data.veiculoAtivo} onChange={e=>updateField('veiculoAtivo',e.target.checked)}/><b>{data.veiculoAtivo?'ON / ATIVO':'OFF / DESATIVADO'}</b></label></div>
       {data.veiculoAtivo&&<>
         <Panel title="IDENTIFICAÇÃO DO VEÍCULO"><div className="rz-grid"><Field label="Veículo / apelido"><input value={data.veiculo?.nome||''} onChange={e=>updateField('veiculo.nome',e.target.value)}/></Field><Field label="Modelo"><input value={data.veiculo?.modelo||''} onChange={e=>updateField('veiculo.modelo',e.target.value)}/></Field><Field label="Placa / ID"><input value={data.veiculo?.placaId||''} onChange={e=>updateField('veiculo.placaId',e.target.value)}/></Field></div></Panel>
         <Panel title="MANEJO / TRAÇÃO / CASCO"><div className="rz-grid">{[['manejo','Manejo'],['tracao','Tração'],['casco','Casco']].map(([k,n])=><Field key={k} label={n}><input type="number" min="1" max="3" value={data.veiculo?.[k]??2} onChange={e=>updateField('veiculo.'+k,clamp(e.target.value,1,3))}/></Field>)}</div></Panel>
