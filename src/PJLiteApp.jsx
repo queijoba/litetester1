@@ -2349,6 +2349,26 @@ const { useState, useEffect, useRef } = React;
                         )}
 
 
+                        {showRotaZeroModelModal && ReactDOM.createPortal(
+                            <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[110] p-4">
+                                <div className="bg-[#e9e8e1] rounded-lg shadow-2xl w-full max-w-3xl border border-[#69756d] overflow-hidden max-h-[90vh] flex flex-col">
+                                    <div className="bg-[#111615] text-white p-4 flex justify-between items-center border-b-4 border-[#6b7e70]">
+                                        <div><div className="text-[9px] tracking-[.2em] text-[#9eb0a4] font-bold">ROTA ZERO DELIVERY CO.</div><h2 className="font-mono font-black text-lg">NOVO FUNCIONÁRIO</h2></div>
+                                        <button onClick={() => { setShowRotaZeroModelModal(false); setCreateTarget(null); }} className="text-2xl px-2">&times;</button>
+                                    </div>
+                                    <div className="p-4 overflow-y-auto space-y-4">
+                                        <button onClick={() => loadTemplate(initialRotaZeroPcData)} className="w-full text-left bg-[#f7f5ed] border-2 border-[#9ca39e] hover:border-[#43564a] rounded p-4">
+                                            <b>Ficha em branco</b><div className="text-xs text-[#667169] mt-1">Pulso 1 • Técnica 1 • Firmeza 1 • 6 Créditos de Contratação.</div>
+                                        </button>
+                                        <div><h3 className="font-black text-sm text-[#263129] mb-2">FUNCIONÁRIOS PRONTOS</h3><div className="grid sm:grid-cols-2 gap-3">
+                                            {MODELOS_ROTA_ZERO_PC.map((m,i)=><button key={i} onClick={() => loadTemplate(m)} className="text-left bg-[#f7f5ed] border border-[#a7aaa5] hover:border-[#43564a] rounded p-3"><div className="flex justify-between gap-2"><b>{m.bio.nome}</b><span className="text-[9px] bg-[#18201c] text-white rounded px-2 py-1">P{m.atributos.pulso} T{m.atributos.tecnica} F{m.atributos.firmeza}</span></div><p className="text-[10px] text-[#657068] mt-2">{m.bio.conceito}</p></button>)}
+                                        </div></div>
+                                        <p className="text-[10px] text-[#667169]">Até 2 Defeitos podem conceder +1 Crédito cada. O total final deve fechar.</p>
+                                    </div>
+                                </div>
+                            </div>, document.body
+                        )}
+
                         {show3DetModelModal && ReactDOM.createPortal(
                             <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] p-4 transition-opacity">
                                 <div className="bg-white rounded-sm shadow-2xl w-full max-w-3xl border-2 border-amber-500 overflow-hidden flex flex-col max-h-[90vh] animate-fade-in-up">
