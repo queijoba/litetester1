@@ -57,6 +57,7 @@ export const initialRotaZeroPcData = {
   inventario:['','','',''],
   ancora:'',
   notas:'',
+  contratacao:{ horaExtra:false, creditosExtras:0 },
   veiculoAtivo:false,
   veiculo:{
     nome:'', modelo:'', placaId:'', manejo:2, tracao:2, casco:2,
@@ -83,6 +84,9 @@ export function normalizeRotaZeroPcData(item){
   out.panico=Array.isArray(source.panico)?[...source.panico,false,false,false,false].slice(0,4):clone(base.panico);
   out.traumas=Array.isArray(source.traumas)?[...source.traumas,false,false,false].slice(0,3):clone(base.traumas);
   out.interferencia=Math.max(0,Math.min(6,Number(source.interferencia||0)));
+  out.contratacao={...base.contratacao,...(source.contratacao||{})};
+  out.contratacao.horaExtra=!!out.contratacao.horaExtra;
+  out.contratacao.creditosExtras=Math.max(0,Math.min(99,Number(out.contratacao.creditosExtras||0)));
   out.veiculo={...base.veiculo,...(source.veiculo||{})};
   out.meta={...(source.meta||{}),rotaZero:true};
   return out;
@@ -94,7 +98,9 @@ export function calcRotaZeroCosts(data){
   const skillCost=RZ_SKILLS.reduce((n,[id])=>n+(data?.pericias?.[id]?1:0),0);
   const advantageCost=(data?.vantagens||[]).reduce((n,id)=>n+(RZ_ADVANTAGES.find(x=>x.id===id)?.custo||0),0);
   const defectGain=Math.min(2,(data?.defeitos||[]).length);
-  return {base:6,attrCost,skillCost,advantageCost,defectGain,total:attrCost+skillCost+advantageCost,available:6+defectGain,remaining:6+defectGain-(attrCost+skillCost+advantageCost)};
+  const extraCredits=data?.contratacao?.horaExtra?Math.max(0,Math.min(99,Number(data?.contratacao?.creditosExtras||0))):0;
+  const available=6+defectGain+extraCredits;
+  return {base:6,attrCost,skillCost,advantageCost,defectGain,extraCredits,total:attrCost+skillCost+advantageCost,available,remaining:available-(attrCost+skillCost+advantageCost)};
 }
 
 export function syncRotaZeroResources(data){
