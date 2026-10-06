@@ -74,6 +74,7 @@ Deno.serve(async (req: Request) => {
       { data: profiles, error: profilesError },
       { data: sheetOwners, error: sheetsError },
       { data: memberships, error: membershipsError },
+      { data: rzCollaborators, error: rzError },
       { count: sheetCount, error: sheetCountError },
       { count: groupCount, error: groupCountError },
       { count: shareCount, error: shareCountError },
@@ -81,16 +82,18 @@ Deno.serve(async (req: Request) => {
       admin.from('profiles').select('id,email,display_name,avatar_url,created_at,updated_at'),
       admin.from('sheets').select('owner_id'),
       admin.from('group_members').select('user_id'),
+      admin.from('rota_zero_collaborators').select('user_id,username,unlocked_at'),
       admin.from('sheets').select('*', { count: 'exact', head: true }),
       admin.from('groups').select('*', { count: 'exact', head: true }),
       admin.from('sheet_shares').select('*', { count: 'exact', head: true }),
     ])
 
-    for (const err of [profilesError, sheetsError, membershipsError, sheetCountError, groupCountError, shareCountError]) {
+    for (const err of [profilesError, sheetsError, membershipsError, rzError, sheetCountError, groupCountError, shareCountError]) {
       if (err) throw err
     }
 
     const profileMap = new Map((profiles || []).map((profile: any) => [profile.id, profile]))
+    const rzMap = new Map((rzCollaborators || []).map((entry: any) => [entry.user_id, entry]))
     const sheetsByUser = new Map<string, number>()
     for (const row of sheetOwners || []) {
       if (!row?.owner_id) continue
@@ -106,6 +109,7 @@ Deno.serve(async (req: Request) => {
     const day = 24 * 60 * 60 * 1000
     const mappedUsers = users.map((user: any) => {
       const profile: any = profileMap.get(user.id) || {}
+      const rz: any = rzMap.get(user.id) || null
       const last = ms(user.last_sign_in_at)
       const age = last ? now - last : Number.POSITIVE_INFINITY
       const activity =
@@ -130,6 +134,15 @@ Deno.serve(async (req: Request) => {
         activity,
         sheetCount: sheetsByUser.get(user.id) || 0,
         groupCount: groupsByUser.get(user.id) || 0,
+        achievementTags: [
+          ...(rz ? [{
+            id: 'rz-88',
+            label: 'RZ-88',
+            name: 'Colaborador Rota Zero',
+            category: 'ARG',
+            unlockedAt: rz.unlocked_at || null,
+          }] : []),
+        ],
       }
     }).sort((a: any, b: any) => ms(b.lastSignInAt) - ms(a.lastSignInAt))
 
@@ -141,6 +154,8 @@ Deno.serve(async (req: Request) => {
       totalSheets: sheetCount || 0,
       totalGroups: groupCount || 0,
       totalShares: shareCount || 0,
+      taggedAccounts: mappedUsers.filter((user: any) => Array.isArray(user.achievementTags) && user.achievementTags.length > 0).length,
+      totalAchievementTags: mappedUsers.reduce((sum: number, user: any) => sum + (Array.isArray(user.achievementTags) ? user.achievementTags.length : 0), 0),
     }
 
     return json({
