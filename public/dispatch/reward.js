@@ -47,10 +47,11 @@
   const style=document.createElement('style');
   style.textContent=`
     #rz-achievement{position:fixed;left:16px;bottom:16px;z-index:99999;display:flex;align-items:center;gap:8px;background:#101714;color:#dbe4dc;border:1px solid #566c5d;border-radius:999px;padding:8px 12px;font:700 11px/1.2 ui-monospace,monospace;box-shadow:0 10px 30px #0004;text-decoration:none}
-    #rz-welcome{position:fixed;right:16px;top:16px;z-index:99998;background:#101714e8;color:#dbe4dc;border:1px solid #566c5d;border-radius:12px;padding:10px 13px;font:700 11px/1.45 ui-monospace,monospace;box-shadow:0 12px 35px #0004;max-width:320px}
-    #rz-omen{position:fixed;right:22px;top:84px;z-index:99996;width:58px;height:58px;object-fit:contain;opacity:.58;filter:grayscale(.12) contrast(1.05) drop-shadow(0 0 10px #0008);image-rendering:pixelated;animation:rzflicker 5s infinite;pointer-events:none}
+    #rz-welcome{position:fixed;right:16px;top:16px;z-index:99998;background:#101714e8;color:#dbe4dc;border:1px solid #566c5d;border-radius:12px;padding:9px 12px;font:700 11px/1.45 ui-monospace,monospace;box-shadow:0 12px 35px #0004;max-width:360px;display:flex;align-items:center;gap:10px}
+    #rz-welcome-text{min-width:0}
+    #rz-omen{position:static;flex:0 0 auto;width:44px;height:44px;object-fit:contain;opacity:.72;filter:grayscale(.08) contrast(1.05) drop-shadow(0 0 8px #0008);image-rendering:pixelated;animation:rzflicker 5s infinite;pointer-events:none}
     @keyframes rzflicker{0%,92%,100%{opacity:.62;transform:translate(0,0)}93%{opacity:.18;transform:translate(1px,-1px)}94%{opacity:.8;transform:translate(-1px,1px)}}
-    @media(max-width:640px){#rz-welcome{top:10px;right:10px;max-width:250px}#rz-achievement{left:10px;bottom:10px}#rz-omen{width:46px;height:46px;right:14px;top:82px}}
+    @media(max-width:640px){#rz-welcome{top:10px;right:10px;max-width:285px}#rz-achievement{left:10px;bottom:10px}#rz-omen{width:38px;height:38px}}
   `;
   document.head.appendChild(style);
 
@@ -64,11 +65,16 @@
 
   const welcome=document.createElement('div');
   welcome.id='rz-welcome';
-  welcome.textContent='Bem-vindo de volta, '+gmailUser+'. Estamos felizes em te ver aqui :>';
-  document.body.appendChild(welcome);
 
   const omen=document.createElement('img');
   omen.id='rz-omen'; omen.src=chosen[1]; omen.alt=''; omen.title='registro: '+chosen[0];
-  document.body.appendChild(omen);
+
+  const welcomeText=document.createElement('span');
+  welcomeText.id='rz-welcome-text';
+  welcomeText.textContent='Bem-vindo de volta, '+gmailUser+'. Estamos felizes em te ver aqui :>';
+
+  welcome.appendChild(omen);
+  welcome.appendChild(welcomeText);
+  document.body.appendChild(welcome);
 
 })();
