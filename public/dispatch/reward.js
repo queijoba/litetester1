@@ -83,9 +83,36 @@
   const fullWelcome='Bem-vindo de volta, '+displayName+'. Estamos felizes em te ver aqui :>';
   welcomeText.textContent=fullWelcome;
 
+  const scan=document.createElement('div');
+  scan.id='rz-scan';
+  const rawBirth=String(meta.birthdate||meta.birthday||meta.date_of_birth||'').trim();
+  const birthText=(()=>{
+    if(!rawBirth)return '';
+    const d=new Date(rawBirth);
+    if(Number.isNaN(d.getTime()))return rawBirth;
+    return new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}).format(d);
+  })();
+  const scanLines=[
+    'NOME NA CONTA // '+displayName,
+    email?'CONTATO RECONHECIDO // '+email:'',
+    birthText?'Seu aniversário é '+birthText+', né? Vamos rever seu bônus salarial.':(profile.age?'Então você tem '+profile.age+' anos. RH anotou isso.':'IDADE // esse campo não foi exposto pela conta.'),
+    profile.role?'FUNÇÃO PREVISTA // '+profile.role:'',
+    profile.shift?'TURNO PREFERIDO // '+profile.shift:''
+  ].filter(Boolean);
+  scanLines.forEach(line=>{const s=document.createElement('span');s.className='rz-scan-line';s.textContent=line;scan.appendChild(s);});
+
   welcome.appendChild(omen);
   welcome.appendChild(welcomeText);
+  welcome.appendChild(scan);
   document.body.appendChild(welcome);
+
+  omen.tabIndex=0;
+  omen.setAttribute('role','button');
+  omen.addEventListener('mouseenter',()=>welcome.classList.add('rz-scan-open'));
+  omen.addEventListener('mouseleave',()=>welcome.classList.remove('rz-scan-open'));
+  omen.addEventListener('focus',()=>welcome.classList.add('rz-scan-open'));
+  omen.addEventListener('blur',()=>welcome.classList.remove('rz-scan-open'));
+  omen.addEventListener('click',e=>{e.stopPropagation();welcome.classList.toggle('rz-scan-open');});
 
   let collapsed=false;
   const collapseWelcome=()=>{
