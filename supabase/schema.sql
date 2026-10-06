@@ -142,20 +142,40 @@ create or replace function public.pjlite_join_group_by_code(p_code text)
 returns table(group_id uuid, group_name text, role text)
 language plpgsql
 security definer
-set search_path = public
-as $$
+set search_path = public, auth
+as $
 declare
   g public.groups%rowtype;
 begin
-  if auth.uid() is null then raise exception 'not_authenticated'; end if;
-  select * into g from public.groups where invite_code = upper(trim(p_code)) limit 1;
-  if g.id is null then raise exception 'invalid_invite_code'; end if;
+  if auth.uid() is null then
+    raise exception 'not_authenticated';
+  end if;
+
+  select grp.*
+  into g
+  from public.groups as grp
+  where grp.invite_code = upper(trim(p_code))
+  limit 1;
+
+  if g.id is null then
+    raise exception 'invalid_invite_code';
+  end if;
+
   insert into public.group_members(group_id, user_id, role)
-  values(g.id, auth.uid(), case when g.owner_id = auth.uid() then 'owner' else 'member' end)
-  on conflict(group_id, user_id) do nothing;
-  return query select g.id, g.name, case when g.owner_id = auth.uid() then 'owner' else 'member' end;
+  values (
+    g.id,
+    auth.uid(),
+    case when g.owner_id = auth.uid() then 'owner' else 'member' end
+  )
+  on conflict on constraint group_members_pkey do nothing;
+
+  return query
+  select
+    g.id,
+    g.name,
+    case when g.owner_id = auth.uid() then 'owner' else 'member' end;
 end;
-$$;
+$;
 
 create or replace function public.pjlite_rotate_group_code(p_group_id uuid)
 returns text
@@ -265,6 +285,7 @@ create policy shares_update_recipient on public.sheet_shares for update using (r
 drop policy if exists shares_delete_recipient on public.sheet_shares;
 create policy shares_delete_recipient on public.sheet_shares for delete using (recipient_id = auth.uid());
 
+revoke all on function public.pjlite_join_group_by_code(text) from public, anon;
 grant execute on function public.pjlite_join_group_by_code(text) to authenticated;
 grant execute on function public.pjlite_rotate_group_code(uuid) to authenticated;
 grant execute on function public.pjlite_share_sheet_to_email(text,text) to authenticated;
