@@ -2934,7 +2934,8 @@ const { useState, useEffect, useRef } = React;
             const isFabula = data.system === 'fabula';
             const isSom6 = data.system === 'somdas6';
             const is3Det = data.system === '3det';
-            const topBarColor = isDnd ? 'bg-[#922610]' : isFabula ? 'bg-teal-800' : isSom6 ? 'bg-red-950' : is3Det ? 'bg-zinc-950' : (data.type === 'pnj' ? 'bg-blue-900' : data.type === 'ameaca' ? 'bg-red-900' : 'bg-dragon-dark');
+            const isRotaZero = data.system === 'rotaZero';
+            const topBarColor = isDnd ? 'bg-[#922610]' : isFabula ? 'bg-teal-800' : isSom6 ? 'bg-red-950' : is3Det ? 'bg-zinc-950' : isRotaZero ? 'bg-[#111615]' : (data.type === 'pnj' ? 'bg-blue-900' : data.type === 'ameaca' ? 'bg-red-900' : 'bg-dragon-dark');
             // Escopo de compatibilidade dos editores modularizados.
             // Será reduzido conforme modelos e lógica forem migrados para cada sistema.
             const systemEditorScope = {
@@ -3264,9 +3265,10 @@ const { useState, useEffect, useRef } = React;
                     {/* 3DeT Victory — personagem e ameaças modularizados */}
                     <TresDeTCharacterEditor scope={systemEditorScope} />
                     <TresDeTThreatEditor scope={systemEditorScope} />
+                    <RotaZeroCharacterEditor scope={systemEditorScope} />
 
                     {/* Editor Dragonbane (Intacto) */}
-                    {!['dragonbane','dnd5e','fabula','somdas6','3det'].includes(data.system || 'dragonbane') && (
+                    {!['dragonbane','dnd5e','fabula','somdas6','3det','rotaZero'].includes(data.system || 'dragonbane') && (
                         <div className="p-6 md:p-10 bg-amber-50 border-y border-amber-300 text-amber-950">
                             <h2 className="font-title font-bold text-lg">⚠ Formato de ficha não reconhecido</h2>
                             <p className="text-sm mt-2">Esta ficha parece ter vindo de uma versão ou sistema que o PJ Lite atual não reconhece. Os dados não foram apagados. Exporte um backup antes de editar e confira o campo de sistema na origem da ficha.</p>
