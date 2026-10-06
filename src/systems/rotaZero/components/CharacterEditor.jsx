@@ -36,6 +36,7 @@ export default function RotaZeroCharacterEditor({scope}){
     updateField('recursos.foco',next.recursos.foco);
     updateField('recursos.vitalidade',next.recursos.vitalidade);
   };
+  const stepAttr=(key,delta)=>setAttr(key,(Number(attrs[key])||1)+delta);
   const toggleList=(key,id,on)=>{
     const list=Array.isArray(data[key])?[...data[key]]:[];
     const next=on?[...new Set([...list,id])]:list.filter(x=>x!==id);
