@@ -31,12 +31,12 @@ jobs:
       - name: Empacotar build da migração
         uses: actions/upload-artifact@v4
         with:
-          name: pjlite-0.9.1-dist
+          name: pjlite-0.9.5-dist
           path: dist/
           if-no-files-found: error
           retention-days: 3
 
-      - name: Publicar snapshot 0.9.1 para produção
+      - name: Publicar snapshot 0.9.5 para produção
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
           rm -rf /tmp/pjlite-dist
@@ -48,7 +48,7 @@ jobs:
           git rm -rf . || true
           find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
           cp -a /tmp/pjlite-dist/. .
-          printf "PJ Lite 0.9.1v Alpha\nSource: %s\n" "$GITHUB_SHA" > .pjlite-release
+          printf "PJ Lite 0.9.5v Alpha\nSource: %s\n" "$GITHUB_SHA" > .pjlite-release
           git add -A
-          git commit -m "Build PJ Lite 0.9.1v Alpha ($GITHUB_SHA)"
+          git commit -m "Build PJ Lite 0.9.5v Alpha ($GITHUB_SHA)"
           git push --force origin HEAD:production-dist
