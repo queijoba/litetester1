@@ -124,6 +124,37 @@ export async function pullSheets() {
   return (data || []).map(row => ({ ...row, payload: row.payload || {} }));
 }
 
+export async function mirrorSheets(characters = [], threats = []) {
+  const client = requireClient();
+
+  await pushSheets(characters, threats);
+
+  const localIds = new Set([
+    ...(Array.isArray(characters) ? characters : []),
+    ...(Array.isArray(threats) ? threats : []),
+  ].map(cleanLocalId).filter(Boolean));
+
+  const { data: remoteBefore, error: remoteError } = await client
+    .from('sheets')
+    .select('local_id');
+  if (remoteError) throw remoteError;
+
+  const staleIds = (remoteBefore || [])
+    .map(row => String(row?.local_id || '').trim())
+    .filter(id => id && !localIds.has(id));
+
+  if (staleIds.length) {
+    const { error: deleteError } = await client
+      .from('sheets')
+      .delete()
+      .in('local_id', staleIds);
+    if (deleteError) throw deleteError;
+  }
+
+  const rows = await pullSheets();
+  return { rows, deletedCount: staleIds.length };
+}
+
 export async function deleteRemoteSheet(localId) {
   const client = requireClient();
   const { error } = await client.from('sheets').delete().eq('local_id', String(localId));
