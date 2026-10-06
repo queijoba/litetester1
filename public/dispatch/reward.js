@@ -1,7 +1,30 @@
-(() => {
+(async () => {
   const EMP='pjlite_rz_employee_v1';
   const UNLOCK='pjlite_rz_theme_unlocked_v1';
-  const THEME='pjlite_rz_theme_active_v1';
+  const SUPABASE_URL='https://jkwlsfkuxaelqjqrirdd.supabase.co';
+  const SUPABASE_KEY='sb_publishable_3p5Jio7t415Lv75rjEVFCg_rlG3ryfJ';
+
+  const liteSession=()=>{
+    try{return JSON.parse(localStorage.getItem('sb-jkwlsfkuxaelqjqrirdd-auth-token')||'null')}catch{return null}
+  };
+  const syncCloudReward=async()=>{
+    const session=liteSession();
+    const token=session?.access_token||session?.currentSession?.access_token||session?.session?.access_token||'';
+    if(!token)return;
+    try{
+      const response=await fetch(SUPABASE_URL+'/rest/v1/rota_zero_collaborators?select=email,username,application&limit=1',{
+        headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+token}
+      });
+      if(!response.ok)return;
+      const rows=await response.json();
+      const row=Array.isArray(rows)?rows[0]:null;
+      if(!row)return;
+      const prev=JSON.parse(localStorage.getItem(EMP)||'{}')||{};
+      localStorage.setItem(EMP,JSON.stringify({...prev,...(row.application||{}),email:row.email,username:row.username,cloud:true}));
+      localStorage.setItem(UNLOCK,'1');
+    }catch{}
+  };
+  await syncCloudReward();
   if(localStorage.getItem(UNLOCK)!=='1') return;
 
   let profile={};
@@ -25,17 +48,11 @@
   style.textContent=`
     #rz-achievement{position:fixed;left:16px;bottom:16px;z-index:99999;display:flex;align-items:center;gap:8px;background:#101714;color:#dbe4dc;border:1px solid #566c5d;border-radius:999px;padding:8px 12px;font:700 11px/1.2 ui-monospace,monospace;box-shadow:0 10px 30px #0004;text-decoration:none}
     #rz-welcome{position:fixed;right:16px;top:16px;z-index:99998;background:#101714e8;color:#dbe4dc;border:1px solid #566c5d;border-radius:12px;padding:10px 13px;font:700 11px/1.45 ui-monospace,monospace;box-shadow:0 12px 35px #0004;max-width:320px}
-    #rz-omen{position:fixed;right:20px;bottom:18px;z-index:99997;width:66px;height:66px;object-fit:contain;opacity:.62;filter:grayscale(.12) contrast(1.05) drop-shadow(0 0 10px #0008);image-rendering:pixelated;animation:rzflicker 5s infinite}
-    #rz-dock{position:fixed;right:98px;bottom:22px;z-index:99998;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
-    #rz-dock button,#rz-dock a{background:#111815;color:#dce4dd;border:1px solid #506259;border-radius:8px;padding:8px 10px;font:700 10px ui-monospace,monospace;text-decoration:none;cursor:pointer}
-    body.rz-reward-theme{background:radial-gradient(circle at 15% 0,#1c2820 0,transparent 35%),linear-gradient(180deg,#101513,#080b0a)!important}
-    body.rz-reward-theme .max-w-\[90rem\],body.rz-reward-theme .max-w-5xl{box-shadow:0 18px 60px #0005!important;border-color:#52655a!important}
+    #rz-omen{position:fixed;right:22px;top:84px;z-index:99996;width:58px;height:58px;object-fit:contain;opacity:.58;filter:grayscale(.12) contrast(1.05) drop-shadow(0 0 10px #0008);image-rendering:pixelated;animation:rzflicker 5s infinite;pointer-events:none}
     @keyframes rzflicker{0%,92%,100%{opacity:.62;transform:translate(0,0)}93%{opacity:.18;transform:translate(1px,-1px)}94%{opacity:.8;transform:translate(-1px,1px)}}
-    @media(max-width:640px){#rz-welcome{top:auto;bottom:94px;right:10px;max-width:250px}#rz-achievement{left:10px;bottom:10px}#rz-omen{width:52px;height:52px;right:10px;bottom:12px}#rz-dock{display:none}}
+    @media(max-width:640px){#rz-welcome{top:10px;right:10px;max-width:250px}#rz-achievement{left:10px;bottom:10px}#rz-omen{width:46px;height:46px;right:14px;top:82px}}
   `;
   document.head.appendChild(style);
-
-  if(localStorage.getItem(THEME)==='1') document.body.classList.add('rz-reward-theme');
 
   const original=document.getElementById('lite-signal-preview');
   if(original){original.style.display='none';}
@@ -54,15 +71,4 @@
   omen.id='rz-omen'; omen.src=chosen[1]; omen.alt=''; omen.title='registro: '+chosen[0];
   document.body.appendChild(omen);
 
-  const dock=document.createElement('div'); dock.id='rz-dock';
-  const theme=document.createElement('button');
-  theme.textContent=document.body.classList.contains('rz-reward-theme')?'Tema RZ: ativo':'Tema RZ';
-  theme.onclick=()=>{
-    document.body.classList.toggle('rz-reward-theme');
-    const on=document.body.classList.contains('rz-reward-theme');
-    localStorage.setItem(THEME,on?'1':'0');
-    theme.textContent=on?'Tema RZ: ativo':'Tema RZ';
-  };
-  const rewards=document.createElement('a'); rewards.href='/rota-zero/'; rewards.textContent='Recompensas RZ';
-  dock.append(theme,rewards); document.body.appendChild(dock);
 })();
