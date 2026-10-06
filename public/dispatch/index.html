@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>RZ Dispatch // Employee Recovery</title>
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#090b0c;--panel:#111516;--panel2:#151a1b;--line:#283033;--text:#d7ded8;
+  --muted:#75817b;--green:#8ea88d;--good:#5e7e62;--yellow:#8b7848;--bad:#744b4b;--cream:#cbc5aa;
+}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:
+radial-gradient(circle at 20% 0%,rgba(104,119,99,.09),transparent 30%),
+linear-gradient(180deg,#0d1010 0,#070909 100%);
+color:var(--text);font-family:"Courier New",ui-monospace,monospace;padding:18px}
+body:before{content:"";pointer-events:none;position:fixed;inset:0;opacity:.055;background:
+repeating-linear-gradient(0deg,transparent,transparent 2px,#fff 3px,transparent 4px)}
+.wrap{width:min(1080px,100%);margin:18px auto;border:1px solid #313a37;background:rgba(12,15,15,.96);border-radius:13px;overflow:hidden;box-shadow:0 28px 100px rgba(0,0,0,.52)}
+.top{padding:13px 17px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:center;background:#101414}
+.brand{font-size:13px;letter-spacing:.15em;color:#aeb8ae}.led{display:inline-block;width:7px;height:7px;border-radius:50%;background:#6e8f70;box-shadow:0 0 10px #6e8f70;margin-right:8px}
+.small{font-size:11px;color:var(--muted)}
+main{padding:clamp(20px,4vw,42px)}
+h1,h2,h3,p{margin-top:0}h1{font-size:clamp(25px,4vw,45px);letter-spacing:.04em;margin-bottom:8px}
+.sub{color:var(--muted);line-height:1.6;max-width:780px}
+.sys{color:var(--cream)}.warn{color:#c69a72}.ok{color:#92ac91}.danger{color:#bd7c7c}
+.hr{height:1px;background:var(--line);margin:26px 0}
+.step{display:none}.step.active{display:block}
+.badge{display:inline-flex;gap:8px;align-items:center;border:1px solid #36413d;background:#121817;padding:6px 9px;border-radius:999px;color:#93a196;font-size:11px;letter-spacing:.08em;margin-bottom:14px}
+.instructions{border-left:3px solid #56655b;padding:2px 0 2px 15px;color:#a7b0aa;line-height:1.6;margin:18px 0}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:18px}
+.card{appearance:none;text-align:left;background:#121718;border:1px solid #30393a;color:inherit;border-radius:10px;padding:16px;cursor:pointer;transition:.15s transform,.15s border-color,.15s background}
+.card:hover{transform:translateY(-2px);border-color:#697b70;background:#161d1b}
+.card.used{opacity:.35;pointer-events:none}
+.card .id{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px}
+.card .name{font-weight:700;color:#e4e7df}.code{font-size:12px;color:#a8b596;border:1px solid #3e4940;padding:3px 7px;border-radius:5px}
+.card .cause{font-size:12px;line-height:1.55;color:#8d9792}.cause strong{color:#b0aaa0}
+.tiles{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0 10px}
+.tile{width:56px;height:56px;border:1px solid #3a4443;background:#0c1011;display:grid;place-items:center;border-radius:7px;font-size:24px;font-weight:700;color:#d8ddd9;transition:.15s}
+.tile.good{background:#35513b;border-color:#62836a}.tile.yellow{background:#62562f;border-color:#8d7c45}.tile.bad{background:#4e3535;border-color:#7a5555}
+.controls{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}
+button,.btn{font:700 12px "Courier New",monospace;letter-spacing:.06em;background:#1a2020;border:1px solid #3b4644;color:#d8ddd8;padding:10px 13px;border-radius:7px;cursor:pointer;text-decoration:none}
+button:hover,.btn:hover{border-color:#7b8d82}.ghost{color:#89928e;background:transparent}
+.feedback{min-height:20px;margin-top:13px;font-size:12px;color:#8c9992}
+.unlock{margin-top:18px;padding:16px;border:1px solid #526654;background:#111912;border-radius:9px;display:none}
+.unlock strong{color:#aac4a9;font-size:19px;letter-spacing:.15em}
+.formbox{max-width:620px;border:1px solid #303838;border-radius:10px;padding:20px;background:#101414;margin-top:18px}
+label{display:block;color:#85928a;font-size:11px;letter-spacing:.11em;margin-bottom:7px}
+input{width:100%;padding:13px 14px;border-radius:7px;border:1px solid #3a4443;background:#080b0c;color:#e3e7e3;font:15px "Courier New",monospace;outline:none}
+input:focus{border-color:#708177;box-shadow:0 0 0 2px rgba(112,129,119,.12)}
+.inputrow{display:flex;gap:10px}.inputrow input{flex:1}.inputrow button{white-space:nowrap}
+.terminal{display:grid;grid-template-columns:1.1fr .9fr;gap:13px;margin-top:18px}
+.box{border:1px solid #303838;background:#101414;border-radius:9px;padding:17px}.box h3{font-size:12px;color:#89968d;letter-spacing:.12em;margin-bottom:14px}.rowline{display:flex;justify-content:space-between;gap:15px;padding:8px 0;border-bottom:1px dotted #2c3434;font-size:12px}.rowline:last-child{border-bottom:0}.rowline span:last-child{text-align:right;color:#bfc7c1}
+.manifest{white-space:pre-wrap;line-height:1.75;font-size:12px;color:#a6b0aa}
+.access{font-size:clamp(24px,4vw,38px);color:#9eb69d;letter-spacing:.08em}
+.footer{padding:12px 17px;border-top:1px solid var(--line);font-size:10px;color:#59635f;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+@media(max-width:720px){.cards,.terminal{grid-template-columns:1fr}.inputrow{flex-direction:column}.tile{width:48px;height:48px}.top{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<section class="wrap">
+  <header class="top">
+    <div class="brand"><span class="led"></span>ROTA ZERO DELIVERY CO. // INTERNAL SERVICES</div>
+    <div class="small">TERMINAL: RZ-DSP-04 · LINK DEGRADED</div>
+  </header>
+  <main>
+    <section id="step0" class="step active">
+      <div class="badge">UTILITY 04-B · CREDENTIAL RECOVERY</div>
+      <h1>Arquivo de funcionários <span class="sys">desligados</span></h1>
+      <p class="sub">O sistema de despacho encontrou uma credencial incompleta associada à remessa 088. Parte da senha foi fragmentada entre registros de operadores removidos do quadro.</p>
+      <div class="instructions">
+        Ordene os registros pelo número de identificação, do <strong>menor para o maior</strong>. Clique nas fichas na ordem correta. As iniciais formarão a senha de manutenção.
+      </div>
+      <div id="tiles" class="tiles"></div>
+      <div id="cards" class="cards"></div>
+      <div class="controls">
+        <button id="check">VALIDAR ORDEM</button>
+        <button id="undo" class="ghost">DESFAZER</button>
+        <button id="reset" class="ghost">LIMPAR</button>
+      </div>
+      <div id="feedback" class="feedback">5 registros recuperados. Causas de desligamento disponíveis.</div>
+      <div id="unlock" class="unlock">CREDENCIAL RECONSTRUÍDA // SENHA: <strong id="passwordOut"></strong></div>
+    </section>
+
+    <section id="step1" class="step">
+      <div class="badge">AUTH GATE 01/02</div>
+      <h2>Verificação de remessa</h2>
+      <p class="sub">A senha foi aceita. Informe o número completo da entrega vinculada ao incidente.</p>
+      <div class="formbox">
+        <label>NÚMERO DA REMESSA / ENTREGA</label>
+        <div class="inputrow"><input id="shipment" placeholder="#___" autocomplete="off"><button id="shipmentBtn">VERIFICAR</button></div>
+        <div id="shipmentMsg" class="feedback"></div>
+      </div>
+    </section>
+
+    <section id="step2" class="step">
+      <div class="badge">AUTH GATE 02/02</div>
+      <h2>Conta de despacho</h2>
+      <p class="sub">Remessa localizada. A sessão requer a conta interna vinculada ao canal de despacho.</p>
+      <div class="formbox">
+        <label>CONTA / ENDEREÇO INTERNO</label>
+        <div class="inputrow"><input id="account" placeholder="user@host.local" autocomplete="off" spellcheck="false"><button id="accountBtn">AUTENTICAR</button></div>
+        <div id="accountMsg" class="feedback"></div>
+      </div>
+    </section>
+
+    <section id="step3" class="step">
+      <div class="badge">SESSION RZ-088 · PRIVILEGE: DISPATCH</div>
+      <div class="access">ACESSO CONCEDIDO</div>
+      <p class="sub">Bem-vindo, <span class="sys">dispatch@rota-zero.local</span>. Alguns registros não foram sincronizados com a rede principal.</p>
+      <div class="terminal">
+        <div class="box">
+          <h3>REMESSA #088</h3>
+          <div class="rowline"><span>STATUS</span><span class="warn">ENTREGA NÃO CONCLUÍDA</span></div>
+          <div class="rowline"><span>ROTA</span><span>RZ-04 / SETOR ███</span></div>
+          <div class="rowline"><span>MOTORISTA</span><span>NÃO ATRIBUÍDO</span></div>
+          <div class="rowline"><span>CARGA</span><span>1 VOLUME · LACRADO</span></div>
+          <div class="rowline"><span>ÚLTIMO PING</span><span>KM 88 · 03:12</span></div>
+        </div>
+        <div class="box">
+          <h3>MANIFESTO RECUPERADO</h3>
+          <div class="manifest">ORIGEM: DEPÓSITO 04
+DESTINO: [ENDEREÇO INDISPONÍVEL]
+INSTRUÇÃO: NÃO RETORNAR PELA MESMA ROTA
+
+OBSERVAÇÃO:
+"se o rádio chamar pelo seu nome,
+não responda."</div>
+        </div>
+      </div>
+      <div class="hr"></div>
+      <p class="sub"><span class="danger">AVISO:</span> os cinco operadores usados na recuperação não constam mais no quadro ativo. O sistema classifica todos como <strong>DESLIGADOS</strong>, embora dois registros não possuam confirmação de retorno.</p>
+      <div class="controls"><a class="btn" href="/">ENCERRAR SESSÃO / VOLTAR</a></div>
+    </section>
+  </main>
+  <footer class="footer">
+    <span>RZ DELIVERY CO. · PROPERTY OF INTERNAL LOGISTICS</span>
+    <span>BUILD 088.04 · DO NOT DISTRIBUTE</span>
+  </footer>
+</section>
+<script>
+const records=[
+ {name:'Cassandra',short:'CASSANDRA',n:4,cause:'DESLIGADA — veículo retornou ao depósito sem motorista.'},
+ {name:'Arquimestre Aodhan',short:'AODHAN',n:9,cause:'DESAPARECIDO — sinal perdido após desvio não autorizado.'},
+ {name:'Blair Clarimonde',short:'BLAIR',n:17,cause:'DESLIGADA — abriu uma entrega marcada como NÃO INSPECIONAR.'},
+ {name:'Lavigne Fallbright',short:'LAVIGNE',n:31,cause:'DESAPARECIDA — última chamada: “não é uma estrada”.'},
+ {name:'Edgar',short:'EDGAR',n:44,cause:'DESLIGADO — retorno rejeitado por divergência de identificação.'}
+];
+const correct=[...records].sort((a,b)=>a.n-b.n);
+const shuffled=[records[2],records[4],records[0],records[3],records[1]];
+let chosen=[];
+const cards=document.getElementById('cards'), tiles=document.getElementById('tiles'), feedback=document.getElementById('feedback'), unlock=document.getElementById('unlock');
+function render(){
+ cards.innerHTML='';
+ shuffled.forEach(r=>{
+  const b=document.createElement('button');b.className='card'+(chosen.includes(r)?' used':'');
+  b.innerHTML='<div class="id"><span class="name">'+r.name+'</span><span class="code">'+r.short+'-'+String(r.n).padStart(2,'0')+'</span></div><div class="cause"><strong>STATUS:</strong> '+r.cause+'</div>';
+  b.onclick=()=>{if(chosen.length<5&&!chosen.includes(r)){chosen.push(r);render();}};cards.appendChild(b);
+ });
+ tiles.innerHTML='';
+ for(let i=0;i<5;i++){const d=document.createElement('div');d.className='tile';d.textContent=chosen[i]?chosen[i].name[0].toUpperCase():'·';tiles.appendChild(d);}
+}
+function evaluate(){
+ if(chosen.length!==5){feedback.textContent='Selecione os 5 registros antes de validar.';feedback.className='feedback warn';return;}
+ const tileEls=[...tiles.children];
+ let all=true;
+ chosen.forEach((r,i)=>{
+   const initial=r.name[0].toUpperCase(), correctInitial=correct[i].name[0].toUpperCase();
+   if(r.n===correct[i].n) tileEls[i].classList.add('good');
+   else if(correct.some(x=>x.name[0].toUpperCase()===initial)) {tileEls[i].classList.add('yellow');all=false;}
+   else {tileEls[i].classList.add('bad');all=false;}
+ });
+ if(all){
+   const pass=correct.map(x=>x.name[0].toUpperCase()).join('');
+   document.getElementById('passwordOut').textContent=pass;
+   unlock.style.display='block';feedback.textContent='Ordem confirmada. Credencial recomposta.';feedback.className='feedback ok';
+   setTimeout(()=>showStep(1),1100);
+ }else{
+   feedback.textContent='Sequência rejeitada. Verde = posição correta; âmbar = registro correto em posição errada.';feedback.className='feedback warn';
+ }
+}
+function showStep(n){document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));document.getElementById('step'+n).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+document.getElementById('check').onclick=evaluate;
+document.getElementById('undo').onclick=()=>{chosen.pop();unlock.style.display='none';feedback.textContent='Última seleção removida.';feedback.className='feedback';render();};
+document.getElementById('reset').onclick=()=>{chosen=[];unlock.style.display='none';feedback.textContent='Sequência limpa.';feedback.className='feedback';render();};
+document.getElementById('shipmentBtn').onclick=()=>{
+ const v=document.getElementById('shipment').value.trim().toUpperCase();
+ if(v==='#088'||v==='088'){document.getElementById('shipmentMsg').textContent='REMESSA 088 LOCALIZADA.';document.getElementById('shipmentMsg').className='feedback ok';setTimeout(()=>showStep(2),600);}
+ else{document.getElementById('shipmentMsg').textContent='REMESSA NÃO RECONHECIDA.';document.getElementById('shipmentMsg').className='feedback danger';}
+};
+document.getElementById('accountBtn').onclick=()=>{
+ const v=document.getElementById('account').value.trim().toLowerCase();
+ if(v==='dispatch@rota-zero.local'){document.getElementById('accountMsg').textContent='CONTA VALIDADA.';document.getElementById('accountMsg').className='feedback ok';setTimeout(()=>showStep(3),650);}
+ else{document.getElementById('accountMsg').textContent='CONTA NÃO AUTORIZADA PARA A REMESSA 088.';document.getElementById('accountMsg').className='feedback danger';}
+};
+['shipment','account'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById(id==='shipment'?'shipmentBtn':'accountBtn').click();}));
+render();
+</script>
+</body>
+</html>
