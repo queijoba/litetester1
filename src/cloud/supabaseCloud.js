@@ -242,3 +242,19 @@ export async function dismissShare(shareId) {
     .eq('id', shareId);
   if (error) throw error;
 }
+
+
+export async function getAdminDashboard() {
+  const client = requireClient();
+  const { data: { session }, error: sessionError } = await client.auth.getSession();
+  if (sessionError) throw sessionError;
+  if (!session?.access_token) throw new Error('not_authenticated');
+
+  const { data, error } = await client.functions.invoke('pjlite-admin', {
+    body: { action: 'dashboard' },
+    headers: { Authorization: 'Bearer ' + session.access_token },
+  });
+  if (error) throw error;
+  if (data?.error) throw new Error(String(data.error));
+  return data;
+}
