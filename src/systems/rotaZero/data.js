@@ -45,7 +45,7 @@ export const RZ_KITS = [
 
 export const initialRotaZeroPcData = {
   id:'', system:'rotaZero', type:'pc',
-  bio:{ nome:'', jogador:'', conceito:'', kit:'', imagem:'' },
+  bio:{ nome:'', jogador:'', idade:'', conceito:'', kit:'', imagem:'' },
   atributos:{ pulso:1, tecnica:1, firmeza:1 },
   recursos:{ adrenalina:{atual:1,max:1}, foco:{atual:5,max:5}, vitalidade:{atual:5,max:5} },
   panico:[false,false,false,false],
@@ -61,7 +61,7 @@ export const initialRotaZeroPcData = {
   veiculo:{
     nome:'', modelo:'', placaId:'', manejo:2, tracao:2, casco:2,
     combustivel:6, integridade:6, aquecimento:4,
-    cargaCompartimentos:'', upgradesSlots:'', avariasReparos:''
+    cargaCompartimentos:'', upgradesSlots:'', avariasReparos:'', entregas:0, tempoTurno:'', despesas:'', rotaAtual:'', destino:'', desvios:'', radioMensagens:'', pistasIncidentes:''
   },
   meta:{ rotaZero:true }
 };
