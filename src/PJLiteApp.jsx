@@ -1853,11 +1853,15 @@ const { useState, useEffect, useRef } = React;
             };
 
             const returnToDashboard = () => {
+                const wasRotaZero = data?.system === 'rotaZero';
                 if (view === 'editor' && data) {
                     const ok = saveToLocal(data, true);
                     if (!ok) { showToast('Não foi possível sair: salve um backup ou libere espaço no navegador.'); return; }
                 }
                 setView('dashboard');
+                // O editor Rota Zero injeta uma identidade visual própria. Limpar a ficha
+                // ativa ao voltar impede cabeçalho/barra do sistema de sobreviver na Home.
+                if (wasRotaZero) setTimeout(() => setData(null), 0);
             };
 
             /* Dragonbane Específicos */
@@ -3207,14 +3211,14 @@ const { useState, useEffect, useRef } = React;
             };
 
             return (
-                <div style={getWindowStyle()} className={`${(!isDnd && !isFabula && !isSom6 && !is3Det && data.type === 'pc') ? 'max-w-[90rem]' : 'max-w-6xl'} mx-auto bg-white rounded-sm shadow-xl border-2 ${isDnd ? 'border-[#922610]' : isFabula ? 'border-teal-700' : isSom6 ? 'border-red-900' : is3Det ? 'border-amber-500' : 'border-gray-500'} transition-all duration-300`}>
-                    <div style={(isDnd || isFabula || isSom6 || is3Det) ? {} : getBarStyle()} className={`no-print p-3 flex flex-wrap justify-between items-center rounded-t-sm gap-2 text-white ${topBarColor}`}>
+                <div style={getWindowStyle()} className={`${isRotaZero ? 'max-w-6xl rz-shell' : (!isDnd && !isFabula && !isSom6 && !is3Det && data.type === 'pc') ? 'max-w-[90rem]' : 'max-w-6xl'} mx-auto bg-white rounded-sm shadow-xl border-2 ${isDnd ? 'border-[#922610]' : isFabula ? 'border-teal-700' : isSom6 ? 'border-red-900' : is3Det ? 'border-amber-500' : isRotaZero ? 'border-[#53685c]' : 'border-gray-500'} transition-all duration-300`}>
+                    <div style={(isDnd || isFabula || isSom6 || is3Det || isRotaZero) ? {} : getBarStyle()} className={`no-print p-3 flex flex-wrap justify-between items-center rounded-t-sm gap-2 text-white ${topBarColor}`}>
                         <div className="flex items-center gap-4">
                             <button onClick={returnToDashboard} className="flex items-center gap-1 transition-colors text-sm font-bold text-gray-300 hover:text-white">
                                 <SVGIcons.ArrowLeft /> <span className="hidden sm:inline">Voltar</span>
                             </button>
                             <span className="font-title font-bold text-lg md:text-xl tracking-wider uppercase">
-                                {isDnd ? (data.type === 'pc' ? 'D&D 5.5e / 2024 - Personagem' : 'D&D 5.5e / 2024 - Bestiário') : isFabula ? (data.type === 'pc' ? 'FABULA ULTIMA • PERSONAGEM • INTEGRADO' : 'FABULA ULTIMA • AMEAÇA / PNJ • INTEGRADO') : isSom6 ? (data.type === 'pc' ? 'O SOM DAS SEIS • PERSONAGEM • INTEGRADO' : 'O SOM DAS SEIS • PDJ • INTEGRADO') : is3Det ? '3DeT VICTORY • PERSONAGEM • PRÉVIA' : (data.type === 'pc' ? 'DRAGONBANE' : data.type === 'pnj' ? 'PNJ (DB)' : 'AMEAÇA (DB)')}
+                                {isDnd ? (data.type === 'pc' ? 'D&D 5.5e / 2024 - Personagem' : 'D&D 5.5e / 2024 - Bestiário') : isFabula ? (data.type === 'pc' ? 'FABULA ULTIMA • PERSONAGEM • INTEGRADO' : 'FABULA ULTIMA • AMEAÇA / PNJ • INTEGRADO') : isSom6 ? (data.type === 'pc' ? 'O SOM DAS SEIS • PERSONAGEM • INTEGRADO' : 'O SOM DAS SEIS • PDJ • INTEGRADO') : is3Det ? '3DeT VICTORY • PERSONAGEM • PRÉVIA' : isRotaZero ? 'ROTA ZERO • FUNCIONÁRIO' : (data.type === 'pc' ? 'DRAGONBANE' : data.type === 'pnj' ? 'PNJ (DB)' : 'AMEAÇA (DB)')}
                             </span>
                         </div>
                         <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end items-center">
