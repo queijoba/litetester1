@@ -104,7 +104,7 @@ export default function RotaZeroCharacterEditor({scope}){
                 <div className="rz-attr" key={k}>
                   <div className="rz-attr-code">{short}</div>
                   <div className="rz-attr-name">{label}</div>
-                  <input aria-label={label} type="number" min="1" max="3" value={attrs[k]??1} onChange={e=>setAttr(k,e.target.value)}/>
+                  <div className="rz-attr-control"><button type="button" className="rz-step" onClick={()=>stepAttr(k,-1)} disabled={(Number(attrs[k])||1)<=1}>-</button><input aria-label={label} type="number" min="1" max="3" value={attrs[k]??1} onChange={e=>setAttr(k,e.target.value)}/><button type="button" className="rz-step" onClick={()=>stepAttr(k,1)} disabled={(Number(attrs[k])||1)>=3}>+</button></div>
                 </div>
               )}
             </div>
