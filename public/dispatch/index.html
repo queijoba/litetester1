@@ -249,51 +249,158 @@ document.getElementById('accountBtn').onclick=()=>{
  if(v==='dispatch@rota-zero.local'){document.getElementById('accountMsg').textContent='CONTA VALIDADA.';document.getElementById('accountMsg').className='feedback ok';setTimeout(()=>showStep(3),650);}
  else{document.getElementById('accountMsg').textContent='CONTA NÃO AUTORIZADA PARA A REMESSA 088.';document.getElementById('accountMsg').className='feedback danger';}
 };
-function liteAccountEmail(){
+function liteSession(){
   try{
     const raw=localStorage.getItem('sb-jkwlsfkuxaelqjqrirdd-auth-token');
-    if(!raw) return '';
-    const obj=JSON.parse(raw);
-    return String(obj?.user?.email||obj?.currentSession?.user?.email||obj?.session?.user?.email||'').toLowerCase();
-  }catch{return '';}
+    return raw?JSON.parse(raw):null;
+  }catch{return null;}
+}
+function liteAccessToken(){
+  const obj=liteSession();
+  return String(obj?.access_token||obj?.currentSession?.access_token||obj?.session?.access_token||'');
+}
+function liteAccountEmail(){
+  const obj=liteSession();
+  return String(obj?.user?.email||obj?.currentSession?.user?.email||obj?.session?.user?.email||'').toLowerCase();
 }
 const liteEmail=liteAccountEmail();
 if(liteEmail){
   document.getElementById('rzEmail').value=liteEmail;
-  document.getElementById('mailHint').textContent='Conta Lite detectada: '+liteEmail;
+  document.getElementById('rzEmail').readOnly=true;
+  document.getElementById('mailHint').textContent='Conta Lite confirmada: '+liteEmail;
 }else{
-  document.getElementById('mailHint').textContent='Nenhuma Conta Lite detectada nesta origem. Use o mesmo Gmail da sua Conta Lite.';
+  document.getElementById('mailHint').textContent='Entre primeiro em Conta & Nuvem no PJ Lite e volte aqui. O currículo precisa usar o mesmo contato Lite.';
 }
 document.getElementById('applyBtn').onclick=()=>showStep(4);
-document.getElementById('submitApplication').onclick=()=>{
+
+const RZ_BUILDS={
+  'Motorista de Rota':{attrs:{pulso:1,tecnica:3,firmeza:2},skills:['conducao','navegacao'],adv:'reflexosEntrega'},
+  'Mecânico de Plantão':{attrs:{pulso:1,tecnica:2,firmeza:2},skills:['manutencao','logistica','observacao'],adv:'maosOficina'},
+  'Batedor de Estrada':{attrs:{pulso:1,tecnica:3,firmeza:1},skills:['observacao','navegacao','infiltracao'],adv:'memoriaRotas'},
+  'Despachante de Campo':{attrs:{pulso:2,tecnica:2,firmeza:1},skills:['influencia','logistica','pesquisa'],adv:'redeContatos'},
+  'Socorrista de Turno':{attrs:{pulso:1,tecnica:2,firmeza:2},skills:['primeirosSocorros','sobrevivencia','observacao'],adv:'cabecaFria'}
+};
+const ALL_RZ_SKILLS=['conducao','manutencao','navegacao','observacao','sobrevivencia','influencia','infiltracao','logistica','pesquisa','primeirosSocorros'];
+
+function saveRecruitmentSheet(profile){
+  const build=RZ_BUILDS[profile.role]||RZ_BUILDS['Motorista de Rota'];
+  const now=new Date().toISOString();
+  const skills={};
+  ALL_RZ_SKILLS.forEach(id=>skills[id]=build.skills.includes(id));
+  const p=build.attrs.pulso,t=build.attrs.tecnica,f=build.attrs.firmeza;
+  const sheet={
+    id:'',system:'rotaZero',type:'pc',
+    bio:{
+      nome:profile.username,
+      jogador:profile.email.split('@')[0]||profile.username,
+      conceito:(profile.trait?profile.trait+' • ':'')+profile.role,
+      kit:profile.role,
+      imagem:''
+    },
+    atributos:{...build.attrs},
+    recursos:{
+      adrenalina:{atual:p,max:p},
+      foco:{atual:t*5,max:t*5},
+      vitalidade:{atual:f*5,max:f*5}
+    },
+    panico:[false,false,false,false],
+    traumas:[false,false,false],
+    interferencia:0,
+    pericias:skills,
+    vantagens:[build.adv],
+    defeitos:[],
+    inventario:[profile.item||'','','',''],
+    ancora:profile.anchor||'',
+    notas:[
+      'CADASTRO RZ-HR-12 / REMESSA #088',
+      'Turno: '+profile.shift,
+      profile.limit?'Limite de rota: '+profile.limit:'',
+      profile.choice?'Protocolo diante do impossível: '+profile.choice:'',
+      profile.notes?'Experiência / observações: '+profile.notes:''
+    ].filter(Boolean).join('\n'),
+    veiculoAtivo:false,
+    veiculo:{nome:'',modelo:'',placaId:'',manejo:2,tracao:2,casco:2,combustivel:6,integridade:6,aquecimento:4,cargaCompartimentos:'',upgradesSlots:'',avariasReparos:''},
+    meta:{rotaZero:true,rotaZeroEmployeeEmail:profile.email,argRecruitment:'RZ-088',createdAt:now,updatedAt:now}
+  };
+  let list=[];
+  try{list=JSON.parse(localStorage.getItem('dragonbane_saved_characters')||'[]');if(!Array.isArray(list))list=[];}catch{list=[];}
+  const existing=list.findIndex(x=>x?.system==='rotaZero'&&x?.meta?.rotaZeroEmployeeEmail===profile.email);
+  if(existing>=0){
+    sheet.id=list[existing].id||('rz-'+Date.now());
+    sheet.meta.createdAt=list[existing]?.meta?.createdAt||now;
+    list[existing]={...list[existing],...sheet,meta:{...(list[existing].meta||{}),...sheet.meta}};
+  }else{
+    sheet.id='rz-'+Date.now().toString(36);
+    list.push(sheet);
+  }
+  localStorage.setItem('dragonbane_saved_characters',JSON.stringify(list));
+  return sheet;
+}
+
+async function registerRotaZero(profile){
+  const token=liteAccessToken();
+  if(!token) throw new Error('not_authenticated');
+  const response=await fetch('https://jkwlsfkuxaelqjqrirdd.supabase.co/functions/v1/rota-zero-onboard',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'Authorization':'Bearer '+token,
+      'apikey':'sb_publishable_3p5Jio7t415Lv75rjEVFCg_rlG3ryfJ'
+    },
+    body:JSON.stringify(profile)
+  });
+  const payload=await response.json().catch(()=>({}));
+  if(!response.ok) throw new Error(payload?.error||('http_'+response.status));
+  return payload;
+}
+
+document.getElementById('submitApplication').onclick=async()=>{
   const username=document.getElementById('rzUser').value.trim();
   const email=document.getElementById('rzEmail').value.trim().toLowerCase();
   const msg=document.getElementById('applicationMsg');
+  const token=liteAccessToken();
   if(!username||!email){msg.textContent='NOME DE USUÁRIO e Gmail são obrigatórios.';msg.className='feedback danger';return;}
-  if(liteEmail && email!==liteEmail){msg.textContent='Use o mesmo contato autenticado na Conta Lite: '+liteEmail;msg.className='feedback danger';return;}
+  if(!liteEmail||!token){msg.textContent='Abra o PJ Lite, entre em Conta & Nuvem com Google e volte para enviar o currículo.';msg.className='feedback danger';return;}
+  if(email!==liteEmail){msg.textContent='Use o mesmo contato autenticado na Conta Lite: '+liteEmail;msg.className='feedback danger';return;}
   const profile={
     username,email,
     role:document.getElementById('rzRole').value,
     shift:document.getElementById('rzShift').value,
     trait:document.getElementById('rzTrait').value.trim(),
     item:document.getElementById('rzItem').value.trim(),
+    anchor:document.getElementById('rzAnchor').value.trim(),
     limit:document.getElementById('rzLimit').value.trim(),
     choice:document.getElementById('rzChoice').value.trim(),
     notes:document.getElementById('rzNotes').value.trim(),
     shipment:'#088',
     hiredAt:new Date().toISOString()
   };
-  localStorage.setItem('pjlite_rz_employee_v1',JSON.stringify(profile));
-  localStorage.setItem('pjlite_rz_theme_unlocked_v1','1');
-  localStorage.setItem('pjlite_rz_mail_preview_v1',JSON.stringify({
-    to:email,
-    subject:'ROTA ZERO // Integração de novo colaborador',
-    body:'Olá, '+username+'. A família Rota Zero cresce sempre. Seu cadastro foi aprovado e seus benefícios internos foram liberados.'
-  }));
-  document.getElementById('employeeWelcome').textContent=
-    'USUÁRIO: '+username+'\nFUNÇÃO: '+profile.role+'\nTURNO: '+profile.shift+'\nCONTA: '+email+'\nSTATUS: COLABORADOR ATIVO\n\n“A família cresce sempre.”';
-  msg.textContent='Cadastro aceito. Benefícios sendo vinculados à Conta Lite...';msg.className='feedback ok';
-  setTimeout(()=>showStep(5),850);
+  msg.textContent='Transmitindo currículo para Recursos Humanos...';msg.className='feedback';
+  document.getElementById('submitApplication').disabled=true;
+  try{
+    const result=await registerRotaZero(profile);
+    localStorage.setItem('pjlite_rz_employee_v1',JSON.stringify(profile));
+    localStorage.setItem('pjlite_rz_theme_unlocked_v1','1');
+    localStorage.setItem('pjlite_rz_mail_preview_v1',JSON.stringify({
+      to:email,
+      subject:'ROTA ZERO // Integração de novo colaborador',
+      body:'Olá, '+username+'. A família Rota Zero cresce sempre. Seu cadastro foi aprovado e seus benefícios internos foram liberados.',
+      sent:!!result?.email_sent,
+      error:result?.email_error||null
+    }));
+    saveRecruitmentSheet(profile);
+    const mailState=result?.email_sent?'ENVIADO PARA '+email:(result?.email_error==='email_service_not_configured'?'AGUARDANDO ATIVAÇÃO DO CANAL DE E-MAIL':'CADASTRADO; ENTREGA DO E-MAIL PENDENTE');
+    document.getElementById('employeeWelcome').textContent=
+      'USUÁRIO: '+username+'\nFUNÇÃO: '+profile.role+'\nTURNO: '+profile.shift+'\nCONTA: '+email+'\nSTATUS: COLABORADOR ATIVO\nE-MAIL CORPORATIVO: '+mailState+'\n\n“A família cresce sempre.”';
+    msg.textContent='Cadastro aceito. Ficha e benefícios vinculados à Conta Lite.';msg.className='feedback ok';
+    setTimeout(()=>showStep(5),800);
+  }catch(error){
+    const code=String(error?.message||error);
+    msg.textContent=code==='not_authenticated'?'Sessão da Conta Lite não encontrada. Entre novamente com Google.':'O RH recusou a transmissão ('+code+'). Nada foi desbloqueado.';
+    msg.className='feedback danger';
+  }finally{
+    document.getElementById('submitApplication').disabled=false;
+  }
 };
 ['shipment','account'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById(id==='shipment'?'shipmentBtn':'accountBtn').click();}));
 render();
