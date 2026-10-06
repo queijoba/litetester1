@@ -39,19 +39,16 @@ Deno.serve(async (req: Request) => {
     if (!token) return json({ error: 'not_authenticated' }, 401)
 
     const url = Deno.env.get('SUPABASE_URL') || ''
-    const rawSecrets = Deno.env.get('SUPABASE_SECRET_KEYS') || ''
-    let secretKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
-    if (rawSecrets) {
-      try {
-        const parsed = JSON.parse(rawSecrets)
-        secretKey = String(parsed?.default || Object.values(parsed || {})[0] || secretKey)
-      } catch {}
-    }
+    const secretKey =
+      readNamedKey('SUPABASE_SECRET_KEYS') ||
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ||
+      ''
     if (!url || !secretKey) return json({ error: 'server_not_configured' }, 500)
 
     const admin = createClient(url, secretKey, {
       auth: { persistSession: false, autoRefreshToken: false },
     })
+
     const { data: userData, error: userError } = await admin.auth.getUser(token)
     if (userError || !userData?.user) return json({ error: 'invalid_session' }, 401)
 
@@ -74,7 +71,7 @@ Deno.serve(async (req: Request) => {
       { data: profiles, error: profilesError },
       { data: sheetOwners, error: sheetsError },
       { data: memberships, error: membershipsError },
-      { data: rzCollaborators, error: rzError },
+      { data: achievements, error: achievementsError },
       { count: sheetCount, error: sheetCountError },
       { count: groupCount, error: groupCountError },
       { count: shareCount, error: shareCountError },
@@ -82,18 +79,24 @@ Deno.serve(async (req: Request) => {
       admin.from('profiles').select('id,email,display_name,avatar_url,created_at,updated_at'),
       admin.from('sheets').select('owner_id'),
       admin.from('group_members').select('user_id'),
-      admin.from('rota_zero_collaborators').select('user_id,username,unlocked_at'),
+      admin.from('account_achievements').select('user_id,achievement_id,label,name,category,unlocked_at,is_public'),
       admin.from('sheets').select('*', { count: 'exact', head: true }),
       admin.from('groups').select('*', { count: 'exact', head: true }),
       admin.from('sheet_shares').select('*', { count: 'exact', head: true }),
     ])
 
-    for (const err of [profilesError, sheetsError, membershipsError, rzError, sheetCountError, groupCountError, shareCountError]) {
+    for (const err of [profilesError, sheetsError, membershipsError, achievementsError, sheetCountError, groupCountError, shareCountError]) {
       if (err) throw err
     }
 
     const profileMap = new Map((profiles || []).map((profile: any) => [profile.id, profile]))
-    const rzMap = new Map((rzCollaborators || []).map((entry: any) => [entry.user_id, entry]))
+    const achievementsByUser = new Map<string, any[]>()
+    for (const entry of achievements || []) {
+      if (!entry?.user_id) continue
+      const list = achievementsByUser.get(entry.user_id) || []
+      list.push(entry)
+      achievementsByUser.set(entry.user_id, list)
+    }
     const sheetsByUser = new Map<string, number>()
     for (const row of sheetOwners || []) {
       if (!row?.owner_id) continue
@@ -109,7 +112,7 @@ Deno.serve(async (req: Request) => {
     const day = 24 * 60 * 60 * 1000
     const mappedUsers = users.map((user: any) => {
       const profile: any = profileMap.get(user.id) || {}
-      const rz: any = rzMap.get(user.id) || null
+      const userAchievements = achievementsByUser.get(user.id) || []
       const last = ms(user.last_sign_in_at)
       const age = last ? now - last : Number.POSITIVE_INFINITY
       const activity =
@@ -134,15 +137,14 @@ Deno.serve(async (req: Request) => {
         activity,
         sheetCount: sheetsByUser.get(user.id) || 0,
         groupCount: groupsByUser.get(user.id) || 0,
-        achievementTags: [
-          ...(rz ? [{
-            id: 'rz-88',
-            label: 'RZ-88',
-            name: 'Colaborador Rota Zero',
-            category: 'ARG',
-            unlockedAt: rz.unlocked_at || null,
-          }] : []),
-        ],
+        achievementTags: userAchievements.map((entry: any) => ({
+          id: entry.achievement_id,
+          label: entry.label,
+          name: entry.name,
+          category: entry.category,
+          unlockedAt: entry.unlocked_at || null,
+          isPublic: entry.is_public !== false,
+        })),
       }
     }).sort((a: any, b: any) => ms(b.lastSignInAt) - ms(a.lastSignInAt))
 
