@@ -2124,10 +2124,11 @@ const { useState, useEffect, useRef } = React;
                                         const isFabula = char.system === 'fabula';
                                         const isSom6 = char.system === 'somdas6';
                                         const is3Det = char.system === '3det';
+                                        const isRotaZero = char.system === 'rotaZero';
                                         return (
-                                        <div key={char.id} style={getWindowStyle()} className={`pj-card-compact bg-white rounded-md shadow-lg border-2 ${isDnd ? 'border-[#922610]' : isFabula ? 'border-teal-700' : isSom6 ? 'border-red-900' : is3Det ? 'border-amber-500' : 'border-dragon-dark'} overflow-hidden flex ${dashboardView==='list'?'flex-row items-stretch':'flex-col'} relative`}>
-                                            <div className={`absolute top-0 right-0 text-white text-[9px] font-bold uppercase px-2 py-0.5 rounded-bl shadow-sm z-10 ${isDnd ? 'bg-[#922610]' : isFabula ? 'bg-teal-700' : isSom6 ? 'bg-red-900' : is3Det ? 'bg-zinc-950' : 'bg-dragon-dark'}`}>
-                                                {isDnd ? 'D&D 5.5e' : isFabula ? 'Fabula Ultima' : isSom6 ? 'O Som das Seis' : is3Det ? '3DeT Victory' : 'Dragonbane'}
+                                        <div key={char.id} style={getWindowStyle()} className={`pj-card-compact bg-white rounded-md shadow-lg border-2 ${isDnd ? 'border-[#922610]' : isFabula ? 'border-teal-700' : isSom6 ? 'border-red-900' : is3Det ? 'border-amber-500' : isRotaZero ? 'border-[#506055]' : 'border-dragon-dark'} overflow-hidden flex ${dashboardView==='list'?'flex-row items-stretch':'flex-col'} relative`}>
+                                            <div className={`absolute top-0 right-0 text-white text-[9px] font-bold uppercase px-2 py-0.5 rounded-bl shadow-sm z-10 ${isDnd ? 'bg-[#922610]' : isFabula ? 'bg-teal-700' : isSom6 ? 'bg-red-900' : is3Det ? 'bg-zinc-950' : isRotaZero ? 'bg-[#18201c]' : 'bg-dragon-dark'}`}>
+                                                {isDnd ? 'D&D 5.5e' : isFabula ? 'Fabula Ultima' : isSom6 ? 'O Som das Seis' : is3Det ? '3DeT Victory' : isRotaZero ? 'ROTA ZERO' : 'Dragonbane'}
                                             </div>
                                             <div className={`${dashboardView==='list'?'flex flex-1 min-w-0 h-24 border-r':'flex h-28 border-b'} border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors`} onClick={() => loadCharacter(char.id)}>
                                                 <div className="w-28 shrink-0 bg-gray-200 border-r border-gray-300">
@@ -2138,11 +2139,11 @@ const { useState, useEffect, useRef } = React;
                                                     )}
                                                 </div>
                                                 <div className="p-3 flex-1 overflow-hidden flex flex-col justify-center">
-                                                    <h3 className={`font-title font-bold text-lg truncate ${isDnd ? 'text-[#922610]' : isFabula ? 'text-teal-800' : isSom6 ? 'text-red-900' : is3Det ? 'text-amber-700' : 'text-red-900'}`}>{char.bio?.nome || 'Sem Nome'}</h3>
+                                                    <h3 className={`font-title font-bold text-lg truncate ${isDnd ? 'text-[#922610]' : isFabula ? 'text-teal-800' : isSom6 ? 'text-red-900' : is3Det ? 'text-amber-700' : isRotaZero ? 'text-[#35483b]' : 'text-red-900'}`}>{char.bio?.nome || 'Sem Nome'}</h3>
                                                     <p className="text-xs text-gray-600 font-bold uppercase mt-1 truncate">
-                                                        {isDnd ? `${char.bio?.linhagem || '?'} • ${char.bio?.classe || '?'}` : isFabula ? `${char.bio?.identidade || 'Sem identidade'} • ${char.bio?.tema || 'Sem tema'}` : isSom6 ? `${char.bio?.apelido || 'Sem apelido'} • ${char.tormento?.tipo || 'Sem tormento'}` : is3Det ? `${char.bio?.arquetipo || 'Sem arquétipo'}${char.bio?.kit ? ` • ${char.bio.kit}` : char.bio?.conceito ? ` • ${char.bio.conceito}` : ''}` : `${char.bio?.ancestralidade || '?'} • ${char.bio?.profissao || '?'}`}
+                                                        {isDnd ? `${char.bio?.linhagem || '?'} • ${char.bio?.classe || '?'}` : isFabula ? `${char.bio?.identidade || 'Sem identidade'} • ${char.bio?.tema || 'Sem tema'}` : isSom6 ? `${char.bio?.apelido || 'Sem apelido'} • ${char.tormento?.tipo || 'Sem tormento'}` : is3Det ? `${char.bio?.arquetipo || 'Sem arquétipo'}${char.bio?.kit ? ` • ${char.bio.kit}` : char.bio?.conceito ? ` • ${char.bio.conceito}` : ''}` : isRotaZero ? `${char.bio?.kit || 'Funcionário'} • ${char.bio?.conceito || 'Sem conceito'}` : `${char.bio?.ancestralidade || '?'} • ${char.bio?.profissao || '?'}`}
                                                     </p>
-                                                    <p className="text-[10px] text-gray-500 mt-2 truncate italic">{is3Det ? `Pontos ${char.pontos ?? 0} • XP ${char.xp ?? 0}` : `Nível ${isFabula ? (char.nivel || 5) : isSom6 ? (char.nivel || 1) : (char.bio?.nivel || 1)}`}</p>
+                                                    <p className="text-[10px] text-gray-500 mt-2 truncate italic">{is3Det ? `Pontos ${char.pontos ?? 0} • XP ${char.xp ?? 0}` : isRotaZero ? `P${char.atributos?.pulso ?? 1} • T${char.atributos?.tecnica ?? 1} • F${char.atributos?.firmeza ?? 1}` : `Nível ${isFabula ? (char.nivel || 5) : isSom6 ? (char.nivel || 1) : (char.bio?.nivel || 1)}`}</p>
                                                     {char.meta?.campanha && <p className="text-[10px] text-indigo-600 mt-1 truncate font-bold">📁 {char.meta.campanha}</p>}
                                                     {char.meta?.updatedAt && <p className="text-[9px] text-gray-400 mt-1">Editado: {new Date(char.meta.updatedAt).toLocaleString('pt-BR')}</p>}
                                                 </div>
