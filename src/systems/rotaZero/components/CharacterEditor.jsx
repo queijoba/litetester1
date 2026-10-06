@@ -1,5 +1,5 @@
 import * as React from 'react';
-import './rota-zero.css';
+import '../rota-zero.css';
 import { RZ_SKILLS, RZ_ADVANTAGES, RZ_DEFECTS, RZ_KITS, calcRotaZeroCosts, syncRotaZeroResources } from '../data.js';
 
 const { useEffect, useState } = React;
