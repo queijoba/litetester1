@@ -2029,10 +2029,11 @@ const { useState, useEffect, useRef } = React;
                                 </span>
                             </div>
                             <div className="mb-4 flex flex-wrap items-center gap-2 no-print">
-                                <div className="flex items-center gap-1 bg-gray-200 border border-gray-300 rounded px-2 py-1.5 shadow-sm">
+                                <div className="flex items-center gap-2 bg-gray-200 border border-gray-300 rounded px-2 py-1.5 shadow-sm">
                                     <SVGIcons.Palette />
-                                    {rotaZeroUnlocked && <span className="rz-model-status">Modelo RZ {theme === 'rotazero' ? 'ON' : 'desativado'}</span>}
-                                    <select value={theme} onChange={(e) => { if (e.target.value === 'custom') setShowCustomBgModal(true); else setTheme(e.target.value); }} className="bg-transparent text-gray-700 font-bold text-xs outline-none cursor-pointer">
+                                    <div className="flex flex-col items-start leading-none">
+                                        {rotaZeroUnlocked && <span className="rz-model-status">Modelo RZ {theme === 'rotazero' ? 'ON' : 'desativado'}</span>}
+                                        <select value={theme} onChange={(e) => { if (e.target.value === 'custom') setShowCustomBgModal(true); else setTheme(e.target.value); }} className="bg-transparent text-gray-700 font-bold text-xs outline-none cursor-pointer">
                                         <option value="default">Tema: Padrão</option>
                                         <option value="classic">Tema: Clássico DB</option>
                                         <option value="dnd">Tema: Dungeons & Dragons</option>
@@ -2042,6 +2043,7 @@ const { useState, useEffect, useRef } = React;
                                         <option value="dark">Tema: Modo Escuro</option>
                                         <option value="custom">Tema: Personalizado...</option>
                                     </select>
+                                    </div>
                                     {theme === 'custom' && <button type="button" onClick={() => setShowCustomBgModal(true)} className="ml-1 px-1.5 py-0.5 rounded border border-gray-400 text-[10px] font-bold hover:bg-white" title="Editar tema personalizado" aria-label="Editar tema personalizado">⚙</button>}
                                 </div>
                                 <button onClick={() => { setGuideTab('inicio'); setShowGuideModal(true); }} className="flex items-center gap-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded shadow transition-colors font-bold text-sm">
