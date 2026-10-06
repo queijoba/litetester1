@@ -20,6 +20,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import JSZip from 'jszip';
 import LZString from 'lz-string';
+import { getMyAchievements } from './cloud/supabaseCloud.js';
 
 const { useState, useEffect, useRef } = React;
 
@@ -1208,7 +1209,7 @@ const { useState, useEffect, useRef } = React;
             const [data, setData] = useState(initialData);
             
             const [theme, setTheme] = useState(() => { try { return localStorage.getItem(THEME_PREF_KEY) || 'default'; } catch { return 'default'; } });
-            const [rotaZeroUnlocked] = useState(() => { try { return localStorage.getItem('pjlite_rz_theme_unlocked_v1') === '1'; } catch { return false; } });
+            const [rotaZeroUnlocked, setRotaZeroUnlocked] = useState(() => { try { return localStorage.getItem('pjlite_rz_theme_unlocked_v1') === '1'; } catch { return false; } });
             const [customBgUrl, setCustomBgUrl] = useState(() => { try { return localStorage.getItem(CUSTOM_BG_KEY) || ''; } catch { return ''; } });
             const [customBgLink, setCustomBgLink] = useState('');
             const [customWinColor, setCustomWinColor] = useState(() => { try { return localStorage.getItem(CUSTOM_WIN_COLOR_KEY) || '#ffffff'; } catch { return '#ffffff'; } });
@@ -1282,6 +1283,33 @@ const { useState, useEffect, useRef } = React;
                 try { localStorage.setItem(THEME_PREF_KEY, theme); } catch {}
                 document.body.className = `font-body text-gray-800 antialiased p-4 md:p-8 ${theme === 'classic' ? 'theme-classic' : theme === 'dnd' ? 'theme-dnd' : theme === 'fabula' ? 'theme-fabula' : theme === 'som6' ? 'theme-som6' : theme === 'rotazero' ? 'theme-rotazero' : theme === 'dark' ? 'theme-dark' : theme === 'custom' ? 'theme-custom' : 'theme-default'}`;
             }, [theme]);
+
+            useEffect(() => {
+                let active = true;
+                const refreshRotaZeroUnlock = async () => {
+                    let unlocked = false;
+                    try { unlocked = localStorage.getItem('pjlite_rz_theme_unlocked_v1') === '1'; } catch {}
+                    if (!unlocked) {
+                        try {
+                            const achievements = await getMyAchievements();
+                            unlocked = achievements.some(tag => tag?.achievement_id === 'rz-88');
+                            if (unlocked) {
+                                try { localStorage.setItem('pjlite_rz_theme_unlocked_v1', '1'); } catch {}
+                            }
+                        } catch {}
+                    }
+                    if (active) setRotaZeroUnlocked(unlocked);
+                };
+                refreshRotaZeroUnlock();
+                const onReturn = () => refreshRotaZeroUnlock();
+                window.addEventListener('focus', onReturn);
+                window.addEventListener('storage', onReturn);
+                return () => {
+                    active = false;
+                    window.removeEventListener('focus', onReturn);
+                    window.removeEventListener('storage', onReturn);
+                };
+            }, []);
 
             useEffect(() => {
                 if (theme === 'custom' && customBgUrl) {
@@ -2719,6 +2747,7 @@ const { useState, useEffect, useRef } = React;
                                         <button onClick={() => setGuideTab('dnd5e')} className={`flex-1 py-2.5 px-4 text-xs font-bold uppercase text-center border-b-4 transition-colors whitespace-nowrap ${guideTab === 'dnd5e' ? 'border-orange-600 text-orange-900 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-300'}`}>D&D 5.5e</button>
                                         <button onClick={() => setGuideTab('fabula')} className={`flex-1 py-2.5 px-4 text-xs font-bold uppercase text-center border-b-4 transition-colors whitespace-nowrap ${guideTab === 'fabula' ? 'border-teal-600 text-teal-900 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-300'}`}>Fabula Ultima</button>
                                         <button onClick={() => setGuideTab('som6')} className={`flex-1 py-2.5 px-4 text-xs font-bold uppercase text-center border-b-4 transition-colors whitespace-nowrap ${guideTab === 'som6' ? 'border-red-900 text-red-950 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-300'}`}>Som das Seis</button>
+                                        {rotaZeroUnlocked && <button onClick={() => setGuideTab('rotazero')} className={`flex-1 py-2.5 px-4 text-xs font-bold uppercase text-center border-b-4 transition-colors whitespace-nowrap ${guideTab === 'rotazero' ? 'border-emerald-950 text-emerald-950 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-300'}`}>Rota Zero</button>}
                                     </div>
                                     <div className="p-6 bg-gray-50 text-sm text-gray-700 overflow-y-auto max-h-[70vh] scrollbar-thin">
                                         {guideTab === 'inicio' && (
@@ -2761,6 +2790,16 @@ const { useState, useEffect, useRef } = React;
                                             <div className="space-y-5">
                                                 <div className="bg-blue-50 border border-blue-200 rounded p-4"><h3 className="font-title font-bold text-blue-900 mb-2">💾 Salvar, fazer backup e compartilhar</h3><p className="text-xs">Existem formas diferentes de guardar a mesma ficha. Para quem está começando, a regra mais simples é: <strong>Salvar</strong> para o uso diário, <strong>ZIP/JSON</strong> para backup e <strong>Código</strong> para mandar rapidamente uma ficha para outra pessoa.</p></div>
                                                 <div className="bg-white border rounded p-4"><h3 className="font-bold text-gray-900 mb-3">🧭 Qual opção eu uso?</h3><div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs"><div className="border rounded p-3"><strong>Salvar</strong><br/>Uso diário neste navegador. É a opção mais rápida durante a sessão.</div><div className="border rounded p-3"><strong>Backup geral</strong><br/>Guarda todas as fichas de uma vez. Faça antes de limpar dados ou mudar de dispositivo.</div><div className="border rounded p-3"><strong>ZIP/JSON</strong><br/>Boa escolha para guardar ou enviar uma ficha específica em arquivo.</div><div className="border rounded p-3"><strong>Código</strong><br/>Compartilhamento rápido por texto. O retrato não vai junto para manter o código compacto.</div><div className="border rounded p-3 sm:col-span-2"><strong>Ficha Chat</strong><br/>Cria um resumo legível para o grupo. Serve para consulta; não restaura nem importa a ficha.</div></div></div>
+                                                <div className="bg-sky-50 border border-sky-300 rounded p-4 space-y-3">
+                                                    <div><h3 className="font-title font-bold text-sky-950">☁️ Conta Lite & Nuvem</h3><p className="text-xs mt-1">O PJ Lite continua sendo <strong>local-first</strong>: suas fichas existem no dispositivo e, quando você entra na Conta Lite, podem também ser copiadas para a nuvem para uso em outros aparelhos.</p></div>
+                                                    <div className="grid sm:grid-cols-2 gap-2 text-xs">
+                                                        <div className="bg-white border rounded p-3"><strong>☁ Sincronizar agora</strong><br/>Faz a nuvem ficar igual às fichas deste dispositivo. Fichas apagadas aqui também são removidas da nuvem depois da confirmação.</div>
+                                                        <div className="bg-white border rounded p-3"><strong>↧ Mesclar da nuvem</strong><br/>Traz todas as fichas que ainda estão salvas na Conta Lite e junta com as deste aparelho. Não apaga fichas da nuvem.</div>
+                                                        <div className="bg-white border rounded p-3"><strong>Autosave conectado</strong><br/>Atualiza e envia fichas durante o uso, mas não trata uma exclusão local como comando automático para apagar a nuvem.</div>
+                                                        <div className="bg-white border rounded p-3"><strong>Grupos & Recebidos</strong><br/>Compartilhamentos são cópias. Você escolhe quando incluir uma ficha recebida na sua biblioteca.</div>
+                                                    </div>
+                                                    <p className="text-[11px] text-sky-900"><strong>Regra prática:</strong> quer que a nuvem copie exatamente o aparelho atual? Use <strong>Sincronizar</strong>. Quer recuperar o que já está guardado na conta? Use <strong>Mesclar</strong>.</p>
+                                                </div>
                                                 <div className="bg-white border rounded p-4 space-y-2"><h3 className="font-bold text-gray-900">1. Salvar no navegador</h3><p>O botão <strong>Salvar</strong> guarda a ficha no armazenamento local do navegador. O autosave também tenta registrar alterações enquanto você edita.</p><p className="text-xs text-gray-500"><strong>Importante:</strong> dados locais não são uma nuvem. Limpar os dados do navegador, usar modo anônimo ou trocar de computador pode fazer a ficha deixar de aparecer naquele dispositivo.</p></div>
                                                 <div className="bg-white border rounded p-4 space-y-2"><h3 className="font-bold text-gray-900">2. ZIP/JSON: sua cópia de segurança</h3><p>Use o backup em arquivo antes de formatar o computador, limpar o navegador ou fazer mudanças importantes. Guarde uma cópia em um local que você reconheça.</p><p className="text-xs"><strong>Para importar:</strong> use o botão ZIP/JSON e escolha o arquivo JSON compatível. Depois confira se nome, sistema e dados principais apareceram corretamente.</p></div>
                                                 <div className="bg-white border rounded p-4 space-y-2"><h3 className="font-bold text-gray-900">3. Código: compartilhamento rápido</h3><p>O Código transforma a ficha em uma sequência de texto. É útil para enviar pelo chat e importar em outro navegador.</p><p className="text-xs text-gray-500">Retratos não entram no código compacto, para evitar textos gigantes. Se a imagem for importante, prefira backup em arquivo.</p></div>
@@ -2869,6 +2908,31 @@ const { useState, useEffect, useRef } = React;
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3"><div className="bg-violet-50 border border-violet-200 rounded p-4"><h3 className="font-bold text-violet-900 mb-2">🔮 Magia & Rituais</h3><p className="text-xs">Escreva as <strong>Disciplinas</strong> livremente no campo superior. Nos feitiços, registre PM, Alvos, Duração e efeito; marque <strong>⚡ Ofensivo</strong> quando houver Teste de Magia. A ficha mantém consultas rápidas de conjuração e rituais e permite reordenar feitiços/rituais com ↑/↓.</p></div><div className="bg-cyan-50 border border-cyan-200 rounded p-4"><h3 className="font-bold text-cyan-900 mb-2">👾 Ameaças / PNJs</h3><p className="text-xs">A ficha de ameaça usa blocos separados para identidade, atributos, recursos/defesas, afinidades e ataques. Feitiços, Poderes, Outras Ações e Regras Especiais ficam recolhíveis e podem ser reordenados, mantendo a leitura próxima de um stat block sem esconder campos importantes.</p></div></div>
                                                 <div className="bg-teal-50 border border-teal-200 rounded p-4"><h3 className="font-bold text-teal-900 mb-2">📚 Materiais e módulos</h3><p className="text-xs mb-2">O <strong>Livro Básico</strong> fica sempre ativo e mantém Arcanos, Magia & Rituais, Projetos e os recursos centrais. Suplementos apenas liberam módulos adicionais; desmarcar um livro esconde os módulos exclusivos sem apagar o que você já preencheu.</p><div className="grid sm:grid-cols-2 gap-2 text-[11px]"><div className="border rounded p-2 bg-white"><strong>🌿 Natural Fantasy</strong><br/>Acampamento, Jardim, Receitas, Invocações, Comércio e Materiais/Fabricação.</div><div className="border rounded p-2 bg-white"><strong>✨ High Fantasy</strong><br/>Poderes Zero e opções avançadas ligadas às classes e peculiaridades.</div><div className="border rounded p-2 bg-white"><strong>⚙️ Techno Fantasy</strong><br/>Tecnosferas, Mnemosfera e módulos tecnológicos/veiculares.</div><div className="border rounded p-2 bg-white"><strong>🩸 Codex Extra</strong><br/>Recursos especializados para classes e opções adicionais.</div></div></div><div className="bg-amber-50 border border-amber-200 rounded p-4"><h3 className="font-bold text-amber-900 mb-2">🛠️ Projetos de Inventor</h3><p className="text-xs">Projetos pertencem ao conjunto base da ficha. O módulo registra invenção, custo material, progresso, material especial e defeito. A consulta rápida serve de apoio, mas as decisões finais continuam pertencendo ao Mestre.</p></div>
                                                 <div className="p-4 bg-teal-50 border border-teal-300 rounded"><h3 className="font-title font-bold text-teal-900 mb-2">Material oficial de Fabula Ultima</h3><p className="text-xs mb-3">O PJ Lite é uma ferramenta independente e não substitui o Livro Básico. Consulte as regras completas e apoie a publicação oficial brasileira:</p><a href="https://jamboeditora.com.br/produto/fabula-ultima-livro-basico/" target="_blank" rel="noopener noreferrer" className="inline-block bg-teal-800 hover:bg-teal-700 text-white px-4 py-2 rounded font-bold text-xs">Obter Fabula Ultima — Livro Básico na Jambô ↗</a></div>
+                                            </div>
+                                        )}
+
+                                        {guideTab === 'rotazero' && rotaZeroUnlocked && (
+                                            <div className="space-y-5">
+                                                <div className="bg-[#101713] text-[#d9e6dc] border border-[#52675a] rounded p-4">
+                                                    <div className="text-[10px] font-bold uppercase tracking-[.14em] text-[#91a397] mb-1">RZ-88 // guia de contratação</div>
+                                                    <h3 className="font-title font-bold text-lg mb-2">🚚 Rota Zero — criando sua ficha</h3>
+                                                    <p className="text-xs text-[#b8c6bd]">Esta aba é uma recompensa do ARG. Ela aparece quando a Conta Lite recebe a conquista <strong>RZ-88</strong>. Ao concluir o currículo da Rota Zero, o PJ Lite já cria uma ficha inicial usando os dados fornecidos; você pode abrir essa ficha e continuar a contratação normalmente.</p>
+                                                </div>
+                                                <div className="bg-emerald-50 border border-emerald-300 rounded p-4"><h3 className="font-bold text-emerald-950 mb-2">🧭 Ordem recomendada</h3><p className="text-xs"><strong>Ficha gerada pelo RH ou Novo Personagem → Contratação → Kit ou atributos → Perícias → Vantagens/Defeitos → Identificação → Âncora/Inventário → Veículo opcional → Salvar.</strong></p></div>
+                                                <div className="grid sm:grid-cols-2 gap-3">
+                                                    <div className="bg-white border rounded p-4"><strong>1. Comece pela CONTRATAÇÃO</strong><p className="text-xs mt-1">Uma ficha nova abre a área de contratação primeiro. Pulso, Técnica e Firmeza começam em 1. Você recebe <strong>6 Créditos de Contratação (CR)</strong> para montar o funcionário.</p></div>
+                                                    <div className="bg-white border rounded p-4"><strong>2. Kits são atalhos</strong><p className="text-xs mt-1">Motorista, Mecânico, Batedor, Despachante e Socorrista aplicam uma base pronta. Eles não impedem personalização: depois do kit, ajuste o que fizer sentido e confira os CR restantes.</p></div>
+                                                    <div className="bg-white border rounded p-4"><strong>3. Atributos P/T/F</strong><p className="text-xs mt-1">Cada aumento acima de 1 custa CR, até o máximo normal de 3. <strong>Pulso</strong> alimenta Adrenalina; <strong>Técnica</strong> define Foco; <strong>Firmeza</strong> define Vitalidade.</p></div>
+                                                    <div className="bg-white border rounded p-4"><strong>4. Perícias</strong><p className="text-xs mt-1">Cada Perícia custa <strong>1 CR</strong>. Escolha o que descreve a função do personagem: Condução, Navegação, Observação, Manutenção, Pesquisa, Primeiros Socorros e outras opções operacionais.</p></div>
+                                                    <div className="bg-white border rounded p-4"><strong>5. Vantagens e Defeitos</strong><p className="text-xs mt-1">Vantagens custam 1 ou 2 CR. Você pode assumir até <strong>2 Defeitos</strong>; cada um devolve +1 CR. Use-os como características que realmente possam entrar em cena.</p></div>
+                                                    <div className="bg-white border rounded p-4"><strong>6. Recursos automáticos</strong><p className="text-xs mt-1"><strong>ADR = Pulso</strong>, <strong>FOC = Técnica × 5</strong> e <strong>VIT = Firmeza × 5</strong>. Algumas Vantagens alteram esses máximos; a ficha recalcula quando a construção muda.</p></div>
+                                                    <div className="bg-white border rounded p-4"><strong>7. Identidade & Âncora</strong><p className="text-xs mt-1">Complete nome, conta/jogador, função, conceito e retrato. A <strong>Âncora</strong> é algo que lembra quem o funcionário é quando o Pânico cresce; vale tratá-la como parte importante do personagem.</p></div>
+                                                    <div className="bg-white border rounded p-4"><strong>8. Pânico, Traumas e Interferência</strong><p className="text-xs mt-1">Esses marcadores são usados durante a campanha. Não é necessário preenchê-los na criação: começam limpos e mudam conforme os acontecimentos da rota.</p></div>
+                                                    <div className="bg-white border rounded p-4"><strong>9. Inventário</strong><p className="text-xs mt-1">A ficha possui <strong>4 espaços</strong> para itens relevantes. Priorize ferramentas, objetos pessoais e recursos que possam influenciar uma entrega.</p></div>
+                                                    <div className="bg-white border rounded p-4"><strong>10. Veículo / Turno</strong><p className="text-xs mt-1">O módulo <strong>RZ-02</strong> é opcional. Ative-o para registrar veículo, Manejo/Tração/Casco, combustível, integridade, aquecimento, rota, carga, rádio, incidentes e reparos.</p></div>
+                                                </div>
+                                                <div className="bg-[#151b18] text-[#ccd7cf] border border-[#526158] rounded p-4"><h3 className="font-bold mb-2">📁 Ficha criada pelo ARG</h3><p className="text-xs">Se você enviou o currículo RZ-HR-12, o PJ Lite gera uma ficha inicial com o nome da Conta Lite, função escolhida, uma construção compatível, item, Âncora e anotações do cadastro. Ela é apenas um ponto de partida: revise a aba <strong>Contratação</strong> antes da primeira sessão.</p></div>
+                                                <div className="bg-sky-50 border border-sky-200 rounded p-4"><h3 className="font-bold text-sky-950 mb-2">☁ Rota Zero e Conta Lite</h3><p className="text-xs">Depois de revisar a ficha, use <strong>Sincronizar agora</strong> para deixar a nuvem igual às fichas deste dispositivo. Em outro aparelho, use <strong>Mesclar da nuvem</strong> para recuperar o arquivo RZ-88 junto das demais fichas da conta.</p></div>
                                             </div>
                                         )}
 
