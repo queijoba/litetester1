@@ -9,6 +9,7 @@ import {
   getProfile,
   pushSheets,
   pullSheets,
+  mirrorSheets,
   listGroups,
   createGroup,
   joinGroupByCode,
@@ -138,17 +139,34 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
     }
   }, [session?.user?.id, savedChars, savedThreats, setSavedChars, setSavedThreats, showToast]);
 
-  const syncNow = React.useCallback(async (silent = false) => {
+  const syncNow = React.useCallback(async (silent = false, exact = false) => {
     if (!session?.user) return;
     setStatus('syncing');
     try {
-      await pushSheets(savedChars, savedThreats);
-      const rows = await pullSheets();
+      let rows = [];
+      let deletedCount = 0;
+
+      if (exact) {
+        const result = await mirrorSheets(savedChars, savedThreats);
+        rows = result?.rows || [];
+        deletedCount = Number(result?.deletedCount || 0);
+      } else {
+        await pushSheets(savedChars, savedThreats);
+        rows = await pullSheets();
+      }
+
       setRemoteCount(rows.length);
       const now = new Date().toISOString();
       setLastSync(now);
       setStatus('synced');
-      if (!silent) showToast('☁️ Conta Lite sincronizada com o Supabase.');
+
+      if (!silent) {
+        if (exact && deletedCount > 0) {
+          showToast('☁️ Sincronizado. ' + deletedCount + (deletedCount === 1 ? ' ficha apagada também foi removida da nuvem.' : ' fichas apagadas também foram removidas da nuvem.'));
+        } else {
+          showToast(exact ? '☁️ Sincronizado. A nuvem agora reflete as fichas deste dispositivo.' : '☁️ Conta Lite sincronizada com o Supabase.');
+        }
+      }
     } catch (error) {
       console.error('Conta Lite: falha ao sincronizar', error);
       setStatus('error');
@@ -397,7 +415,7 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
               <span className={'pjlite-cloud-state pjlite-cloud-state--'+status}>{status==='syncing'?'Sincronizando…':status==='pending'?'Alterações pendentes':status==='error'?'Erro':'☁ Sincronizado'}</span>
             </div>
             <div className="pjlite-cloud-settings__stats"><div><span>Neste dispositivo</span><strong>{savedChars.length+savedThreats.length}</strong><small>fichas</small></div><div><span>Nuvem real</span><strong>{remoteCount}</strong><small>fichas</small></div><div><span>Última sincronização</span><strong>{lastSync?new Date(lastSync).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'—'}</strong><small>{lastSync?new Date(lastSync).toLocaleDateString('pt-BR'):'Ainda não'}</small></div></div>
-            <div className="pjlite-cloud-settings__group"><h3>Sincronização</h3><p>O autosave local continua funcionando. Quando a conta está conectada, as alterações também são enviadas para o PJ Lite Cloud.</p><div className="pjlite-cloud-actions"><button type="button" onClick={()=>syncNow(false)}>☁ Sincronizar agora</button><button type="button" onClick={()=>pullAndMerge(false)}>↧ Mesclar da nuvem</button></div></div>
+            <div className="pjlite-cloud-settings__group"><h3>Sincronização</h3><p><strong>Sincronizar agora</strong> faz a nuvem refletir as fichas deste dispositivo, inclusive removendo da nuvem as fichas que você apagou aqui. <strong>Mesclar da nuvem</strong> faz o contrário: traz para este dispositivo todas as fichas salvas na sua Conta Lite, sem apagar nenhuma.</p><div className="pjlite-cloud-actions"><button type="button" onClick={()=>syncNow(false,true)}>☁ Sincronizar agora</button><button type="button" onClick={()=>pullAndMerge(false)}>↧ Mesclar da nuvem</button></div></div>
             <div className="pjlite-cloud-settings__group pjlite-cloud-settings__group--quiet"><h3>Conta</h3><div className="pjlite-cloud-actions"><button type="button" className="secondary" onClick={handleLogout}>Sair da Conta Lite</button></div></div>
           </> : tab==='groups' ? <>
             <div className="pjlite-cloud-settings__group"><h3>Compartilhar ficha</h3><p>Envie uma cópia para uma pessoa que já tenha Conta Lite ou para um grupo inteiro.</p><div className="pjlite-cloud-form-stack"><label><span>Ficha</span><select value={shareDraft.sheetId} onChange={e=>setShareDraft(v=>({...v,sheetId:e.target.value}))}><option value="">Escolha uma ficha…</option>{allSheets.map(entry=><option key={entry.key} value={entry.key}>{sheetName(entry.item)} • {systemName(entry.item)}</option>)}</select></label><div className="pjlite-cloud-form-split"><label><span>Grupo</span><select value={shareDraft.groupId} onChange={e=>setShareDraft(v=>({...v,groupId:e.target.value,email:e.target.value?'':v.email}))}><option value="">Nenhum grupo</option>{groups.map(group=><option key={group.id} value={group.id}>{group.name} ({group.members?.length||0})</option>)}</select></label><label><span>Ou enviar para</span><input type="email" disabled={!!shareDraft.groupId} value={shareDraft.email} onChange={e=>setShareDraft(v=>({...v,email:e.target.value,groupId:''}))} placeholder="jogador@gmail.com"/></label></div><button type="button" className="pjlite-cloud-primary" onClick={handleShare}>Enviar cópia da ficha</button></div></div>
