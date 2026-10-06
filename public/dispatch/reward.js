@@ -30,7 +30,12 @@
   let profile={};
   try{profile=JSON.parse(localStorage.getItem(EMP)||'{}')||{};}catch{}
   const email=String(profile.email||'');
+  const session=liteSession()||{};
+  const user=session?.user||session?.currentSession?.user||session?.session?.user||{};
+  const meta=user?.user_metadata||{};
   const gmailUser=(email.split('@')[0]||profile.username||'colaborador').trim();
+  const displayName=String(profile.accountName||meta.full_name||meta.name||profile.username||gmailUser||'colaborador').trim();
+  const shortName=(displayName.split(/\s+/)[0]||gmailUser).slice(0,24);
 
   const omens=[
     ['You','data:image/webp;base64,UklGRqgFAABXRUJQVlA4WAoAAAAQAAAARwAARwAAQUxQSJwCAAABoGvbliLJuQE5zGK0mGWxZDEzMzMzy5P+gbzhqSWTZcqXx8zMnBHxrlGREZH5+gMiYgKwkPsJeDeJdzaPZYCNt7vx/Iz9/zBjdOeT//yB8S17CtGNcB5J9rf60cCeTHeiuT8vJpLh4tH87YEkQ2rlL42JWYxtfmNW/odp0Z3P4V3tOGal5ChE1+A8Dst/MKPYgzgc70S1Oz+kgl/GMeYVGWKIVZfGxFKM6wJLpYcp6PAny+NsnBOkiCSG3XG/pgpysx/jlVghhMv44yWyNn5o27lHfpEKhvuQ/zqyuidGmCVWS4QB8Fdkw3Chbwb2dRTC4efEtmjtrwtsKXL415GNtzetLm9DfsHme9lGYOvUTH5HW7t3szFdGzOTyaUnbRPXc/r/WN8C1IiugXsrKvj/XtR7+6MoIC/2dasTNaY/TZV9uNdB1Nr9X4sqhCtthT83Uqf8hVomJRRXZpdTtKSTbZF5Rqi1f7krwhd6SNMVCfXK9r6Iivs7TYG9Pmm6FoV+S1BEnusGOghV32sHcPP/qkSQd2dSt3C1yeDzqG3njFkkou2kDH5OVJ4+QZb6/8tFfbSZz5I6OcQsEGG9n/t4Adg4Zw6gqFuf2UlfvM9hXtTRYt7elpSlb5A75hNR9ksOuL7XJc8NuAOSKuFOJtdZKnMY9FuDLhS8qesNMwRQ9Zmu5BvRE55aikIzU9TfZkrsHpJ0iCQe5op2I0WmJ0LybdgSYNfdZ9+RYUKR5Fez3XdFtTUAbnuJDP0EIsnZ0wBgbF3Weux56x2U+WYiwmfPAbybG9EDOI3ZlBqkRJKnAV2HKTpg7fY7bfrkMzKGMBACyW8+um/n7eEMpmuMwfyLmzaSIQRy44bHMG8MVHrvgeuvvRrw3mVUe+8xQVZQOCDmAgAAMBAAnQEqSABIAD5tLpNGpCKhoS4S62iADYlnDbflebtI8A8gDrPPKAzCWVQOROVOwI30DxYZgH865NyYATI+89zF5+IapkwR51C7vE4hpQszQeeQTACtJgI/vdb5Sfo/Dzg2ZOsJ0z4CpcT2kG50HODQRDb7odAkaBEvMJEm3m9Ix7mb4IycqrCAAP77k//+s68tJBOCiSJkAP7MtGpbG7/lSgiGcuhe4feiPPfI9zp22KPEZNQ1jdQPHVwisEfKAMeILJjqNJ0OtV3WDuwGdkVhtln2R9As0jfT7pJuJqxt5ctrRo4gLi+scNGqsc0lfyw0DBZlw5tlrNEVwtodSqFv/asLOKdmyVGLt3I93+9oDsz2tt8pq0yedliAL0NzcuW+9TaPqXd6bcK7LgWEA+suNvQhe0PCuSWb1Aw1JzYtQuvv7h///VIc6/Mzo/g2zlTImmmoVnA+KQE5xPcJ6guPbgeuGlimK7pEzdXIfuSIpX959PlbDSMhO3N3XVLLERcAGf/2+3inW5EMMX8spRLHvqBaufOykiSB1HYG4MHz+QLZfJNEnusdhomeIiJ+DSTjB0PT9Sak22dCW+v9S37yupc+LqAlkmsEj8C+mR1VwJ5bb39FIAWZyZTAYUtb8irwqTHA5hqlSTF5KfkYT/RBNLdWQL3T/XOncANNHx+BtNX3xNKj/7/5WHW8o2h+qaZzbhJz9CfUrEVdsGJ2CbC25GhCv0I/aK/xT6J019Dt7Jb8o8KSx59f28IWIy3DBI0XLkiHpeiDChKJTHJAFPc4R7r4dmVfR7or+2NZfIMdlfvQbs/QR6rMhBZVOFLq6646A4PuX//Zo69CbtHtMLVlZiSeubHzlsLCYv3jx3620l5HvBfjKqBBXcYBPbqbNdPDIKGWvVd6u4EPH0WVfQ/Qwh7msg3DaOSieKpe43Y+voZivspyNf6QE3XRHEuY7gXrfIgbtxBAkTA56R1XPKi/9AAAAA=='],
@@ -47,11 +52,15 @@
   const style=document.createElement('style');
   style.textContent=`
     #rz-achievement{position:fixed;left:16px;bottom:16px;z-index:99999;display:flex;align-items:center;gap:8px;background:#101714;color:#dbe4dc;border:1px solid #566c5d;border-radius:999px;padding:8px 12px;font:700 11px/1.2 ui-monospace,monospace;box-shadow:0 10px 30px #0004;text-decoration:none}
-    #rz-welcome{position:fixed;right:16px;top:16px;z-index:99998;background:#101714e8;color:#dbe4dc;border:1px solid #566c5d;border-radius:12px;padding:9px 12px;font:700 11px/1.45 ui-monospace,monospace;box-shadow:0 12px 35px #0004;max-width:360px;display:flex;align-items:center;gap:10px}
+    #rz-welcome{position:fixed;right:14px;top:14px;z-index:99998;background:#101714ee;color:#dbe4dc;border:1px solid #566c5d;border-radius:10px;padding:7px 10px;font:700 10px/1.35 ui-monospace,monospace;box-shadow:0 10px 28px #0004;max-width:310px;display:flex;align-items:center;gap:8px;transition:max-width .35s ease,padding .35s ease,opacity .25s ease,transform .35s ease}
     #rz-welcome-text{min-width:0}
-    #rz-omen{position:static;flex:0 0 auto;width:44px;height:44px;object-fit:contain;opacity:.72;filter:grayscale(.08) contrast(1.05) drop-shadow(0 0 8px #0008);image-rendering:pixelated;animation:rzflicker 5s infinite;pointer-events:none}
+    #rz-omen{position:static;flex:0 0 auto;width:36px;height:36px;object-fit:contain;opacity:.72;filter:grayscale(.08) contrast(1.05) drop-shadow(0 0 8px #0008);image-rendering:pixelated;animation:rzflicker 5s infinite;pointer-events:none;transition:width .35s ease,height .35s ease}
+    #rz-welcome.rz-compact{max-width:185px;padding:5px 8px;border-radius:999px;opacity:.88;transform:translateY(0)}
+    #rz-welcome.rz-compact #rz-omen{width:25px;height:25px}
+    #rz-welcome.rz-compact #rz-welcome-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:9px}
+    #rz-welcome.rz-hidden{opacity:0;pointer-events:none;transform:translateY(-10px)}
     @keyframes rzflicker{0%,92%,100%{opacity:.62;transform:translate(0,0)}93%{opacity:.18;transform:translate(1px,-1px)}94%{opacity:.8;transform:translate(-1px,1px)}}
-    @media(max-width:640px){#rz-welcome{top:10px;right:10px;max-width:285px}#rz-achievement{left:10px;bottom:10px}#rz-omen{width:38px;height:38px}}
+    @media(max-width:640px){#rz-welcome{top:8px;right:8px;max-width:245px}#rz-welcome.rz-compact{max-width:155px}#rz-achievement{left:8px;bottom:8px}#rz-omen{width:32px;height:32px}}
   `;
   document.head.appendChild(style);
 
@@ -71,10 +80,40 @@
 
   const welcomeText=document.createElement('span');
   welcomeText.id='rz-welcome-text';
-  welcomeText.textContent='Bem-vindo de volta, '+gmailUser+'. Estamos felizes em te ver aqui :>';
+  const fullWelcome='Bem-vindo de volta, '+displayName+'. Estamos felizes em te ver aqui :>';
+  welcomeText.textContent=fullWelcome;
 
   welcome.appendChild(omen);
   welcome.appendChild(welcomeText);
   document.body.appendChild(welcome);
+
+  let collapsed=false;
+  const collapseWelcome=()=>{
+    collapsed=true;
+    welcome.classList.add('rz-compact');
+    welcomeText.textContent='RZ-088 · '+shortName;
+  };
+  const editorIsOpen=()=>{
+    if(document.querySelector('.rz-sheet')) return true;
+    return Array.from(document.querySelectorAll('button')).some(btn=>{
+      const txt=(btn.textContent||'').trim().toLowerCase();
+      if(!txt.startsWith('voltar')) return false;
+      const rect=btn.getBoundingClientRect();
+      const st=getComputedStyle(btn);
+      return rect.width>0&&rect.height>0&&st.display!=='none'&&st.visibility!=='hidden';
+    });
+  };
+  const syncWelcomeVisibility=()=>{
+    const editing=editorIsOpen();
+    welcome.classList.toggle('rz-hidden',editing);
+    if(!editing&&collapsed){
+      welcome.classList.add('rz-compact');
+      welcomeText.textContent='RZ-088 · '+shortName;
+    }
+  };
+  setTimeout(collapseWelcome,4200);
+  const observer=new MutationObserver(syncWelcomeVisibility);
+  observer.observe(document.getElementById('root')||document.body,{childList:true,subtree:true});
+  syncWelcomeVisibility();
 
 })();
