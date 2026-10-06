@@ -144,16 +144,49 @@ export async function listGroups() {
 
   const ids = (groups || []).map(group => group.id);
   if (!ids.length) return [];
-  const { data: members, error: membersError } = await client
-    .from('group_members')
-    .select('group_id,user_id,role,joined_at')
-    .in('group_id', ids);
-  if (membersError) throw membersError;
+
+  let members = [];
+  try {
+    const { data: { session }, error: sessionError } = await client.auth.getSession();
+    if (sessionError) throw sessionError;
+    if (!session?.access_token) throw new Error('not_authenticated');
+
+    const { data: result, error: profileError } = await client.functions.invoke('pjlite-group-profiles', {
+      body: { groupIds: ids },
+      headers: { Authorization: 'Bearer ' + session.access_token },
+    });
+    if (profileError) throw profileError;
+    if (result?.error) throw new Error(String(result.error));
+    members = Array.isArray(result?.members) ? result.members : [];
+  } catch (profileError) {
+    console.warn('Conta Lite: perfis do grupo indisponíveis, usando lista básica', profileError);
+    const { data: basicMembers, error: membersError } = await client
+      .from('group_members')
+      .select('group_id,user_id,role,joined_at')
+      .in('group_id', ids);
+    if (membersError) throw membersError;
+    members = (basicMembers || []).map(member => ({
+      groupId: member.group_id,
+      userId: member.user_id,
+      role: member.role || 'member',
+      joinedAt: member.joined_at || null,
+      name: member.user_id === user.id ? 'Você' : 'Jogador',
+      avatar: '',
+      achievementTags: [],
+    }));
+  }
 
   return (groups || []).map(group => ({
     ...group,
     isOwner: group.owner_id === user.id,
-    members: (members || []).filter(member => member.group_id === group.id),
+    members: members
+      .filter(member => (member.groupId || member.group_id) === group.id)
+      .map(member => ({
+        ...member,
+        groupId: member.groupId || member.group_id,
+        userId: member.userId || member.user_id,
+        joinedAt: member.joinedAt || member.joined_at || null,
+      })),
   }));
 }
 
