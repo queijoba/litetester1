@@ -30,11 +30,23 @@ rep("const [show3DetModelModal, setShow3DetModelModal] = useState(false);",`cons
             const [showSkyfallModelModal, setShowSkyfallModelModal] = useState(false);
             const [showOrdemModelModal, setShowOrdemModelModal] = useState(false);`, 'modal states');
 
-rep("theme === 'som6' ? 'theme-som6' : theme === 'dark' ? 'theme-dark'", "theme === 'som6' ? 'theme-som6' : theme === 'skyfall' ? 'theme-skyfall' : theme === 'ordem' ? 'theme-ordem' : theme === 'dark' ? 'theme-dark'", 'theme body');
-rep(`<option value="som6">Tema: O Som das Seis</option>\n                                        <option value="dark">`, `<option value="som6">Tema: O Som das Seis</option>
+if (s.includes("theme === 'som6' ? 'theme-som6' : theme === 'rotazero' ? 'theme-rotazero' : theme === 'dark' ? 'theme-dark'")) {
+  s=s.replace("theme === 'som6' ? 'theme-som6' : theme === 'rotazero' ? 'theme-rotazero' : theme === 'dark' ? 'theme-dark'", "theme === 'som6' ? 'theme-som6' : theme === 'skyfall' ? 'theme-skyfall' : theme === 'ordem' ? 'theme-ordem' : theme === 'rotazero' ? 'theme-rotazero' : theme === 'dark' ? 'theme-dark'");
+} else {
+  rep("theme === 'som6' ? 'theme-som6' : theme === 'dark' ? 'theme-dark'", "theme === 'som6' ? 'theme-som6' : theme === 'skyfall' ? 'theme-skyfall' : theme === 'ordem' ? 'theme-ordem' : theme === 'dark' ? 'theme-dark'", 'theme body');
+}
+if (s.includes(`<option value="som6">Tema: O Som das Seis</option>\n                                        {rotaZeroUnlocked && <option value="rotazero">Tema: Rota Zero</option>}\n                                        <option value="dark">`)) {
+  s=s.replace(`<option value="som6">Tema: O Som das Seis</option>\n                                        {rotaZeroUnlocked && <option value="rotazero">Tema: Rota Zero</option>}\n                                        <option value="dark">`, `<option value="som6">Tema: O Som das Seis</option>
+                                        <option value="skyfall">Tema: Skyfall RPG</option>
+                                        <option value="ordem">Tema: Ordem Paranormal</option>
+                                        {rotaZeroUnlocked && <option value="rotazero">Tema: Rota Zero</option>}
+                                        <option value="dark">`);
+} else {
+  rep(`<option value="som6">Tema: O Som das Seis</option>\n                                        <option value="dark">`, `<option value="som6">Tema: O Som das Seis</option>
                                         <option value="skyfall">Tema: Skyfall RPG</option>
                                         <option value="ordem">Tema: Ordem Paranormal</option>
                                         <option value="dark">`, 'theme options');
+}
 
 for (const [oldv,newv,label] of [
  ["savingData = normalize3DetThreatData(savingData);",`savingData = normalize3DetThreatData(savingData);
@@ -58,7 +70,22 @@ for (const [oldv,newv,label] of [
                 templateData = normalizeOrdemPcData(templateData);
                 templateData = normalizeOrdemThreatData(templateData);`,'template']]) rep(oldv,newv,label);
 
-rep(`normalized = normalize3DetThreatData(normalized);\n                    setData(normalized);`, `normalized = normalize3DetThreatData(normalized);\n                    normalized = normalizeSkyfallPcData(normalized);\n                    normalized = normalizeSkyfallThreatData(normalized);\n                    normalized = normalizeOrdemPcData(normalized);\n                    normalized = normalizeOrdemThreatData(normalized);\n                    setData(normalized);`, 'load character');
+if (s.includes(`normalized = normalize3DetThreatData(normalized);\n                    normalized = normalizeRotaZeroPcData(normalized);\n                    setData(normalized);`)) {
+  s=s.replace(`normalized = normalize3DetThreatData(normalized);\n                    normalized = normalizeRotaZeroPcData(normalized);\n                    setData(normalized);`, `normalized = normalize3DetThreatData(normalized);
+                    normalized = normalizeSkyfallPcData(normalized);
+                    normalized = normalizeSkyfallThreatData(normalized);
+                    normalized = normalizeOrdemPcData(normalized);
+                    normalized = normalizeOrdemThreatData(normalized);
+                    normalized = normalizeRotaZeroPcData(normalized);
+                    setData(normalized);`);
+} else {
+  rep(`normalized = normalize3DetThreatData(normalized);\n                    setData(normalized);`, `normalized = normalize3DetThreatData(normalized);
+                    normalized = normalizeSkyfallPcData(normalized);
+                    normalized = normalizeSkyfallThreatData(normalized);
+                    normalized = normalizeOrdemPcData(normalized);
+                    normalized = normalizeOrdemThreatData(normalized);
+                    setData(normalized);`, 'load character');
+}
 
 rep(`normalized = normalizeSom6PdjData(normalized);\n                    setData(normalized);`, `normalized = normalizeSom6PdjData(normalized);\n                    normalized = normalize3DetThreatData(normalized);\n                    normalized = normalizeSkyfallThreatData(normalized);\n                    normalized = normalizeOrdemThreatData(normalized);\n                    setData(normalized);`, 'load threat');
 
@@ -90,7 +117,11 @@ rep(`                        {showSom6ModelModal && ReactDOM.createPortal(`, `${
 rep(`const is3Det = data.system === '3det';`, `const is3Det = data.system === '3det';\n            const isSkyfall = data.system === 'skyfall';\n            const isOrdem = data.system === 'ordem';`, 'editor flags');
 rep(`const topBarColor = isDnd ? 'bg-[#922610]' : isFabula ? 'bg-teal-800' : isSom6 ? 'bg-red-950' : is3Det ? 'bg-zinc-950'`, `const topBarColor = isDnd ? 'bg-[#922610]' : isFabula ? 'bg-teal-800' : isSom6 ? 'bg-red-950' : is3Det ? 'bg-zinc-950' : isSkyfall ? 'bg-violet-950' : isOrdem ? 'bg-black'`, 'topbar');
 rep(`{/* 3DeT Victory — personagem e ameaças modularizados */}\n                    <TresDeTCharacterEditor scope={systemEditorScope} />\n                    <TresDeTThreatEditor scope={systemEditorScope} />`, `{/* 3DeT Victory — personagem e ameaças modularizados */}\n                    <TresDeTCharacterEditor scope={systemEditorScope} />\n                    <TresDeTThreatEditor scope={systemEditorScope} />\n                    <SkyfallCharacterEditor scope={systemEditorScope} />\n                    <SkyfallThreatEditor scope={systemEditorScope} />\n                    <OrdemCharacterEditor scope={systemEditorScope} />\n                    <OrdemThreatEditor scope={systemEditorScope} />`, 'editors');
-rep(`!['dragonbane','dnd5e','fabula','somdas6','3det'].includes`, `!['dragonbane','dnd5e','fabula','somdas6','3det','skyfall','ordem'].includes`, 'known systems');
+if (s.includes(`!['dragonbane','dnd5e','fabula','somdas6','3det','rotaZero'].includes`)) {
+  s=s.replace(`!['dragonbane','dnd5e','fabula','somdas6','3det','rotaZero'].includes`, `!['dragonbane','dnd5e','fabula','somdas6','3det','skyfall','ordem','rotaZero'].includes`);
+} else {
+  rep(`!['dragonbane','dnd5e','fabula','somdas6','3det'].includes`, `!['dragonbane','dnd5e','fabula','somdas6','3det','skyfall','ordem'].includes`, 'known systems');
+}
 
 await writeFile(path,s,'utf8');
 console.log('✓ Final systems patch applied: Skyfall RPG + Ordem Paranormal RPG.');
