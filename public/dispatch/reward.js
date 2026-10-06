@@ -58,7 +58,7 @@
     #rz-welcome.rz-compact{max-width:185px;padding:5px 8px;border-radius:999px;opacity:.88;transform:translateY(0)}
     #rz-welcome.rz-compact #rz-omen{width:25px;height:25px}
     #rz-welcome.rz-compact #rz-welcome-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:9px}
-    #rz-welcome.rz-hidden{opacity:0;pointer-events:none;transform:translateY(-10px)}
+    #rz-welcome.rz-hidden{opacity:0;pointer-events:none;transform:translateY(-10px)}\n    #rz-scan{position:absolute;right:calc(100% + 10px);top:0;width:300px;display:grid;gap:5px;opacity:0;transform:translateX(8px);transition:.18s;pointer-events:none}\n    #rz-welcome.rz-scan-open #rz-scan{opacity:1;transform:translateX(0)}\n    .rz-scan-line{background:#0b110eee;border:1px solid #52665a;color:#becbc1;border-radius:4px;padding:5px 7px;box-shadow:0 6px 18px #0006;font:700 9px/1.35 ui-monospace,monospace;text-align:left}\n
     @keyframes rzflicker{0%,92%,100%{opacity:.62;transform:translate(0,0)}93%{opacity:.18;transform:translate(1px,-1px)}94%{opacity:.8;transform:translate(-1px,1px)}}
     @media(max-width:640px){#rz-welcome{top:8px;right:8px;max-width:245px}#rz-welcome.rz-compact{max-width:155px}#rz-achievement{left:8px;bottom:8px}#rz-omen{width:32px;height:32px}}
   `;
