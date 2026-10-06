@@ -71,20 +71,26 @@ Deno.serve(async (req: Request) => {
 
     const [
       { data: profiles, error: profilesError },
-      { data: rzRows, error: rzError },
+      { data: achievements, error: achievementsError },
     ] = await Promise.all([
       admin.from('profiles').select('id,display_name,avatar_url').in('id', userIds),
-      admin.from('rota_zero_collaborators').select('user_id,unlocked_at').in('user_id', userIds),
+      admin.from('account_achievements').select('user_id,achievement_id,label,name,category,unlocked_at,is_public').in('user_id', userIds).eq('is_public', true),
     ])
     if (profilesError) throw profilesError
-    if (rzError) throw rzError
+    if (achievementsError) throw achievementsError
 
     const profileMap = new Map((profiles || []).map((profile: any) => [profile.id, profile]))
-    const rzMap = new Map((rzRows || []).map((entry: any) => [entry.user_id, entry]))
+    const achievementsByUser = new Map<string, any[]>()
+    for (const entry of achievements || []) {
+      if (!entry?.user_id) continue
+      const list = achievementsByUser.get(entry.user_id) || []
+      list.push(entry)
+      achievementsByUser.set(entry.user_id, list)
+    }
 
     const members = (memberships || []).map((member: any) => {
       const profile: any = profileMap.get(member.user_id) || {}
-      const rz: any = rzMap.get(member.user_id) || null
+      const userAchievements = achievementsByUser.get(member.user_id) || []
       return {
         groupId: member.group_id,
         userId: member.user_id,
@@ -92,15 +98,13 @@ Deno.serve(async (req: Request) => {
         joinedAt: member.joined_at || null,
         name: profile.display_name || 'Jogador',
         avatar: profile.avatar_url || '',
-        achievementTags: [
-          ...(rz ? [{
-            id: 'rz-88',
-            label: 'RZ-88',
-            name: 'Colaborador Rota Zero',
-            category: 'ARG',
-            unlockedAt: rz.unlocked_at || null,
-          }] : []),
-        ],
+        achievementTags: userAchievements.map((entry: any) => ({
+          id: entry.achievement_id,
+          label: entry.label,
+          name: entry.name,
+          category: entry.category,
+          unlockedAt: entry.unlocked_at || null,
+        })),
       }
     })
 
