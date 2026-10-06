@@ -201,6 +201,186 @@ css += `
   height: 26px;
 }
 
+/* Perfis dos membros do grupo */
+.pjlite-cloud-group-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.pjlite-cloud-group-card__head > div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.pjlite-cloud-group-card__head > div > span {
+  color: #8794a4;
+  font-size: 8px;
+}
+.pjlite-cloud-group-members {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #d7e0e9;
+  border-radius: 9px;
+  background: #fff;
+}
+.pjlite-cloud-group-members__title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.pjlite-cloud-group-members__title > span {
+  color: #65768a;
+  font-size: 8px;
+  font-weight: 950;
+  letter-spacing: .08em;
+}
+.pjlite-cloud-group-members__title > small {
+  padding: 0;
+  background: transparent;
+  color: #93a0ae;
+  font-size: 7.5px;
+}
+.pjlite-cloud-group-members__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+.pjlite-cloud-member {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid #e0e7ee;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+.pjlite-cloud-member__avatar {
+  width: 34px;
+  height: 34px;
+  overflow: hidden;
+  border: 1px solid #ced8e2;
+  border-radius: 50%;
+  background: #e5ecf2;
+}
+.pjlite-cloud-member__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.pjlite-cloud-member__avatar > span {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  color: #486078;
+  font-size: 11px;
+  font-weight: 950;
+}
+.pjlite-cloud-member__main {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+.pjlite-cloud-member__name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.pjlite-cloud-member__name strong {
+  overflow: hidden;
+  color: #324960;
+  font-size: 9.5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pjlite-cloud-member__name em {
+  padding: 2px 5px;
+  border-radius: 999px;
+  background: #e7eef5;
+  color: #65778a;
+  font-size: 7px;
+  font-style: normal;
+  font-weight: 900;
+}
+.pjlite-cloud-member__main > small {
+  padding: 0;
+  background: transparent;
+  color: #8a97a6;
+  font-size: 7.5px;
+  font-weight: 700;
+}
+.pjlite-cloud-member__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.pjlite-cloud-member-tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 19px;
+  padding: 3px 5px;
+  border: 1px solid #c9b47f;
+  border-radius: 5px;
+  background: #2a251a;
+  color: #eadcb0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 7px;
+  font-weight: 950;
+  letter-spacing: .07em;
+}
+.pjlite-cloud-member-tag.is-rz-88 {
+  border-color: #637a69;
+  background: #142019;
+  color: #cee0d2;
+}
+.pjlite-cloud-member-tag.is-empty {
+  border-color: #dbe3ea;
+  background: #f3f6f8;
+  color: #9aa6b3;
+  font-family: inherit;
+  font-weight: 750;
+  letter-spacing: 0;
+}
+
+.theme-dark .pjlite-cloud-group-members {
+  background: #101827;
+  border-color: #3b4b60;
+}
+.theme-dark .pjlite-cloud-group-members__title > span {
+  color: #b2c0ce;
+}
+.theme-dark .pjlite-cloud-member {
+  background: #172233;
+  border-color: #33465c;
+}
+.theme-dark .pjlite-cloud-member__avatar {
+  background: #223147;
+  border-color: #43566d;
+}
+.theme-dark .pjlite-cloud-member__avatar > span,
+.theme-dark .pjlite-cloud-member__name strong {
+  color: #e2eaf2;
+}
+.theme-dark .pjlite-cloud-member__name em {
+  background: #243348;
+  color: #bdcad7;
+}
+.theme-dark .pjlite-cloud-member__main > small {
+  color: #96a7b8;
+}
+.theme-dark .pjlite-cloud-member-tag.is-empty {
+  border-color: #3b4b60;
+  background: #1d2939;
+  color: #8495a7;
+}
+
 .theme-dark .pjlite-cloud-settings__group > .pjlite-cloud-invite-join input,
 .theme-dark .pjlite-cloud-invite code,
 .theme-dark .pjlite-cloud-invite-actions button {
@@ -239,6 +419,13 @@ css += `
   }
   .pjlite-cloud-group-card {
     padding: 12px 40px 12px 12px;
+  }
+  .pjlite-cloud-group-members__grid {
+    grid-template-columns: 1fr;
+  }
+  .pjlite-cloud-group-members__title {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }
 `;
