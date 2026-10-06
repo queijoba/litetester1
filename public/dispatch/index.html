@@ -154,8 +154,9 @@ não responda."</div>
       <div class="notice"><strong>CONTATO:</strong> use o mesmo contato usado nos Lite, por favor. Se você estiver autenticado na Conta Lite, o sistema tentará validar o mesmo e-mail.</div>
       <div class="formbox">
         <div class="grid2">
-          <div><label>NOME DE USUÁRIO</label><input id="rzUser" placeholder="como devemos chamar você?"></div>
+          <div><label>NOME / CONTA GOOGLE</label><input id="rzUser" placeholder="nome detectado na Conta Lite"></div>
           <div><label>GMAIL / CONTATO LITE</label><input id="rzEmail" type="email" placeholder="seuemail@gmail.com"><div id="mailHint" class="hint"></div></div>
+          <div><label>IDADE / CONTA GOOGLE</label><input id="rzAge" readonly value="AGUARDANDO LEITURA DA CONTA"><div id="ageHint" class="hint">A Rota Zero só usa este dado quando a própria autenticação o expõe.</div></div>
           <div><label>FUNÇÃO DE INTERESSE</label><select id="rzRole"><option>Motorista de Rota</option><option>Mecânico de Plantão</option><option>Batedor de Estrada</option><option>Despachante de Campo</option><option>Socorrista de Turno</option></select></div>
           <div><label>TURNO PREFERIDO</label><select id="rzShift"><option>Diurno</option><option>Noturno</option><option>Indiferente</option></select></div>
         </div>
@@ -259,17 +260,43 @@ function liteAccessToken(){
   const obj=liteSession();
   return String(obj?.access_token||obj?.currentSession?.access_token||obj?.session?.access_token||'');
 }
-function liteAccountEmail(){
-  const obj=liteSession();
-  return String(obj?.user?.email||obj?.currentSession?.user?.email||obj?.session?.user?.email||'').toLowerCase();
+function liteAccountProfile(){
+  const obj=liteSession()||{};
+  const user=obj?.user||obj?.currentSession?.user||obj?.session?.user||{};
+  const meta=user?.user_metadata||{};
+  const email=String(user?.email||'').toLowerCase();
+  const name=String(meta.full_name||meta.name||meta.preferred_username||'').trim();
+  const avatarUrl=String(meta.avatar_url||meta.picture||'').trim();
+  let age='';
+  const explicitAge=Number(meta.age);
+  if(Number.isFinite(explicitAge)&&explicitAge>0&&explicitAge<130) age=String(Math.floor(explicitAge));
+  if(!age&&meta.birthdate){
+    const born=new Date(meta.birthdate);
+    if(!Number.isNaN(born.getTime())){
+      const now=new Date();
+      let years=now.getFullYear()-born.getFullYear();
+      const beforeBirthday=(now.getMonth()<born.getMonth())||(now.getMonth()===born.getMonth()&&now.getDate()<born.getDate());
+      if(beforeBirthday) years--;
+      if(years>0&&years<130) age=String(years);
+    }
+  }
+  return {email,name,avatarUrl,age};
 }
-const liteEmail=liteAccountEmail();
+function liteAccountEmail(){ return liteAccountProfile().email; }
+const liteProfile=liteAccountProfile();
+const liteEmail=liteProfile.email;
 if(liteEmail){
   document.getElementById('rzEmail').value=liteEmail;
   document.getElementById('rzEmail').readOnly=true;
   document.getElementById('mailHint').textContent='Conta Lite confirmada: '+liteEmail;
+  if(liteProfile.name) document.getElementById('rzUser').value=liteProfile.name;
+  document.getElementById('rzAge').value=liteProfile.age||'NÃO EXPOSTA PELA CONTA GOOGLE';
+  document.getElementById('ageHint').textContent=liteProfile.age
+    ? 'Dado exposto pela autenticação da Conta Google.'
+    : 'A Conta Google autenticada não expôs idade/data de nascimento. O sistema não inventa esse dado.';
 }else{
   document.getElementById('mailHint').textContent='Entre primeiro em Conta & Nuvem no PJ Lite e volte aqui. O currículo precisa usar o mesmo contato Lite.';
+  document.getElementById('rzAge').value='CONTA LITE NÃO AUTENTICADA';
 }
 document.getElementById('applyBtn').onclick=()=>showStep(4);
 
@@ -281,6 +308,40 @@ const RZ_BUILDS={
   'Socorrista de Turno':{attrs:{pulso:1,tecnica:2,firmeza:2},skills:['primeirosSocorros','sobrevivencia','observacao'],adv:'cabecaFria'}
 };
 const ALL_RZ_SKILLS=['conducao','manutencao','navegacao','observacao','sobrevivencia','influencia','infiltracao','logistica','pesquisa','primeirosSocorros'];
+const RZ_SKILL_NAMES={conducao:'Condução',manutencao:'Manutenção',navegacao:'Navegação',observacao:'Observação',sobrevivencia:'Sobrevivência',influencia:'Influência',infiltracao:'Infiltração',logistica:'Logística',pesquisa:'Pesquisa',primeirosSocorros:'Primeiros Socorros'};
+const RZ_ADV_NAMES={reflexosEntrega:'Reflexos de Entrega',maosOficina:'Mãos de Oficina',memoriaRotas:'Memória de Rotas',redeContatos:'Rede de Contatos',cabecaFria:'Cabeça Fria'};
+function rzMachineFingerprint(profile){
+  const raw=[profile.email,profile.role,profile.shift,profile.trait,profile.anchor,profile.choice].join('|');
+  let h=2166136261;
+  for(let i=0;i<raw.length;i++){h^=raw.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}
+  const hex=h.toString(16).toUpperCase().padStart(8,'0');
+  return 'RZ-'+hex.slice(0,4)+'-'+hex.slice(4);
+}
+function rzMachineNote(profile,build){
+  const fingerprint=profile.fingerprint||rzMachineFingerprint(profile);
+  const skills=build.skills.map(id=>RZ_SKILL_NAMES[id]||id).join(', ');
+  const ability=RZ_ADV_NAMES[build.adv]||build.adv;
+  const anomaly=[
+    'PADRÃO DE RETORNO: improvável, porém consistente.',
+    'ASSINATURA DE ROTA: coincide com um registro sem motorista.',
+    'RUÍDO DE IDENTIDADE: dentro da margem corporativa aceitável.',
+    'GPS INTERNO: insiste que esta conta já passou pelo km 88.',
+    'ARQUIVO DE RH: criado alguns segundos antes do envio do currículo.'
+  ][parseInt(fingerprint.slice(3,7),16)%5];
+  return [
+    'LEITURA AUTOMÁTICA // RZ-HR-12',
+    'NOME DA CONTA: '+(profile.accountName||profile.username),
+    'CONTATO: '+profile.email,
+    'IDADE: '+(profile.age||'NÃO EXPOSTA PELA CONTA GOOGLE'),
+    'FUNÇÃO PROVÁVEL: '+profile.role,
+    'PERÍCIAS INDEXADAS: '+skills,
+    'HABILIDADE COMPATÍVEL: '+ability,
+    'ASSINATURA: '+fingerprint,
+    'ANOMALIA: '+anomaly,
+    '',
+    'A máquina usou apenas metadados expostos pela Conta Lite/Google e respostas deste formulário.'
+  ].join('\n');
+}
 
 function saveRecruitmentSheet(profile){
   const build=RZ_BUILDS[profile.role]||RZ_BUILDS['Motorista de Rota'];
@@ -288,14 +349,17 @@ function saveRecruitmentSheet(profile){
   const skills={};
   ALL_RZ_SKILLS.forEach(id=>skills[id]=build.skills.includes(id));
   const p=build.attrs.pulso,t=build.attrs.tecnica,f=build.attrs.firmeza;
+  const displayName=profile.accountName||profile.username;
+  const scanNote=rzMachineNote(profile,build);
   const sheet={
     id:'',system:'rotaZero',type:'pc',
     bio:{
-      nome:profile.username,
-      jogador:profile.email.split('@')[0]||profile.username,
+      nome:displayName,
+      jogador:profile.email,
+      idade:profile.age||'NÃO EXPOSTA',
       conceito:(profile.trait?profile.trait+' • ':'')+profile.role,
       kit:profile.role,
-      imagem:''
+      imagem:profile.avatarUrl||''
     },
     atributos:{...build.attrs},
     recursos:{
@@ -312,6 +376,8 @@ function saveRecruitmentSheet(profile){
     inventario:[profile.item||'','','',''],
     ancora:profile.anchor||'',
     notas:[
+      scanNote,
+      '',
       'CADASTRO RZ-HR-12 / REMESSA #088',
       'Turno: '+profile.shift,
       profile.limit?'Limite de rota: '+profile.limit:'',
@@ -320,7 +386,7 @@ function saveRecruitmentSheet(profile){
     ].filter(Boolean).join('\n'),
     veiculoAtivo:false,
     veiculo:{nome:'',modelo:'',placaId:'',manejo:2,tracao:2,casco:2,combustivel:6,integridade:6,aquecimento:4,cargaCompartimentos:'',upgradesSlots:'',avariasReparos:''},
-    meta:{rotaZero:true,rotaZeroEmployeeEmail:profile.email,argRecruitment:'RZ-088',createdAt:now,updatedAt:now}
+    meta:{rotaZero:true,rotaZeroEmployeeEmail:profile.email,argRecruitment:'RZ-088',hrScan:{fingerprint:profile.fingerprint,source:'Conta Lite/Google + formulário RZ-HR-12',ageExposed:!!profile.age},createdAt:now,updatedAt:now}
   };
   let list=[];
   try{list=JSON.parse(localStorage.getItem('dragonbane_saved_characters')||'[]');if(!Array.isArray(list))list=[];}catch{list=[];}
@@ -362,8 +428,13 @@ document.getElementById('submitApplication').onclick=async()=>{
   if(!username||!email){msg.textContent='NOME DE USUÁRIO e Gmail são obrigatórios.';msg.className='feedback danger';return;}
   if(!liteEmail||!token){msg.textContent='Abra o PJ Lite, entre em Conta & Nuvem com Google e volte para enviar o currículo.';msg.className='feedback danger';return;}
   if(email!==liteEmail){msg.textContent='Use o mesmo contato autenticado na Conta Lite: '+liteEmail;msg.className='feedback danger';return;}
+  const account=liteAccountProfile();
   const profile={
-    username,email,
+    username,
+    accountName:account.name||username,
+    email,
+    age:account.age||'',
+    avatarUrl:account.avatarUrl||'',
     role:document.getElementById('rzRole').value,
     shift:document.getElementById('rzShift').value,
     trait:document.getElementById('rzTrait').value.trim(),
@@ -375,6 +446,7 @@ document.getElementById('submitApplication').onclick=async()=>{
     shipment:'#088',
     hiredAt:new Date().toISOString()
   };
+  profile.fingerprint=rzMachineFingerprint(profile);
   msg.textContent='Transmitindo currículo para Recursos Humanos...';msg.className='feedback';
   document.getElementById('submitApplication').disabled=true;
   try{
@@ -390,8 +462,22 @@ document.getElementById('submitApplication').onclick=async()=>{
     }));
     saveRecruitmentSheet(profile);
     const mailState=result?.email_sent?'ENVIADO PARA '+email:(result?.email_error==='email_service_not_configured'?'AGUARDANDO ATIVAÇÃO DO CANAL DE E-MAIL':'CADASTRADO; ENTREGA DO E-MAIL PENDENTE');
+    const build=RZ_BUILDS[profile.role]||RZ_BUILDS['Motorista de Rota'];
+    const skillNames=build.skills.map(id=>RZ_SKILL_NAMES[id]||id).join(', ');
     document.getElementById('employeeWelcome').textContent=
-      'USUÁRIO: '+username+'\nFUNÇÃO: '+profile.role+'\nTURNO: '+profile.shift+'\nCONTA: '+email+'\nSTATUS: COLABORADOR ATIVO\nE-MAIL CORPORATIVO: '+mailState+'\n\n“A família cresce sempre.”';
+      'PERFIL OPERACIONAL RECONSTRUÍDO\n'+
+      'NOME DETECTADO: '+(profile.accountName||username)+'\n'+
+      'IDADE: '+(profile.age||'NÃO EXPOSTA PELA CONTA GOOGLE')+'\n'+
+      'FUNÇÃO: '+profile.role+'\n'+
+      'PERÍCIAS: '+skillNames+'\n'+
+      'HABILIDADE: '+(RZ_ADV_NAMES[build.adv]||build.adv)+'\n'+
+      'ASSINATURA: '+profile.fingerprint+'\n'+
+      'TURNO: '+profile.shift+'\n'+
+      'CONTA: '+email+'\n'+
+      'STATUS: COLABORADOR ATIVO\n'+
+      'E-MAIL CORPORATIVO: '+mailState+'\n\n'+
+      'LEITURA CONCLUÍDA. DADOS NÃO EXPOSTOS NÃO FORAM INFERIDOS.\n'+
+      '“A família cresce sempre.”';
     msg.textContent='Cadastro aceito. Ficha e benefícios vinculados à Conta Lite.';msg.className='feedback ok';
     setTimeout(()=>showStep(5),800);
   }catch(error){
