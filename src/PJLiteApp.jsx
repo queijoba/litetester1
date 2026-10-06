@@ -6,6 +6,9 @@ import Som6CharacterEditor from './systems/somDasSeis/components/CharacterEditor
 import Som6ThreatEditor from './systems/somDasSeis/components/ThreatEditor.jsx';
 import TresDeTCharacterEditor from './systems/3det/components/CharacterEditor.jsx';
 import TresDeTThreatEditor from './systems/3det/components/ThreatEditor.jsx';
+import RotaZeroCharacterEditor from './systems/rotaZero/components/CharacterEditor.jsx';
+import { initialRotaZeroPcData, normalizeRotaZeroPcData } from './systems/rotaZero/data.js';
+import { MODELOS_ROTA_ZERO_PC } from './systems/rotaZero/models.js';
 import { initial3DetPcData, normalize3DetPcData } from './systems/3det/data.js';
 import { initial3DetThreatData, normalize3DetThreatData } from './systems/3det/threatData.js';
 import { MODELOS_3DET_PC } from './systems/3det/models.js';
@@ -1205,6 +1208,7 @@ const { useState, useEffect, useRef } = React;
             const [data, setData] = useState(initialData);
             
             const [theme, setTheme] = useState(() => { try { return localStorage.getItem(THEME_PREF_KEY) || 'default'; } catch { return 'default'; } });
+            const [rotaZeroUnlocked] = useState(() => { try { return localStorage.getItem('pjlite_rz_theme_unlocked_v1') === '1'; } catch { return false; } });
             const [customBgUrl, setCustomBgUrl] = useState(() => { try { return localStorage.getItem(CUSTOM_BG_KEY) || ''; } catch { return ''; } });
             const [customBgLink, setCustomBgLink] = useState('');
             const [customWinColor, setCustomWinColor] = useState(() => { try { return localStorage.getItem(CUSTOM_WIN_COLOR_KEY) || '#ffffff'; } catch { return '#ffffff'; } });
@@ -1233,6 +1237,7 @@ const { useState, useEffect, useRef } = React;
             const [showFabulaModelModal, setShowFabulaModelModal] = useState(false);
             const [showSom6ModelModal, setShowSom6ModelModal] = useState(false);
             const [show3DetModelModal, setShow3DetModelModal] = useState(false);
+            const [showRotaZeroModelModal, setShowRotaZeroModelModal] = useState(false);
             const [dndPcTab, setDndPcTab] = useState('caracteristicas');
             const [fabulaTab, setFabulaTab] = useState('perfil');
             const [som6Tab, setSom6Tab] = useState('perfil');
@@ -1275,7 +1280,7 @@ const { useState, useEffect, useRef } = React;
 
             useEffect(() => {
                 try { localStorage.setItem(THEME_PREF_KEY, theme); } catch {}
-                document.body.className = `font-body text-gray-800 antialiased p-4 md:p-8 ${theme === 'classic' ? 'theme-classic' : theme === 'dnd' ? 'theme-dnd' : theme === 'fabula' ? 'theme-fabula' : theme === 'som6' ? 'theme-som6' : theme === 'dark' ? 'theme-dark' : theme === 'custom' ? 'theme-custom' : 'theme-default'}`;
+                document.body.className = `font-body text-gray-800 antialiased p-4 md:p-8 ${theme === 'classic' ? 'theme-classic' : theme === 'dnd' ? 'theme-dnd' : theme === 'fabula' ? 'theme-fabula' : theme === 'som6' ? 'theme-som6' : theme === 'rotazero' ? 'theme-rotazero' : theme === 'dark' ? 'theme-dark' : theme === 'custom' ? 'theme-custom' : 'theme-default'}`;
             }, [theme]);
 
             useEffect(() => {
@@ -2024,12 +2029,14 @@ const { useState, useEffect, useRef } = React;
                             <div className="mb-4 flex flex-wrap items-center gap-2 no-print">
                                 <div className="flex items-center gap-1 bg-gray-200 border border-gray-300 rounded px-2 py-1.5 shadow-sm">
                                     <SVGIcons.Palette />
+                                    {rotaZeroUnlocked && <span className="rz-model-status">Modelo RZ {theme === 'rotazero' ? 'ON' : 'desativado'}</span>}
                                     <select value={theme} onChange={(e) => { if (e.target.value === 'custom') setShowCustomBgModal(true); else setTheme(e.target.value); }} className="bg-transparent text-gray-700 font-bold text-xs outline-none cursor-pointer">
                                         <option value="default">Tema: Padrão</option>
                                         <option value="classic">Tema: Clássico DB</option>
                                         <option value="dnd">Tema: Dungeons & Dragons</option>
                                         <option value="fabula">Tema: Fabula Ultima</option>
                                         <option value="som6">Tema: O Som das Seis</option>
+                                        {rotaZeroUnlocked && <option value="rotazero">Tema: Rota Zero</option>}
                                         <option value="dark">Tema: Modo Escuro</option>
                                         <option value="custom">Tema: Personalizado...</option>
                                     </select>
@@ -2095,7 +2102,7 @@ const { useState, useEffect, useRef } = React;
                                 {showFilters && (
                                     <div style={getWindowStyle()} className="mt-2 max-w-2xl bg-white border border-gray-200 rounded-lg shadow-sm p-3 grid grid-cols-1 sm:grid-cols-3 gap-2">
                                         <select value={systemFilter} onChange={e=>setSystemFilter(e.target.value)} className="border rounded px-2 py-2 text-xs bg-white">
-                                            <option value="all">Todos os sistemas</option><option value="dragonbane">Dragonbane</option><option value="dnd5e">D&D 5.5e</option><option value="fabula">Fabula Ultima</option><option value="somdas6">O Som das Seis</option><option value="3det">3DeT Victory</option>
+                                            <option value="all">Todos os sistemas</option><option value="dragonbane">Dragonbane</option><option value="dnd5e">D&D 5.5e</option><option value="fabula">Fabula Ultima</option><option value="somdas6">O Som das Seis</option><option value="3det">3DeT Victory</option>{rotaZeroUnlocked && <option value="rotaZero">Rota Zero</option>}
                                         </select>
                                         <select value={sortMode} onChange={e=>setSortMode(e.target.value)} className="border rounded px-2 py-2 text-xs bg-white">
                                             <option value="recent">Mais recentes</option><option value="name">Nome A–Z</option><option value="system">Por sistema</option>
