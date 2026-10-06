@@ -1429,7 +1429,7 @@ const { useState, useEffect, useRef } = React;
                         localStorage.setItem(STORAGE_KEY, JSON.stringify(chars));
                         if (previous) pushHistorySnapshot(previous, savingData);
                         setSavedChars(chars);
-                        if (!silent) showToast(savingData.system === 'fabula' ? 'Personagem Fabula salvo!' : savingData.system === 'somdas6' ? 'Personagem de O Som das Seis salvo!' : savingData.system === '3det' ? 'Personagem 3DeT Victory salvo!' : 'Personagem salvo!');
+                        if (!silent) showToast(savingData.system === 'fabula' ? 'Personagem Fabula salvo!' : savingData.system === 'somdas6' ? 'Personagem de O Som das Seis salvo!' : savingData.system === '3det' ? 'Personagem 3DeT Victory salvo!' : savingData.system === 'rotaZero' ? 'Funcionário Rota Zero salvo!' : 'Personagem salvo!');
                     } else {
                         let threats = getSavedThreats();
                         const index = threats.findIndex(t => t.id === savingData.id);
@@ -1648,6 +1648,7 @@ const { useState, useEffect, useRef } = React;
                     normalized = normalizeSom6PdjData(normalized);
                     normalized = normalize3DetPcData(normalized);
                     normalized = normalize3DetThreatData(normalized);
+                    normalized = normalizeRotaZeroPcData(normalized);
                     setData(normalized);
                     setDndPcTab('caracteristicas');
                     setFabulaTab('perfil');
@@ -1696,6 +1697,7 @@ const { useState, useEffect, useRef } = React;
             const loadTemplate = (modelo) => {
                 let templateData = normalizeMetaItem(modelo);
                 templateData = normalizeDndPcData(templateData);
+                templateData = normalizeRotaZeroPcData(templateData);
                 templateData = normalizeFabulaPcData(templateData);
                 templateData = normalizeFabulaThreatData(templateData);
                 templateData = normalizeSom6PcData(templateData);
