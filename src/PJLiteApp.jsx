@@ -2359,13 +2359,24 @@ const { useState, useEffect, useRef } = React;
                                         <button onClick={() => { setShowRotaZeroModelModal(false); setCreateTarget(null); }} className="text-2xl px-2">&times;</button>
                                     </div>
                                     <div className="p-4 overflow-y-auto space-y-4">
+                                        <div className="rounded-lg border border-[#8f9a92] bg-[#f3f2ea] p-4">
+                                            <div className="flex flex-wrap items-end justify-between gap-3">
+                                                <div><div className="text-[9px] tracking-[.16em] font-black text-[#68766d]">CRÉDITOS DE CONTRATAÇÃO</div><div className="text-3xl font-black font-mono text-[#1f2b24]">6 CR</div><div className="text-[10px] text-[#667169]">+1 CR por Defeito, até 2.</div></div>
+                                                <div className="text-[10px] text-[#526158] leading-relaxed max-w-sm">Aumentar um Atributo em +1 custa 1 CR. Cada Perícia custa 1 CR. Vantagens custam 1 ou 2 CR.</div>
+                                            </div>
+                                        </div>
                                         <button onClick={() => loadTemplate(initialRotaZeroPcData)} className="w-full text-left bg-[#f7f5ed] border-2 border-[#9ca39e] hover:border-[#43564a] rounded p-4">
-                                            <b>Ficha em branco</b><div className="text-xs text-[#667169] mt-1">Pulso 1 • Técnica 1 • Firmeza 1 • 6 Créditos de Contratação.</div>
+                                            <b>Ficha em branco / montar com 6 Créditos</b><div className="text-xs text-[#667169] mt-1">Abre diretamente em CONTRATAÇÃO para você distribuir os pontos com as tabelas de Perícias, Vantagens e Defeitos.</div>
                                         </button>
+                                        <div className="grid md:grid-cols-3 gap-3 text-[10px]">
+                                            <div className="border border-[#a7aaa5] bg-[#fbfaf5] rounded p-3"><b>PERÍCIAS</b><p className="mt-1 text-[#657068]">Condução, Manutenção, Navegação, Observação, Sobrevivência, Influência, Infiltração, Logística, Pesquisa e Primeiros Socorros.</p><strong className="text-[#314238]">1 CR cada</strong></div>
+                                            <div className="border border-[#a7aaa5] bg-[#fbfaf5] rounded p-3"><b>VANTAGENS</b><p className="mt-1 text-[#657068]">A criação mostra nome, tipo/efeito e custo para comparar as opções sem consultar outra página.</p><strong className="text-[#314238]">1–2 CR</strong></div>
+                                            <div className="border border-[#a7aaa5] bg-[#fbfaf5] rounded p-3"><b>DEFEITOS</b><p className="mt-1 text-[#657068]">Mostra o efeito mecânico e o ganho de Crédito. Máximo de dois na criação.</p><strong className="text-[#314238]">+1 CR cada</strong></div>
+                                        </div>
                                         <div><h3 className="font-black text-sm text-[#263129] mb-2">FUNCIONÁRIOS PRONTOS</h3><div className="grid sm:grid-cols-2 gap-3">
                                             {MODELOS_ROTA_ZERO_PC.map((m,i)=><button key={i} onClick={() => loadTemplate(m)} className="text-left bg-[#f7f5ed] border border-[#a7aaa5] hover:border-[#43564a] rounded p-3"><div className="flex justify-between gap-2"><b>{m.bio.nome}</b><span className="text-[9px] bg-[#18201c] text-white rounded px-2 py-1">P{m.atributos.pulso} T{m.atributos.tecnica} F{m.atributos.firmeza}</span></div><p className="text-[10px] text-[#657068] mt-2">{m.bio.conceito}</p></button>)}
                                         </div></div>
-                                        <p className="text-[10px] text-[#667169]">Até 2 Defeitos podem conceder +1 Crédito cada. O total final deve fechar.</p>
+                                        <p className="text-[10px] text-[#667169]">A ficha de Veículo RZ-02 é opcional e fica dentro da ficha do personagem, sem criar um cartão separado na Home.</p>
                                     </div>
                                 </div>
                             </div>, document.body
