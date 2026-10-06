@@ -73,3 +73,17 @@
 
 .rz-attr-control{display:flex;gap:4px;align-items:center}.rz-attr-control input{width:52px!important}.rz-step{width:34px;height:34px;border:1px solid #59685f;background:#1b2b23;color:#f0e7ce;font:900 19px "Courier New",monospace;padding:0;cursor:pointer}.rz-step:disabled{opacity:.3;cursor:not-allowed}
 @media(max-width:720px){.rz-field input,.rz-field textarea,.rz-field select,.rz-input{font-size:16px}.rz-note{font-size:11px}.rz-step{width:40px;height:40px;font-size:22px}.rz-tabs button{min-height:40px}.rz-btn{min-height:40px}}
+
+.rz-credit-summary{display:grid;grid-template-columns:auto 1fr auto;column-gap:8px;align-items:end}
+.rz-credit-summary .rz-contract-kicker{grid-column:1/-1}
+.rz-credit-summary strong{font:900 30px/1 "Courier New",monospace;color:#1d2a23}
+.rz-credit-summary small{font-size:10px;color:#667169;padding-bottom:3px}
+.rz-overtime-toggle{align-self:center;border:1px solid #815c34;background:#d8c49e;color:#5a452f;padding:7px 9px;font:900 9px "Courier New",monospace;letter-spacing:.06em;cursor:pointer}
+.rz-overtime-toggle.on{background:#482f1f;color:#f4dfbd;border-color:#8f6840;box-shadow:0 0 0 2px #8f684022}
+.rz-contract-copy{display:grid;gap:7px}
+.rz-overtime-box{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px dashed #8c6d45;background:#e0d2b3;padding:7px 9px}
+.rz-overtime-box b{display:block;font-size:10px;color:#443628}
+.rz-overtime-box span{display:block;font-size:9px;color:#6f6254;margin-top:2px}
+.rz-overtime-step{display:flex;align-items:center;gap:4px;flex:0 0 auto}
+.rz-overtime-step input{width:58px;height:34px;text-align:center;border:1px solid #756754;background:#fffaf0;font:900 16px "Courier New",monospace}
+@media(max-width:720px){.rz-credit-summary{grid-template-columns:auto 1fr}.rz-overtime-toggle{grid-column:1/-1;width:100%;min-height:40px;margin-top:5px}.rz-overtime-box{align-items:flex-start;flex-direction:column}.rz-overtime-step{width:100%;justify-content:flex-start}.rz-overtime-step input{height:40px;font-size:18px}}
