@@ -54,7 +54,7 @@
     #rz-achievement{position:fixed;left:16px;bottom:16px;z-index:99999;display:flex;align-items:center;gap:8px;background:#101714;color:#dbe4dc;border:1px solid #566c5d;border-radius:999px;padding:8px 12px;font:700 11px/1.2 ui-monospace,monospace;box-shadow:0 10px 30px #0004;text-decoration:none}
     #rz-welcome{position:fixed;right:14px;top:14px;z-index:99998;background:#101714ee;color:#dbe4dc;border:1px solid #566c5d;border-radius:10px;padding:7px 10px;font:700 10px/1.35 ui-monospace,monospace;box-shadow:0 10px 28px #0004;max-width:310px;display:flex;align-items:center;gap:8px;transition:max-width .35s ease,padding .35s ease,opacity .25s ease,transform .35s ease}
     #rz-welcome-text{min-width:0}
-    #rz-omen{position:static;flex:0 0 auto;width:36px;height:36px;object-fit:contain;opacity:.72;filter:grayscale(.08) contrast(1.05) drop-shadow(0 0 8px #0008);image-rendering:pixelated;animation:rzflicker 5s infinite;pointer-events:none;transition:width .35s ease,height .35s ease}
+    #rz-omen{position:static;flex:0 0 auto;width:36px;height:36px;object-fit:contain;opacity:.72;filter:grayscale(.08) contrast(1.05) drop-shadow(0 0 8px #0008);image-rendering:pixelated;animation:rzflicker 5s infinite;pointer-events:auto;cursor:help;transition:width .35s ease,height .35s ease}
     #rz-welcome.rz-compact{max-width:185px;padding:5px 8px;border-radius:999px;opacity:.88;transform:translateY(0)}
     #rz-welcome.rz-compact #rz-omen{width:25px;height:25px}
     #rz-welcome.rz-compact #rz-welcome-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:9px}
