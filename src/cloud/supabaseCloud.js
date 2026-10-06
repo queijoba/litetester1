@@ -83,6 +83,22 @@ export async function getProfile() {
   };
 }
 
+export async function getMyAchievements() {
+  const client = requireClient();
+  const { data: { user }, error: userError } = await client.auth.getUser();
+  if (userError) throw userError;
+  if (!user) return [];
+
+  const { data, error } = await client
+    .from('account_achievements')
+    .select('achievement_id,label,name,category,unlocked_at,is_public')
+    .eq('user_id', user.id)
+    .eq('is_public', true)
+    .order('unlocked_at', { ascending: true });
+  if (error) throw error;
+  return data || [];
+}
+
 export async function pushSheets(characters = [], threats = []) {
   const client = requireClient();
   const { data: { user }, error: userError } = await client.auth.getUser();
