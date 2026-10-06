@@ -16,11 +16,11 @@ need(ordem,["['rituais','Rituais']",'PODERES PARANORMAIS',"sortByName('poderesPa
 need(ordemDataText,['poderesParanormais:[]','migrados','/paranormal/i'],'Dados Ordem');
 need(ordemCss,['PJ LITE 0.8.3 ORDEM THEME','.ordem-paranormal-entry','.ordem-ritual-entry'],'Tema Ordem');
 need(ordemChat,['PODERES PARANORMAIS','RITUAIS','HABILIDADES & PODERES'],'Ficha Chat Ordem');
-need(app,['PJ LITE 0.8.3 ALPHA FINAL','PJ LITE 0.9.1 RELEASE BASE',"versao: '0.9.1v Alpha'",'✨ 0.9.1v Alpha — nova base oficial do PJ Lite','PJ Lite 0.9.1v Alpha','Poderes Paranormais','Truques, Camada Superficial'],'App 0.9.1');
+need(app,['PJ LITE 0.8.3 ALPHA FINAL','PJ LITE 0.9.1 RELEASE BASE','PJ LITE 0.9.5 RELEASE',"versao: '0.9.1v Alpha'","versao: '0.9.5v Alpha'",'✨ 0.9.5v Alpha — Conta Lite e grupos em nuvem','Poderes Paranormais','Truques, Camada Superficial'],'App 0.9.5');
 if(!app.includes('const SCHEMA_VERSION = 7;'))throw new Error('Schema não atualizado para 7.');
 
 const ordemData=await import('../src/systems/ordemParanormal/data.js');
 const migrated=ordemData.normalizeOrdemPcData({system:'ordemParanormal',type:'pc',habilidades:[{nome:'Visão do Oculto',tipo:'Poder Paranormal',desc:'legado'}]});
 if(migrated.habilidades.length!==0||migrated.poderesParanormais.length!==1||migrated.poderesParanormais[0].nome!=='Visão do Oculto')throw new Error('Migração de Poder Paranormal antigo falhou.');
 
-console.log('✓ Base 0.9.1v Alpha: UX, migração, temas, guias e novidades verificados.');
+console.log('✓ Base 0.9.5v Alpha: UX, migração, temas, guias e novidades verificados.');
