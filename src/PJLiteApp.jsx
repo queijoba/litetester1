@@ -1736,13 +1736,16 @@ const { useState, useEffect, useRef } = React;
             };
 
             const updateField = (path, value) => {
-                const newData = JSON.parse(JSON.stringify(data));
-                let current = newData;
-                const keys = path.split('.');
-                const lastKey = keys.pop();
-                keys.forEach(key => { if (!current[key]) current[key] = {}; current = current[key]; });
-                current[lastKey] = value;
-                setData(newData);
+                setData(prevData => {
+                    if (!prevData) return prevData;
+                    const newData = JSON.parse(JSON.stringify(prevData));
+                    let current = newData;
+                    const keys = path.split('.');
+                    const lastKey = keys.pop();
+                    keys.forEach(key => { if (!current[key]) current[key] = {}; current = current[key]; });
+                    current[lastKey] = value;
+                    return newData;
+                });
             };
 
             const updateArrayField = (arrayName, index, field, value) => {
