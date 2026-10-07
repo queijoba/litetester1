@@ -13,13 +13,12 @@ export function generateOrdemChatText(data) {
   const pdMode = s.recursoMental === 'pd';
   /* RECURSO MENTAL SAH */
   /* PJ LITE 0.8.3 ORDEM PD CHAT */
-  const mentalResources = pdMode
+  const recursos=s.recursoMental==='pd'
     ? `PV ${s.pvAtual ?? 0}/${s.pvMax ?? 0} | PD ${s.pdAtual ?? 0}/${s.pdMax ?? 0}`
     : `PV ${s.pvAtual ?? 0}/${s.pvMax ?? 0} | PE ${s.peAtual ?? 0}/${s.peMax ?? 0} | SAN ${s.sanAtual ?? 0}/${s.sanMax ?? 0}`;
+  const defesa=10+Number(a.agi||0)+Number(s.defesaEquip||0)+Number(s.defesaOutros||0);
   const hasAutoDefense = Object.prototype.hasOwnProperty.call(s, 'defesaEquip') || Object.prototype.hasOwnProperty.call(s, 'defesaOutros');
-  const defense = hasAutoDefense
-    ? 10 + Number(a.agi || 0) + Number(s.defesaEquip || 0) + Number(s.defesaOutros || 0)
-    : Number(s.defesa ?? 10);
+  const defense = hasAutoDefense ? defesa : Number(s.defesa ?? 10);
 
   let out = `🔻 ORDEM PARANORMAL — ${val(b.nome, 'Sem Nome')}\n`;
   if (has(b.jogador)) out += `Jogador: ${b.jogador}${has(b.idade) ? ` | Idade: ${b.idade}` : ''}\n`;
@@ -29,7 +28,7 @@ export function generateOrdemChatText(data) {
 
   out += `\n📊 ATRIBUTOS & STATUS\n`;
   out += `AGI ${a.agi ?? 1} | FOR ${a.for ?? 1} | INT ${a.int ?? 1} | PRE ${a.pre ?? 1} | VIG ${a.vig ?? 1}\n`;
-  out += mentalResources + '\n';
+  out += recursos + '\n';
   out += `Defesa ${defense} | Bloqueio ${s.bloqueio ?? 0} | Esquiva ${s.esquiva ?? 10}`;
   if (!pdMode) out += ` | PE/Rodada ${s.peRodada ?? 1}`;
   if (has(s.limitePePd)) out += ` | Limite PD ${s.limitePePd}`;
