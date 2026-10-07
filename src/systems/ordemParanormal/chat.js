@@ -4,27 +4,48 @@ const t = (value) => String(value ?? '').trim();
 const has = (value) => t(value) !== '';
 const val = (value, fallback = '—') => has(value) ? value : fallback;
 const compact = (value) => t(value).replace(/\r\n/g, '\n').replace(/\n{3,}/g, '\n\n');
-const skillName = (id) => ORDEM_SKILLS.find(([key]) => key === id)?.[1] || id;
+const skillInfo = (id) => ORDEM_SKILLS.find(([key]) => key === id) || [id, id, ''];
+const skillName = (id) => skillInfo(id)[1] || id;
+const skillDefaultAttr = (id) => skillInfo(id)[2] || '';
 
 export function generateOrdemChatText(data) {
   const d = data || {}, b = d.bio || {}, a = d.atributos || {}, s = d.status || {};
+  const pdMode = s.recursoMental === 'pd';
+  /* RECURSO MENTAL SAH */
+  /* PJ LITE 0.8.3 ORDEM PD CHAT */
+  const mentalResources = pdMode
+    ? `PV ${s.pvAtual ?? 0}/${s.pvMax ?? 0} | PD ${s.pdAtual ?? 0}/${s.pdMax ?? 0}`
+    : `PV ${s.pvAtual ?? 0}/${s.pvMax ?? 0} | PE ${s.peAtual ?? 0}/${s.peMax ?? 0} | SAN ${s.sanAtual ?? 0}/${s.sanMax ?? 0}`;
+  const hasAutoDefense = Object.prototype.hasOwnProperty.call(s, 'defesaEquip') || Object.prototype.hasOwnProperty.call(s, 'defesaOutros');
+  const defense = hasAutoDefense
+    ? 10 + Number(a.agi || 0) + Number(s.defesaEquip || 0) + Number(s.defesaOutros || 0)
+    : Number(s.defesa ?? 10);
+
   let out = `🔻 ORDEM PARANORMAL — ${val(b.nome, 'Sem Nome')}\n`;
   if (has(b.jogador)) out += `Jogador: ${b.jogador}${has(b.idade) ? ` | Idade: ${b.idade}` : ''}\n`;
   out += `${val(b.origem)} • ${val(b.classe)}${has(b.trilha) ? ` • ${b.trilha}` : ''} • NEX ${b.nex ?? 0}% • ${val(b.patente)}\n`;
+  if (has(b.profissao)) out += `Profissão/Especialidade: ${b.profissao}\n`;
   if (has(d.afinidade)) out += `Afinidade: ${d.afinidade}\n`;
 
   out += `\n📊 ATRIBUTOS & STATUS\n`;
   out += `AGI ${a.agi ?? 1} | FOR ${a.for ?? 1} | INT ${a.int ?? 1} | PRE ${a.pre ?? 1} | VIG ${a.vig ?? 1}\n`;
-  out += `PV ${s.pvAtual ?? 0}/${s.pvMax ?? 0} | PE ${s.peAtual ?? 0}/${s.peMax ?? 0} | SAN ${s.sanAtual ?? 0}/${s.sanMax ?? 0}\n`;
-  out += `Defesa ${s.defesa ?? 10} | Bloqueio ${s.bloqueio ?? 0} | Esquiva ${s.esquiva ?? 10} | PE/Rodada ${s.peRodada ?? 1} | Mov. ${val(s.deslocamento, '9 m')}\n`;
+  out += mentalResources + '\n';
+  out += `Defesa ${defense} | Bloqueio ${s.bloqueio ?? 0} | Esquiva ${s.esquiva ?? 10}`;
+  if (!pdMode) out += ` | PE/Rodada ${s.peRodada ?? 1}`;
+  if (has(s.limitePePd)) out += ` | Limite PD ${s.limitePePd}`;
+  out += ` | Mov. ${val(s.deslocamento, '9 m')}\n`;
 
-  const skills = Object.entries(d.pericias || {}).filter(([, entry]) => Number(entry?.grau || 0) > 0 || Number(entry?.outros || 0) !== 0);
+  const skills = Object.entries(d.pericias || {}).filter(([, entry]) =>
+    Number(entry?.grau || 0) > 0 || Number(entry?.outros || 0) !== 0
+  );
   if (skills.length) {
     out += `\n🎯 PERÍCIAS\n`;
     out += skills.map(([id, entry]) => {
       const total = Number(entry?.grau || 0) + Number(entry?.outros || 0);
       const extra = Number(entry?.outros || 0);
-      return `• ${skillName(id)}: ${total >= 0 ? '+' : ''}${total}${extra ? ` (outros ${extra >= 0 ? '+' : ''}${extra})` : ''}`;
+      const attr = t(entry?.atributoBase || skillDefaultAttr(id)).toUpperCase();
+      const dice = attr && a[attr.toLowerCase()] !== undefined ? `${a[attr.toLowerCase()]}d20` : '';
+      return `• ${skillName(id)}: ${total >= 0 ? '+' : ''}${total}${attr ? ` [${attr}${dice ? ` • ${dice}` : ''}]` : ''}${extra ? ` (outros ${extra >= 0 ? '+' : ''}${extra})` : ''}`;
     }).join('\n') + '\n';
   }
 
@@ -49,7 +70,9 @@ export function generateOrdemChatText(data) {
   if (abilities.length) {
     out += `\n✨ PODERES & HABILIDADES\n`;
     abilities.forEach((entry) => {
-      out += `• ${val(entry.nome, 'Poder')}${has(entry.tipo) ? ` [${entry.tipo}]` : ''}${has(entry.custo) ? ` — Custo: ${entry.custo}` : ''}`;
+      out += `• ${val(entry.nome, 'Poder')}${has(entry.tipo) ? ` [${entry.tipo}]` : ''}`;
+      const details = [has(entry.custo) ? `Custo ${entry.custo}` : '', has(entry.pagina) ? `p. ${entry.pagina}` : ''].filter(Boolean);
+      if (details.length) out += ` — ${details.join(' | ')}`;
       if (has(entry.desc)) out += `\n  ${compact(entry.desc)}`;
       out += '\n';
     });
@@ -64,6 +87,7 @@ export function generateOrdemChatText(data) {
         has(entry.elemento) ? entry.elemento : '',
         has(entry.requisito) ? `Req. ${entry.requisito}` : '',
         has(entry.custo) ? `Custo ${entry.custo}` : '',
+        has(entry.pagina) ? `p. ${entry.pagina}` : '',
       ].filter(Boolean);
       if (details.length) out += ` [${details.join(' | ')}]`;
       if (has(entry.desc)) out += ` — ${compact(entry.desc)}`;
@@ -72,12 +96,22 @@ export function generateOrdemChatText(data) {
   }
 
   const rituals = (d.rituais || []).filter((entry) => has(entry?.nome) || has(entry?.desc));
-  if (rituals.length) {
+  const ritualDts = d.dtRituais || {};
+  if (rituals.length || Object.values(ritualDts).some(has)) {
     out += `\n🔮 RITUAIS\n`;
+    const dts = [1,2,3,4].filter((circle) => has(ritualDts[circle])).map((circle) => `${circle}º: DT ${ritualDts[circle]}`);
+    if (dts.length) out += `DT por círculo: ${dts.join(' | ')}\n`;
     rituals.forEach((entry) => {
       out += `• ${val(entry.nome, 'Ritual')} — ${val(entry.circulo, 1)}º círculo`;
       if (has(entry.elemento)) out += ` | ${entry.elemento}`;
-      const details = [entry.execucao, entry.alcance, entry.duracao, has(entry.resistencia) ? `Resistência: ${entry.resistencia}` : ''].filter(has);
+      const details = [
+        entry.execucao,
+        entry.alcance,
+        entry.duracao,
+        has(entry.resistencia) ? `Resistência: ${entry.resistencia}` : '',
+        has(entry.custo) ? `Custo: ${entry.custo}` : '',
+        has(entry.pagina) ? `p. ${entry.pagina}` : '',
+      ].filter(has);
       if (details.length) out += ` | ${details.join(' | ')}`;
       if (has(entry.desc)) out += `\n  ${compact(entry.desc)}`;
       out += '\n';
@@ -85,8 +119,16 @@ export function generateOrdemChatText(data) {
   }
 
   const inventory = (d.inventario || []).filter((entry) => has(entry?.nome));
-  if (inventory.length) {
+  const management = d.gestao || {};
+  if (inventory.length || Object.values(management).some(has)) {
     out += `\n🎒 INVENTÁRIO\n`;
+    const limits = [
+      has(management.limiteItens) ? `Limite de Itens ${management.limiteItens}` : '',
+      has(management.limiteCredito) ? `Crédito ${management.limiteCredito}` : '',
+      has(management.cargaMax) ? `Carga Máx. ${management.cargaMax}` : '',
+      has(management.prestigio) ? `Prestígio ${management.prestigio}` : '',
+    ].filter(Boolean);
+    if (limits.length) out += limits.join(' | ') + '\n';
     inventory.forEach((entry) => {
       out += `• ${entry.quantidade || 1}x ${entry.nome} | Cat. ${val(entry.categoria, '0')} | ${val(entry.espacos, 1)} espaço(s)`;
       if (has(entry.desc)) out += ` — ${compact(entry.desc)}`;
@@ -94,12 +136,24 @@ export function generateOrdemChatText(data) {
     });
   }
 
-  if (has(d.resistencias) || has(d.proficiencias)) {
+  if (has(d.resistencias) || has(d.protecao) || has(d.proficiencias)) {
     out += `\n📚 ESTATÍSTICAS\n`;
     if (has(d.resistencias)) out += `Resistências: ${compact(d.resistencias)}\n`;
+    if (has(d.protecao)) out += `Proteção: ${compact(d.protecao)}\n`;
     if (has(d.proficiencias)) out += `Proficiências: ${compact(d.proficiencias)}\n`;
   }
-  if (has(d.notas)) out += `\n🎭 ANOTAÇÕES\n${compact(d.notas)}\n`;
+
+  const evolution = (d.evolucao || []).filter((entry) =>
+    has(entry?.nivelNex) || has(entry?.limitePePd) || has(entry?.patente) || has(entry?.nota)
+  );
+  if (has(d.notas) || evolution.length) {
+    out += `\n🎭 ANOTAÇÕES & EVOLUÇÃO\n`;
+    if (has(d.notas)) out += compact(d.notas) + '\n';
+    evolution.forEach((entry) => {
+      const info = [entry.nivelNex, entry.patente, has(entry.limitePePd) ? `Limite PD ${entry.limitePePd}` : ''].filter(has);
+      out += `• ${info.length ? info.join(' • ') : 'Marco'}${has(entry.nota) ? ` — ${compact(entry.nota)}` : ''}\n`;
+    });
+  }
 
   return out.replace(/\n{3,}/g, '\n\n').trim();
 }
