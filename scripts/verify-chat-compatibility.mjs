@@ -68,7 +68,7 @@ const need = (value, tokens, label) => {
   d.resistencias='Mental'; d.protecao='Colete'; d.proficiencias='Armas simples';
   d.evolucao = [{nivelNex:'NEX 25%',limitePePd:'5',patente:'Operador',nota:'Marco'}];
   const out = generateOrdemChatText(d);
-  need(out, ['ATRIBUTOS & STATUS','PV 10/10 | PD 7/10','Defesa 14','Bloqueio 5','Esquiva 18','Profissão/Especialidade: Investigador','ATAQUES','PODERES & HABILIDADES','p. 42','PODERES PARANORMAIS','p. 88','RITUAIS','DT por círculo','p. 99','INVENTÁRIO','Prestígio 20','ESTATÍSTICAS','Proteção: Colete','ANOTAÇÕES & EVOLUÇÃO','Operador'], 'Ordem personagem');
+  need(out, ['ATRIBUTOS & STATUS','PV 10/10 | PD 7/10','Defesa 14','Bloqueio 5','Esquiva 18','Profissão/Especialidade: Investigador','ATAQUES','HABILIDADES & PODERES','p. 42','PODERES PARANORMAIS','p. 88','RITUAIS','DT por círculo','p. 99','INVENTÁRIO','Prestígio 20','ESTATÍSTICAS','Proteção: Colete','ANOTAÇÕES & EVOLUÇÃO','Operador'], 'Ordem personagem');
 
   const n = clone(initialOrdemThreatData);
   n.nome='Criatura'; n.presencaPerturbadora='DT 20'; n.sentidos='Percepção às cegas'; n.enigmaMedo='Segredo';
