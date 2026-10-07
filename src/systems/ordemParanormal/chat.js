@@ -55,6 +55,22 @@ export function generateOrdemChatText(data) {
     });
   }
 
+  const paranormalPowers = (d.poderesParanormais || []).filter((entry) => has(entry?.nome) || has(entry?.desc));
+  if (paranormalPowers.length) {
+    out += `\n👁️ PODERES PARANORMAIS\n`;
+    paranormalPowers.forEach((entry) => {
+      out += `• ${val(entry.nome, 'Poder Paranormal')}`;
+      const details = [
+        has(entry.elemento) ? entry.elemento : '',
+        has(entry.requisito) ? `Req. ${entry.requisito}` : '',
+        has(entry.custo) ? `Custo ${entry.custo}` : '',
+      ].filter(Boolean);
+      if (details.length) out += ` [${details.join(' | ')}]`;
+      if (has(entry.desc)) out += ` — ${compact(entry.desc)}`;
+      out += '\n';
+    });
+  }
+
   const rituals = (d.rituais || []).filter((entry) => has(entry?.nome) || has(entry?.desc));
   if (rituals.length) {
     out += `\n🔮 RITUAIS\n`;
