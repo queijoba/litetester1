@@ -37,13 +37,15 @@ const need = (value, tokens, label) => {
   const d = clone(initialSkyfallPcData);
   d.bio = { ...d.bio, nome:'Astra', jogador:'Nick', legado:'Humano', classe:'Combatente', trilha:'Teste', heranca:'Herança', maldicao:'Maldição', melancolia:'Melancolia' };
   d.combate = { ...d.combate, protecao:'14', reducaoDano:'2', iniciativa:'+3' };
+  d.recursos.enfase = { ...d.recursos.enfase, atual:2, max:4, outro:1 };
+  d.protecoes = { for:{proficiente:true,bonus:1}, con:{proficiente:false,bonus:0}, des:{proficiente:false,bonus:0}, sab:{proficiente:false,bonus:0}, int:{proficiente:false,bonus:0}, car:{proficiente:false,bonus:0} };
   d.pericias = { ...d.pericias, atletismo:{proficiente:true,enfase:true,bonus:'+5'} };
   d.ataques = [{nome:'Lâmina',bonus:'+5',dano:'1d8',tipo:'corte',alcance:'corpo a corpo',descricao:'Teste de descrição'}];
-  d.habilidades = [{nome:'Ímpeto',origem:'Classe',desc:'Teste de habilidade'}];
+  d.habilidades = [{nome:'Ímpeto',origem:'Classe',custoEnfase:'1',descritores:'Marcial',desc:'Teste de habilidade'}];
   d.magias = [{nome:'Luz',camada:'Superficial',custo:'1',execucao:'Ação',alcance:'Curto',duracao:'Cena',descritores:'Luz',desc:'Teste de magia'}];
   d.equipamentos = [{nome:'Kit',quantidade:1,volume:'1',fragmentos:'0',descritores:'Útil'}];
   const out = generateSkyfallChatText(d);
-  need(out, ['ATRIBUTOS & RECURSOS','COMBATE','ATAQUES','HABILIDADES','MAGIAS & CONJURAÇÃO','INVENTÁRIO','Teste de descrição','Superficial'], 'Skyfall personagem');
+  need(out, ['ATRIBUTOS & RECURSOS','Ênfase 2/4 (+1 outro)','COMBATE','PROTEÇÕES','FOR 13','ATAQUES','HABILIDADES','Ênfase 1','Marcial','MAGIAS & CONJURAÇÃO','INVENTÁRIO','Teste de descrição','Superficial'], 'Skyfall personagem');
 
   const n = clone(initialSkyfallThreatData);
   n.nome='Eco'; n.atributos.for=14; n.pericias=[{nome:'Percepção',bonus:'+4'}]; n.reacoes=[{nome:'Recuar',desc:'Teste'}]; n.resistencias='frio';
@@ -54,16 +56,19 @@ const need = (value, tokens, label) => {
 // Ordem Paranormal — personagem e ameaça com campos atuais.
 {
   const d = clone(initialOrdemPcData);
-  d.bio = { ...d.bio, nome:'Agente', jogador:'Nick', origem:'Acadêmico', classe:'Especialista', trilha:'Infiltrador', nex:25 };
-  d.status = { ...d.status, bloqueio:5, esquiva:18, peRodada:3 };
+  d.bio = { ...d.bio, nome:'Agente', jogador:'Nick', origem:'Acadêmico', classe:'Especialista', trilha:'Infiltrador', nex:25, profissao:'Investigador' };
+  d.status = { ...d.status, recursoMental:'pd', pdAtual:7, pdMax:10, bloqueio:5, esquiva:18, peRodada:3, defesaEquip:2, defesaOutros:1, limitePePd:'5' };
   d.ataques = [{nome:'Pistola',teste:'Pontaria',dano:'1d12',critico:'18/x3',alcance:'Curto',tipo:'Balístico',municao:'6',desc:'Teste'}];
-  d.habilidades = [{nome:'Poder',tipo:'Classe',custo:'2 PE',desc:'Teste'}];
-  d.poderesParanormais = [{nome:'Visão do Oculto',elemento:'Conhecimento',requisito:'NEX 15%',custo:'2 PE',desc:'Teste'}];
-  d.rituais = [{nome:'Ritual',circulo:1,elemento:'Conhecimento',execucao:'Padrão',alcance:'Curto',duracao:'Cena',resistencia:'Vontade',desc:'Teste'}];
+  d.habilidades = [{nome:'Poder',tipo:'Classe',custo:'2 PE',pagina:'42',desc:'Teste'}];
+  d.poderesParanormais = [{nome:'Visão do Oculto',elemento:'Conhecimento',requisito:'NEX 15%',custo:'2 PD',pagina:'88',desc:'Teste'}];
+  d.rituais = [{nome:'Ritual',circulo:1,elemento:'Conhecimento',execucao:'Padrão',alcance:'Curto',duracao:'Cena',resistencia:'Vontade',custo:'1 PD',pagina:'99',desc:'Teste'}];
+  d.dtRituais = {1:'15',2:'18',3:'21',4:'24'};
   d.inventario = [{nome:'Item',categoria:'I',espacos:1,quantidade:1,desc:'Teste'}];
-  d.resistencias='Mental'; d.proficiencias='Armas simples';
+  d.gestao = {limiteItens:'5',limiteCredito:'II',cargaMax:'10',prestigio:'20'};
+  d.resistencias='Mental'; d.protecao='Colete'; d.proficiencias='Armas simples';
+  d.evolucao = [{nivelNex:'NEX 25%',limitePePd:'5',patente:'Operador',nota:'Marco'}];
   const out = generateOrdemChatText(d);
-  need(out, ['ATRIBUTOS & STATUS','Bloqueio 5','Esquiva 18','ATAQUES','PODERES & HABILIDADES','PODERES PARANORMAIS','RITUAIS','INVENTÁRIO','ESTATÍSTICAS'], 'Ordem personagem');
+  need(out, ['ATRIBUTOS & STATUS','PV 10/10 | PD 7/10','Defesa 14','Bloqueio 5','Esquiva 18','Profissão/Especialidade: Investigador','ATAQUES','PODERES & HABILIDADES','p. 42','PODERES PARANORMAIS','p. 88','RITUAIS','DT por círculo','p. 99','INVENTÁRIO','Prestígio 20','ESTATÍSTICAS','Proteção: Colete','ANOTAÇÕES & EVOLUÇÃO','Operador'], 'Ordem personagem');
 
   const n = clone(initialOrdemThreatData);
   n.nome='Criatura'; n.presencaPerturbadora='DT 20'; n.sentidos='Percepção às cegas'; n.enigmaMedo='Segredo';
@@ -89,7 +94,8 @@ const need = (value, tokens, label) => {
     "if (sys === 'dnd5e' && item.type === 'pc')",
     "VANTAGENS|DESVANTAGENS|TÉCNICAS",
     "VEÍCULO|VEICULO|TURNO|CARGA|UPGRADES",
-    "ÂNCORA|ANCORA|NOTAS",
+    "PROTEÇÕES|PROTECOES",
+    "ÂNCORA|ANCORA|NOTAS|EVOLUÇÃO|EVOLUCAO",
   ];
   for (const token of required) if (!app.includes(token)) throw new Error(`Compatibilidade geral da Ficha Chat ausente: ${token}`);
 }
