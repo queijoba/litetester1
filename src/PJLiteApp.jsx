@@ -9,6 +9,7 @@ import TresDeTThreatEditor from './systems/3det/components/ThreatEditor.jsx';
 import RotaZeroCharacterEditor from './systems/rotaZero/components/CharacterEditor.jsx';
 import { initialRotaZeroPcData, normalizeRotaZeroPcData } from './systems/rotaZero/data.js';
 import { MODELOS_ROTA_ZERO_PC } from './systems/rotaZero/models.js';
+import { generateRotaZeroChatText } from './systems/rotaZero/chat.js';
 import { initial3DetPcData, normalize3DetPcData } from './systems/3det/data.js';
 import { initial3DetThreatData, normalize3DetThreatData } from './systems/3det/threatData.js';
 import { MODELOS_3DET_PC } from './systems/3det/models.js';
@@ -702,6 +703,7 @@ const { useState, useEffect, useRef } = React;
 
             if (sys === '3det' && item.type === 'pc') return generate3DetChatText(item);
             if (sys === '3det' && item.type !== 'pc') return generate3DetThreatChatText(item);
+            if (sys === 'rotaZero') return generateRotaZeroChatText(item);
 
             // ==========================================================
             // O SOM DAS SEIS — PERSONAGEM / PDJ
@@ -1592,15 +1594,15 @@ const { useState, useEffect, useRef } = React;
                 const mapHeading = (line) => {
                     const rawLine = String(line || '').trim();
                     if (!rawLine) return null;
-                    const startsWithSectionIcon = /^[📊⚙⚔🗡✨🔮🎒🤝🎭🧬📚⚡🛡👑🌟🧠🍳🛠📝🎯]/u.test(rawLine);
+                    const startsWithSectionIcon = /^[📊⚙⚔🗡✨🔮🎒🤝🎭🧬📚⚡🛡👑🌟🧠🍳🛠📝🎯⭐⚠🚚👁🔎🐎☠❤️🔷🏃🎲]/u.test(rawLine);
                     const plainUpperHeading = /^[A-ZÁÉÍÓÚÂÊÔÃÕÇ0-9][A-ZÁÉÍÓÚÂÊÔÃÕÇ0-9 &/(),.\-]{2,}$/u.test(rawLine);
                     if (!startsWithSectionIcon && !plainUpperHeading) return null;
                     const u = rawLine.toUpperCase();
-                    if (/STATUS|ATRIBUTOS|CONDIÇÕES|AFINIDADES|DERIVADOS|ESTATÍSTICAS|PERÍCIAS|ANTECEDENTES/.test(u)) return 'status';
-                    if (/ATAQUES|ARMAS|AÇÕES|REAÇÕES|EQUIPAMENTO|COMBATE|DEFESA/.test(u)) return 'combate';
-                    if (/PODERES|CARACTERÍSTICAS|MAGIAS|FEITIÇOS|CLASSES|HABILIDADES|ARCANOS|MNEMOSFERA|PROFICIÊNCIAS DE EQUIPAMENTO|CARTAS DE SINA/.test(u)) return 'poderes';
-                    if (/INVENTÁRIO|MOCHILA|RECEITAS|PROJETOS|MONTARIA/.test(u)) return 'inventario';
-                    if (/INTERPRETAÇÃO|LAÇOS|ANOTAÇÕES EXTRAS|TORMENTO|REPUTAÇÃO|ANOTAÇÕES/.test(u)) return 'interpretacao';
+                    if (/STATUS|ATRIBUTOS|CONDIÇÕES|AFINIDADES|DERIVADOS|ESTATÍSTICAS|PERÍCIAS|ANTECEDENTES|RECURSOS|PÂNICO|PANICO|TRAUMAS|INTERFERÊNCIA|INTERFERENCIA|ESPECIALIZAÇÕES|ESPECIALIZACOES/.test(u)) return 'status';
+                    if (/ATAQUES|ARMAS|AÇÕES|ACOES|REAÇÕES|REACOES|EQUIPAMENTO|COMBATE|DEFESA|FA \/ FD/.test(u)) return 'combate';
+                    if (/PODERES|CARACTERÍSTICAS|CARACTERISTICAS|MAGIAS|FEITIÇOS|FEITICOS|CLASSES|HABILIDADES|ARCANOS|MNEMOSFERA|PROFICIÊNCIAS DE EQUIPAMENTO|CARTAS DE SINA|VANTAGENS|DESVANTAGENS|TÉCNICAS|TECNICAS|RITUAIS|CONJURAÇÃO|CONJURACAO|ENIGMA DE MEDO/.test(u)) return 'poderes';
+                    if (/INVENTÁRIO|INVENTARIO|MOCHILA|RECEITAS|PROJETOS|MONTARIA|VEÍCULO|VEICULO|TURNO|CARGA|UPGRADES/.test(u)) return 'inventario';
+                    if (/INTERPRETAÇÃO|INTERPRETACAO|LAÇOS|LACOS|ANOTAÇÕES EXTRAS|ANOTACOES EXTRAS|TORMENTO|REPUTAÇÃO|REPUTACAO|ANOTAÇÕES|ANOTACOES|ÂNCORA|ANCORA|NOTAS/.test(u)) return 'interpretacao';
                     return null;
                 };
                 const lines = raw.split('\n');
