@@ -5,6 +5,11 @@ const has = (value) => t(value) !== '';
 const val = (value, fallback = '—') => has(value) ? value : fallback;
 const compact = (value) => t(value).replace(/\r\n/g, '\n').replace(/\n{3,}/g, '\n\n');
 const skillName = (id) => SKYFALL_SKILLS.find(([key]) => key === id)?.[1] || id;
+const abilityMod = (value) => Math.floor((Number(value || 10) - 10) / 2);
+const protectionTotal = (data, key) => {
+  const p = data?.protecoes?.[key] || {};
+  return 10 + abilityMod(data?.atributos?.[key]) + (p.proficiente ? Number(data?.proficiencia || 0) : 0) + Number(p.bonus || 0);
+};
 
 export function generateSkyfallChatText(data) {
   const d = data || {};
@@ -22,7 +27,7 @@ export function generateSkyfallChatText(data) {
 
   out += `\n📊 ATRIBUTOS & RECURSOS\n`;
   out += `FOR ${val(a.for)} | CON ${val(a.con)} | DES ${val(a.des)} | SAB ${val(a.sab)} | INT ${val(a.int)} | CAR ${val(a.car)}\n`;
-  out += `PV ${r.pv?.atual ?? 0}/${r.pv?.max ?? 0}${Number(r.pv?.temp || 0) ? ` (+${r.pv.temp} temp.)` : ''} | Catarse ${r.catarse?.atual ?? 0}/${r.catarse?.max ?? 0} | Ênfase ${r.enfase?.atual ?? 0}/${r.enfase?.max ?? 0}\n`;
+  out += `PV ${r.pv?.atual ?? 0}/${r.pv?.max ?? 0}${Number(r.pv?.temp || 0) ? ` (+${r.pv.temp} temp.)` : ''} | Catarse ${r.catarse?.atual ?? 0}/${r.catarse?.max ?? 0} | Ênfase ${r.enfase?.atual ?? 0}/${r.enfase?.max ?? 0}${Number(r.enfase?.outro || 0) ? ` (+${r.enfase.outro} outro)` : ''}\n`;
   out += `Sombra ${r.sombra ?? 0} | Fragmentos ${r.fragmentos?.atual ?? 0}/${r.fragmentos?.max ?? 0} | Volume ${r.volume?.atual ?? 0}/${r.volume?.max ?? 0}\n`;
   if (has(r.dadosVida?.totais) || has(r.dadosVida?.usados)) out += `Dados de Vida: ${val(r.dadosVida?.usados, 0)}/${val(r.dadosVida?.totais, 0)} usados\n`;
   if (Number(r.testesMorte?.sucessos || 0) || Number(r.testesMorte?.falhas || 0)) out += `Testes de Morte: ${r.testesMorte?.sucessos || 0} sucessos | ${r.testesMorte?.falhas || 0} falhas\n`;
@@ -31,6 +36,15 @@ export function generateSkyfallChatText(data) {
   out += `Proteção ${val(c.protecao)} | RD ${val(c.reducaoDano, 0)} | Iniciativa ${val(c.iniciativa)} | Movimento ${val(c.deslocamento, '9 m')}`;
   if (has(c.tamanho)) out += ` | Tamanho ${c.tamanho}`;
   out += '\n';
+
+  if (d.protecoes && Object.keys(d.protecoes).length) {
+    out += `\n🛡️ PROTEÇÕES\n`;
+    const labels = { for:'FOR', con:'CON', des:'DES', sab:'SAB', int:'INT', car:'CAR' };
+    out += Object.keys(labels).map((key) => {
+      const p = d.protecoes?.[key] || {};
+      return `${labels[key]} ${protectionTotal(d, key)}${p.proficiente ? ' [Prof.]' : ''}${Number(p.bonus || 0) ? ` [Bônus ${Number(p.bonus) >= 0 ? '+' : ''}${p.bonus}]` : ''}`;
+    }).join(' | ') + '\n';
+  }
 
   const skills = Object.entries(d.pericias || {}).filter(([, entry]) => entry?.proficiente || entry?.enfase || has(entry?.bonus));
   if (skills.length) {
@@ -54,7 +68,14 @@ export function generateSkyfallChatText(data) {
   if (abilities.length) {
     out += `\n✨ HABILIDADES\n`;
     abilities.forEach((entry) => {
-      out += `• ${val(entry.nome, 'Habilidade')}${has(entry.origem) ? ` [${entry.origem}]` : ''}${has(entry.desc) ? ` — ${compact(entry.desc)}` : ''}\n`;
+      out += `• ${val(entry.nome, 'Habilidade')}${has(entry.origem) ? ` [${entry.origem}]` : ''}`;
+      const details = [
+        has(entry.custoEnfase) ? `Ênfase ${entry.custoEnfase}` : '',
+        has(entry.descritores) ? entry.descritores : '',
+      ].filter(Boolean);
+      if (details.length) out += ` — ${details.join(' | ')}`;
+      if (has(entry.desc)) out += `\n  ${compact(entry.desc)}`;
+      out += '\n';
     });
   }
 
