@@ -68,7 +68,7 @@ export function generateOrdemChatText(data) {
 
   const abilities = (d.habilidades || []).filter((entry) => has(entry?.nome) || has(entry?.desc));
   if (abilities.length) {
-    out += `\n✨ PODERES & HABILIDADES\n`;
+    out += `\n✨ HABILIDADES & PODERES\n`;
     abilities.forEach((entry) => {
       out += `• ${val(entry.nome, 'Poder')}${has(entry.tipo) ? ` [${entry.tipo}]` : ''}`;
       const details = [has(entry.custo) ? `Custo ${entry.custo}` : '', has(entry.pagina) ? `p. ${entry.pagina}` : ''].filter(Boolean);
