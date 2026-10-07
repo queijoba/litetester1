@@ -58,11 +58,12 @@ const need = (value, tokens, label) => {
   d.status = { ...d.status, bloqueio:5, esquiva:18, peRodada:3 };
   d.ataques = [{nome:'Pistola',teste:'Pontaria',dano:'1d12',critico:'18/x3',alcance:'Curto',tipo:'Balístico',municao:'6',desc:'Teste'}];
   d.habilidades = [{nome:'Poder',tipo:'Classe',custo:'2 PE',desc:'Teste'}];
+  d.poderesParanormais = [{nome:'Visão do Oculto',elemento:'Conhecimento',requisito:'NEX 15%',custo:'2 PE',desc:'Teste'}];
   d.rituais = [{nome:'Ritual',circulo:1,elemento:'Conhecimento',execucao:'Padrão',alcance:'Curto',duracao:'Cena',resistencia:'Vontade',desc:'Teste'}];
   d.inventario = [{nome:'Item',categoria:'I',espacos:1,quantidade:1,desc:'Teste'}];
   d.resistencias='Mental'; d.proficiencias='Armas simples';
   const out = generateOrdemChatText(d);
-  need(out, ['ATRIBUTOS & STATUS','Bloqueio 5','Esquiva 18','ATAQUES','PODERES & HABILIDADES','RITUAIS','INVENTÁRIO','ESTATÍSTICAS'], 'Ordem personagem');
+  need(out, ['ATRIBUTOS & STATUS','Bloqueio 5','Esquiva 18','ATAQUES','PODERES & HABILIDADES','PODERES PARANORMAIS','RITUAIS','INVENTÁRIO','ESTATÍSTICAS'], 'Ordem personagem');
 
   const n = clone(initialOrdemThreatData);
   n.nome='Criatura'; n.presencaPerturbadora='DT 20'; n.sentidos='Percepção às cegas'; n.enigmaMedo='Segredo';
