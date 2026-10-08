@@ -27,6 +27,8 @@ export default function RotaZeroCharacterEditor({scope}){
   const attrs=data.atributos||{};
   const res=data.recursos||{};
   const vehicle=data.veiculo||{};
+  const selectedAdvantages=(data.vantagens||[]).map(id=>RZ_ADVANTAGES.find(x=>x.id===id)||{id,nome:id,resumo:''});
+  const selectedDefects=(data.defeitos||[]).map(id=>RZ_DEFECTS.find(x=>x.id===id)||{id,nome:id,efeito:''});
 
   const setAttr=(key,value)=>{
     const n=clamp(value,1,3);
@@ -138,7 +140,20 @@ export default function RotaZeroCharacterEditor({scope}){
 
       <div className="rz-grid two">
         <Panel title="PERÍCIAS"><div className="rz-chip-list">{RZ_SKILLS.filter(([id])=>data.pericias?.[id]).map(([id,nome])=><span className="rz-tag" key={id}>{nome}</span>)}</div>{!RZ_SKILLS.some(([id])=>data.pericias?.[id])&&<p className="rz-note">Nenhuma Perícia comprada. Use CONTRATAÇÃO.</p>}</Panel>
-        <Panel title="VANTAGENS / DEFEITOS"><div className="rz-chip-list">{(data.vantagens||[]).map(id=><span className="rz-tag positive" key={id}>+ {RZ_ADVANTAGES.find(x=>x.id===id)?.nome||id}</span>)}{(data.defeitos||[]).map(id=><span className="rz-tag negative" key={id}>− {RZ_DEFECTS.find(x=>x.id===id)?.nome||id}</span>)}</div></Panel>
+        <Panel title="VANTAGENS / DEFEITOS">
+          <div className="rz-traits">
+            {selectedAdvantages.length ? <div className="rz-trait-benefits">
+              {selectedAdvantages.map(v=><div className="rz-trait-entry" key={v.id} title={v.efeito||''}>
+                <strong>+ {v.nome}:</strong>
+                <span>{v.resumo||v.efeito||'Consulte a Contratação.'}</span>
+              </div>)}
+            </div> : <p className="rz-note rz-trait-empty">Nenhuma Vantagem selecionada.</p>}
+            {selectedDefects.length>0&&<div className="rz-trait-defects">
+              <span className="rz-trait-defect-label">DEFEITOS //</span>
+              <span className="rz-trait-defect-names">{selectedDefects.map(v=><span key={v.id} title={v.efeito||''}>{v.nome}</span>)}</span>
+            </div>}
+          </div>
+        </Panel>
       </div>
 
       <Panel title="INVENTÁRIO // 4 ESPAÇOS"><div className="rz-grid two">{[0,1,2,3].map(i=><Field key={i} label={'Espaço '+(i+1)}><input value={data.inventario?.[i]||''} onChange={e=>updateField('inventario.'+i,e.target.value)}/></Field>)}</div></Panel>
