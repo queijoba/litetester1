@@ -1,3 +1,4 @@
+import { RZ_ADVANTAGES, RZ_DEFECTS } from '../data.js';
 const STORAGE_KEY='dragonbane_saved_characters';
 const PDFLIB_CDN='https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js';
 const BUTTON_ID='pjlite-rota-zero-pdf-export';
@@ -22,6 +23,94 @@ async function elementToPng(img){try{if(!img?.complete||!(img.naturalWidth||img.
 async function portrait(item,allowLive=true){if(allowLive){const live=Array.from(document.querySelectorAll('.rz-portrait img')).find(visible);if(live){const png=await elementToPng(live);if(png)return{kind:'png',bytes:png};}}const value=String(item?.bio?.imagem||'').trim();const d=dataUrlBytes(value);if(d){if(d.mime.includes('png'))return{kind:'png',bytes:d.bytes};if(d.mime.includes('jpeg')||d.mime.includes('jpg'))return{kind:'jpg',bytes:d.bytes};}return null;}
 async function drawPortrait(doc,page,item,PDFLib,x,y,w,h,colors,allowLive=true){const p=await portrait(item,allowLive);box(page,x,y,w,h,colors.line,colors.paper);if(!p){page.drawText('FOTO / CRACHA',{x:x+30,y:y+h/2,size:10,font:await doc.embedFont(PDFLib.StandardFonts.Courier),color:colors.muted});return;}try{const img=p.kind==='png'?await doc.embedPng(p.bytes):await doc.embedJpg(p.bytes),dims=img.scale(1),scale=Math.min((w-6)/dims.width,(h-6)/dims.height),iw=dims.width*scale,ih=dims.height*scale;page.drawImage(img,{x:x+(w-iw)/2,y:y+(h-ih)/2,width:iw,height:ih});}catch{}}
 
+
+export function getRotaZeroPdfTraits(item) {
+ const advantages=(Array.isArray(item?.vantagens)?item.vantagens:[]).map(id=>{
+  const entry=RZ_ADVANTAGES.find(advantage=>advantage.id===id);
+  return {
+   id, name:entry?.nome||String(id),
+   summary:entry?.resumo||entry?.efeito||'Consulte a Contratacao.'
+  };
+ });
+ const defects=(Array.isArray(item?.defeitos)?item.defeitos:[]).map(id=>{
+  const entry=RZ_DEFECTS.find(defect=>defect.id===id);
+  return {id,name:entry?.nome||String(id),effect:entry?.efeito||''};
+ });
+ return {advantages,defects};
+}
+
+// The first RZ-01 page has only 8 compact lines in this panel. If more
+// advantages are selected, show a continuation marker and print all entries
+// on the annex rather than silently clipping the rest.
+function traitRows(font,traits,size,width) {
+ const rows=[];
+ for(const advantage of traits.advantages) {
+  const text='+ '+advantage.name+': '+advantage.summary;
+  wrap(font,text,size,width).forEach(line=>rows.push({kind:'advantage',text:line}));
+ }
+ if(traits.defects.length) {
+  if(traits.advantages.length)rows.push({kind:'divider'});
+  const names=traits.defects.map(defect=>defect.name).join(', ');
+  wrap(font,'DEFEITOS // '+names,size,width).forEach(line=>rows.push({kind:'defect',text:line}));
+ }
+ if(!rows.length)rows.push({kind:'empty',text:'Nenhuma vantagem ou defeito.'});
+ return rows;
+}
+function drawTraitRow(page,font,bold,row,x,y,colors,size=8.3){
+ if(row.kind==='divider'){
+  page.drawLine({start:{x,y:y+5},end:{x:x+226,y:y+5},thickness:.6,color:colors.line});
+  return;
+ }
+ const color=row.kind==='defect'?PDF_TRAIT_RED(colors):colors.ink;
+ const isName=row.kind==='defect'||row.kind==='continuation';
+ page.drawText(row.text,{x,y,size,font:isName?bold:font,color});
+}
+function PDF_TRAIT_RED(colors){return colors.muted;}
+function drawTraitsPanel(page,font,bold,item,colors) {
+ const traits=getRotaZeroPdfTraits(item);
+ const rows=traitRows(font,traits,8.3,226);
+ const overflow=rows.length>8;
+ const visible=overflow?[...rows.slice(0,7),{kind:'continuation',text:'... VER ANEXO RZ-04'}]:rows;
+ visible.forEach((row,index)=>drawTraitRow(page,font,bold,row,312,473-index*11,colors));
+ return overflow;
+}
+function drawTraitsAnnex(doc,item,font,bold,colors) {
+ const traits=getRotaZeroPdfTraits(item);
+ let page=null,y=0,part=0;
+ const nextPage=()=>{
+  part+=1;
+  page=doc.addPage([595,842]);
+  page.drawRectangle({x:0,y:0,width:595,height:842,color:colors.bg});
+  addHeader(page,bold,'FORMULARIO RZ-04 // REGISTRO DE CARACTERISTICAS','Vantagens e defeitos',colors);
+  label(page,bold,'VANTAGENS // EFEITOS RESUMIDOS',46,716,10,colors.ink);
+  y=696;
+  return page;
+ };
+ nextPage();
+ const write=(text,isBold=false)=>{
+  const lines=wrap(font,text,9,486);
+  if(y-(lines.length*12)<74)nextPage();
+  for(const line of lines){
+   page.drawText(line,{x:50,y,size:9,font:isBold?bold:font,color:colors.ink});
+   y-=12;
+  }
+  y-=6;
+ };
+ if(!traits.advantages.length)write('Nenhuma vantagem selecionada.');
+ else traits.advantages.forEach(adv=>write('+ '+adv.name+': '+adv.summary));
+ if(y<110)nextPage();
+ y-=3;
+ page.drawLine({start:{x:46,y},end:{x:548,y},thickness:.8,color:colors.line});
+ y-=22;
+ label(page,bold,'DEFEITOS //',46,y,10,colors.ink);y-=18;
+ if(traits.defects.length)traits.defects.forEach(defect=>write('- '+defect.name));
+ else write('Nenhum defeito selecionado.');
+ for(let i=0;i<part;i++){
+  const p=doc.getPages()[doc.getPageCount()-part+i];
+  p.drawText('ROTA ZERO // PJ LITE // RZ-04',{x:395,y:28,size:7,font,color:colors.muted});
+ }
+}
+
 function addHeader(page,bold,small,title,colors){page.drawText(small,{x:46,y:790,size:8,font:bold,color:colors.muted});page.drawText(title,{x:46,y:760,size:22,font:bold,color:colors.ink});page.drawLine({start:{x:46,y:748},end:{x:548,y:748},thickness:.8,color:colors.line});}
 async function employeePage(doc,item,PDFLib,font,bold,colors,allowLivePortrait=true){const p=doc.addPage([595,842]);p.drawRectangle({x:0,y:0,width:595,height:842,color:colors.bg});addHeader(p,bold,'FORMULARIO RZ-01 // FICHA DE FUNCIONARIO','Ficha de Funcionario',colors);
  box(p,46,594,330,135,colors.line,colors.paper);field(p,font,bold,'NOME',item.bio?.nome,56,690,96,colors);field(p,font,bold,'CONCEITO',item.bio?.conceito,164,690,96,colors);field(p,font,bold,'FUNCAO / KIT',item.bio?.kit,272,690,94,colors);
@@ -30,11 +119,11 @@ async function employeePage(doc,item,PDFLib,font,bold,colors,allowLivePortrait=t
  await drawPortrait(doc,p,item,PDFLib,391,594,157,135,colors,allowLivePortrait);
  [[46,'PANICO',4,(item.panico||[]).filter(Boolean).length],[218,'TRAUMAS',3,(item.traumas||[]).filter(Boolean).length],[390,'INTERFERENCIA 0-6',6,Number(item.interferencia||0)]].forEach(([x,n,c,f])=>{box(p,x,525,158,55,colors.line,colors.paper);label(p,bold,n,x+10,558,8,colors.ink);squareTrack(p,c,f,x+10,536,138,14,colors);});
  box(p,46,377,244,132,colors.line,colors.paper);label(p,bold,'PERICIAS',56,491,8,colors.ink);drawWrapped(p,font,Object.entries(item.pericias||{}).filter(([,v])=>v).map(([k])=>k.replace(/([A-Z])/g,' $1')).join(', '),56,474,9,224,12,8,colors.ink);
- box(p,302,377,246,132,colors.line,colors.paper);label(p,bold,'VANTAGENS / DEFEITOS',312,491,8,colors.ink);const vd=[...(item.vantagens||[]).map(x=>'+ '+x),...(item.defeitos||[]).map(x=>'- '+x)].join('\n');drawWrapped(p,font,vd,312,474,9,226,12,8,colors.ink);
+ box(p,302,377,246,132,colors.line,colors.paper);label(p,bold,'VANTAGENS / DEFEITOS',312,491,8,colors.ink);const traitsNeedAnnex=drawTraitsPanel(p,font,bold,item,colors);
  box(p,46,250,502,112,colors.line,colors.paper);label(p,bold,'INVENTARIO - 4 ESPACOS',56,344,8,colors.ink);(item.inventario||[]).slice(0,4).forEach((v,i)=>{const col=i%2,row=Math.floor(i/2),x=56+col*244,y=304-row*42;box(p,x,y,232,32,colors.line,colors.bg);drawWrapped(p,font,v,x+8,y+12,9,216,10,2,colors.ink);});
  box(p,46,112,244,122,colors.line,colors.paper);label(p,bold,'ANCORA',56,216,8,colors.ink);drawWrapped(p,font,item.ancora,56,198,9,224,12,8,colors.ink);
  box(p,302,112,246,122,colors.line,colors.paper);label(p,bold,'TRAUMAS / GATILHOS / NOTAS',312,216,8,colors.ink);let notes=String(item.notas||'');if(item.contratacao?.horaExtra)notes='HORA EXTRA: +'+Number(item.contratacao?.creditosExtras||0)+' CR\n'+notes;drawWrapped(p,font,notes,312,198,8.5,226,11,9,colors.ink);
- p.drawText('ROTA ZERO // PJ LITE // RZ-01',{x:395,y:28,size:7,font,color:colors.muted});return p;}
+ p.drawText('ROTA ZERO // PJ LITE // RZ-01',{x:395,y:28,size:7,font,color:colors.muted});return traitsNeedAnnex;}
 
 function vehiclePage(doc,item,font,bold,colors){const v=item.veiculo||{},p=doc.addPage([595,842]);p.drawRectangle({x:0,y:0,width:595,height:842,color:colors.bg});addHeader(p,bold,'FORMULARIO RZ-02 // FICHA DE VEICULO','Ficha do veiculo',colors);
  [['VEICULO / APELIDO',v.nome,46],['MODELO',v.modelo,218],['PLACA / ID',v.placaId,390]].forEach(([n,val,x])=>{box(p,x,682,158,52,colors.line,colors.paper);field(p,font,bold,n,val,x+10,689,138,colors);});
@@ -54,7 +143,7 @@ function turnPage(doc,item,font,bold,colors){const v=item.veiculo||{},p=doc.addP
  box(p,46,90,502,146,colors.line,colors.paper);label(p,bold,'PISTAS / INCIDENTES / DESPESAS',56,218,8,colors.ink);drawWrapped(p,font,[v.pistasIncidentes,v.despesas&&('Despesas: '+v.despesas)].filter(Boolean).join('\n'),56,198,9,482,12,10,colors.ink);
  p.drawText('ROTA ZERO // PJ LITE // RZ-03',{x:395,y:28,size:7,font,color:colors.muted});return p;}
 
-async function buildRotaZeroPdfBytes(item,allowLivePortrait=false){if(!item||item.system!=='rotaZero')throw new Error('Ficha Rota Zero inválida.');const PDFLib=await loadPdfLib(),doc=await PDFLib.PDFDocument.create(),font=await doc.embedFont(PDFLib.StandardFonts.Courier),bold=await doc.embedFont(PDFLib.StandardFonts.CourierBold),colors={bg:PDFLib.rgb(.94,.92,.86),paper:PDFLib.rgb(.975,.965,.925),ink:PDFLib.rgb(.08,.12,.10),line:PDFLib.rgb(.31,.37,.33),dark:PDFLib.rgb(.05,.12,.08),muted:PDFLib.rgb(.38,.45,.40)};await employeePage(doc,item,PDFLib,font,bold,colors,allowLivePortrait);if(item.veiculoAtivo){vehiclePage(doc,item,font,bold,colors);turnPage(doc,item,font,bold,colors);}return doc.save({useObjectStreams:false});}
+async function buildRotaZeroPdfBytes(item,allowLivePortrait=false){if(!item||item.system!=='rotaZero')throw new Error('Ficha Rota Zero inválida.');const PDFLib=await loadPdfLib(),doc=await PDFLib.PDFDocument.create(),font=await doc.embedFont(PDFLib.StandardFonts.Courier),bold=await doc.embedFont(PDFLib.StandardFonts.CourierBold),colors={bg:PDFLib.rgb(.94,.92,.86),paper:PDFLib.rgb(.975,.965,.925),ink:PDFLib.rgb(.08,.12,.10),line:PDFLib.rgb(.31,.37,.33),dark:PDFLib.rgb(.05,.12,.08),muted:PDFLib.rgb(.38,.45,.40)};const traitsNeedAnnex=await employeePage(doc,item,PDFLib,font,bold,colors,allowLivePortrait);if(traitsNeedAnnex)drawTraitsAnnex(doc,item,font,bold,colors);if(item.veiculoAtivo){vehiclePage(doc,item,font,bold,colors);turnPage(doc,item,font,bold,colors);}return doc.save({useObjectStreams:false});}
 export async function downloadRotaZeroPdf(item){const bytes=await buildRotaZeroPdfBytes(item,false);download(bytes,item);return item;}
 async function exportPdf(){document.activeElement?.blur?.();await sleep(250);const item=currentRotaZero(false);if(!item)throw new Error('Não encontrei a ficha Rota Zero atual. Salve a ficha e tente novamente.');const bytes=await buildRotaZeroPdfBytes(item,true);download(bytes,item);return item;}
 function editorOpen(){return Array.from(document.querySelectorAll('.rz-sheet')).some(visible)||!!currentRotaZero(true);}
