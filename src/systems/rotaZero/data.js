@@ -12,16 +12,16 @@ export const RZ_SKILLS = [
 ];
 
 export const RZ_ADVANTAGES = [
-  { id:'cabecaFria', nome:'Cabeça Fria', custo:1, tipo:'Reação, 1/cena', efeito:'Quando receber Pressão, reduza-a em 1 antes de escolher perder FOC ou marcar Pânico.' },
-  { id:'maosOficina', nome:'Mãos de Oficina', custo:1, tipo:'Passiva', efeito:'Reparos de emergência levam metade do tempo; em Meta Estendida de reparo, o primeiro sucesso vale 2.' },
-  { id:'memoriaRotas', nome:'Memória de Rotas', custo:1, tipo:'Passiva', efeito:'Ganho em Navegação para voltar por uma rota já percorrida.' },
-  { id:'bolsoEscondido', nome:'Bolso Escondido', custo:1, tipo:'Passiva', efeito:'1 item pequeno não ocupa Espaço de Inventário e passa despercebido em inspeções casuais.' },
-  { id:'durao', nome:'Durão', custo:2, tipo:'Passiva', efeito:'+5 Vitalidade máxima.' },
-  { id:'reservaFoco', nome:'Reserva de Foco', custo:2, tipo:'Passiva', efeito:'+10 Foco máximo.' },
-  { id:'autocontrole', nome:'Autocontrole', custo:1, tipo:'Reação, 1/turno', efeito:'Ignore 1 ponto de FOC de um custo de Vantagem ou Pressão; nunca reduz abaixo de 0.' },
-  { id:'reflexosEntrega', nome:'Reflexos de Entrega', custo:1, tipo:'Reação, 1/cena', efeito:'Ganho na primeira tentativa de fugir de uma ameaça.' },
-  { id:'redeContatos', nome:'Rede de Contatos', custo:1, tipo:'Ação, 1/sessão', efeito:'Declare um NPC comum que conhece você; ele pode oferecer informação, abrigo curto ou um favor pequeno.' },
-  { id:'leitorRuido', nome:'Leitor de Ruído', custo:2, tipo:'Passiva', efeito:'Você reconhece transmissão/placa contaminada por Ruído, mas ainda precisa investigar seu significado.' },
+  { id:'cabecaFria', nome:'Cabeça Fria', custo:1, tipo:'Reação, 1/cena', efeito:'Quando receber Pressão, reduza-a em 1 antes de escolher perder FOC ou marcar Pânico.' , resumo:'Reduz 1 Pressão (1/cena).' },
+  { id:'maosOficina', nome:'Mãos de Oficina', custo:1, tipo:'Passiva', efeito:'Reparos de emergência levam metade do tempo; em Meta Estendida de reparo, o primeiro sucesso vale 2.' , resumo:'Reparo mais rápido; 1º sucesso vale 2.' },
+  { id:'memoriaRotas', nome:'Memória de Rotas', custo:1, tipo:'Passiva', efeito:'Ganho em Navegação para voltar por uma rota já percorrida.' , resumo:'Ganho ao retornar por rotas conhecidas.' },
+  { id:'bolsoEscondido', nome:'Bolso Escondido', custo:1, tipo:'Passiva', efeito:'1 item pequeno não ocupa Espaço de Inventário e passa despercebido em inspeções casuais.' , resumo:'1 item pequeno não ocupa espaço.' },
+  { id:'durao', nome:'Durão', custo:2, tipo:'Passiva', efeito:'+5 Vitalidade máxima.' , resumo:'+5 de Vitalidade máxima.' },
+  { id:'reservaFoco', nome:'Reserva de Foco', custo:2, tipo:'Passiva', efeito:'+10 Foco máximo.' , resumo:'+10 de Foco máximo.' },
+  { id:'autocontrole', nome:'Autocontrole', custo:1, tipo:'Reação, 1/turno', efeito:'Ignore 1 ponto de FOC de um custo de Vantagem ou Pressão; nunca reduz abaixo de 0.' , resumo:'Ignora 1 FOC de custo/Pressão (1/turno).' },
+  { id:'reflexosEntrega', nome:'Reflexos de Entrega', custo:1, tipo:'Reação, 1/cena', efeito:'Ganho na primeira tentativa de fugir de uma ameaça.' , resumo:'Ganho na 1ª fuga de uma ameaça (1/cena).' },
+  { id:'redeContatos', nome:'Rede de Contatos', custo:1, tipo:'Ação, 1/sessão', efeito:'Declare um NPC comum que conhece você; ele pode oferecer informação, abrigo curto ou um favor pequeno.' , resumo:'Contato oferece ajuda (1/sessão).' },
+  { id:'leitorRuido', nome:'Leitor de Ruído', custo:2, tipo:'Passiva', efeito:'Você reconhece transmissão/placa contaminada por Ruído, mas ainda precisa investigar seu significado.' , resumo:'Reconhece sinais contaminados por Ruído.' },
 ];
 
 export const RZ_DEFECTS = [
