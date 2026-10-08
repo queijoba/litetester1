@@ -39,6 +39,20 @@
 .rz-track{display:flex;gap:6px;flex-wrap:wrap}.rz-track button{width:30px;height:22px;border:1px solid #4c5e53;background:#173123;border-radius:2px}.rz-track button.off{background:#e8e0c8}
 .rz-interference{text-align:center;font-weight:900;font-size:18px!important}
 .rz-chip-list{display:flex;gap:5px;flex-wrap:wrap}
+
+/* RZ-01: vantagens com efeito abreviado; defeitos em linha distinta */
+.rz-traits{display:grid;gap:5px;min-width:0}
+.rz-trait-benefits{display:grid;gap:5px}
+.rz-trait-entry{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 5px;min-width:0;font:9px/1.4 "Courier New",ui-monospace,monospace}
+.rz-trait-entry strong{color:#285442;font-weight:900;white-space:normal}
+.rz-trait-entry span{flex:1 1 120px;min-width:0;color:#45544b;overflow-wrap:anywhere}
+.rz-trait-empty{margin:0}
+.rz-trait-defects{display:flex;align-items:baseline;flex-wrap:wrap;gap:3px 7px;border-top:1px dashed #94a097;padding-top:6px;margin-top:4px;min-width:0}
+.rz-trait-defect-label{font:900 8px/1.4 "Courier New",monospace;letter-spacing:.07em;color:#7c4940}
+.rz-trait-defect-names{display:flex;flex-wrap:wrap;gap:0 4px;min-width:0;color:#753d37;font:900 9px/1.5 "Courier New",monospace}
+.rz-trait-defect-names>span:not(:last-child):after{content:","}
+@media(max-width:430px){.rz-trait-entry{font-size:10px}.rz-trait-entry span{flex-basis:100%}.rz-trait-defect-names{font-size:10px}}
+
 .rz-tag{display:inline-block;border:1px solid #87918a;background:#e1dfd0;border-radius:999px;padding:3px 7px;font-size:8px;font-weight:900}.rz-tag.positive{border-color:#63816c;background:#dce5d7}.rz-tag.negative{border-color:#9e6e65;background:#ead8d1;color:#6c332e}
 .rz-actions{display:flex;gap:6px;flex-wrap:wrap}.rz-btn{border:1px solid #42584b;background:#15231c;color:#eee7d1;border-radius:2px;padding:7px 10px;font:900 9px "Courier New",monospace}.rz-btn.secondary{background:#ded8c3;color:#303b34}.rz-btn.secondary b{display:block}.rz-btn.secondary .rz-note{display:block;margin-top:3px}
 .rz-note{font-size:10px;color:#657068;line-height:1.45}
