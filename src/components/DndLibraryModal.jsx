@@ -22,7 +22,7 @@ export default function DndLibraryModal({open,initialTab='classe',className='',s
  const currentClass=getDndClassByLabel(className);
  useEffect(()=>{
   if(!open)return;
-  setTab(['magias','especies','talentos'].includes(initialTab)?initialTab:'classe');
+  setTab(['magias','especies','talentos','antecedentes'].includes(initialTab)?initialTab:'classe');
   setQuery('');setSelected('');setAllClasses(false);setLevel('all');setOnlyAvailableLevel(false);setFeatCategory('todas');setSelectedChoice('');
   setRevision(n=>n+1);
  },[open,initialTab]);
@@ -67,11 +67,14 @@ export default function DndLibraryModal({open,initialTab='classe',className='',s
      <button type="button" className="pjlite-dnd-library-close" aria-label="Fechar" onClick={onClose}>×</button>
     </header>
     <div className="pjlite-dnd-library-tabs" role="tablist" aria-label="Categoria">
-     {[['classe','Classe'],['subclasse','Subclasse'],['magias','Magias'],['especies','Espécies'],['talentos','Talentos']].map(([id,label])=>
+     {[['classe','Classe'],['subclasse','Subclasse'],['magias','Magias'],['especies','Espécies'],['antecedentes','Antecedentes'],['talentos','Talentos']].map(([id,label])=>
       <button type="button" role="tab" key={id} aria-selected={tab===id} className={tab===id?'active':''} onClick={()=>setCategory(id)}>{label}</button>)}
     </div>
     <div className="pjlite-dnd-library-filters">
-     {tab==='especies'?<>
+     {tab==='antecedentes'?<>
+      <div className="pjlite-dnd-library-context"><b>Antecedentes — Livro do Jogador 2024</b><span>16 opções • capítulo 4</span></div>
+      <small>Preenche o antecedente e o talento de origem. Os ajustes de atributos, perícias e equipamentos permanecem sob sua escolha.</small>
+     </>:tab==='especies'?<>
       <div className="pjlite-dnd-library-context"><b>Espécies do Livro do Jogador 2024</b><span>{currentSpecies?'Ficha atual: '+currentSpecies:'Escolha uma espécie para preencher os traços.'}</span></div>
       <small>Ao aplicar, o PJLite atualiza a espécie e registra seus traços; escolhas de linhagem ficam anotadas na ficha.</small>
      </>:tab==='talentos'?<>
@@ -122,6 +125,7 @@ export default function DndLibraryModal({open,initialTab='classe',className='',s
           <span><strong>{item.name}</strong>{entry.paginaLivro&&<em className="pjlite-dnd-page-ref">{entry.paginaConferida?'Livro do Jogador, '+entry.paginaLivro:entry.paginaLivro}</em>}<small>{tab==='magias'
             ?(circle(entry.nivel)===0?'Truque':circle(entry.nivel)+'º círculo')+(entry.escola?' • '+entry.escola:'')
             :tab==='especies'?(entry.tamanho+' • '+entry.deslocamentoMetros+' m • '+entry.tracos?.length+' traços')
+            :tab==='antecedentes'?('Talento: '+entry.talentoNome+' • '+entry.pericias?.join(', '))
             :tab==='talentos'?(entry.categoria+(entry.nivelMinimo>1?' • Nível '+entry.nivelMinimo+'+':'')+(entry.fonteTipo==='livro-jogador-2024'?' • Livro do Jogador':' • SRD'))
             :[entry.classe||classNameFor(entry.classId)||'Modelo geral',entry.subclasse,entry.nivelMinimo?'Nível '+entry.nivelMinimo:''].filter(Boolean).join(' • ')}</small></span>
          </button>
@@ -129,6 +133,11 @@ export default function DndLibraryModal({open,initialTab='classe',className='',s
           aria-label={'Adicionar '+item.name} title={allowed(item)?'Adicionar à ficha':'Disponível apenas para a classe/subclasse correspondente'}>+</button>
         </div>
         {expanded&&<div className="pjlite-dnd-library-detail">
+         {tab==='antecedentes'&&<>
+          <div className="pjlite-dnd-library-metadata"><span>Atributos: {entry.atributosPt?.join(', ')}</span><span>Talento de origem: {entry.talentoNome}</span><span>Perícias: {entry.pericias?.join(', ')}</span><span>Ferramenta: {entry.ferramenta}</span><span>Equipamento: pacote do antecedente ou 50 PO</span></div>
+          <p>{entry.regraAtributos}</p>
+          <small>O talento será registrado; suas escolhas internas (como lista de magias e proficiências) precisam ser configuradas pelo jogador.</small>
+         </>}
          {tab==='especies'&&<>
           <div className="pjlite-dnd-library-metadata"><span>Tipo: {entry.tipoCriatura}</span><span>Tamanho: {entry.tamanho}</span><span>Deslocamento: {entry.deslocamentoMetros} m</span></div>
           <div className="pjlite-dnd-species-traits">
