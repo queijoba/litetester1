@@ -1,5 +1,6 @@
 import DndCharacterEditor from './systems/dnd5e/components/CharacterEditor.jsx';
 import DndLibraryModal from './components/DndLibraryModal.jsx';
+import { buildSpeciesApplication, buildFeatApplication } from './components/dndSpeciesFeatActions.js';
 import { getDndClassByLabel } from './systems/dnd5e/classPanels.js';
 import DndThreatEditor from './systems/dnd5e/components/ThreatEditor.jsx';
 import FabulaCharacterEditor from './systems/fabulaUltima/components/CharacterEditor.jsx';
@@ -3020,7 +3021,28 @@ const { useState, useEffect, useRef } = React;
                 );
             }
 
-            const addFromDndLibrary = (entry, tab) => {
+            const addFromDndLibrary = (entry, tab, choiceName='') => {
+                if(tab==='especies'){
+                    try {
+                        const chosen=buildSpeciesApplication(entry,choiceName,data.caracteristicas,data.status);
+                        updateField('bio.linhagem',chosen.especie);
+                        updateField('bio.varianteEspecie',chosen.variacao);
+                        updateField('caracteristicas',chosen.features);
+                        if(chosen.size)updateField('status.tamanho',chosen.size);
+                        if(chosen.speed)updateField('status.deslocamento',chosen.speed);
+                        setMobileTab('habilidades');
+                        showToast(chosen.especie+' aplicada com '+chosen.traitCount+' traços. Confira escolhas, PV e magias manualmente.');
+                    }catch(error){showToast(error.message||'Não foi possível aplicar a espécie.');}
+                    return;
+                }
+                if(tab==='talentos'){
+                    const built=buildFeatApplication(entry,data.caracteristicas);
+                    if(built.duplicate){showToast('Esse talento já está na ficha e não é repetível.');return;}
+                    updateField('caracteristicas',built.features);
+                    setMobileTab('habilidades');
+                    showToast('Talento '+entry.nome+' registrado na ficha. Confira os efeitos.');
+                    return;
+                }
                 if (tab === 'magias') {
                     const existing = Array.isArray(data.magias?.lista) ? data.magias.lista : [];
                     updateField('magias.lista', [...existing, { ...entry, preparada: false }]);
@@ -3358,6 +3380,9 @@ const { useState, useEffect, useRef } = React;
                         className={data.bio?.classe || ''}
                         subclass={data.bio?.subclasse || ''}
                         classLevel={Number(data.bio?.nivel || 1)}
+                        attributes={data.atributos || {}}
+                        features={data.caracteristicas || []}
+                        currentSpecies={data.bio?.linhagem || ''}
                         onChoose={addFromDndLibrary}
                         onClose={()=>setDndLibraryOpen(false)}
                     />}
