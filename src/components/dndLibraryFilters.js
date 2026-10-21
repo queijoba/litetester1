@@ -14,10 +14,11 @@ export const getDndLibraryEntries=({
  tab,classId,subclass,query='',level='all',allClasses=false,
  classLevel=20,onlyAvailableLevel=false,featCategory='todas'
 })=>{
- const kind=tab==='magias'?'magias':tab==='especies'?'especies':tab==='talentos'?'talentos':'caracteristicas';
+ const kind=tab==='magias'?'magias':tab==='especies'?'especies':tab==='talentos'?'talentos':tab==='antecedentes'?'antecedentes':'caracteristicas';
  const needle=normalize(query);
  return findAbilityPresets('dnd5e',kind).filter(({entry})=>{
   if(tab==='especies')return true;
+  if(tab==='antecedentes')return true;
   if(tab==='talentos')return (featCategory==='todas'||entry.categoria===featCategory)
     && (!onlyAvailableLevel || Number(entry.nivelMinimo||1)<=Number(classLevel||1));
   if(tab==='magias'){
@@ -34,6 +35,7 @@ export const getDndLibraryEntries=({
   return true;
  }).filter(({entry,name})=>!needle||normalize([
    name,entry.nomeOriginal,entry.desc,entry.resumoPt,entry.requisito,entry.categoria,
+   entry.pericias?.join(' '),entry.ferramenta,entry.talentoNome,entry.atributosPt?.join(' '),
    entry.tracos?.map(trait=>trait.nome+' '+trait.resumoPt).join(' ')||'',
    entry.escolha?.options?.map(x=>x.name+' '+x.desc).join(' ')||'',
    entry.classe,classNameFor(entry.classId),entry.subclasse,
@@ -43,7 +45,7 @@ export const getDndLibraryEntries=({
 };
 
 export const canUseDndEntry=(entry,tab,classId,subclass)=>{
- if(tab==='magias'||tab==='especies'||tab==='talentos')return true;
+ if(tab==='magias'||tab==='especies'||tab==='talentos'||tab==='antecedentes')return true;
  if(!classId)return false;
  if(entry.classId&&entry.classId!==classId)return false;
  if(tab==='subclasse'&&(!subclass||entry.subclasse&&entry.subclasse!==subclass))return false;
