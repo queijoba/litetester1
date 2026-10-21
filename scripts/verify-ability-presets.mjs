@@ -36,7 +36,7 @@ const picker=readFileSync('src/components/AbilityPresetPicker.jsx','utf8');
 const ordemModal=readFileSync('src/systems/ordemParanormal/OrdemLibraryModal.jsx','utf8');
 const app=readFileSync('src/PJLiteApp.jsx','utf8');
 assert.ok(app.includes('<OrdemLibraryModal'),'Ordem usa a biblioteca na barra principal');
-assert.ok(ordemModal.includes("['habilidades','Poderes']")&&ordemModal.includes("['rituais','Rituais']"),'Ordem oferece poderes e rituais');
+assert.ok(ordemModal.includes("['habilidades','Poderes de Classe']")&&ordemModal.includes("['poderesParanormais','Poderes Paranormais']")&&ordemModal.includes("['rituais','Rituais']"),'Ordem oferece poderes e rituais');
 assert.ok(ordem.includes('storeAbilityPreset'),'Ordem permite salvar modelos próprios');
 assert.ok(!ordem.includes("setPresetKind('"),'Ordem não deve render botões de biblioteca dentro da ficha');
 assert.ok(skyfall.includes('AbilityPresetPicker'),'Skyfall deve montar o seletor');
