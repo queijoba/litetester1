@@ -1,0 +1,53 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {findAbilityPresets,DND_PHB2024_SPECIES_COUNT,DND_PHB2024_FEATS_COUNT} from '../src/components/abilityPresetLibrary.js';
+import {getDndLibraryEntries} from '../src/components/dndLibraryFilters.js';
+import {buildSpeciesApplication,featRequirementWarnings,buildFeatApplication} from '../src/components/dndSpeciesFeatActions.js';
+
+globalThis.localStorage={getItem:()=>null,setItem:()=>{}};
+const species=findAbilityPresets('dnd5e','especies');
+const feats=findAbilityPresets('dnd5e','talentos');
+assert.equal(DND_PHB2024_SPECIES_COUNT,10);
+assert.equal(DND_PHB2024_FEATS_COUNT,77);
+assert.equal(species.length,10);
+assert.equal(feats.length,77);
+assert.equal(new Set(feats.map(x=>x.entry.nomeOriginal)).size,77,'Catálogo não deve duplicar talentos');
+const aasimar=species.find(s=>s.entry.id==='aasimar')?.entry;
+assert.ok(aasimar,'Aasimar não encontrado');
+assert.equal(aasimar.fonteTipo,'livro-jogador-2024');
+assert.equal(aasimar.tracos.length,5);
+assert.equal(aasimar.escolha,undefined,'A Revelação Celestial é escolhida a cada uso, não na criação');
+assert.ok(aasimar.tracos.some(t=>t.nome==='Revelação Celestial'));
+assert.ok(aasimar.tracos.some(t=>t.nome==='Mãos Curativas'));
+const applied=buildSpeciesApplication(aasimar,'',[{tipo:'classe',nome:'Meu poder'},{tipo:'talento',nome:'Meu talento'}],{});
+assert.equal(applied.variacao,'');
+assert.ok(applied.features.some(x=>x.nome==='Meu poder'));
+assert.ok(applied.features.some(x=>x.nome==='Meu talento'));
+assert.equal(applied.traitCount,5);
+assert.equal(applied.especie,'Aasimar');
+assert.ok(getDndLibraryEntries({tab:'especies',query:'cura'}).some(x=>x.entry.id==='aasimar'));
+
+const phbFeats=feats.filter(x=>x.entry.fonteTipo==='livro-jogador-2024');
+assert.equal(phbFeats.length,60);
+for(const x of phbFeats){
+ assert.ok(x.entry.resumoPt.length>35,x.name+' resumo ausente');
+ assert.ok(x.entry.categoria,x.name+' categoria ausente');
+ assert.ok(x.entry.paginaLivro,x.name+' referência ausente');
+ assert.ok(!x.entry.fonte.includes('CC BY'),x.name+' não deve ser marcado CC BY');
+}
+const actor=feats.find(x=>x.entry.nomeOriginal==='Actor').entry;
+assert.ok(featRequirementWarnings(actor,{level:4,attributes:{car:10}}).length,'Carisma insuficiente precisa alertar');
+assert.equal(featRequirementWarnings(actor,{level:4,attributes:{car:14}}).length,0);
+const blessed=feats.find(x=>x.entry.nomeOriginal==='Blessed Warrior').entry;
+assert.ok(featRequirementWarnings(blessed,{level:4,classId:'mago'}).length,'Talento exige Paladino');
+const registered=buildFeatApplication(actor,[]);
+assert.ok(registered.features.at(-1).nome==='Ator');
+assert.equal(buildFeatApplication(actor,registered.features).duplicate,true);
+const ui=readFileSync('src/components/DndLibraryModal.jsx','utf8');
+assert.ok(ui.includes('Livr'+'o do Jogador 2024'));
+assert.ok(ui.includes('não endossado'));
+const credits=readFileSync('src/systems/dnd5e/SRD_CREDITS.md','utf8');
+assert.ok(credits.includes('Política de Conteúdo de Fãs'));
+assert.ok(credits.includes('©Wizards of the Coast LLC'));
+assert.ok(credits.includes('CC BY 4.0'));
+console.log('✓ Livro do Jogador: Aasimar, 60 talentos não-SRD, requisitos, créditos e integração preservados.');
