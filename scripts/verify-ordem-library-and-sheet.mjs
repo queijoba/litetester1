@@ -6,8 +6,8 @@ import {normalizeOrdemPcData,initialOrdemPcData} from '../src/systems/ordemParan
 
 globalThis.localStorage={getItem:()=>null,setItem:()=>{},removeItem:()=>{}};
 assert.ok(ORDEM_LIBRARY_CATALOG.length>=95);
-assert.equal(ORDEM_LIBRARY_COUNTS.origem,35);
-assert.equal(ORDEM_LIBRARY_COUNTS.trilha,18);
+assert.equal(ORDEM_LIBRARY_COUNTS.origem,37);
+assert.equal(ORDEM_LIBRARY_COUNTS.trilha,19);
 assert.ok(ORDEM_LIBRARY_CATALOG.every(x=>x.nome&&x.tipo&&x.fonte&&x.desc&&x.pagina));
 assert.ok(ORDEM_LIBRARY_CATALOG.every(x=>!/playtest|alpha|ordem 2/i.test([x.nome,x.fonte,x.desc].join(' '))));
 assert.equal(findAbilityPresets('ordemParanormal','origens').length,ORDEM_LIBRARY_COUNTS.origem);
@@ -17,6 +17,7 @@ assert.ok(findAbilityPresets('ordemParanormal','rituais').length>=ORDEM_LIBRARY_
 assert.ok(findAbilityPresets('ordemParanormal','poderesParanormais').length>=ORDEM_LIBRARY_COUNTS.poderParanormal);
 assert.ok(ORDEM_LIBRARY_CATALOG.some(x=>x.nome==='Durão'&&x.classe==='Sobrevivente'));
 assert.ok(ORDEM_LIBRARY_CATALOG.some(x=>x.nome==='Esfolar'&&x.circulo===1&&x.elemento==='Sangue'));
+assert.ok(ORDEM_LIBRARY_CATALOG.some(x=>x.nome==='Backup'&&x.fonte==='Arquivos Secretos #04'));
 const old={...structuredClone(initialOrdemPcData),bio:{nome:'Agente salvo',classe:'Ocultista',nex:15},habilidades:[{nome:'Poder particular',tipo:'Poder',desc:'Texto editado'}],gestao:undefined};
 const normal=normalizeOrdemPcData(old);
 assert.equal(normal.bio.nome,'Agente salvo');
