@@ -3029,7 +3029,6 @@ const { useState, useEffect, useRef } = React;
 
             const addFromOrdemLibrary = (entry,kind) => {
                 const features=Array.isArray(data.habilidades)?data.habilidades:[];
-                const refs=features.filter(x=>x.bibliotecaOrigem!=='pj-op-official-index'||!['Origem','Trilha'].includes(x.tipo||''));
                 const item={nome:entry.nome,tipo:kind==='habilidades'?'Poder':kind==='poderesParanormais'?'Poder paranormal':kind==='trilhas'?'Trilha':'Origem',custo:entry.custo||'',desc:entry.desc||'',pagina:entry.pagina||'',fonte:entry.fonte||'',classe:entry.classe||'',elemento:entry.elemento||'',bibliotecaOrigem:entry.bibliotecaOrigem||'pj-op-official-index',referenciaId:entry.id};
                 if(kind==='origens'){
                     updateField('bio.origem',entry.nome);
@@ -3043,6 +3042,13 @@ const { useState, useEffect, useRef } = React;
                     const remaining=features.filter(x=>!(x.bibliotecaOrigem==='pj-op-official-index'&&x.tipo==='Trilha'));
                     updateField('habilidades',[...remaining,{...item,nome:'Trilha: '+entry.nome}]);
                     showToast('Trilha selecionada. Confira os poderes liberados pelo NEX.');
+                    return;
+                }
+                if(kind==='poderesParanormais'){
+                    const rows=Array.isArray(data.poderesParanormais)?data.poderesParanormais:[];
+                    if(rows.some(x=>x.referenciaId===entry.id)){showToast('Esse poder paranormal já está na ficha.');return;}
+                    updateField('poderesParanormais',[...rows,{nome:entry.nome,elemento:entry.elemento||'',requisito:entry.requisito||'',custo:entry.custo||'',pagina:entry.pagina||'',fonte:entry.fonte||'',desc:entry.desc||'',referenciaId:entry.id,bibliotecaOrigem:item.bibliotecaOrigem}]);
+                    showToast('Poder paranormal adicionado. Confira a afinidade e o requisito.');
                     return;
                 }
                 if(kind==='rituais'){
