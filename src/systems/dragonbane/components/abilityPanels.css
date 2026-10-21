@@ -101,3 +101,83 @@ body.theme-custom .db-sheet .db-resource-section-head{background:var(--custom-ba
 body.theme-custom .db-sheet .db-resource-expand{color:var(--custom-bar-text,#fff)}
 body.theme-custom .db-sheet .db-resource-count{color:var(--custom-bar-text,#fff)}
 body.theme-custom .db-sheet .db-resource-card label>span,body.theme-custom .db-sheet .db-resource-extra summary,body.theme-custom .db-sheet .db-resource-hint{color:var(--custom-text-color,#2a241d)}
+
+
+/* Navegação principal — três páginas, no padrão D&D / Skyfall, identidade Dragonbane. */
+.db-sheet .db-primary-tabs{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:5px;
+  margin:5px 0 14px;
+  padding:6px;
+  background:linear-gradient(180deg,rgba(255,249,227,.75),rgba(221,210,182,.76));
+  border:1px solid #a79773;
+  border-radius:11px 3px 11px 3px;
+  box-shadow:inset 0 1px rgba(255,255,255,.65),0 2px 6px rgba(68,46,27,.07);
+}
+.db-sheet .db-primary-tab{
+  border:1px solid #638f7e;
+  border-bottom:3px solid #347669;
+  background:linear-gradient(180deg,#f5efdc,#e8ddc0);
+  border-radius:8px 2px 8px 2px;
+  padding:11px 7px;
+  min-width:0;
+  min-height:41px;
+  color:#355f53;
+  font:900 12px/1.2 Georgia,'Times New Roman',serif;
+  text-transform:uppercase;
+  letter-spacing:.025em;
+  text-align:center;
+  cursor:pointer;
+  transition:background .15s ease,border-color .15s ease;
+}
+.db-sheet .db-primary-tab:hover:not(.active){background:#eee6cf;border-color:#256a5e}
+.db-sheet .db-primary-tab.active,
+.db-sheet .db-primary-tab[aria-selected="true"]{
+  color:#fff8e6;
+  border-color:#164a40;
+  border-bottom-color:#dc6255;
+  background:linear-gradient(180deg,#327e70,#20594f);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.15),0 2px 5px rgba(24,60,51,.18);
+}
+.db-sheet .db-primary-tab:focus-visible{
+  outline:2px solid #c7473e;
+  outline-offset:2px;
+}
+.db-sheet .db-resource-pdf-warning{
+  color:#89342c;
+  background:#f1dfc8;
+  border-left:3px solid #a8352a;
+  margin:3px 0;
+  padding:9px 11px;
+  font:750 10px/1.4 system-ui,sans-serif;
+}
+.db-sheet .db-column--mobile-combat{min-width:0}
+@media(max-width:767px){
+ .db-sheet .db-primary-tabs{gap:4px;padding:5px;margin:4px 0 10px}
+ .db-sheet .db-primary-tab{padding:8px 4px;min-height:38px;font-size:10px}
+ .db-sheet .db-mobile-navigation{margin-bottom:10px;grid-template-columns:repeat(3,minmax(0,1fr))}
+ .db-sheet .db-mobile-navigation>button{font-size:9px;line-height:1.25;padding:7px 3px;min-height:40px}
+}
+body.theme-dark .db-sheet .db-primary-tabs{
+ background:linear-gradient(180deg,#20342d,#15221d);
+ border-color:#46786a;
+}
+body.theme-dark .db-sheet .db-primary-tab{
+ background:#1c3029;color:#d3ddcb;border-color:#46796d;
+ border-bottom-color:#499083;
+}
+body.theme-dark .db-sheet .db-primary-tab.active,
+body.theme-dark .db-sheet .db-primary-tab[aria-selected="true"]{
+ background:linear-gradient(180deg,#378273,#235d52);
+ color:#fff6e4;
+ border-bottom-color:#e56d5a;
+}
+body.theme-dark .db-sheet .db-resource-pdf-warning{background:#3a2924;color:#ffd1be;border-left-color:#da6f5a}
+body.theme-custom .db-sheet .db-primary-tabs{border-color:var(--custom-accent-color,#256a5e)}
+body.theme-custom .db-sheet .db-primary-tab.active,
+body.theme-custom .db-sheet .db-primary-tab[aria-selected="true"]{
+ background:var(--custom-bar-color,#26685b);
+ color:var(--custom-bar-text,#fff);
+ border-color:var(--custom-accent-color,#2e7667);
+}
