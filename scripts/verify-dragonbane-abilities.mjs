@@ -87,8 +87,20 @@ assert.ok(panel.includes("entry.desc!==undefined?entry.desc"),'Preservar desc e 
 assert.ok(app.includes("h.desc !== undefined ? h.desc : h.descricao"),'Ficha Chat deve manter prioridade consistente de descrições');
 
 assert.ok(editor.includes('<DragonbaneAbilityPanels'));
-assert.ok(editor.includes("id: 'poderes', label: 'Habilidades & Magia'"));
-assert.ok(editor.includes("mobileTab === 'poderes'"));
+assert.ok(editor.includes("const DRAGONBANE_PAGES=[['ficha','Ficha'],['habilidades','Habilidades'],['magias','Magias']]"),'Dragonbane precisa de três abas principais');
+assert.ok(editor.includes("dbPage==='ficha'"),'Ficha principal acessível');
+assert.ok(editor.includes("dbPage==='habilidades'"),'Aba de habilidades acessível');
+assert.ok(editor.includes("dbPage==='magias'"),'Aba de magias acessível');
+assert.ok(editor.includes("visibleKinds={['inata','heroica','outro']}"),'Separar inatas, heroicas e outros');
+assert.ok(editor.includes("visibleKinds={['magia','truque']}"),'Separar feitiços e truques');
+assert.ok(editor.includes('role="tablist"')&&editor.includes('aria-selected={dbPage===id}'),'Aba acessível para leitores de tela');
+assert.ok(editor.includes('db-column--mobile-combat lg:hidden'),'Não exibir combate duplicado no desktop');
+assert.ok(!panel.includes('db-resources-intro'),'Remover explicação desnecessária no painel');
+assert.ok(!panel.includes('Compatível com fichas antigas.'),'Não repetir texto informativo longo no painel');
+assert.ok(panel.includes('DRAGONBANE_ABILITY_KINDS.filter(kind=>visibleKinds.includes(kind.id))'),'Exibir somente seções da aba ativa');
+assert.ok(panel.includes('onNavigateKind?.(kind)'),'Mover habilidade para outra aba deve levar o jogador até lá');
+assert.ok(css.includes('.db-primary-tabs')&&css.includes('grid-template-columns:repeat(3,minmax(0,1fr))'),'Abas responsivas com 3 colunas');
+assert.ok(css.includes('body.theme-dark .db-sheet .db-primary-tab'),'Aba deve respeitar tema escuro');
 assert.ok(app.includes('DRAGONBANE_ABILITY_KINDS.forEach'));
 assert.ok(css.includes('.db-resource-section-head'), 'Cabeçalho das categorias deve existir');
 assert.ok(css.includes('.db-resource-card::before'), 'Cartões devem preservar o cabeçalho verde da ficha original');
