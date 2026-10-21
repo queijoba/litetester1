@@ -12,7 +12,7 @@ const ordemChat=await readFile('src/systems/ordemParanormal/chat.js','utf8');
 need(sky,['PJ LITE 0.8.3 SKYFALL COMPLETE UI','protectionTotal','skyfall-protection-line','skillTotal','Ênfase — Outro','Custo de Ênfase','Descritores'],'Skyfall completo');
 need(skyData,['PJ LITE 0.8.3 SKYFALL COMPLETE','protecoes:{','enfase:{atual:0,max:0,outro:0}','custoEnfase','descritores'],'Dados Skyfall');
 need(skyCss,['PJ LITE 0.8.3 SKYFALL THEME STABLE','.skyfall-protection-line','.skyfall-skill-total'],'Tema Skyfall estável');
-need(ordem,['PJ LITE 0.8.3 ORDEM SAH COMPLETE UI','Determinação (PD)','recursoMental','DT DE RITUAIS','Limite de Itens','Limite de Crédito','Carga Máx.','Prestígio','EVOLUÇÃO DO PERSONAGEM','Dados'],'Ordem SaH completa');
+need(ordem,['PJ LITE 0.8.3 ORDEM SAH COMPLETE UI','Determinação (PD)','recursoMental','DT DE RITUAIS','Limite de Itens','Limite de Crédito','Carga Máx.','Prestígio','EVOLUÇÃO DO AGENTE','Dados'],'Ordem SaH completa');
 need(ordemData,['PJ LITE 0.8.3 ORDEM SAH COMPLETE','pdAtual','pdMax','recursoMental','limiteItens','limiteCredito','cargaMax','prestigio','dtRituais','evolucao','protecao'],'Dados Ordem SaH');
 need(ordemCss,['PJ LITE 0.8.3 ORDEM THEME STABLE','.ordem-meter--determinacao','.ordem-mental-switch','.ordem-dt-grid','.ordem-evolution-grid'],'Tema Ordem estável');
 need(ordemChat,['RECURSO MENTAL SAH','PD ${s.pdAtual'],'Ficha Chat SAN/PD');
