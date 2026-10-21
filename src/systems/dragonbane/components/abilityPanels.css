@@ -1,66 +1,103 @@
-/* Dragonbane: painéis separados de habilidades, ancestralidade e magia.
-   Escopo próprio para não alterar D&D, Ordem ou fichas de ameaças. */
-.db-resources{display:flex;flex-direction:column;gap:12px;min-width:0;color:#29251f}
-.db-resources *{box-sizing:border-box;min-width:0}
-.db-resources-banner{display:flex;justify-content:space-between;align-items:center;gap:9px;background:linear-gradient(115deg,#252321,#4a2524);border:1px solid #4c3330;border-left:5px solid #b7352e;color:#fff;padding:12px 13px}
-.db-resources-banner h2{font:900 clamp(16px,1.7vw,20px)/1.2 Georgia,'Times New Roman',serif;letter-spacing:.015em;color:#fff}
-.db-resources-banner p{font-size:11px;color:#e4d4ce;margin-top:4px;line-height:1.4}
-.db-resources-kicker{display:block;font-size:9px;letter-spacing:.13em;font-weight:800;color:#e4b0a2;margin-bottom:4px}
-.db-resources-counter{font-size:10px;white-space:nowrap;border:1px solid #aa8173;border-radius:2px;padding:5px 7px;font-weight:800;color:#f3d2c4}
-.db-resource-section{background:#fdfbf6;border:1px solid #c3b8a4;border-top:3px solid #5f4c3c;padding:0 10px 10px;min-width:0}
-.db-resource-section--inata{border-top-color:#536648}
-.db-resource-section--heroica{border-top-color:#9c3028}
-.db-resource-section--magia,.db-resource-section--truque{border-top-color:#544573}
-.db-resource-section--outro{border-top-color:#8b8375}
-.db-resource-section-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px solid #d9d2c4}
-.db-resource-section-head h3{font:900 15px/1.2 Georgia,serif;color:#29231f}
-.db-resource-section-head p{font-size:10px;line-height:1.4;color:#736c60;margin-top:3px}
-.db-resource-add{background:#322a26;color:white!important;border:1px solid #4c3d36;white-space:nowrap;padding:8px 9px;font-size:11px;font-weight:800;min-height:33px;border-radius:2px}
-.db-resource-add:hover{background:#8e2722}
-.db-resource-empty{font-size:11px;color:#82796c;padding:10px 1px 2px;font-style:italic}
-.db-innate-suggestions{border:1px solid #c9d0bf;background:#eef2e8;padding:9px;margin:10px 0;display:grid;gap:7px}
-.db-innate-suggestions b{font-size:11px;display:block;color:#3a4635}
-.db-innate-suggestions small{display:block;font-size:10px;line-height:1.5;color:#546149}
-.db-innate-suggestion-actions{display:flex;flex-wrap:wrap;gap:5px}
-.db-innate-suggestion-actions button{border:1px solid #6c875d;background:#f9fff6;color:#3c5d32;font-size:10px;font-weight:800;padding:7px 9px;border-radius:2px;white-space:normal;text-align:left}
-.db-innate-suggestion-actions button:hover{background:#dfecd4}
-.db-resource-list{display:grid;gap:9px;margin-top:9px}
-.db-resource-card{border:1px solid #cfc6b7;border-left:3px solid #a7a09a;background:white;padding:9px 10px;display:grid;gap:8px;min-width:0}
-.db-resource-main{display:grid;grid-template-columns:minmax(0,1fr) 78px;gap:7px}
-.db-resource-card label{display:flex;flex-direction:column;gap:3px}
-.db-resource-card label>span,.db-resource-card details summary{font-size:9px;font-weight:900;letter-spacing:.035em;text-transform:uppercase;color:#76685f}
-.db-resource-card textarea,.db-resource-card input:not([type=checkbox]),.db-resource-card select{border:1px solid #c5bdb3;background:#fffdf9;color:#26221e;font:500 12px/1.45 system-ui,sans-serif;max-width:100%;min-height:30px;padding:5px 7px;outline:none;border-radius:2px}
-.db-resource-card textarea{width:100%;resize:vertical;min-height:37px;white-space:pre-wrap}
-.db-resource-name textarea{font-weight:750;font-size:13px}
-.db-resource-card :is(textarea,input,select):focus-visible{border-color:#9c3530;outline:2px solid #c48079;outline-offset:1px}
-.db-resource-cost input{text-align:center}
-.db-resource-summary-row{display:flex;align-items:end;justify-content:space-between;gap:7px;flex-wrap:wrap}
-.db-resource-summary-row label{flex:1 1 125px}
-.db-resource-summary-row select{width:100%}
-.db-resource-delete{border:1px solid #b88d86;color:#872c25;padding:7px 9px;font-size:10px;font-weight:850;min-height:31px}
-.db-resource-delete:hover{background:#f5dfdc}
-.db-resource-magic-row{display:grid;grid-template-columns:minmax(0,1fr) 72px auto;gap:6px;align-items:end;border:1px solid #ddd4e4;background:#f5f0f8;padding:8px}
-.db-resource-section--truque .db-resource-magic-row{grid-template-columns:minmax(0,1fr)}
-.db-resource-magic-row select{width:100%}
-.db-resource-prepared{display:flex!important;flex-direction:row!important;align-items:center;gap:5px!important;font-size:11px;font-weight:800;white-space:nowrap;color:#433851;padding-bottom:8px}
-.db-resource-prepared input[type=checkbox]{width:15px;height:15px;accent-color:#5f4685}
-.db-resource-trick-note{font-size:10px;font-weight:850;color:#574575}
-.db-resource-description textarea{line-height:1.6}
-.db-resource-extra{border-top:1px solid #e1d9ce;padding-top:6px}
-.db-resource-extra summary{cursor:pointer;list-style:inside;font-size:10px!important}
-.db-resource-extra-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:8px 0 2px}
-.db-resource-notes{font-size:10px;background:#f0ede7;border:1px dashed #c0b5a4;color:#60594f;padding:10px;line-height:1.5}
-.db-resource-notes p{font-weight:800;color:#952c25;margin-top:5px}
+/*
+ * DRAGONBANE — PAINÉIS DE HABILIDADES NO VISUAL ORIGINAL
+ * Herdam pergaminho, verde-esmeralda e os recortes assimétricos da ficha.
+ * Não altera as fichas de outros sistemas.
+ */
+.db-sheet .db-resources{display:flex;flex-direction:column;gap:11px;min-width:0;color:#2a241d}
+.db-sheet .db-resources *{box-sizing:border-box;min-width:0}
+.db-sheet .db-resources-banner{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;min-height:36px;margin:0}
+.db-sheet .db-resources-banner h2{margin:0;font-family:Georgia,'Times New Roman',serif;font-size:clamp(13px,1.3vw,17px);line-height:1.25;font-weight:900;text-transform:uppercase;letter-spacing:.025em;color:inherit}
+.db-sheet .db-resources-counter{font:900 9px/1.3 system-ui,sans-serif;letter-spacing:.025em;white-space:nowrap;color:#f2ebd8;padding:3px 5px;border:1px solid #86a99b;border-radius:6px 2px 6px 2px;background:rgba(0,0,0,.12)}
+.db-sheet .db-resources-intro{font-size:10px;line-height:1.45;color:#76654a;margin:-3px 2px 1px}
+.db-sheet .db-resource-section{min-width:0;border:1px solid #a99778;border-radius:10px 2px 10px 2px;background:rgba(249,244,226,.72);box-shadow:0 2px 7px rgba(66,48,27,.06);overflow:hidden}
+.db-sheet .db-resource-section-head{min-height:37px;margin:0!important;padding:5px 6px 5px 9px;display:flex;align-items:center;justify-content:space-between;gap:5px;flex-wrap:wrap;border-radius:8px 2px 8px 2px!important}
+.db-sheet .db-resource-section-head::before,.db-sheet .db-resource-section-head::after{display:none}
+.db-sheet .db-resource-expand{display:flex;align-items:center;flex:1 1 130px;gap:5px;background:transparent;border:0;padding:4px 1px;color:#fff9e8;font-size:11px;line-height:1.2;text-align:left;font-family:Georgia,'Times New Roman',serif;font-weight:900;cursor:pointer}
+.db-sheet .db-resource-expand>span:nth-child(2){flex:1;overflow-wrap:anywhere}
+.db-sheet .db-resource-chevron{color:#f6cc9a;font-size:14px;line-height:1}
+.db-sheet .db-resource-count{min-width:19px;padding:3px 4px;text-align:center;border:1px solid rgba(255,255,255,.48);border-radius:5px 1px 5px 1px;font:900 10px system-ui,sans-serif;background:rgba(0,0,0,.11);color:#fffaeb}
+.db-sheet .db-resource-section-head .db-resource-add{flex:0 0 auto;min-height:25px;padding:0 7px;font-size:9px;border-radius:6px 2px 6px 2px;box-shadow:none}
+.db-sheet .db-resource-section-content{padding:8px;display:grid;gap:8px}
+.db-sheet .db-resource-hint{color:#72634e;font:500 10px/1.5 system-ui,sans-serif;margin:0}
+.db-sheet .db-resource-empty{border:1px dashed #c1b397;border-radius:8px 2px 8px 2px;color:#81725c;font:italic 10px/1.4 system-ui,sans-serif;padding:8px;margin:0}
+.db-sheet .db-innate-suggestions{background:linear-gradient(90deg,#e9e6d2,#f0eddc);border:1px solid #a8b09a;border-left:3px solid #27695c;border-radius:8px 2px 8px 2px;padding:8px;display:grid;gap:6px}
+.db-sheet .db-innate-suggestions b{display:block;font-size:10px;color:#385b4a}
+.db-sheet .db-innate-suggestions small{display:block;font-size:9px;line-height:1.4;color:#67674e}
+.db-sheet .db-innate-suggestion-actions{display:flex;flex-wrap:wrap;gap:5px}
+.db-sheet .db-innate-suggestion-actions button{border:1px solid #5e8a79;background:#f2efda;color:#285c4e;font-size:10px;font-weight:850;line-height:1.3;padding:6px 7px;border-radius:7px 2px 7px 2px;text-align:left;white-space:normal}
+.db-sheet .db-innate-suggestion-actions button:hover{background:#e2ebd5}
+.db-sheet .db-resource-list{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+.db-sheet .db-resource-card{position:relative;padding:24px 8px 9px;border:2px solid #2b6f63;border-radius:9px 2px 9px 2px;background:#f5edd4;box-shadow:inset 0 0 0 1px #cbbd97;display:grid;gap:8px;min-width:0}
+.db-sheet .db-resource-card::before{content:"◆  " attr(data-label) "  ◆";position:absolute;left:0;right:0;top:0;height:19px;display:flex;justify-content:center;align-items:center;color:#fff9e8;background:linear-gradient(180deg,#2e786a,#1f5d52);border-bottom:1px solid #17443c;font:900 8px/1 system-ui,sans-serif;letter-spacing:.08em}
+.db-sheet .db-resource-main{display:grid;grid-template-columns:minmax(0,1fr) 68px;gap:7px}
+.db-sheet .db-resource-card label{display:flex;flex-direction:column;gap:3px}
+.db-sheet .db-resource-card label>span,.db-sheet .db-resource-extra summary{font:900 9px/1.3 system-ui,sans-serif;letter-spacing:.02em;text-transform:uppercase;color:#665b4a}
+.db-sheet .db-resource-card textarea,.db-sheet .db-resource-card input:not([type=checkbox]),.db-sheet .db-resource-card select{width:100%;max-width:100%;border:0!important;border-bottom:1px solid #ae9c7b!important;border-radius:0;outline:0;min-height:27px;padding:5px 3px;font:500 12px/1.45 system-ui,sans-serif;color:#2a241d;background:transparent!important;box-shadow:none!important}
+.db-sheet .db-resource-card textarea{width:100%;min-height:40px;resize:vertical;white-space:pre-wrap}
+.db-sheet .db-resource-name textarea{font-size:13px;font-weight:800}
+.db-sheet .db-resource-card input:focus-visible,.db-sheet .db-resource-card textarea:focus-visible,.db-sheet .db-resource-card select:focus-visible{border-bottom:2px solid #1c685a!important;outline:2px solid rgba(37,104,91,.18);outline-offset:1px}
+.db-sheet .db-resource-cost input{text-align:center;font-size:11px}
+.db-sheet .db-resource-cost input[readonly]{opacity:.86;cursor:default}
+.db-sheet .db-resource-summary-row{display:flex;align-items:end;gap:8px;justify-content:space-between;flex-wrap:wrap}
+.db-sheet .db-resource-summary-row label{flex:1 1 110px}
+.db-sheet .db-resource-summary-row select{cursor:pointer}
+.db-sheet .db-resource-delete{border:1px solid #b27a71;color:#992c25;background:rgba(255,243,225,.7);border-radius:6px 2px 6px 2px;padding:6px 8px;font-size:10px;font-weight:850;min-height:29px}
+.db-sheet .db-resource-delete:hover{background:#eac8b9}
+.db-sheet .db-resource-magic-row{display:grid;grid-template-columns:minmax(0,1fr) 55px;gap:8px;align-items:end;padding:8px;background:rgba(40,101,86,.07);border:1px dashed #a9a48f;border-radius:7px 2px 7px 2px}
+.db-sheet .db-resource-section--truque .db-resource-magic-row{grid-template-columns:minmax(0,1fr)}
+.db-sheet .db-resource-prepared{display:flex!important;flex-direction:row!important;gap:5px!important;align-items:center;grid-column:1/-1;font-size:10px;font-weight:850;color:#355d51}
+.db-sheet .db-resource-prepared input[type=checkbox]{flex:none}
+.db-sheet .db-resource-trick-note{font-size:10px;font-weight:850;color:#316d60}
+.db-sheet .db-resource-description textarea{line-height:1.5}
+.db-sheet .db-resource-extra{border-top:1px dotted #a89c86;padding-top:7px}
+.db-sheet .db-resource-extra summary{cursor:pointer;list-style:inside}
+.db-sheet .db-resource-extra-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:8px 0 2px}
+.db-sheet .db-resource-notes{background:rgba(249,241,217,.67);border:1px dotted #bcab8b;border-radius:7px 2px 7px 2px;color:#655943;padding:9px;font-size:10px;line-height:1.5}
+.db-sheet .db-resource-notes b{color:#306455}
+.db-sheet .db-resource-notes p{color:#982d27;font-weight:800;margin-top:5px}
+.db-sheet .db-resource-expand:focus-visible,.db-sheet .db-resource-add:focus-visible,.db-sheet .db-resource-delete:focus-visible,.db-sheet .db-innate-suggestion-actions button:focus-visible{outline:2px solid #c89b62;outline-offset:2px}
+/* Mesma estética em celulares: navegação compacta e sem cortes. */
+.db-mobile-navigation{gap:3px;padding:5px;background:#e2d7bc;border-bottom:2px solid #236155}
+.db-mobile-navigation>button{min-width:0;min-height:45px;padding:8px 4px;border:1px solid #b09e7f;border-bottom:3px solid transparent;background:#f6efd9;color:#624f3b;font:900 10px/1.25 system-ui,sans-serif;text-align:center;overflow-wrap:anywhere}
+.db-mobile-navigation>button.db-mobile-navigation--active{background:#fffaf0;color:#a62f28;border-bottom-color:#c6352c}
 @media(max-width:1100px){
-.db-resource-main{grid-template-columns:minmax(0,1fr) 66px}
-.db-resource-magic-row{grid-template-columns:minmax(0,1fr) 60px}
-.db-resource-prepared{grid-column:1 / -1;padding:0}
+ .db-sheet .db-resource-main{grid-template-columns:minmax(0,1fr) 62px}
+ .db-sheet .db-resource-extra-grid{grid-template-columns:minmax(0,1fr)}
 }
 @media(max-width:640px){
-.db-resources-banner{padding:10px;flex-wrap:wrap}
-.db-resources-counter{margin-left:auto}
-.db-resource-section{padding:0 8px 9px}
-.db-resource-section-head h3{font-size:14px}
-.db-resource-section-head p{font-size:10px}
-.db-resource-add{padding:6px}
+ .db-sheet .db-resource-section-head{padding:6px}
+ .db-sheet .db-resource-expand{font-size:10px}
+ .db-sheet .db-resources-banner{padding:7px 9px}
+ .db-sheet .db-resources-banner h2{font-size:14px}
+ .db-sheet .db-resource-section-content{padding:7px}
+ .db-sheet .db-resource-extra-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+@media(max-width:380px){
+ .db-sheet .db-resource-main{grid-template-columns:minmax(0,1fr) 58px}
+ .db-sheet .db-resource-extra-grid{grid-template-columns:minmax(0,1fr)}
+}
+/* Tema escuro — mesmos tons da ficha Dragonbane original. */
+body.theme-dark .db-sheet .db-resources{color:#eee5cf}
+body.theme-dark .db-sheet .db-resources-intro,body.theme-dark .db-sheet .db-resource-hint{color:#c9bba0}
+body.theme-dark .db-sheet .db-resource-section{background:rgba(25,35,31,.92);border-color:#4e746a}
+body.theme-dark .db-sheet .db-resource-card{background:#1a2722;border-color:#53776c;box-shadow:inset 0 0 0 1px #3a5b4f}
+body.theme-dark .db-sheet .db-resource-card::before{background:linear-gradient(180deg,#327d6e,#225f54)}
+body.theme-dark .db-sheet .db-resource-card label>span,body.theme-dark .db-sheet .db-resource-extra summary{color:#d0be9f}
+body.theme-dark .db-sheet .db-resource-count{color:#fff1d8}
+body.theme-dark .db-sheet .db-resource-empty,body.theme-dark .db-sheet .db-resource-notes{background:#17251f;border-color:#5a7367;color:#dccbab}
+body.theme-dark .db-sheet .db-resource-notes b{color:#addacc}
+body.theme-dark .db-sheet .db-innate-suggestions,body.theme-dark .db-sheet .db-resource-magic-row{background:#152a23;border-color:#668578}
+body.theme-dark .db-sheet .db-innate-suggestions b,body.theme-dark .db-sheet .db-resource-prepared,body.theme-dark .db-sheet .db-resource-trick-note{color:#c0e9d6}
+body.theme-dark .db-sheet .db-innate-suggestions small{color:#b2bfb1}
+body.theme-dark .db-sheet .db-innate-suggestion-actions button{background:#21392f;color:#d8f1e4;border-color:#668a7b}
+body.theme-dark .db-sheet .db-resource-delete{background:#3b2220;color:#ffd1c4;border-color:#92544a}
+body.theme-dark .db-mobile-navigation{background:#17271f;border-color:#367968}
+body.theme-dark .db-mobile-navigation>button{background:#1b2a25;color:#e2d6bf;border-color:#4c7366}
+body.theme-dark .db-mobile-navigation>button.db-mobile-navigation--active{background:#2d4e42;color:#fff3df;border-bottom-color:#e25a50}
+/* Tema personalizado continua herdando a cor escolhida para as barras. */
+body.theme-custom .db-sheet .db-resource-section,body.theme-custom .db-sheet .db-resource-card,body.theme-custom .db-sheet .db-resource-notes{background:color-mix(in srgb,var(--custom-window-color,#f4ead8) 91%,var(--custom-accent-color,#2b7768) 9%);border-color:color-mix(in srgb,var(--custom-accent-color,#2b7768) 48%,#c0b095);color:var(--custom-text-color,#2a241d)}
+body.theme-custom .db-sheet .db-resource-card::before{background:var(--custom-bar-color,#26685b);color:var(--custom-bar-text,#fff)}
+body.theme-custom .db-sheet .db-resource-section-head{background:var(--custom-bar-color,#26685b)!important;color:var(--custom-bar-text,#fff)!important}
+body.theme-custom .db-sheet .db-resource-expand{color:var(--custom-bar-text,#fff)}
+body.theme-custom .db-sheet .db-resource-count{color:var(--custom-bar-text,#fff)}
+body.theme-custom .db-sheet .db-resource-card label>span,body.theme-custom .db-sheet .db-resource-extra summary,body.theme-custom .db-sheet .db-resource-hint{color:var(--custom-text-color,#2a241d)}
