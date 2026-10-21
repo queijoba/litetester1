@@ -1,4 +1,7 @@
+import { useState } from 'react';
 import CharacterEditorBase from './CharacterEditorBase.jsx';
+import AbilityPresetPicker from '../../../components/AbilityPresetPicker.jsx';
+import { storeAbilityPreset } from '../../../components/abilityPresetLibrary.js';
 import '../dnd-sheet-v7.css';
 import { getDndClassByLabel } from '../classPanels.js';
 
@@ -53,7 +56,8 @@ export default function DndCharacterEditor({ scope }) {
 }
 
 function ClassWorkspace({ scope, selectedClass }) {
-  const { data, SVGIcons, updateField, updateArrayField, addToArray, removeFromArray } = scope;
+  const { data, SVGIcons, updateField, updateArrayField, addToArray, removeFromArray, showToast } = scope;
+  const [pickerOrigin, setPickerOrigin] = useState(null);
 
   const features = Array.isArray(data.caracteristicas) ? data.caracteristicas : [];
   const currentSubclass = String(data.bio?.subclasse || '');
@@ -131,6 +135,26 @@ function ClassWorkspace({ scope, selectedClass }) {
     );
   };
 
+  const saveFeatureModel = entry => {
+    const {classId, subclasse, ...safeEntry} = entry || {};
+    const saved = storeAbilityPreset('dnd5e','caracteristicas',safeEntry);
+    showToast(saved.ok ? '☆ Habilidade salva nos modelos deste navegador.' : 'Digite o nome da habilidade antes de salvar.');
+  };
+
+  const insertFeatureModel = entry => {
+    if (pickerOrigin === 'subclasse' && !currentSubclass) return;
+    const origin = pickerOrigin === 'subclasse' ? 'subclasse' : 'classe';
+    const {classId,subclasse,...content}=entry;
+    addToArray('caracteristicas',{
+      ...content,
+      tipo:'classe',
+      origem:origin,
+      classId:selectedClass.id,
+      ...(origin === 'subclasse' ? {subclasse:currentSubclass} : {}),
+    });
+    showToast('Habilidade adicionada e pronta para editar.');
+  };
+
   const addFeature = (origin) => addToArray('caracteristicas', {
     tipo: 'classe',
     origem: origin,
@@ -144,7 +168,7 @@ function ClassWorkspace({ scope, selectedClass }) {
     <article key={index} className={`dnd-v6-feature-card ${origin === 'subclasse' ? 'subclass-feature' : ''}`}>
       <div className="dnd-v6-feature-head">
         <span className={`dnd-v6-origin ${origin}`}>{origin === 'subclasse' ? (currentSubclass || 'Subclasse') : selectedClass.label}</span>
-        <button type="button" onClick={() => removeFromArray('caracteristicas', index)} title="Remover habilidade"><SVGIcons.Trash /></button>
+        <div className="dnd-v6-preset-card-actions"><button type="button" className="pjlite-preset-save" onClick={()=>saveFeatureModel(entry)} title="Salvar esta habilidade como modelo" aria-label="Salvar habilidade como modelo">☆</button><button type="button" onClick={() => removeFromArray('caracteristicas', index)} title="Remover habilidade"><SVGIcons.Trash /></button></div>
       </div>
       <input
         className="dnd-v6-feature-name"
@@ -218,7 +242,7 @@ function ClassWorkspace({ scope, selectedClass }) {
                 <div className="dnd-v6-feature-lane">
                   <div className="dnd-v6-lane-head">
                     <div><b>{selectedClass.label}</b><small>Recursos base da classe</small></div>
-                    <button type="button" onClick={() => addFeature('classe')}>+ Habilidade</button>
+                    <div className="dnd-v6-preset-header-actions"><button type="button" className="pjlite-preset-button" onClick={()=>setPickerOrigin('classe')} title="Abrir biblioteca de habilidades da classe" aria-label="Biblioteca de habilidades da classe">📚</button><button type="button" onClick={() => addFeature('classe')}>+ Habilidade</button></div>
                   </div>
                   <div className="dnd-v6-feature-list">
                     {baseClassFeatures.length === 0
@@ -230,7 +254,7 @@ function ClassWorkspace({ scope, selectedClass }) {
                 <div className={`dnd-v6-feature-lane subclass-lane ${currentSubclass ? '' : 'is-disabled'}`}>
                   <div className="dnd-v6-lane-head">
                     <div><b>{currentSubclass || 'Subclasse'}</b><small>{currentSubclass ? 'Recursos específicos da subclasse' : 'Selecione uma subclasse no topo'}</small></div>
-                    <button type="button" onClick={() => addFeature('subclasse')} disabled={!currentSubclass}>+ Habilidade</button>
+                    <div className="dnd-v6-preset-header-actions"><button type="button" className="pjlite-preset-button" onClick={()=>setPickerOrigin('subclasse')} disabled={!currentSubclass} title="Abrir biblioteca de habilidades da subclasse" aria-label="Biblioteca de habilidades da subclasse">📚</button><button type="button" onClick={() => addFeature('subclasse')} disabled={!currentSubclass}>+ Habilidade</button></div>
                   </div>
                   <div className="dnd-v6-feature-list">
                     {!currentSubclass
@@ -245,18 +269,34 @@ function ClassWorkspace({ scope, selectedClass }) {
           </div>
         </div>
       </div>
+      <AbilityPresetPicker open={!!pickerOrigin} system="dnd5e" kind="caracteristicas" onChoose={insertFeatureModel} onClose={()=>setPickerOrigin(null)}/>
     </div>
   );
 }
 
 function SpellWorkspace({ scope }) {
-  const { data, updateField } = scope;
+  const { data, updateField, showToast } = scope;
+  const [pickerOpen, setPickerOpen] = useState(false);
   const spells = Array.isArray(data.magias?.lista) ? data.magias.lista : [];
 
   const updateSpell = (index, patch) => {
     const next = [...spells];
     next[index] = { ...next[index], ...patch };
     updateField('magias.lista', next);
+  };
+
+  const saveSpellModel = entry => {
+    const saved=storeAbilityPreset('dnd5e','magias',entry);
+    showToast(saved.ok ? '☆ Magia salva nos modelos deste navegador.' : 'Digite o nome da magia antes de salvar.');
+  };
+
+  const insertSpellModel = entry => {
+    const level=clampSpellLevel(entry.nivel);
+    updateField('magias.lista',[
+      ...spells,
+      {...entry,nivel:level,preparada:false}
+    ]);
+    showToast('Magia adicionada ao '+circleName(level)+'.');
   };
 
   const addSpell = (level) => updateField('magias.lista', [
@@ -311,6 +351,7 @@ function SpellWorkspace({ scope }) {
           <input className="dnd-v6-spell-name" value={spell?.nome || ''} onChange={e => updateSpell(index, { nome: e.target.value })} placeholder="Nome da magia" />
           <input className="dnd-v6-spell-school" value={spell?.escola || ''} onChange={e => updateSpell(index, { escola: e.target.value })} placeholder="Escola" />
           <div className="dnd-v6-spell-order">
+            <button type="button" className="pjlite-preset-save" onClick={()=>saveSpellModel(spell)} title="Salvar magia como modelo" aria-label="Salvar magia como modelo">☆</button>
             <button type="button" disabled={position <= 0} onClick={() => moveSpell(index, -1)} title="Mover para cima">↑</button>
             <button type="button" disabled={position >= circleItems.length - 1} onClick={() => moveSpell(index, 1)} title="Mover para baixo">↓</button>
             <button type="button" className="danger" onClick={() => removeSpell(index)} title="Remover magia">×</button>
@@ -368,7 +409,7 @@ function SpellWorkspace({ scope }) {
           <section className="dnd-v6-spell-toolbar">
             <div className="dnd-v6-spell-title">
               <div><small>Conjuração</small><b>Livro de Magias</b><span>Adicione a magia no círculo correto. O círculo fica fixo pela seção e não precisa ser selecionado novamente.</span></div>
-              <div className="dnd-v6-spell-count"><strong>{spells.filter(spell => spell?.preparada).length}</strong><span>preparadas</span><i>/</i><strong>{spells.length}</strong><span>total</span></div>
+              <div className="dnd-v6-preset-toolbar-actions"><button type="button" className="pjlite-preset-button" onClick={()=>setPickerOpen(true)} title="Abrir biblioteca de magias" aria-label="Biblioteca de magias">📚</button><div className="dnd-v6-spell-count"><strong>{spells.filter(spell => spell?.preparada).length}</strong><span>preparadas</span><i>/</i><strong>{spells.length}</strong><span>total</span></div></div>
             </div>
             <div className="dnd-v6-casting-grid">
               <label><span>Habilidade</span><input value={data.magias?.conjuracao?.habilidade || ''} onChange={e => updateField('magias.conjuracao.habilidade', e.target.value)} placeholder="INT / SAB / CAR" /></label>
@@ -409,6 +450,7 @@ function SpellWorkspace({ scope }) {
           </div>
         </div>
       </div>
+      <AbilityPresetPicker open={pickerOpen} system="dnd5e" kind="magias" onChoose={insertSpellModel} onClose={()=>setPickerOpen(false)}/>
     </div>
   );
 }
