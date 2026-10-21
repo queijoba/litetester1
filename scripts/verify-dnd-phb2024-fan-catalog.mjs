@@ -45,7 +45,7 @@ assert.ok(registered.features.at(-1).nome==='Ator');
 assert.equal(buildFeatApplication(actor,registered.features).duplicate,true);
 const ui=readFileSync('src/components/DndLibraryModal.jsx','utf8');
 assert.ok(ui.includes('Livr'+'o do Jogador 2024'));
-assert.ok(ui.includes('não endossado'));
+assert.ok(ui.includes('Não aprovado ou endossado'));
 const credits=readFileSync('src/systems/dnd5e/SRD_CREDITS.md','utf8');
 assert.ok(credits.includes('Política de Conteúdo de Fãs'));
 assert.ok(credits.includes('©Wizards of the Coast LLC'));
