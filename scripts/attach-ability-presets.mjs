@@ -28,6 +28,12 @@ function patchZone(text,start,end,fn){
   return text.slice(0,a)+fn(text.slice(a,b))+text.slice(b);
 }
 
+// O editor Ordem v2 usa a biblioteca contextual na barra principal, sem seletor interno.
+// Não reinjetar controles da versão 0.8.3 nem sobrescrever a UI moderna.
+const ordemAtual=await readFile(ordemPath,'utf8');
+if(ordemAtual.includes('PJ LITE 0.8.3 ORDEM AUTO UI')) {
+  console.log('✓ Ordem v2: biblioteca da barra superior preservada no preparo final.');
+} else {
 let ordem=await readFile(ordemPath,'utf8');
 ordem=patchZone(ordem,'<span>HABILIDADES & PODERES</span>','<span>PODERES PARANORMAIS</span>',zone=>{
   zone=addButton(zone,'<button className="ordem-add" onClick={()=>add(\'habilidades\',{nome:\'\',tipo:\'Poder\',custo:\'\',desc:\'\'})}>+ Poder</button>','habilidades');
@@ -43,6 +49,8 @@ ordem=patchZone(ordem,'<span>RITUAIS</span>',"{tab==='inventario'",zone=>{
 });
 if(!ordem.includes('<AbilityPresetPicker'))throw new Error('Seletor ausente do editor Ordem');
 await writeFile(ordemPath,ordem,'utf8');
+
+}
 
 let skyfall=await readFile(skyfallPath,'utf8');
 skyfall=patchZone(skyfall,"{tab==='poderes'","{tab==='magias'",zone=>{
