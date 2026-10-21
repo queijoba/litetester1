@@ -7,6 +7,7 @@ import srdClassFeatures from '../systems/dnd5e/srd521-features-classes.js';
 import srdSubclassFeatures from '../systems/dnd5e/srd521-features-subclasses.js';
 import srdSpecies from '../systems/dnd5e/srd521-species.js';
 import srdFeats from '../systems/dnd5e/srd521-feats.js';
+import {localizeDndSrdEntry} from './dndSrdPortuguese.js';
 
 export const DND_SRD_SPECIES_COUNT = srdSpecies.length;
 export const DND_SRD_FEATS_COUNT = srdFeats.length;
@@ -139,7 +140,7 @@ export const findAbilityPresets = (system, kind) => {
   const local = load().filter(p=>p.system===system && p.kind===kind).map(p=>({...p, entry:clone(p.entry), source:'personal'}));
   const defaultEntries = [
     ...(system==='dnd5e'&&kind==='magias' ? [] : STARTERS[system]?.[kind] || []),
-    ...(system==='dnd5e' ? dndCatalog[kind] || [] : []),
+    ...(system==='dnd5e' ? (dndCatalog[kind] || []).map(entry=>localizeDndSrdEntry(entry,kind)) : []),
   ];
   const builtins = defaultEntries.map((entry,index)=>({
     id: 'example-'+system+'-'+kind+'-'+index,
