@@ -31,7 +31,7 @@ export function generateOrdemChatText(data) {
   out += recursos + '\n';
   out += `Defesa ${defense} | Bloqueio ${s.bloqueio ?? 0} | Esquiva ${s.esquiva ?? 10}`;
   if (!pdMode) out += ` | PE/Rodada ${s.peRodada ?? 1}`;
-  if (has(s.limitePePd)) out += ` | Limite PD ${s.limitePePd}`;
+  if (has(s.limitePePd)) out += ` | Limite ${pdMode ? 'PD' : 'PE'} ${s.limitePePd}`;
   out += ` | Mov. ${val(s.deslocamento, '9 m')}\n`;
 
   const skills = Object.entries(d.pericias || {}).filter(([, entry]) =>
@@ -101,7 +101,7 @@ export function generateOrdemChatText(data) {
     const dts = [1,2,3,4].filter((circle) => has(ritualDts[circle])).map((circle) => `${circle}º: DT ${ritualDts[circle]}`);
     if (dts.length) out += `DT por círculo: ${dts.join(' | ')}\n`;
     rituals.forEach((entry) => {
-      out += `• ${val(entry.nome, 'Ritual')} — ${val(entry.circulo, 1)}º círculo`;
+      out += `• ${val(entry.nome, 'Ritual')}${has(entry.circulo)?` — ${entry.circulo}º círculo`:' — Círculo a confirmar'}`;
       if (has(entry.elemento)) out += ` | ${entry.elemento}`;
       const details = [
         entry.execucao,
