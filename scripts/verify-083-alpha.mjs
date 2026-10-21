@@ -12,7 +12,7 @@ const need=(text,tokens,label)=>{for(const token of tokens)if(!text.includes(tok
 need(sky,['PJ LITE 0.8.3 SKYFALL PROFILE ATTRS','skyfall-profile-aside','skyfall-profile-attributes','moveMagic','sortMagicLayer'],'Skyfall 0.8.3');
 if(sky.includes('skyfall-card skyfall-attributes-top'))throw new Error('Skyfall: atributos ainda estão no topo global.');
 need(skyCss,['PJ LITE 0.8.3 SKYFALL THEME','.skyfall-profile-attributes','.skyfall-profile-aside'],'Tema Skyfall');
-need(ordem,["['rituais','Rituais']",'PODERES PARANORMAIS',"sortByName('poderesParanormais')","move('poderesParanormais'","tab==='rituais'"],'Ordem 0.8.3');
+need(ordem,['PJ LITE 0.8.3 ORDEM POWERS','PODERES PARANORMAIS',"sortByName('poderesParanormais')","move('poderesParanormais'","sortByName('rituais')","move('rituais'","data.rituais",'ordem-dt-grid'],'Ordem 0.8.3 e ficha SaH v2');
 need(ordemDataText,['poderesParanormais:[]','migrados','/paranormal/i'],'Dados Ordem');
 need(ordemCss,['PJ LITE 0.8.3 ORDEM THEME','.ordem-paranormal-entry','.ordem-ritual-entry'],'Tema Ordem');
 need(ordemChat,['PODERES PARANORMAIS','RITUAIS','HABILIDADES & PODERES'],'Ficha Chat Ordem');
