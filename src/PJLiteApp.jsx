@@ -1,6 +1,7 @@
 import DndCharacterEditor from './systems/dnd5e/components/CharacterEditor.jsx';
 import DndLibraryModal from './components/DndLibraryModal.jsx';
 import OrdemLibraryModal from './systems/ordemParanormal/OrdemLibraryModal.jsx';
+import {applyOrdemLibrarySelection} from './systems/ordemParanormal/libraryActions.js';
 import { buildSpeciesApplication, buildFeatApplication } from './components/dndSpeciesFeatActions.js';
 import {buildBackgroundApplication} from './components/dndBackgroundActions.js';
 import {findAbilityPresets} from './components/abilityPresetLibrary.js';
@@ -3028,39 +3029,13 @@ const { useState, useEffect, useRef } = React;
             }
 
             const addFromOrdemLibrary = (entry,kind) => {
-                const features=Array.isArray(data.habilidades)?data.habilidades:[];
-                const item={nome:entry.nome,tipo:kind==='habilidades'?'Poder':kind==='poderesParanormais'?'Poder paranormal':kind==='trilhas'?'Trilha':'Origem',custo:entry.custo||'',desc:entry.desc||'',pagina:entry.pagina||'',fonte:entry.fonte||'',classe:entry.classe||'',elemento:entry.elemento||'',bibliotecaOrigem:entry.bibliotecaOrigem||'pj-op-official-index',referenciaId:entry.id};
-                if(kind==='origens'){
-                    updateField('bio.origem',entry.nome);
-                    const remaining=features.filter(x=>!(x.bibliotecaOrigem==='pj-op-official-index'&&x.tipo==='Origem'));
-                    updateField('habilidades',[...remaining,{...item,nome:entry.poderOrigem||entry.nome,desc:[entry.desc,entry.pericias?.length?'Perícias da origem: '+entry.pericias.join(', '):''].filter(Boolean).join('\\n')}]);
-                    showToast('Origem aplicada. Confira e marque as perícias treinadas.');
-                    return;
+                try {
+                    const outcome=applyOrdemLibrarySelection(data,entry,kind);
+                    if(outcome.changed)setData(outcome.data);
+                    showToast(outcome.message);
+                } catch(error) {
+                    showToast(error.message||'Não foi possível adicionar esta referência.');
                 }
-                if(kind==='trilhas'){
-                    updateField('bio.trilha',entry.nome);
-                    const remaining=features.filter(x=>!(x.bibliotecaOrigem==='pj-op-official-index'&&x.tipo==='Trilha'));
-                    updateField('habilidades',[...remaining,{...item,nome:'Trilha: '+entry.nome}]);
-                    showToast('Trilha selecionada. Confira os poderes liberados pelo NEX.');
-                    return;
-                }
-                if(kind==='poderesParanormais'){
-                    const rows=Array.isArray(data.poderesParanormais)?data.poderesParanormais:[];
-                    if(rows.some(x=>x.referenciaId===entry.id)){showToast('Esse poder paranormal já está na ficha.');return;}
-                    updateField('poderesParanormais',[...rows,{nome:entry.nome,elemento:entry.elemento||'',requisito:entry.requisito||'',custo:entry.custo||'',pagina:entry.pagina||'',fonte:entry.fonte||'',desc:entry.desc||'',referenciaId:entry.id,bibliotecaOrigem:item.bibliotecaOrigem}]);
-                    showToast('Poder paranormal adicionado. Confira a afinidade e o requisito.');
-                    return;
-                }
-                if(kind==='rituais'){
-                    const rows=Array.isArray(data.rituais)?data.rituais:[];
-                    if(rows.some(x=>x.nome===entry.nome&&x.fonte===entry.fonte)){showToast('Este ritual desta fonte já consta da ficha.');return;}
-                    updateField('rituais',[...rows,{nome:entry.nome,circulo:entry.circulo||'',elemento:entry.elemento||'',execucao:entry.execucao||'',alcance:entry.alcance||'',duracao:entry.duracao||'',resistencia:entry.resistencia||'',desc:entry.desc||'',pagina:entry.pagina||'',fonte:entry.fonte||'',bibliotecaOrigem:item.bibliotecaOrigem}]);
-                    showToast('Ritual adicionado. Confira círculo e formas avançadas na fonte.');
-                    return;
-                }
-                if(features.some(x=>x.referenciaId===entry.id)){showToast('Este poder já está na ficha.');return;}
-                updateField('habilidades',[...features,item]);
-                showToast('Referência adicionada: '+entry.nome+'.');
             };
 
             const addFromDndLibrary = (entry, tab, choiceName='') => {
