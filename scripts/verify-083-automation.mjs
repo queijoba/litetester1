@@ -8,7 +8,7 @@ const app=await readFile('src/PJLiteApp.jsx','utf8');
 const need=(txt,tokens,label)=>{for(const t of tokens)if(!txt.includes(t))throw new Error(`${label}: ausente ${t}`);};
 need(skyCss,['PJ LITE 0.8.3 SKYFALL ATTR CARDS','grid-template-columns:minmax(320px,360px)','skyfall-profile-attributes .skyfall-attributes','repeat(3,minmax(0,1fr))'],'Skyfall atributos');
 need(ordem,['PJ LITE 0.8.3 ORDEM AUTO UI','BASE_TABS','evolucaoPatentes','ordem-meters--pd','defesaTotal','skillAttr','skillDice','skillBonus','atributoBase','ordem-skills-wrap'],'Ordem UI');
-if(ordem.includes("{meter('vida','VIDA','pvAtual','pvMax')}{mentalMode==='pd'?meter('determinacao'"))throw new Error('Ordem: layout antigo de PD ainda presente.');
+if(!ordem.includes("{mentalMode==='pd'?meter('determinacao','DETERMINAÇÃO','pdAtual','pdMax'):<>{meter('esforco'"))throw new Error('Ordem: modo PD deve substituir PE e SAN, e não apenas SAN.');
 need(ordemDataText,['PJ LITE 0.8.3 ORDEM AUTO DATA','atributoBase:attr','opcionais:{evolucaoPatentes:false,nivelExperiencia:false}','s.opcionais.evolucaoPatentes','s.opcionais.nivelExperiencia'],'Ordem dados');
 need(ordemCss,['PJ LITE 0.8.3 ORDEM AUTO THEME','.ordem-optional-rule','.ordem-meters--pd','.ordem-skill-dice'],'Ordem tema');
 need(ordemChat,['PJ LITE 0.8.3 ORDEM PD CHAT','const recursos=s.recursoMental','const defesa=10+Number'],'Ordem chat');
