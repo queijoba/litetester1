@@ -10,6 +10,7 @@ import srdFeats from '../systems/dnd5e/srd521-feats.js';
 import phbFeats from '../systems/dnd5e/phb2024-feats-summaries.js';
 import phbAasimar from '../systems/dnd5e/phb2024-species-aasimar.js';
 import phbBackgrounds from '../systems/dnd5e/phb2024-backgrounds.js';
+import {ORDEM_LIBRARY_CATALOG} from '../systems/ordemParanormal/libraryCatalog.js';
 import {localizeDndSrdEntry} from './dndSrdPortuguese.js';
 
 export const DND_SRD_SPECIES_COUNT = srdSpecies.length;
@@ -148,6 +149,7 @@ export const findAbilityPresets = (system, kind) => {
   const defaultEntries = [
     ...(system==='dnd5e'&&kind==='magias' ? [] : STARTERS[system]?.[kind] || []),
     ...(system==='dnd5e' ? (dndCatalog[kind] || []).map(entry=>localizeDndSrdEntry(entry,kind)) : []),
+    ...(system==='ordemParanormal' ? ORDEM_LIBRARY_CATALOG.filter(entry=>({origens:'origem',trilhas:'trilha',habilidades:'habilidade',poderesParanormais:'poderParanormal',rituais:'ritual'})[kind]===entry.tipo) : []),
   ];
   const builtins = defaultEntries.map((entry,index)=>({
     id: 'example-'+system+'-'+kind+'-'+index,
@@ -179,6 +181,8 @@ export const abilityPresetKindName = kind => ({
   habilidades:'Habilidades e poderes',
   caracteristicas:'Habilidades da classe',
   poderesParanormais:'Poderes paranormais',
+  origens:'Origens',
+  trilhas:'Trilhas',
   rituais:'Rituais',
   magias:'Magias',
   especies:'Espécies',
