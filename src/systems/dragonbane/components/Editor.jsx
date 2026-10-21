@@ -258,6 +258,7 @@ export default function DragonbaneEditor({ scope }) {
     view
   } = scope;
   const [dbPage,setDbPage]=React.useState('ficha');
+  const dbMobileTab=['status','pericias','equipamento'].includes(mobileTab)?mobileTab:'status';
   const navigateAbilityKind=(kind)=>setDbPage(['magia','truque'].includes(kind)?'magias':'habilidades');
 
   return (
@@ -284,13 +285,13 @@ export default function DragonbaneEditor({ scope }) {
                                           {dbPage==='ficha'&&<>
                                           <div className="db-mobile-navigation md:hidden grid grid-cols-3" aria-label="Seções da ficha">
                                               {[{id:'status',label:'Perfil & Status'},{id:'pericias',label:'Perícias'},{id:'equipamento',label:'Combate & Equip.'}].map(tab=><button
-                                                type="button" key={tab.id} aria-pressed={mobileTab===tab.id}
+                                                type="button" key={tab.id} aria-pressed={dbMobileTab===tab.id}
                                                 onClick={()=>setMobileTab(tab.id)}
-                                                className={`db-mobile-navigation-tab ${mobileTab===tab.id?'db-mobile-navigation--active':''}`}>{tab.label}</button>)}
+                                                className={`db-mobile-navigation-tab ${dbMobileTab===tab.id?'db-mobile-navigation--active':''}`}>{tab.label}</button>)}
                                           </div>
 
                                           {/* Biografia PC */}
-                                          <div className={`db-bio flex flex-col md:flex-row gap-4 items-start ${mobileTab === 'status' ? 'block' : 'hidden md:flex'}`}>
+                                          <div className={`db-bio flex flex-col md:flex-row gap-4 items-start ${dbMobileTab === 'status' ? 'block' : 'hidden md:flex'}`}>
                                               <div className="flex flex-col items-center gap-2 mx-auto md:mx-0 w-full md:w-auto">
                                                   <div className="db-portrait w-36 h-36 md:w-40 md:h-40 shrink-0 relative group overflow-hidden flex flex-col items-center justify-center">
                                                       {data.bio?.imagem ? ( <img src={data.bio.imagem} alt="Avatar" className="w-full h-full object-cover" /> ) : ( <span className="text-gray-400 text-sm font-bold uppercase text-center px-4">Retrato</span> )}
@@ -326,7 +327,7 @@ export default function DragonbaneEditor({ scope }) {
                                               </div>
                                           </div>
       
-                                          <div className={`${mobileTab === 'status' ? 'block' : 'hidden md:block'}`}>
+                                          <div className={`${dbMobileTab === 'status' ? 'block' : 'hidden md:block'}`}>
                                               <div className="db-attributes-strip">
                                                   {Object.keys(data.atributos || {}).map(attr => (
                                                       <div key={`strip-${attr}`} className="db-attr-medallion">
@@ -351,7 +352,7 @@ export default function DragonbaneEditor({ scope }) {
       
                                           {/* Grades e Blocos PC */}
                                           <div className="db-layout grid grid-cols-1 lg:grid-cols-12">
-                                              <div className={`db-column lg:col-span-4 xl:col-span-4 space-y-4 min-w-0 ${mobileTab === 'status' ? 'block' : 'hidden md:block'}`}>
+                                              <div className={`db-column lg:col-span-4 xl:col-span-4 space-y-4 min-w-0 ${dbMobileTab === 'status' ? 'block' : 'hidden md:block'}`}>
                                                   <div className="hidden">
                                                       <h2 style={getBarStyle()} className="font-title font-bold text-lg bg-dragon-dark text-white text-center py-1 mb-3 rounded-sm">ATRIBUTOS E CONDIÇÕES</h2>
                                                       <div className="grid grid-cols-2 gap-4">
@@ -477,7 +478,7 @@ export default function DragonbaneEditor({ scope }) {
                                                   </div>
                                               </div>
       
-                                              <div className={`db-column lg:col-span-8 xl:col-span-8 flex flex-col min-w-0 ${mobileTab === 'pericias' ? 'flex' : 'hidden md:flex'}`}>
+                                              <div className={`db-column lg:col-span-8 xl:col-span-8 flex flex-col min-w-0 ${dbMobileTab === 'pericias' ? 'flex' : 'hidden md:flex'}`}>
                                                   <div className="flex justify-end mb-3">
                                                       <button onClick={() => updateField('status.armasPrimeiro', !data.status?.armasPrimeiro)} className="text-[10px] bg-gray-200 hover:bg-gray-300 text-gray-700 px-2 py-1 rounded flex items-center gap-1 shadow-sm font-bold uppercase transition-colors">
                                                           <SVGIcons.Refresh /> Alternar Ordem
@@ -542,8 +543,8 @@ export default function DragonbaneEditor({ scope }) {
                                                   </div>
                                               </div>
       
-                                              <div className={`db-column db-column--mobile-combat lg:hidden space-y-4 min-w-0 ${mobileTab === 'equipamento' ? 'block' : 'hidden md:block'}`}>
-      <div className={`lg:hidden db-combat-mobile-slot md:block ${mobileTab === 'equipamento' ? 'block' : 'hidden'}`}>
+                                              <div className={`db-column db-column--mobile-combat lg:hidden space-y-4 min-w-0 ${dbMobileTab === 'equipamento' ? 'block' : 'hidden md:block'}`}>
+      <div className={`lg:hidden db-combat-mobile-slot md:block ${dbMobileTab === 'equipamento' ? 'block' : 'hidden'}`}>
                                                   <div>
                                                       <h2 style={getBarStyle()} className="db-section-title font-title font-bold text-base bg-dragon-dark text-white text-center py-1 mb-2">COMBATE</h2>
                                                       <div className="space-y-3 mb-4">
