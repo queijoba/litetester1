@@ -1,3 +1,4 @@
+import DragonbaneAbilityPanels from './AbilityPanels.jsx';
 // Extraído automaticamente do antigo PJLiteApp monolítico.
 // Este arquivo agora é a fonte visual do editor deste sistema.
 export default function DragonbaneEditor({ scope }) {
@@ -262,8 +263,8 @@ export default function DragonbaneEditor({ scope }) {
                               data.type === 'pc' ? (
                                   <React.Fragment>
                                       {/* Mobile Tabs for PC */}
-                                      <div className="md:hidden flex bg-gray-200 border-b border-gray-300">
-                                          {[ { id: 'status', label: 'Perfil & Status' }, { id: 'pericias', label: 'Perícias' }, { id: 'equipamento', label: 'Combate & Equip' } ].map(tab => (
+                                      <div className="md:hidden grid grid-cols-2 sm:grid-cols-4 bg-gray-200 border-b border-gray-300">
+                                          {[ { id: 'status', label: 'Perfil & Status' }, { id: 'pericias', label: 'Perícias' }, { id: 'equipamento', label: 'Combate & Equip' }, { id: 'poderes', label: 'Habilidades & Magia' } ].map(tab => (
                                               <button key={tab.id} onClick={() => setMobileTab(tab.id)} className={`flex-1 py-3 text-xs font-bold uppercase text-center border-b-4 transition-colors ${mobileTab === tab.id ? 'border-red-700 text-red-900 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-300'}`}>{tab.label}</button>
                                           ))}
                                       </div>
@@ -531,30 +532,18 @@ export default function DragonbaneEditor({ scope }) {
                                                   </div>
                                               </div>
       
-                                              <div className={`db-column lg:col-span-3 xl:col-span-4 space-y-4 min-w-0 ${mobileTab === 'equipamento' ? 'block' : 'hidden md:block'}`}>
-                                                  <div>
-                                                      <div style={getBarStyle()} className="db-section-title flex justify-between items-center bg-dragon-dark text-white py-1 px-3 mb-2">
-                                                          <h2 className="font-title font-bold text-lg">HABILIDADES E MAGIAS</h2>
-                                                          <button onClick={() => addToArray('habilidadesFeiticos', { nome: '', fv_nvl: '' })} className="db-add-btn db-add-red"><SVGIcons.Plus/> Adic.</button>
-                                                      </div>
-                                                      <div className="db-ability-list">
-                                                          {(data.habilidadesFeiticos || []).map((hab, index) => (
-                                                              <div key={index} className="db-ability-card flex gap-2 items-start min-w-0">
-                                                                  <div className="flex-1">
-                                                                      {index === 0 && <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Habilidade / Magia</label>}
-                                                                      <textarea rows="2" value={hab.nome} onChange={e => updateArrayField('habilidadesFeiticos', index, 'nome', e.target.value)} className="w-full border border-gray-300 rounded bg-gray-50 outline-none text-sm p-1 resize-y"></textarea>
-                                                                  </div>
-                                                                  <div className="w-12">
-                                                                      {index === 0 && <label className="block text-[10px] font-bold text-gray-400 uppercase text-center mb-1">PD/Nv.</label>}
-                                                                      <input type="text" value={hab.fv_nvl} onChange={e => updateArrayField('habilidadesFeiticos', index, 'fv_nvl', e.target.value)} className="w-full border-b border-gray-400 outline-none bg-transparent text-center text-sm mt-1" />
-                                                                  </div>
-                                                                  <button onClick={() => removeFromArray('habilidadesFeiticos', index)} className="text-red-500 hover:text-red-700 mt-2"><SVGIcons.Trash/></button>
-                                                              </div>
-                                                          ))}
-                                                      </div>
+                                              <div className={`db-column lg:col-span-3 xl:col-span-4 space-y-4 min-w-0 ${['equipamento','poderes'].includes(mobileTab) ? 'block' : 'hidden md:block'}`}>
+                                                  {/* Habilidades, poderes heroicos e grimório mantêm o array legado habilidadesFeiticos. */}
+                                                  <div className={`${mobileTab === 'poderes' ? 'block' : 'hidden md:block'}`}>
+                                                      <DragonbaneAbilityPanels
+                                                          data={data}
+                                                          addToArray={addToArray}
+                                                          updateArrayField={updateArrayField}
+                                                          removeFromArray={removeFromArray}
+                                                      />
                                                   </div>
-      
-      <div className="lg:hidden db-combat-mobile-slot">
+
+      <div className={`lg:hidden db-combat-mobile-slot md:block ${mobileTab === 'equipamento' ? 'block' : 'hidden'}`}>
                                                   <div>
                                                       <h2 style={getBarStyle()} className="db-section-title font-title font-bold text-base bg-dragon-dark text-white text-center py-1 mb-2">COMBATE</h2>
                                                       <div className="space-y-3 mb-4">
