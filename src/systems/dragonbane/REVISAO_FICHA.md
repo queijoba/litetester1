@@ -17,6 +17,22 @@ A coluna **Habilidades e Magias** guardava todos os recursos num único conjunto
 - O PDF editável possui **24 cartões**: o editor apresenta aviso quando o personagem exceder esse limite. Mais cartões exigem um modelo futuro com páginas adicionais; não foram prometidos.
 - Testes automatizados cobrem classificação, seis ancestralidades, registro original imutável, magia, ficha chat, PDF e adaptação mobile.
 
+## Segunda rodada no LiteTester — preservação da identidade visual
+
+O jogador aprovou a aparência anterior da ficha. Esta rodada **não muda** o logotipo Dragonbane, o retrato, os medallhões de atributos, as colunas principais, a fonte e a textura de pergaminho do PJLite.
+
+Os novos painéis usam os mesmos elementos gráficos da ficha clássica:
+- títulos **verde-esmeralda** com filetes e marcadores em losango;
+- cartões em **pergaminho creme com moldura esmeralda** e recortes assimétricos;
+- botões **vermelho-escuros**, respeitando as classes originais de adição;
+- categorias recolhíveis para preservar espaço nas colunas;
+- barra de navegação mobile com tons de pergaminho e destaque vermelho;
+- compatibilidade explícita com os temas escuro e personalizado existentes.
+
+Foi implementada uma função de renomeação atômica que fixa a categoria reconhecida de registros antigos quando seu nome começa a ser editado. Ao mover uma habilidade para outra categoria, essa seção abre automaticamente. Os controles de origem, custo, escola, preparação, Ficha Chat e PDF permanecem funcionais.
+
+Validação: pipeline GitHub Actions aprovado no ramo de testes; a publicação do LiteTester depende de disponibilidade de cota da Vercel e **não implica alteração do site PJLite oficial**.
+
 ## Recomendações futuras
 - Catálogo opcional de feitiços e habilidades heroicas pesquisáveis, com filtros por escola, grau e profissão e resumos redigidos especificamente para o PJLite.
 - Painel para contar o limite de feitiços preparados e validar acesso às escolas.
