@@ -78,7 +78,7 @@ export default function DragonbaneAbilityPanels({
          {kind.id==='truque'&&<span className="db-resource-trick-note">Sempre preparado · 1 PD</span>}
         </div>}
        <label className="db-resource-description"><span>Efeito / Observações</span>
-        <textarea rows={2} value={entry.desc??entry.descricao??''} onChange={e=>change(index,'desc',e.target.value)}
+        <textarea rows={2} value={entry.desc||entry.descricao||''} onChange={e=>change(index,entry.descricao!==undefined&&entry.desc===undefined?'descricao':'desc',e.target.value)}
          placeholder="Escreva um resumo do efeito, incluindo limites e condições." />
        </label>
        <details className="db-resource-extra">
