@@ -53,6 +53,30 @@ export function featRequirementWarnings(feat,{level=1,attributes={},classId='',s
  if(feat.nivelMinimo && currentLevel<Number(feat.nivelMinimo))
   warnings.push('Exige nível '+feat.nivelMinimo+' ou maior (ficha: '+currentLevel+').');
  const req=String(feat.requisitoOriginal||feat.requisito||'');
+ const requisitoPt=String(feat.requisitoPt||feat.requisito||'');
+ const reqNorm=requisitoPt.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+ const stats={forca:'for',destreza:'des',constituicao:'con',inteligencia:'int',sabedoria:'sab',carisma:'car'};
+ const attributes13=reqNorm.match(/(?:forca|destreza|constituicao|inteligencia|sabedoria|carisma)(?:\s*(?:,|ou|e)\s*(?:forca|destreza|constituicao|inteligencia|sabedoria|carisma))*\s*13\+/);
+ if(attributes13 && !/Strength or Dexterity 13/i.test(req)){
+  const alternatives=[...attributes13[0].matchAll(/forca|destreza|constituicao|inteligencia|sabedoria|carisma/g)].map(x=>x[0]);
+  if(alternatives.length&&!alternatives.some(key=>Number(attributes[stats[key]]??0)>=13))
+   warnings.push('Exige '+requisitoPt.split(';').at(-1).trim()+'.');
+ }
+ if(/treinamento com armaduras|treinamento com escudos/i.test(requisitoPt)){
+  if(!selectedFeatures.some(item=>/armadura|escudo|profici[eê]ncia/i.test(item.nome||'')&&
+          /treinamento com|profici[eê]ncia/i.test(item.desc||'')))
+   warnings.push('Confirme o treinamento exigido em armaduras ou escudos.');
+ }
+ if(/classe paladino/i.test(requisitoPt) && classId!=='paladino')
+  warnings.push('Exclusivo para Paladino.');
+ if(/classe patrulheiro/i.test(requisitoPt) && classId!=='patrulheiro')
+  warnings.push('Exclusivo para Patrulheiro.');
+ if(/conjura[cç][aã]o ou magia de pacto/i.test(requisitoPt)){
+  const capable=['bardo','bruxo','clerigo','druida','feiticeiro','mago','paladino','patrulheiro'];
+  if(!capable.includes(classId)&&!selectedFeatures.some(entry=>/conjura[cç][aã]o|magia de pacto/i.test(entry.nome||'')))
+   warnings.push('Exige capacidade de conjurar magias ou Magia de Pacto; confirme com o Mestre.');
+ }
+
  const strength=Number(attributes.for??10),dex=Number(attributes.des??10);
  if(/Strength or Dexterity 13/i.test(req) && Math.max(strength,dex)<13)
   warnings.push('Exige Força ou Destreza 13 ou maior.');
