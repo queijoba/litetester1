@@ -1,4 +1,6 @@
 import DndCharacterEditor from './systems/dnd5e/components/CharacterEditor.jsx';
+import DndLibraryModal from './components/DndLibraryModal.jsx';
+import { getDndClassByLabel } from './systems/dnd5e/classPanels.js';
 import DndThreatEditor from './systems/dnd5e/components/ThreatEditor.jsx';
 import FabulaCharacterEditor from './systems/fabulaUltima/components/CharacterEditor.jsx';
 import FabulaThreatEditor from './systems/fabulaUltima/components/ThreatEditor.jsx';
@@ -1228,6 +1230,8 @@ const { useState, useEffect, useRef } = React;
             const [showUrlInput, setShowUrlInput] = useState(false);
             const [tempUrl, setTempUrl] = useState('');
             const [mobileTab, setMobileTab] = useState('status');
+            const [dndLibraryOpen, setDndLibraryOpen] = useState(false);
+            const [dndLibraryTab, setDndLibraryTab] = useState('classe');
             const [deleteConfirmId, setDeleteConfirmId] = useState(null);
             const [toastMsg, setToastMsg] = useState('');
             
@@ -3016,6 +3020,33 @@ const { useState, useEffect, useRef } = React;
                 );
             }
 
+            const addFromDndLibrary = (entry, tab) => {
+                if (tab === 'magias') {
+                    const existing = Array.isArray(data.magias?.lista) ? data.magias.lista : [];
+                    updateField('magias.lista', [...existing, { ...entry, preparada: false }]);
+                    setMobileTab('magias');
+                    showToast('Magia adicionada ao grimório.');
+                    return;
+                }
+                const selected = getDndClassByLabel(data.bio?.classe || '');
+                if (!selected) { showToast('Selecione uma classe primeiro.'); return; }
+                const origin = tab === 'subclasse' ? 'subclasse' : 'classe';
+                const subclasse = String(data.bio?.subclasse || '');
+                if (origin === 'subclasse' && !subclasse) { showToast('Selecione uma subclasse primeiro.'); return; }
+                const {classId: _oldClass, classe: _oldLabel, subclasse: _oldSubclass, ...body} = entry;
+                const feature = {
+                    ...body,
+                    tipo: 'classe',
+                    origem: origin,
+                    classId: selected.id,
+                    ...(origin === 'subclasse' ? { subclasse } : {})
+                };
+                const features = Array.isArray(data.caracteristicas) ? data.caracteristicas : [];
+                updateField('caracteristicas', [...features, feature]);
+                setMobileTab('classe');
+                showToast('Habilidade adicionada à ' + (origin === 'subclasse' ? 'subclasse.' : 'classe.'));
+            };
+
             const isDnd = data.system === 'dnd5e';
             const isFabula = data.system === 'fabula';
             const isSom6 = data.system === 'somdas6';
@@ -3293,6 +3324,10 @@ const { useState, useEffect, useRef } = React;
                         <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end items-center">
                             <input value={data.meta?.campanha || ''} onChange={e=>updateField('meta.campanha', e.target.value)} placeholder="Campanha" className="w-28 md:w-36 px-2 py-1 rounded text-xs text-gray-900 bg-white/90 border border-white/30" title="Campanha / pasta desta ficha" />
                             {saveStatus && <span className={`text-[10px] font-bold px-2 py-1 rounded ${saveStatus==='error'?'bg-red-900':saveStatus==='saving'?'bg-amber-700':'bg-black/30'}`}>{saveStatus==='pending'?'Alterado…':saveStatus==='saving'?'Salvando…':saveStatus==='saved'?'✓ Salvo':'Erro ao salvar'}</span>}
+                            {isDnd && data.type === 'pc' && <button type="button" onClick={()=>{
+                                setDndLibraryTab(mobileTab === 'magias' ? 'magias' : 'classe');
+                                setDndLibraryOpen(true);
+                            }} className="pjlite-toolbar-library" title="Biblioteca de habilidades e magias" aria-label="Biblioteca de habilidades e magias">📚</button>}
                             <button onClick={()=>setShowHistoryModal(true)} className="px-3 py-1 rounded text-xs md:text-sm font-bold bg-black/30 hover:bg-black/50 text-white" title="Histórico local">🕘</button>
                             <button onClick={() => openChatOptions(data)} className="flex items-center gap-1 px-3 py-1 rounded text-xs md:text-sm font-bold transition-colors shadow bg-black/30 hover:bg-black/50 text-white" title="Copiar como texto">
                                 <SVGIcons.MessageCircle /> Copiar Ficha
@@ -3317,6 +3352,14 @@ const { useState, useEffect, useRef } = React;
                             {toastMsg}
                         </div>
                     )}
+                    {isDnd && data.type === 'pc' && <DndLibraryModal
+                        open={dndLibraryOpen}
+                        initialTab={dndLibraryTab}
+                        className={data.bio?.classe || ''}
+                        subclass={data.bio?.subclasse || ''}
+                        onChoose={addFromDndLibrary}
+                        onClose={()=>setDndLibraryOpen(false)}
+                    />}
                     {renderHistoryModal()}
                         {chatModal.isOpen && ReactDOM.createPortal(
                             <div className="fixed inset-0 bg-black/60 z-[320] flex items-center justify-center p-4 no-print">
