@@ -95,3 +95,22 @@ body.theme-ordem .ordem-sheet .ordem-card,body.theme-dark .ordem-sheet .ordem-ca
 .ordem-sheet .ordem-level-badge input{text-align:center;font-size:21px;font-weight:900;color:#171717;background:#faf9f5;border:0;width:60px}
 .ordem-sheet .ordem-paranormal-entry{border-left:4px solid #764e81!important}
 .ordem-sheet .ordem-ritual-entry{border-left:4px solid #a5383f!important}
+
+
+/* Ficha de agente: linguagem visual inspirada nos formulários impressos de Sobrevivendo ao Horror. */
+.ordem-sheet{--ordem-paper:#e8e3d7;--ordem-ink:#18191b;--ordem-red:#9d2929;background:radial-gradient(circle at 90% 0%,#281a1a 0,transparent 36%),#0e1011}
+.ordem-hero{position:relative;justify-content:flex-start;background:linear-gradient(110deg,#111315,#222426 70%,#491b1c);border-radius:2px;border:1px solid #716e66;border-left:6px solid #a42a2d;padding:17px 20px;box-shadow:inset 0 0 0 2px #121212,0 5px 20px #0005}
+.ordem-hero h2{font-family:Georgia,'Times New Roman',serif;font-size:clamp(20px,3vw,29px);letter-spacing:.08em}
+.ordem-seal{width:55px;height:55px;flex:0 0 55px;border:2px double #b7a89b;outline:1px solid #694849;outline-offset:3px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;color:#e7ddd0;font-family:Georgia,serif;font-size:35px;line-height:1}
+.ordem-seal small{position:absolute;font-size:11px;right:7px;bottom:5px;color:#d38a8a}
+.ordem-progression-badges{margin-left:auto}
+.ordem-file-ribbon{display:flex;align-items:center;gap:12px;justify-content:space-between;padding:6px 11px;background:#e3ded3;color:#3a3231;border-left:5px solid #a32b2b;font-size:9px;font-weight:900;letter-spacing:.11em;text-transform:uppercase}
+.ordem-file-ribbon span:first-child{color:#962929}
+.ordem-panel{border-radius:2px;border-color:#68615a;box-shadow:inset 0 0 0 1px #1c1c1e,0 2px 6px #0003}
+.ordem-panel-title{border-bottom:1px solid #6e3737;padding-bottom:7px;margin-bottom:10px}
+.ordem-panel-title>span{font-family:Georgia,serif;letter-spacing:.08em}
+.ordem-tabs button{border-radius:2px;text-transform:uppercase;letter-spacing:.04em}
+.ordem-tabs button.active{box-shadow:inset 0 -3px 0 #e0b4a7}
+.ordem-attr{border-radius:2px!important;border-color:#71635f!important}
+.ordem-attr strong{font-family:Georgia,serif}
+@media(max-width:640px){.ordem-hero{padding:12px;gap:10px}.ordem-seal{width:40px;height:40px;flex-basis:40px;font-size:25px}.ordem-seal small{font-size:8px;right:4px;bottom:3px}.ordem-file-ribbon{font-size:8px;flex-wrap:wrap;gap:4px}.ordem-file-ribbon span:last-child{flex-basis:100%}.ordem-hero h2{letter-spacing:.02em}}
