@@ -6,7 +6,7 @@ import {normalizeOrdemPcData,initialOrdemPcData} from '../src/systems/ordemParan
 
 globalThis.localStorage={getItem:()=>null,setItem:()=>{},removeItem:()=>{}};
 assert.ok(ORDEM_LIBRARY_CATALOG.length>=95);
-assert.equal(ORDEM_LIBRARY_COUNTS.origem,33);
+assert.equal(ORDEM_LIBRARY_COUNTS.origem,35);
 assert.equal(ORDEM_LIBRARY_COUNTS.trilha,18);
 assert.ok(ORDEM_LIBRARY_CATALOG.every(x=>x.nome&&x.tipo&&x.fonte&&x.desc&&x.pagina));
 assert.ok(ORDEM_LIBRARY_CATALOG.every(x=>!/playtest|alpha|ordem 2/i.test([x.nome,x.fonte,x.desc].join(' '))));
@@ -36,4 +36,4 @@ assert.ok(!editor.includes('📚 Biblioteca</button>'),'Botões de biblioteca de
 assert.ok(libui.includes("['origens','Origens']")&&libui.includes("['trilhas','Trilhas']"));
 assert.ok(stylesheet.includes('Atualização visual v2'));
 assert.ok(map.includes("Habilidade/Ritual - Página"));
-console.log('✓ Ordem Paranormal: 98 referências, 3 livros/acervos, campos SaH, toolbar, PDF e salvamentos legados verificados.');
+console.log('✓ Ordem Paranormal: 109 referências, 3 livros/acervos, campos SaH, toolbar, PDF e salvamentos legados verificados.');
