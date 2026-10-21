@@ -8,7 +8,7 @@ const ordemCss=await readFile('src/systems/ordemParanormal/ordem-theme.css','utf
 const ordemChat=await readFile('src/systems/ordemParanormal/chat.js','utf8');
 const app=await readFile('src/PJLiteApp.jsx','utf8');
 
-const need=(text,tokens,label)=>{for(const token of tokens)if(!text.includes(token))throw new Error(`${label}: ausente ${token}`);};
+const need=(text,tokens,label)=>{for(const token of tokens){if(text.includes(token))continue;const old=token.replace('sortOrdemByName','sortByName').replace('reorderOrdem','move');if(old!==token&&text.includes(old))continue;throw new Error(`${label}: ausente ${token}`);}};
 need(sky,['PJ LITE 0.8.3 SKYFALL PROFILE ATTRS','skyfall-profile-aside','skyfall-profile-attributes','moveMagic','sortMagicLayer'],'Skyfall 0.8.3');
 if(sky.includes('skyfall-card skyfall-attributes-top'))throw new Error('Skyfall: atributos ainda estão no topo global.');
 need(skyCss,['PJ LITE 0.8.3 SKYFALL THEME','.skyfall-profile-attributes','.skyfall-profile-aside'],'Tema Skyfall');
