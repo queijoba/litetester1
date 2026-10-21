@@ -11,10 +11,10 @@ export const ORDEM_SKILLS=[
 const skills=()=>Object.fromEntries(ORDEM_SKILLS.map(([id])=>[id,{grau:0,outros:0}]));
 export const initialOrdemPcData={
  id:'',system:'ordemParanormal',type:'pc',
- bio:{nome:'',jogador:'',origem:'',classe:'',trilha:'',nex:5,patente:'Recruta',idade:'',imagem:''},
+ bio:{nome:'',jogador:'',origem:'',classe:'',trilha:'',nex:5,estagio:1,patente:'Recruta',idade:'',imagem:''},
  atributos:{agi:1,for:1,int:1,pre:1,vig:1},
- status:{pvAtual:10,pvMax:10,peAtual:5,peMax:5,sanAtual:10,sanMax:10,defesa:10,bloqueio:0,esquiva:10,peRodada:1,deslocamento:'9 m'},
- pericias:skills(), ataques:[], habilidades:[], rituais:[], inventario:[], resistencias:'', proficiencias:'', afinidade:'', notas:''
+ status:{pvAtual:10,pvMax:10,peAtual:5,peMax:5,pdAtual:0,pdMax:0,sanAtual:10,sanMax:10,defesa:10,bloqueio:0,esquiva:10,peRodada:1,limitePePd:1,deslocamento:'9 m'},
+ pericias:skills(), ataques:[], habilidades:[], rituais:[], inventario:[], gestao:{prestigio:0,limiteItens:'',limiteCredito:'',cargaMax:''}, resistencias:'', proficiencias:'', afinidade:'', notas:''
 };
 const c=v=>JSON.parse(JSON.stringify(v)); const list=v=>Array.isArray(v)?v:[];
 export function normalizeOrdemPcData(item){
@@ -22,6 +22,7 @@ export function normalizeOrdemPcData(item){
  s.bio={...initialOrdemPcData.bio,...(s.bio||{})}; s.bio.nex=Math.max(0,Number(s.bio.nex??5)||0);
  s.atributos={...initialOrdemPcData.atributos,...(s.atributos||{})}; ORDEM_ATTRIBUTES.forEach(([k])=>s.atributos[k]=Number(s.atributos[k]??1)||0);
  s.status={...initialOrdemPcData.status,...(s.status||{})};
+ s.gestao={...initialOrdemPcData.gestao,...(s.gestao||{})};
  s.pericias={...skills(),...(s.pericias||{})}; ORDEM_SKILLS.forEach(([id])=>{const x=s.pericias[id]||{};s.pericias[id]={grau:[0,5,10,15].includes(Number(x.grau))?Number(x.grau):0,outros:Number(x.outros||0)||0};});
  s.ataques=list(s.ataques).map(x=>({nome:'',teste:'',dano:'',critico:'',alcance:'',tipo:'',municao:'',desc:'',...(x||{})}));
  s.habilidades=list(s.habilidades).map(x=>({nome:'',tipo:'Poder',custo:'',desc:'',...(x||{})}));
