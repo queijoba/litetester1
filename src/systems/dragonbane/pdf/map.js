@@ -1,3 +1,4 @@
+import {dragonbaneAbilityKind,dragonbanePdfAbilityOrder,dragonbanePdfAbilityName} from '../abilities.js';
 const clean = v => String(v ?? '')
   .replace(/[–—]/g, '-')
   .replace(/[“”]/g, '"')
@@ -125,20 +126,33 @@ export function fillDragonbanePdf(form, item) {
   setText(form, 'cobre', item?.moedas?.cobre ?? '');
 
   setText(form, 'nome_pagina_2', bio.nome);
-  (item?.habilidadesFeiticos || []).slice(0, 24).forEach((hab, index) => {
-    const n = String(index + 1).padStart(2, '0');
-    const rawLines = String(hab?.nome || '').split(/\r?\n/).map(v => v.trim()).filter(Boolean);
-    const cardName = rawLines.shift() || '';
-    const description = [hab?.descricao ?? hab?.desc ?? '', rawLines.join(' ')].filter(Boolean).join(' ');
-    const lines = wrap3(description);
-    const kind = String(hab?.tipo || '').toLowerCase();
-    const isMagic = hab?.magia === true || hab?.isSpell === true || kind.includes('magia') || kind.includes('spell');
-    setCheck(form, `cartao_${n}_habilidade`, !isMagic);
-    setCheck(form, `cartao_${n}_magia`, isMagic);
-    setText(form, `cartao_${n}_nome`, cardName);
-    setText(form, `cartao_${n}_fv_nivel`, hab?.fv_nvl ?? hab?.pd_nivel ?? '');
-    setText(form, `cartao_${n}_descricao_1`, lines[0]);
-    setText(form, `cartao_${n}_descricao_2`, lines[1]);
-    setText(form, `cartao_${n}_descricao_3`, lines[2]);
+  // O PDF físico possui 24 cartões mistos. A categoria vai no título para
+  // distinguir habilidades inatas, heroicas, feitiços e truques sem trocar o template.
+  dragonbanePdfAbilityOrder(item?.habilidadesFeiticos).slice(0,24).forEach((hab,index)=>{
+    const n=String(index+1).padStart(2,'0');
+    const kind=dragonbaneAbilityKind(hab);
+    const isMagic=kind==='magia'||kind==='truque';
+    const rawLines=String(hab?.nome||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+    rawLines.shift();
+    const detail=[
+      isMagic&&hab?.escola&&'Escola: '+hab.escola,
+      kind==='magia'&&hab?.grau&&'Grau '+hab.grau,
+      kind==='magia'&&hab?.preparada&&'Preparado',
+      hab?.descricao??hab?.desc??'',
+      rawLines.join(' '),
+      hab?.conjuracao&&'Conjuração: '+hab.conjuracao,
+      hab?.alcance&&'Alcance: '+hab.alcance,
+      hab?.duracao&&'Duração: '+hab.duracao,
+      hab?.fonte&&'Fonte: '+hab.fonte,
+      hab?.pagina&&'p. '+hab.pagina
+    ].filter(Boolean).join(' | ');
+    const lines=wrap3(detail);
+    setCheck(form,`cartao_${n}_habilidade`,!isMagic);
+    setCheck(form,`cartao_${n}_magia`,isMagic);
+    setText(form,`cartao_${n}_nome`,dragonbanePdfAbilityName(hab));
+    setText(form,`cartao_${n}_fv_nivel`,kind==='truque'?(hab?.fv_nvl||'1 PD'):(hab?.fv_nvl??hab?.pd_nivel??''));
+    setText(form,`cartao_${n}_descricao_1`,lines[0]);
+    setText(form,`cartao_${n}_descricao_2`,lines[1]);
+    setText(form,`cartao_${n}_descricao_3`,lines[2]);
   });
 }
