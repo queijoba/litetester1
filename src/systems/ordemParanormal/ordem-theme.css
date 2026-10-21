@@ -59,3 +59,16 @@ body.theme-ordem .ordem-sheet .ordem-card,body.theme-dark .ordem-sheet .ordem-ca
 .ordem-sheet .pjlite-preset-save{font-size:10px;background:#ded9d0!important;color:#4e4841!important}
 @media(max-width:700px){.ordem-sheet{padding:6px!important}.ordem-sheet .ordem-hero{padding:12px!important}.ordem-sheet .ordem-hero h2{font-size:19px!important}.ordem-sheet .ordem-panel,.ordem-sheet .ordem-card{padding:9px!important}.ordem-sheet .ordem-attrs{grid-template-columns:repeat(3,minmax(0,1fr))}.ordem-sheet .ordem-attr input{font-size:22px!important}.ordem-sheet .ordem-meter{min-width:0}.ordem-sheet .ordem-hero p{max-width:230px}}
 @media print{body.theme-ordem .ordem-sheet,.ordem-sheet{background:white!important;border:0!important;box-shadow:none!important}.ordem-tabs,.ordem-photo label,.ordem-photo button,.ordem-entry button,.ordem-add{display:none!important}.ordem-panel,.ordem-card,.ordem-entry{break-inside:avoid}}
+
+/* PJ LITE 0.8.3 ORDEM THEME STABLE — v2 reimplementada, sem reverter o visual de papel */
+.ordem-sheet .ordem-mental-switch{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#f4f2ec;border:1px solid #b1aca2;padding:9px 12px;margin-bottom:10px}
+.ordem-sheet .ordem-mental-switch strong{display:block;font-size:11px;color:#282422}
+.ordem-sheet .ordem-mental-switch small{display:block;font-size:9px;color:#605952}
+.ordem-sheet .ordem-mental-switch select{width:auto;max-width:235px;background:#fff!important;color:#222!important}
+.ordem-sheet .ordem-dt-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.ordem-sheet .ordem-dt-grid input{text-align:center}
+.ordem-sheet .ordem-skill-head,.ordem-sheet .ordem-skill{grid-template-columns:minmax(125px,1fr) 38px 54px 77px 60px}
+.ordem-sheet .ordem-skill-dice{color:#6f232b;text-align:center;font-size:10px}
+.ordem-sheet .ordem-evolution-grid{display:grid;grid-template-columns:1fr 1fr 1fr 34px;gap:6px}
+.ordem-sheet .ordem-panel-actions{align-items:center}
+@media(max-width:640px){.ordem-sheet .ordem-mental-switch{flex-direction:column;align-items:stretch}.ordem-sheet .ordem-mental-switch select{max-width:none;width:100%}.ordem-sheet .ordem-dt-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ordem-sheet .ordem-skill-head,.ordem-sheet .ordem-skill{grid-template-columns:minmax(0,1fr) 32px 42px 60px 45px;gap:3px}.ordem-sheet .ordem-skill strong{font-size:10px}.ordem-sheet .ordem-evolution-grid{grid-template-columns:1fr 1fr}.ordem-sheet .ordem-evolution-grid button{grid-column:2}}
