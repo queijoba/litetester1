@@ -87,3 +87,11 @@ body.theme-ordem .ordem-sheet .ordem-card,body.theme-dark .ordem-sheet .ordem-ca
 .ordem-sheet .ordem-skill-dice,.ordem-sheet .ordem-skill-bonus{display:block;text-align:center;font-size:10px;font-weight:900;color:#792126}
 .ordem-sheet .ordem-auto-help{font-size:10px;color:#756e65;margin-top:10px}
 @media(max-width:640px){.ordem-sheet .ordem-meters--pd{grid-template-columns:repeat(2,minmax(0,1fr))!important}.ordem-sheet .ordem-skill-head,.ordem-sheet .ordem-skill{grid-template-columns:128px 65px 48px 50px 62px 52px!important;min-width:495px}.ordem-sheet .ordem-optional-rule{padding:8px!important}}
+
+/* PJ LITE 0.8.3 ORDEM NEX NIVEL STYLE */
+.ordem-sheet .ordem-progression-badges{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.ordem-sheet .ordem-level-badge{min-width:75px;border:2px solid #161616;background:#faf9f5;padding:6px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ordem-sheet .ordem-level-badge span{font-size:9px;font-weight:900;letter-spacing:.13em;color:#843035}
+.ordem-sheet .ordem-level-badge input{text-align:center;font-size:21px;font-weight:900;color:#171717;background:#faf9f5;border:0;width:60px}
+.ordem-sheet .ordem-paranormal-entry{border-left:4px solid #764e81!important}
+.ordem-sheet .ordem-ritual-entry{border-left:4px solid #a5383f!important}
