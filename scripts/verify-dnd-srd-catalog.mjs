@@ -63,7 +63,7 @@ assert.ok(!college.some(x=>x.entry.subclasse==='Colégio da Dança'));
 const other=getDndLibraryEntries({tab:'subclasse',classId:'bardo',subclass:'Colégio da Dança'});
 assert.ok(other.some(x=>x.entry.nome.includes('Ficha de Colégio da Dança')));
 assert.ok(other.every(x=>!x.entry.fonte.includes('SRD 5.2.1')||!x.entry._srdId?.startsWith('Bard:subclasse:')));
-const cross=getDndLibraryEntries({tab:'classe',classId:'mago',query:'Barbarian',allClasses:true});
+const cross=getDndLibraryEntries({tab:'classe',classId:'mago',query:'Bárbaro',allClasses:true});
 assert.ok(cross.some(x=>x.entry.classId==='barbaro'));
 assert.equal(canUseDndEntry({classId:'barbaro'},'classe','mago',''),false);
 
