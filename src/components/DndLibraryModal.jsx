@@ -5,7 +5,7 @@ import {removeAbilityPreset} from './abilityPresetLibrary.js';
 import {getDndLibraryEntries,canUseDndEntry} from './dndLibraryFilters.js';
 import './dndLibraryModal.css';
 
-const circle=value=>Math.max(0,Math.min(9,Number(String(value??'0').match(/\\d+/)?.[0]||0)));
+const circle=value=>Math.max(0,Math.min(9,Number(String(value??'0').match(/\d+/)?.[0]||0)));
 const classNameFor=id=>DND_2024_CLASSES.find(entry=>entry.id===id)?.label||'';
 
 export default function DndLibraryModal({open,initialTab='classe',className='',subclass='',onChoose,onClose}){
