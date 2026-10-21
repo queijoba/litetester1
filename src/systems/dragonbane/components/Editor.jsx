@@ -1,4 +1,5 @@
 import DragonbaneAbilityPanels from './AbilityPanels.jsx';
+const DRAGONBANE_PAGES=[['ficha','Ficha'],['habilidades','Habilidades'],['magias','Magias']];
 // Extraído automaticamente do antigo PJLiteApp monolítico.
 // Este arquivo agora é a fonte visual do editor deste sistema.
 export default function DragonbaneEditor({ scope }) {
@@ -256,19 +257,14 @@ export default function DragonbaneEditor({ scope }) {
     useState,
     view
   } = scope;
+  const [dbPage,setDbPage]=React.useState('ficha');
+  const navigateAbilityKind=(kind)=>setDbPage(['magia','truque'].includes(kind)?'magias':'habilidades');
 
   return (
     <>
       {!isDnd && !isFabula && !isSom6 && !is3Det && (
                               data.type === 'pc' ? (
                                   <React.Fragment>
-                                      {/* Mobile Tabs for PC */}
-                                      <div className="db-mobile-navigation md:hidden grid grid-cols-2 sm:grid-cols-4">
-                                          {[ { id: 'status', label: 'Perfil & Status' }, { id: 'pericias', label: 'Perícias' }, { id: 'equipamento', label: 'Combate & Equip' }, { id: 'poderes', label: 'Habilidades & Magia' } ].map(tab => (
-                                              <button key={tab.id} onClick={() => setMobileTab(tab.id)} className={`db-mobile-navigation-tab ${mobileTab === tab.id ? 'db-mobile-navigation--active' : ''}`}>{tab.label}</button>
-                                          ))}
-                                      </div>
-      
                                       <div className="db-paper db-sheet p-3 md:p-5 space-y-4">
                                           <div className="db-brand">
                                               <div className="db-brand-line"></div>
@@ -279,6 +275,20 @@ export default function DragonbaneEditor({ scope }) {
                                               <div className="db-brand-line"></div>
                                           </div>
       
+                                          <nav className="db-primary-tabs" role="tablist" aria-label="Seções da ficha Dragonbane">
+                                              {DRAGONBANE_PAGES.map(([id,label])=><button
+                                                key={id} type="button" role="tab" aria-selected={dbPage===id}
+                                                className={`db-primary-tab ${dbPage===id?'active':''}`}
+                                                onClick={()=>setDbPage(id)}>{label}</button>)}
+                                          </nav>
+                                          {dbPage==='ficha'&&<>
+                                          <div className="db-mobile-navigation md:hidden grid grid-cols-3" aria-label="Seções da ficha">
+                                              {[{id:'status',label:'Perfil & Status'},{id:'pericias',label:'Perícias'},{id:'equipamento',label:'Combate & Equip.'}].map(tab=><button
+                                                type="button" key={tab.id} aria-pressed={mobileTab===tab.id}
+                                                onClick={()=>setMobileTab(tab.id)}
+                                                className={`db-mobile-navigation-tab ${mobileTab===tab.id?'db-mobile-navigation--active':''}`}>{tab.label}</button>)}
+                                          </div>
+
                                           {/* Biografia PC */}
                                           <div className={`db-bio flex flex-col md:flex-row gap-4 items-start ${mobileTab === 'status' ? 'block' : 'hidden md:flex'}`}>
                                               <div className="flex flex-col items-center gap-2 mx-auto md:mx-0 w-full md:w-auto">
@@ -341,7 +351,7 @@ export default function DragonbaneEditor({ scope }) {
       
                                           {/* Grades e Blocos PC */}
                                           <div className="db-layout grid grid-cols-1 lg:grid-cols-12">
-                                              <div className={`db-column lg:col-span-4 xl:col-span-3 space-y-4 min-w-0 ${mobileTab === 'status' ? 'block' : 'hidden md:block'}`}>
+                                              <div className={`db-column lg:col-span-4 xl:col-span-4 space-y-4 min-w-0 ${mobileTab === 'status' ? 'block' : 'hidden md:block'}`}>
                                                   <div className="hidden">
                                                       <h2 style={getBarStyle()} className="font-title font-bold text-lg bg-dragon-dark text-white text-center py-1 mb-3 rounded-sm">ATRIBUTOS E CONDIÇÕES</h2>
                                                       <div className="grid grid-cols-2 gap-4">
@@ -467,7 +477,7 @@ export default function DragonbaneEditor({ scope }) {
                                                   </div>
                                               </div>
       
-                                              <div className={`db-column lg:col-span-5 xl:col-span-5 flex flex-col min-w-0 ${mobileTab === 'pericias' ? 'flex' : 'hidden md:flex'}`}>
+                                              <div className={`db-column lg:col-span-8 xl:col-span-8 flex flex-col min-w-0 ${mobileTab === 'pericias' ? 'flex' : 'hidden md:flex'}`}>
                                                   <div className="flex justify-end mb-3">
                                                       <button onClick={() => updateField('status.armasPrimeiro', !data.status?.armasPrimeiro)} className="text-[10px] bg-gray-200 hover:bg-gray-300 text-gray-700 px-2 py-1 rounded flex items-center gap-1 shadow-sm font-bold uppercase transition-colors">
                                                           <SVGIcons.Refresh /> Alternar Ordem
@@ -532,18 +542,7 @@ export default function DragonbaneEditor({ scope }) {
                                                   </div>
                                               </div>
       
-                                              <div className={`db-column lg:col-span-3 xl:col-span-4 space-y-4 min-w-0 ${['equipamento','poderes'].includes(mobileTab) ? 'block' : 'hidden md:block'}`}>
-                                                  {/* Habilidades, poderes heroicos e grimório mantêm o array legado habilidadesFeiticos. */}
-                                                  <div className={`${mobileTab === 'poderes' ? 'block' : 'hidden md:block'}`}>
-                                                      <DragonbaneAbilityPanels
-                                                          data={data}
-                                                          addToArray={addToArray}
-                                                          updateArrayField={updateArrayField}
-                                                          removeFromArray={removeFromArray}
-                                                          setData={setData}
-                                                      />
-                                                  </div>
-
+                                              <div className={`db-column db-column--mobile-combat lg:hidden space-y-4 min-w-0 ${mobileTab === 'equipamento' ? 'block' : 'hidden md:block'}`}>
       <div className={`lg:hidden db-combat-mobile-slot md:block ${mobileTab === 'equipamento' ? 'block' : 'hidden'}`}>
                                                   <div>
                                                       <h2 style={getBarStyle()} className="db-section-title font-title font-bold text-base bg-dragon-dark text-white text-center py-1 mb-2">COMBATE</h2>
@@ -610,6 +609,29 @@ export default function DragonbaneEditor({ scope }) {
                                                   </div>
                                               </div>
                                           </div>
+                                          </>}
+                                          {dbPage==='habilidades'&&<div role="tabpanel" aria-label="Habilidades">
+                                              <DragonbaneAbilityPanels
+                                                data={data}
+                                                addToArray={addToArray}
+                                                updateArrayField={updateArrayField}
+                                                removeFromArray={removeFromArray}
+                                                setData={setData}
+                                                visibleKinds={['inata','heroica','outro']}
+                                                onNavigateKind={navigateAbilityKind}
+                                              />
+                                          </div>}
+                                          {dbPage==='magias'&&<div role="tabpanel" aria-label="Magias">
+                                              <DragonbaneAbilityPanels
+                                                data={data}
+                                                addToArray={addToArray}
+                                                updateArrayField={updateArrayField}
+                                                removeFromArray={removeFromArray}
+                                                setData={setData}
+                                                visibleKinds={['magia','truque']}
+                                                onNavigateKind={navigateAbilityKind}
+                                              />
+                                          </div>}
                                       </div>
                                   </React.Fragment>
                               ) : data.type === 'pnj' ? (
