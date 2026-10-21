@@ -1,5 +1,6 @@
 import DndCharacterEditor from './systems/dnd5e/components/CharacterEditor.jsx';
 import DndLibraryModal from './components/DndLibraryModal.jsx';
+import OrdemLibraryModal from './systems/ordemParanormal/OrdemLibraryModal.jsx';
 import { buildSpeciesApplication, buildFeatApplication } from './components/dndSpeciesFeatActions.js';
 import {buildBackgroundApplication} from './components/dndBackgroundActions.js';
 import {findAbilityPresets} from './components/abilityPresetLibrary.js';
@@ -1235,6 +1236,7 @@ const { useState, useEffect, useRef } = React;
             const [mobileTab, setMobileTab] = useState('status');
             const [dndLibraryOpen, setDndLibraryOpen] = useState(false);
             const [dndLibraryTab, setDndLibraryTab] = useState('classe');
+            const [ordemLibraryOpen,setOrdemLibraryOpen] = useState(false);
             const [deleteConfirmId, setDeleteConfirmId] = useState(null);
             const [toastMsg, setToastMsg] = useState('');
             
@@ -3025,6 +3027,36 @@ const { useState, useEffect, useRef } = React;
                 );
             }
 
+            const addFromOrdemLibrary = (entry,kind) => {
+                const features=Array.isArray(data.habilidades)?data.habilidades:[];
+                const refs=features.filter(x=>x.bibliotecaOrigem!=='pj-op-official-index'||!['Origem','Trilha'].includes(x.tipo||''));
+                const item={nome:entry.nome,tipo:kind==='habilidades'?'Poder':kind==='poderesParanormais'?'Poder paranormal':kind==='trilhas'?'Trilha':'Origem',custo:entry.custo||'',desc:entry.desc||'',pagina:entry.pagina||'',fonte:entry.fonte||'',classe:entry.classe||'',elemento:entry.elemento||'',bibliotecaOrigem:entry.bibliotecaOrigem||'pj-op-official-index',referenciaId:entry.id};
+                if(kind==='origens'){
+                    updateField('bio.origem',entry.nome);
+                    const remaining=features.filter(x=>!(x.bibliotecaOrigem==='pj-op-official-index'&&x.tipo==='Origem'));
+                    updateField('habilidades',[...remaining,{...item,nome:entry.poderOrigem||entry.nome,desc:[entry.desc,entry.pericias?.length?'Perícias da origem: '+entry.pericias.join(', '):''].filter(Boolean).join('\\n')}]);
+                    showToast('Origem aplicada. Confira e marque as perícias treinadas.');
+                    return;
+                }
+                if(kind==='trilhas'){
+                    updateField('bio.trilha',entry.nome);
+                    const remaining=features.filter(x=>!(x.bibliotecaOrigem==='pj-op-official-index'&&x.tipo==='Trilha'));
+                    updateField('habilidades',[...remaining,{...item,nome:'Trilha: '+entry.nome}]);
+                    showToast('Trilha selecionada. Confira os poderes liberados pelo NEX.');
+                    return;
+                }
+                if(kind==='rituais'){
+                    const rows=Array.isArray(data.rituais)?data.rituais:[];
+                    if(rows.some(x=>x.nome===entry.nome&&x.fonte===entry.fonte)){showToast('Este ritual desta fonte já consta da ficha.');return;}
+                    updateField('rituais',[...rows,{nome:entry.nome,circulo:entry.circulo||'',elemento:entry.elemento||'',execucao:entry.execucao||'',alcance:entry.alcance||'',duracao:entry.duracao||'',resistencia:entry.resistencia||'',desc:entry.desc||'',pagina:entry.pagina||'',fonte:entry.fonte||'',bibliotecaOrigem:item.bibliotecaOrigem}]);
+                    showToast('Ritual adicionado. Confira círculo e formas avançadas na fonte.');
+                    return;
+                }
+                if(features.some(x=>x.referenciaId===entry.id)){showToast('Este poder já está na ficha.');return;}
+                updateField('habilidades',[...features,item]);
+                showToast('Referência adicionada: '+entry.nome+'.');
+            };
+
             const addFromDndLibrary = (entry, tab, choiceName='') => {
                 if(tab==='antecedentes'){
                     try {
@@ -3362,6 +3394,9 @@ const { useState, useEffect, useRef } = React;
                         <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end items-center">
                             <input value={data.meta?.campanha || ''} onChange={e=>updateField('meta.campanha', e.target.value)} placeholder="Campanha" className="w-28 md:w-36 px-2 py-1 rounded text-xs text-gray-900 bg-white/90 border border-white/30" title="Campanha / pasta desta ficha" />
                             {saveStatus && <span className={`text-[10px] font-bold px-2 py-1 rounded ${saveStatus==='error'?'bg-red-900':saveStatus==='saving'?'bg-amber-700':'bg-black/30'}`}>{saveStatus==='pending'?'Alterado…':saveStatus==='saving'?'Salvando…':saveStatus==='saved'?'✓ Salvo':'Erro ao salvar'}</span>}
+                            {data.system === 'ordemParanormal' && data.type === 'pc' && <button type="button" onClick={()=>setOrdemLibraryOpen(true)}
+                                className="pjlite-toolbar-library" title="Acervo de poderes e rituais de Ordem Paranormal"
+                                aria-label="Biblioteca de Ordem Paranormal">📚</button>}
                             {isDnd && data.type === 'pc' && <button type="button" onClick={()=>{
                                 setDndLibraryTab(mobileTab === 'magias' ? 'magias' : 'classe');
                                 setDndLibraryOpen(true);
@@ -3390,6 +3425,10 @@ const { useState, useEffect, useRef } = React;
                             {toastMsg}
                         </div>
                     )}
+                    {data.system === 'ordemParanormal' && data.type === 'pc' && <OrdemLibraryModal open={ordemLibraryOpen}
+                        classe={data.bio?.classe || ''} trilha={data.bio?.trilha || ''}
+                        nex={Number(data.bio?.nex||5)} onChoose={addFromOrdemLibrary}
+                        onClose={()=>setOrdemLibraryOpen(false)}/>}
                     {isDnd && data.type === 'pc' && <DndLibraryModal
                         open={dndLibraryOpen}
                         initialTab={dndLibraryTab}
