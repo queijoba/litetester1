@@ -14,6 +14,50 @@ const STARTERS = {
       { nome:'Eco do Silêncio', elemento:'A definir', requisito:'A definir', custo:'A definir', desc:'O personagem percebe um ruído que não existe para os outros. Exemplo narrativo original do PJLite; defina efeitos e custo com o mestre.' }
     ]
   },
+  dnd5e: {
+    // Descriptions are short Portuguese adaptations of the CC BY 4.0 SRD 5.2.1,
+    // not copied from a non-SRD Player's Handbook translation.
+    magias: [
+      {
+        nome:'Mãos Mágicas', nivel:0, escola:'Conjuração', tempo:'Ação', alcance:'9 m',
+        duracao:'1 minuto', alvo:'Mão espectral a até 9 m',
+        verbal:true, somatico:true, material:false, materialDetalhe:'',
+        concentracao:false, ritual:false, preparada:false,
+        salvaguarda:'', dano:'',
+        desc:'Cria uma mão espectral que pode manipular objetos leves a distância, abrir portas destrancadas e transportar um objeto de até 4,5 kg. Não realiza ataques. Consulte o SRD 5.2.1 para limitações.',
+        fonte:'D&D SRD 5.2.1 — CC BY 4.0 (adaptação PJLite)'
+      },
+      {
+        nome:'Curar Ferimentos', nivel:1, escola:'Abjuração', tempo:'Ação', alcance:'Toque',
+        duracao:'Instantânea', alvo:'Criatura tocada',
+        verbal:true, somatico:true, material:false, materialDetalhe:'',
+        concentracao:false, ritual:false, preparada:false,
+        salvaguarda:'', dano:'Cura 2d8 + modificador de conjuração',
+        desc:'A criatura tocada recupera 2d8 pontos de vida mais o modificador do atributo de conjuração. +2d8 de cura para cada nível de espaço acima do 1º.',
+        fonte:'D&D SRD 5.2.1 — CC BY 4.0 (adaptação PJLite)'
+      },
+      {
+        nome:'Bola de Fogo', nivel:3, escola:'Evocação', tempo:'Ação', alcance:'45 m',
+        duracao:'Instantânea', alvo:'Esfera de 6 m de raio',
+        verbal:true, somatico:true, material:true,
+        materialDetalhe:'Guano de morcego e enxofre',
+        concentracao:false, ritual:false, preparada:false,
+        salvaguarda:'Destreza (metade do dano)', dano:'8d6 fogo',
+        desc:'Uma explosão de chamas atinge as criaturas na esfera. Salvaguarda de Destreza para sofrer metade do dano. +1d6 por espaço acima do 3º nível.',
+        fonte:'D&D SRD 5.2.1 — CC BY 4.0 (adaptação PJLite)'
+      }
+    ],
+    caracteristicas: [
+      {
+        nome:'Juramento Pessoal', tipo:'classe', origem:'classe',
+        desc:'Modelo original do PJLite: descreva uma promessa ou objetivo marcante do personagem. Preencha aqui o efeito mecânico aprovado pelo mestre.'
+      },
+      {
+        nome:'Treinamento Especializado', tipo:'classe', origem:'classe',
+        desc:'Modelo original do PJLite: registre a aptidão aprendida e suas condições de uso. Não é uma habilidade oficial e não concede bônus automaticamente.'
+      }
+    ]
+  },
   skyfall: {
     habilidades: [
       { nome:'Promessa de Retorno', origem:'Habilidade (modelo PJLite)', desc:'Quando assumir um compromisso importante, registre-o na ficha. Combine com o mestre como ele influenciará sua história e os testes.' }
@@ -67,6 +111,7 @@ export const removeAbilityPreset = (id) => {
 
 export const abilityPresetKindName = kind => ({
   habilidades:'Habilidades e poderes',
+  caracteristicas:'Habilidades da classe',
   poderesParanormais:'Poderes paranormais',
   rituais:'Rituais',
   magias:'Magias'
