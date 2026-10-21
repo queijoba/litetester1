@@ -1047,7 +1047,7 @@ const { useState, useEffect, useRef } = React;
                         text += `\n[${kind.nome.toUpperCase()}]\n\n`;
                         entries.forEach(({entry:h}) => {
                             text += `- ✦ ${safe(h.nome,'Registro').toUpperCase()}\n`;
-                            const desc = hasText(h.desc) ? h.desc : h.descricao;
+                            const desc = h.desc !== undefined ? h.desc : h.descricao;
                             if (hasText(desc)) text += `${compactText(desc)}\n`;
                             if (hasText(h.fv_nvl)) text += `PD/Nível: ${h.fv_nvl}\n`;
                             if (['magia','truque'].includes(dragonbaneAbilityKind(h))) {
