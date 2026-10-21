@@ -1,4 +1,14 @@
 import { DND_2024_CLASSES } from '../systems/dnd5e/classPanels.js';
+import srdSpells1 from '../systems/dnd5e/srd521-spells-1.js';
+import srdSpells2 from '../systems/dnd5e/srd521-spells-2.js';
+import srdSpells3 from '../systems/dnd5e/srd521-spells-3.js';
+import srdSpells4 from '../systems/dnd5e/srd521-spells-4.js';
+import srdClassFeatures from '../systems/dnd5e/srd521-features-classes.js';
+import srdSubclassFeatures from '../systems/dnd5e/srd521-features-subclasses.js';
+
+export const DND_SRD_SPELL_COUNT = srdSpells1.length+srdSpells2.length+srdSpells3.length+srdSpells4.length;
+export const DND_SRD_FEATURE_COUNT = srdClassFeatures.length+srdSubclassFeatures.length;
+
 
 const STORAGE_KEY = 'pjlite_ability_presets_v1';
 
@@ -72,23 +82,23 @@ const STARTERS = {
 
 // Templates tied to the player's class/subclass. Mechanical text from non-SRD
 // supplements is never reproduced; each is explicitly an editable worksheet.
-const dndClassTemplates = DND_2024_CLASSES.flatMap(cls => {
-  const basic = (cls.fields || []).slice(0,2).map(field => ({
-    nome:field.label,
-    tipo:'classe', origem:'classe', classId:cls.id, classe:cls.label,
-    desc:'Modelo editável de '+cls.label+'. Anote aqui os usos, efeitos e limites de '+field.label+
-      ' conforme o livro utilizado na sua mesa. Este campo não altera os contadores automaticamente.',
-    fonte:'Modelo de organização PJLite'
-  }));
-  const subclasses = (cls.subclasses || []).map(sub => ({
-    nome:'Recurso de '+sub,
-    tipo:'classe', origem:'subclasse', classId:cls.id, classe:cls.label, subclasse:sub,
-    desc:'Modelo editável para registrar a habilidade obtida com '+sub+
-      '. Consulte a descrição oficial da sua subclasse e preencha o efeito, nível e recarga na ficha.',
-    fonte:'Modelo de organização PJLite'
-  }));
-  return [...basic,...subclasses];
-});
+const officialSrdSubclassNames=new Set(srdSubclassFeatures.map(item=>item.classId+'::'+item.subclasse));
+const dndSubclassOutline=DND_2024_CLASSES.flatMap(cls=>(cls.subclasses||[])
+ .filter(name=>!officialSrdSubclassNames.has(cls.id+'::'+name))
+ .map(name=>({
+  nome:'Ficha de '+name,
+  nomeOriginal:'Template for '+name,
+  tipo:'classe',origem:'subclasse',classId:cls.id,classe:cls.label,subclasse:name,
+  desc:'MODELO DE ANOTAÇÃO (NÃO OFICIAL). Esta subclasse não possui a descrição completa no SRD 5.2.1. Consulte seu Livro do Jogador ou suplemento autorizado e anote os benefícios e níveis aqui. O PJLite não atribui efeitos automaticamente.',
+  fonte:'Modelo de anotação PJLite · conteúdo não presente no SRD 5.2.1',
+  idiomaDescricao:'pt',
+  nivelMinimo:3,
+  _srdId:'outline:'+cls.id+':'+name
+ })));
+const dndCatalog={
+ magias:[...srdSpells1,...srdSpells2,...srdSpells3,...srdSpells4],
+ caracteristicas:[...srdClassFeatures,...srdSubclassFeatures,...dndSubclassOutline]
+};
 
 const normalize = value => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR').trim();
 const clone = entry => JSON.parse(JSON.stringify(entry));
@@ -107,7 +117,7 @@ export const findAbilityPresets = (system, kind) => {
   const local = load().filter(p=>p.system===system && p.kind===kind).map(p=>({...p, entry:clone(p.entry), source:'personal'}));
   const defaultEntries = [
     ...(STARTERS[system]?.[kind] || []),
-    ...(system==='dnd5e' && kind==='caracteristicas' ? dndClassTemplates : []),
+    ...(system==='dnd5e' ? dndCatalog[kind] || [] : []),
   ];
   const builtins = defaultEntries.map((entry,index)=>({
     id: 'example-'+system+'-'+kind+'-'+index,
