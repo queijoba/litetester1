@@ -1,4 +1,4 @@
-import {dragonbaneAbilityKind,dragonbanePdfAbilityOrder,dragonbanePdfAbilityName} from '../abilities.js';
+import {dragonbaneAbilityKind,dragonbanePdfAbilityOrder,dragonbanePdfAbilityName,dragonbaneMagicSchool} from '../abilities.js';
 const clean = v => String(v ?? '')
   .replace(/[–—]/g, '-')
   .replace(/[“”]/g, '"')
@@ -135,7 +135,7 @@ export function fillDragonbanePdf(form, item) {
     const rawLines=String(hab?.nome||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
     rawLines.shift();
     const detail=[
-      isMagic&&hab?.escola&&'Escola: '+hab.escola,
+      isMagic&&'Escola: '+dragonbaneMagicSchool(hab),
       kind==='magia'&&hab?.grau&&'Grau '+hab.grau,
       kind==='magia'&&hab?.preparada&&'Preparado',
       hab?.descricao??hab?.desc??'',
