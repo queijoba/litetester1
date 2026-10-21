@@ -9,12 +9,14 @@ import srdSpecies from '../systems/dnd5e/srd521-species.js';
 import srdFeats from '../systems/dnd5e/srd521-feats.js';
 import phbFeats from '../systems/dnd5e/phb2024-feats-summaries.js';
 import phbAasimar from '../systems/dnd5e/phb2024-species-aasimar.js';
+import phbBackgrounds from '../systems/dnd5e/phb2024-backgrounds.js';
 import {localizeDndSrdEntry} from './dndSrdPortuguese.js';
 
 export const DND_SRD_SPECIES_COUNT = srdSpecies.length;
 export const DND_SRD_FEATS_COUNT = srdFeats.length;
 export const DND_PHB2024_FEATS_COUNT = srdFeats.length+phbFeats.length;
 export const DND_PHB2024_SPECIES_COUNT = srdSpecies.length+phbAasimar.length;
+export const DND_PHB2024_BACKGROUNDS_COUNT = phbBackgrounds.length;
 
 export const DND_SRD_SPELL_COUNT = srdSpells1.length+srdSpells2.length+srdSpells3.length+srdSpells4.length;
 export const DND_SRD_FEATURE_COUNT = srdClassFeatures.length+srdSubclassFeatures.length;
@@ -106,6 +108,7 @@ const dndSubclassOutline=DND_2024_CLASSES.flatMap(cls=>(cls.subclasses||[])
   _srdId:'outline:'+cls.id+':'+name
  })));
 const dndCatalog={
+ antecedentes:phbBackgrounds,
  especies:[...srdSpecies,...phbAasimar].map(species=>({
   ...species,
   desc:species.tracos.map(trait=>trait.nome+': '+trait.resumoPt).join('\n'),
