@@ -26,6 +26,10 @@ export default function DragonbaneAbilityPanels({
   addToArray('habilidadesFeiticos',createDragonbaneAbility(kind,extra));
  };
  const change=(index,field,value)=>updateArrayField('habilidadesFeiticos',index,field,value);
+ const changeCategory=(index,kind)=>{
+  setExpanded(old=>({...old,[kind]:true}));
+  change(index,'tipo',kind);
+ };
  const rename=(index,value)=>{
   if(typeof setData==='function')setData(current=>renameDragonbaneAbility(current,index,value));
   else change(index,'nome',value);
@@ -74,7 +78,7 @@ export default function DragonbaneAbilityPanels({
         </label>
        </div>
        <div className="db-resource-summary-row">
-        <label><span>Categoria</span><select value={kind.id} onChange={e=>change(index,'tipo',e.target.value)}
+        <label><span>Categoria</span><select value={kind.id} onChange={e=>changeCategory(index,e.target.value)}
           aria-label={'Categoria de '+(entry.nome||'habilidade')}>
          {DRAGONBANE_ABILITY_KINDS.map(option=><option value={option.id} key={option.id}>{option.short}</option>)}
         </select></label>
