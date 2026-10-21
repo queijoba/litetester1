@@ -14,13 +14,13 @@ const feats=findAbilityPresets('dnd5e','talentos');
 assert.equal(species.length,10);
 assert.equal(DND_PHB2024_SPECIES_COUNT,10);
 assert.ok(species.some(s=>s.entry.id==='aasimar'));
-assert.equal(feats.length,77);
-assert.equal(DND_PHB2024_FEATS_COUNT,77);
-const counts={Origem:10,Geral:43,'Estilo de Luta':12,'Dádiva Épica':12};
+assert.equal(feats.length,75);
+assert.equal(DND_PHB2024_FEATS_COUNT,75);
+const counts={Origem:10,Geral:43,'Estilo de Luta':10,'Dádiva Épica':12};
 for(const [type,num] of Object.entries(counts))
  assert.equal(feats.filter(x=>x.entry.categoria===type).length,num,type);
 assert.equal(new Set(species.map(x=>x.name)).size,10);
-assert.equal(new Set(feats.map(x=>x.name)).size,77);
+assert.equal(new Set(feats.map(x=>x.name)).size,75);
 assert.ok(species.reduce((n,s)=>n+s.entry.tracos.length,0)>=30);
 for(const record of species) {
  const x=record.entry;
@@ -89,4 +89,4 @@ assert.ok(modal.includes("['talentos','Talentos']"));
 assert.ok(modal.includes('selectedChoice'),'Escolha de variante');
 assert.ok(modal.includes('featRequirementWarnings'),'Aviso de talentos');
 assert.ok(!app.includes("updateField('bio.raca'"),'Usar campo de espécie existente');
-console.log('✓ D&D espécies/talentos: 10 espécies, 77 entradas, linhagens, requisitos, busca e fichas existentes verificadas.');
+console.log('✓ D&D espécies/talentos: 10 espécies, 75 entradas, linhagens, requisitos, busca e fichas existentes verificadas.');
