@@ -95,6 +95,11 @@ assert.ok(editor.includes("visibleKinds={['inata','heroica','outro']}"),'Separar
 assert.ok(editor.includes("visibleKinds={['magia','truque']}"),'Separar feitiços e truques');
 assert.ok(editor.includes('role="tablist"')&&editor.includes('aria-selected={dbPage===id}'),'Aba acessível para leitores de tela');
 assert.ok(editor.includes('db-column--mobile-combat lg:hidden'),'Não exibir combate duplicado no desktop');
+assert.ok(editor.includes("['status','pericias','equipamento'].includes(mobileTab)?mobileTab:'status'"),'Estado de aba móvel legado deve cair no Perfil');
+assert.ok(editor.includes('dbMobileTab ==='), 'As seções da ficha devem respeitar a aba móvel normalizada');
+assert.ok(editor.includes("['ficha','Ficha'],['habilidades','Habilidades'],['magias','Magias']"), 'Nomes da navegação devem ser simples');
+const libraryWords=['Inatas da Ancestralidade','Habilidades Heroicas','Feitiços','Truques Mágicos'];
+for(const label of libraryWords) assert.ok(DRAGONBANE_ABILITY_KINDS.some(x=>x.nome===label),'Categoria ausente: '+label);
 assert.ok(!panel.includes('db-resources-intro'),'Remover explicação desnecessária no painel');
 assert.ok(!panel.includes('Compatível com fichas antigas.'),'Não repetir texto informativo longo no painel');
 assert.ok(panel.includes('DRAGONBANE_ABILITY_KINDS.filter(kind=>visibleKinds.includes(kind.id))'),'Exibir somente seções da aba ativa');
