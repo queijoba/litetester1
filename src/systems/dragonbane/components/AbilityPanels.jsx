@@ -1,7 +1,7 @@
 import React from 'react';
 import {
  DRAGONBANE_ABILITY_KINDS,DRAGONBANE_MAGIC_SCHOOLS,dragonbaneAbilityList,
- dragonbaneInnateSuggestions,createDragonbaneAbility
+ dragonbaneInnateSuggestions,createDragonbaneAbility,dragonbaneMagicSchool
 } from '../abilities.js';
 import './abilityPanels.css';
 
@@ -66,7 +66,7 @@ export default function DragonbaneAbilityPanels({
          aria-label={'Remover '+(entry.nome||'registro')}>Remover</button>
        </div>
        {isMagic&&<div className="db-resource-magic-row">
-         <label><span>Escola</span><select value={entry.escola||'Magia Geral'} onChange={e=>change(index,'escola',e.target.value)}>
+         <label><span>Escola</span><select value={dragonbaneMagicSchool(entry)} onChange={e=>change(index,'escola',e.target.value)}>
           {DRAGONBANE_MAGIC_SCHOOLS.concat(entry.escola&&!DRAGONBANE_MAGIC_SCHOOLS.includes(entry.escola)?[entry.escola]:[]).map(s=><option key={s}>{s}</option>)}
          </select></label>
          {kind.id==='magia'&&<>
