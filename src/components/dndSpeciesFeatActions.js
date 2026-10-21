@@ -14,7 +14,8 @@ export function buildSpeciesApplication(species, choiceName, features=[], status
   tipo:'especie',origem:'especie',
   especieId:species.id,traitId:trait.id,
   nome:trait.nome,
-  desc:[trait.resumoPt,trait.desc].filter(Boolean).join('\n\n'),
+  desc:trait.desc || trait.resumoPt || 'Consulte o Livro do Jogador.',
+  paginaLivro:species.paginaLivro,paginaConferida:species.paginaConferida,
   bibliotecaOrigem:DND_CATALOG_ORIGIN,
   fonte:trait.fonte||species.fonte
  }));
@@ -23,7 +24,8 @@ export function buildSpeciesApplication(species, choiceName, features=[], status
    tipo:'especie',origem:'especie',especieId:species.id,
    traitId:'choice-'+choice.name,
    nome:species.escolha.label+' — '+choice.name,
-   desc:choice.desc,
+   desc:choice.desc+'\nReferência: Livro do Jogador 2024, '+(species.paginaLivro||'seção Espécies')+'.',
+   paginaLivro:species.paginaLivro,
    bibliotecaOrigem:DND_CATALOG_ORIGIN,
    fonte:species.fonte
   });
@@ -50,7 +52,7 @@ export function featRequirementWarnings(feat,{level=1,attributes={},classId='',s
  const currentLevel=Number(level)||1;
  if(feat.nivelMinimo && currentLevel<Number(feat.nivelMinimo))
   warnings.push('Exige nível '+feat.nivelMinimo+' ou maior (ficha: '+currentLevel+').');
- const req=String(feat.requisito||'');
+ const req=String(feat.requisitoOriginal||feat.requisito||'');
  const strength=Number(attributes.for??10),dex=Number(attributes.des??10);
  if(/Strength or Dexterity 13/i.test(req) && Math.max(strength,dex)<13)
   warnings.push('Exige Força ou Destreza 13 ou maior.');
@@ -83,7 +85,8 @@ export function buildFeatApplication(feat,features=[]) {
   tipo:'talento',origem:'talento',
   featId:feat.id,nome:feat.nome,categoria:feat.categoria,
   nivelMinimo:feat.nivelMinimo,requisito:feat.requisito,
-  desc:[feat.resumoPt,feat.desc].filter(Boolean).join('\n\n'),
+  desc:feat.desc || feat.resumoPt || 'Consulte o Livro do Jogador.',
+  paginaLivro:feat.paginaLivro,paginaConferida:feat.paginaConferida,
   repetivel:feat.repetivel,
   bibliotecaOrigem:DND_CATALOG_ORIGIN,
   fonte:feat.fonte
