@@ -3,7 +3,7 @@ import {readFileSync} from 'node:fs';
 import {
  DRAGONBANE_ABILITY_KINDS,DRAGONBANE_INNATE_CATALOG,dragonbaneAncestryKey,
  dragonbaneInnateSuggestions,createDragonbaneAbility,dragonbaneAbilityKind,
- dragonbaneAbilityList,dragonbanePdfAbilityOrder,dragonbanePdfAbilityName,dragonbaneMagicSchool
+ dragonbaneAbilityList,dragonbanePdfAbilityOrder,dragonbanePdfAbilityName,dragonbaneMagicSchool,renameDragonbaneAbility
 } from '../src/systems/dragonbane/abilities.js';
 import {fillDragonbanePdf} from '../src/systems/dragonbane/pdf/map.js';
 
@@ -42,6 +42,12 @@ assert.equal(dragonbaneAbilityKind({...oldRecords[2],tipo:'heroica'}),'heroica',
 assert.equal(dragonbaneAbilityKind({...oldRecords[2],tipo:'outro'}),'outro','Permitir classificar em Outros');
 assert.deepEqual(dragonbanePdfAbilityOrder(oldRecords),oldRecords,'Ordem de categorias reconhecidas deve ser estável');
 assert.deepEqual(oldRecords,untouched,'Não alterar entradas antigas automaticamente');
+const renameOld=renameDragonbaneAbility({habilidadesFeiticos:oldRecords},2,'Minha Bola de Fogo');
+assert.equal(renameOld.habilidadesFeiticos[2].tipo,'magia','Manter a categoria durante edição de nome legado');
+assert.equal(renameOld.habilidadesFeiticos[2].nome,'Minha Bola de Fogo');
+assert.deepEqual(oldRecords,untouched,'Não mutar objetos de fichas antigas durante edição');
+assert.equal(renameDragonbaneAbility({habilidadesFeiticos:oldRecords},999,'X').habilidadesFeiticos,oldRecords);
+
 
 const formData={};
 const form={
@@ -84,6 +90,16 @@ assert.ok(editor.includes('<DragonbaneAbilityPanels'));
 assert.ok(editor.includes("id: 'poderes', label: 'Habilidades & Magia'"));
 assert.ok(editor.includes("mobileTab === 'poderes'"));
 assert.ok(app.includes('DRAGONBANE_ABILITY_KINDS.forEach'));
-assert.ok(css.includes('.db-resource-section--inata'));
-assert.ok(css.includes('.db-resource-section--truque'));
+assert.ok(css.includes('.db-resource-section-head'), 'Cabeçalho das categorias deve existir');
+assert.ok(css.includes('.db-resource-card::before'), 'Cartões devem preservar o cabeçalho verde da ficha original');
+assert.ok(css.includes('#2e786a')&&css.includes('#f5edd4'), 'Cores originais de Dragonbane ausentes');
+assert.ok(css.includes('.db-mobile-navigation'), 'Navegação mobile deve usar o estilo Dragonbane');
+assert.ok(css.includes('body.theme-dark .db-sheet .db-resource-card'), 'Modo escuro precisa cobrir os novos cartões');
+assert.ok(css.includes('body.theme-custom .db-sheet .db-resource-card'), 'Tema personalizado precisa continuar funcionando');
+assert.ok(panel.includes('db-section-title'), 'Reutilizar as barras clássicas da ficha');
+assert.ok(panel.includes('db-add-btn db-add-red'), 'Reutilizar o botão original de adição');
+assert.ok(panel.includes('aria-expanded={!!expanded[kind.id]}'), 'Categorias devem ser recolhíveis');
+assert.ok(panel.includes('changeCategory(index,e.target.value)'), 'Transferir item deve abrir a nova categoria');
+assert.ok(editor.includes('db-mobile-navigation'), 'A barra mobile deve manter o visual do sistema');
+assert.ok(editor.includes('setData={setData}'), 'A edição deve manter a categoria de recursos legados');
 console.log('✓ Dragonbane: inatas, heroicas, feitiços/truques, modelos legados, chat e PDF sem perda de dados.');
