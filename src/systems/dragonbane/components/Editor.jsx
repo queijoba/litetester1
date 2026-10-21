@@ -263,9 +263,9 @@ export default function DragonbaneEditor({ scope }) {
                               data.type === 'pc' ? (
                                   <React.Fragment>
                                       {/* Mobile Tabs for PC */}
-                                      <div className="md:hidden grid grid-cols-2 sm:grid-cols-4 bg-gray-200 border-b border-gray-300">
+                                      <div className="db-mobile-navigation md:hidden grid grid-cols-2 sm:grid-cols-4">
                                           {[ { id: 'status', label: 'Perfil & Status' }, { id: 'pericias', label: 'Perícias' }, { id: 'equipamento', label: 'Combate & Equip' }, { id: 'poderes', label: 'Habilidades & Magia' } ].map(tab => (
-                                              <button key={tab.id} onClick={() => setMobileTab(tab.id)} className={`flex-1 py-3 text-xs font-bold uppercase text-center border-b-4 transition-colors ${mobileTab === tab.id ? 'border-red-700 text-red-900 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-300'}`}>{tab.label}</button>
+                                              <button key={tab.id} onClick={() => setMobileTab(tab.id)} className={`db-mobile-navigation-tab ${mobileTab === tab.id ? 'db-mobile-navigation--active' : ''}`}>{tab.label}</button>
                                           ))}
                                       </div>
       
@@ -540,6 +540,7 @@ export default function DragonbaneEditor({ scope }) {
                                                           addToArray={addToArray}
                                                           updateArrayField={updateArrayField}
                                                           removeFromArray={removeFromArray}
+                                                          setData={setData}
                                                       />
                                                   </div>
 
