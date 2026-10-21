@@ -8,7 +8,8 @@ import './abilityPanels.css';
 const MAX_PDF_CARDS=24;
 const n=v=>String(v??'').trim();
 export default function DragonbaneAbilityPanels({
- data,addToArray,updateArrayField,removeFromArray,setData
+ data,addToArray,updateArrayField,removeFromArray,setData,
+ visibleKinds=DRAGONBANE_ABILITY_KINDS.map(kind=>kind.id),onNavigateKind
 }){
  const abilities=Array.isArray(data?.habilidadesFeiticos)?data.habilidadesFeiticos:[];
  const ancestry=data?.bio?.ancestralidade||'';
@@ -29,22 +30,17 @@ export default function DragonbaneAbilityPanels({
  const changeCategory=(index,kind)=>{
   setExpanded(old=>({...old,[kind]:true}));
   change(index,'tipo',kind);
+  if(!visibleKinds.includes(kind))onNavigateKind?.(kind);
  };
  const rename=(index,value)=>{
   if(typeof setData==='function')setData(current=>renameDragonbaneAbility(current,index,value));
   else change(index,'nome',value);
  };
- return <div className="db-resources" aria-label="Habilidades e magias de Dragonbane">
-   <div className="db-resources-banner db-section-title">
-     <h2>HABILIDADES E MAGIAS</h2>
-     <span className="db-resources-counter">{counted} registro{counted===1?'':'s'}</span>
-   </div>
-   <p className="db-resources-intro">Recursos organizados por origem e magia, preservando o visual clássico da ficha.</p>
-   {DRAGONBANE_ABILITY_KINDS.map(kind=>{
+ return <div className="db-resources" aria-label="Recursos e magias de Dragonbane">
+   {DRAGONBANE_ABILITY_KINDS.filter(kind=>visibleKinds.includes(kind.id)).map(kind=>{
     const entries=dragonbaneAbilityList(data,kind.id);
     const isMagic=kind.id==='magia'||kind.id==='truque';
-    const legacy=kind.id==='outro';
-    return <section className={'db-resource-section db-resource-section--'+kind.id} key={kind.id} aria-label={kind.nome}>
+       return <section className={'db-resource-section db-resource-section--'+kind.id} key={kind.id} aria-label={kind.nome}>
      <div className="db-resource-section-head db-section-title">
       <button type="button" className="db-resource-expand" onClick={()=>toggle(kind.id)} aria-expanded={!!expanded[kind.id]} aria-controls={'db-resource-group-'+kind.id}>
        <span className="db-resource-chevron" aria-hidden="true">{expanded[kind.id]?'▾':'▸'}</span>
@@ -54,15 +50,14 @@ export default function DragonbaneAbilityPanels({
       <button type="button" className="db-add-btn db-add-red db-resource-add" onClick={()=>add(kind.id)} aria-label={'Adicionar em '+kind.nome}>+ Adic.</button>
      </div>
      {expanded[kind.id]&&<div className="db-resource-section-content" id={'db-resource-group-'+kind.id}>
-       <p className="db-resource-hint">{kind.caption}</p>
      {kind.id==='inata'&&<div className="db-innate-suggestions">
-       <div><b>Ancestralidade: {ancestry||'não informada'}</b><small>A sugestão é opcional. Alterar a ancestralidade não apaga habilidades já salvas.</small></div>
+       <div><b>Ancestralidade: {ancestry||'não informada'}</b></div>
        {proposals.length>0&&<div className="db-innate-suggestion-actions">{proposals.map(x=><button type="button" key={x.nome}
         onClick={()=>add('inata',{nome:x.nome,fv_nvl:x.custo,desc:x.desc,fonte:'Livro de Regras v1.1',pagina:'10–12'})}
         title={'Adicionar habilidade inata: '+x.nome}>+ {x.nome}</button>)}</div>}
-       {!ancestry&&<small>Preencha a ancestralidade na parte superior da ficha para receber sugestões do livro.</small>}
+       {!ancestry&&<small>Defina a ancestralidade na aba Ficha.</small>}
      </div>}
-     {entries.length===0&&<p className="db-resource-empty">{legacy?'As anotações antigas sem categoria ficam aqui para você organizar.':'Nenhum registro nesta seção.'}</p>}
+     {entries.length===0&&<p className="db-resource-empty">Nenhum registro.</p>}
      <div className="db-resource-list">
       {entries.map(({entry,index})=><article className="db-resource-card" data-label={kind.short.toUpperCase()} key={'resource-'+index}>
        <div className="db-resource-main">
@@ -118,9 +113,8 @@ export default function DragonbaneAbilityPanels({
      </div>}
     </section>;
    })}
-   <div className="db-resource-notes">
-    <b>Compatível com fichas antigas.</b> Entradas sem categoria permanecem em “Outros”; basta mudar a Categoria para organizá-las.
-    {counted>MAX_PDF_CARDS&&<p>O PDF editável original possui {MAX_PDF_CARDS} cartões. Você cadastrou {counted} registros; somente os primeiros {MAX_PDF_CARDS} cabem nesse modelo.</p>}
-   </div>
+   {counted>MAX_PDF_CARDS&&visibleKinds.includes('outro')&&
+     <p className="db-resource-pdf-warning">A ficha PDF original comporta até {MAX_PDF_CARDS} cartões. Você possui {counted} registros; os demais continuam salvos no PJLite.</p>}
+  
  </div>;
 }
