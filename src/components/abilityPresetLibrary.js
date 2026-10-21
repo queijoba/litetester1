@@ -96,7 +96,18 @@ const dndSubclassOutline=DND_2024_CLASSES.flatMap(cls=>(cls.subclasses||[])
   _srdId:'outline:'+cls.id+':'+name
  })));
 const dndCatalog={
- magias:[...srdSpells1,...srdSpells2,...srdSpells3,...srdSpells4],
+ magias:[...srdSpells1,...srdSpells2,...srdSpells3,...srdSpells4].map(entry=>{
+  const translated=(STARTERS.dnd5e.magias||[]).find(item=>item.nomeOriginal===entry.nomeOriginal||item.nome===entry.nome);
+  if(!translated)return entry;
+  return {
+   ...entry,
+   desc:translated.desc+'\n\nTEXTO DO SRD (inglês):\n'+entry.desc,
+   resumoPt:translated.desc,
+   dano:translated.dano||entry.dano,
+   alvo:translated.alvo||entry.alvo||'',
+   salvaguarda:translated.salvaguarda||entry.salvaguarda||''
+  };
+ }),
  caracteristicas:[...srdClassFeatures,...srdSubclassFeatures,...dndSubclassOutline]
 };
 
@@ -116,7 +127,7 @@ const persist = rows => {
 export const findAbilityPresets = (system, kind) => {
   const local = load().filter(p=>p.system===system && p.kind===kind).map(p=>({...p, entry:clone(p.entry), source:'personal'}));
   const defaultEntries = [
-    ...(STARTERS[system]?.[kind] || []),
+    ...(system==='dnd5e'&&kind==='magias' ? [] : STARTERS[system]?.[kind] || []),
     ...(system==='dnd5e' ? dndCatalog[kind] || [] : []),
   ];
   const builtins = defaultEntries.map((entry,index)=>({
