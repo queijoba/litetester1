@@ -29,11 +29,12 @@ const stylesheet=readFileSync('src/systems/ordemParanormal/ordem-theme.css','utf
 const libui=readFileSync('src/systems/ordemParanormal/OrdemLibraryModal.jsx','utf8');
 const map=readFileSync('src/systems/ordemParanormal/pdf/map.js','utf8');
 assert.ok(app.includes('OrdemLibraryModal')&&app.includes('onChoose={addFromOrdemLibrary}'));
-assert.ok(app.includes("updateField('bio.origem'")&&app.includes("updateField('bio.trilha'"));
+assert.ok(app.includes('applyOrdemLibrarySelection')&&app.includes('setData(outcome.data)'));
+assert.ok(readFileSync('src/systems/ordemParanormal/libraryActions.js','utf8').includes('origemBibliotecaControle'));
 assert.ok(editor.includes('<option>Sobrevivente</option>'));
 assert.ok(editor.includes("gestao.prestigio")&&editor.includes("pdAtual")&&editor.includes("bio.estagio"));
 assert.ok(!editor.includes('📚 Biblioteca</button>'),'Botões de biblioteca devem ficar na barra superior');
 assert.ok(libui.includes("['origens','Origens']")&&libui.includes("['trilhas','Trilhas']"));
 assert.ok(stylesheet.includes('Atualização visual v2'));
 assert.ok(map.includes("Habilidade/Ritual - Página"));
-console.log('✓ Ordem Paranormal: 109 referências, 3 livros/acervos, campos SaH, toolbar, PDF e salvamentos legados verificados.');
+console.log('✓ Ordem Paranormal: '+ORDEM_LIBRARY_CATALOG.length+' referências, livros/acervos, ficha SaH, biblioteca, PDF e salvamentos legados verificados.');
