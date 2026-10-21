@@ -1,40 +1,56 @@
 import React from 'react';
 import {
  DRAGONBANE_ABILITY_KINDS,DRAGONBANE_MAGIC_SCHOOLS,dragonbaneAbilityList,
- dragonbaneInnateSuggestions,createDragonbaneAbility,dragonbaneMagicSchool
+ dragonbaneInnateSuggestions,createDragonbaneAbility,dragonbaneMagicSchool,renameDragonbaneAbility
 } from '../abilities.js';
 import './abilityPanels.css';
 
 const MAX_PDF_CARDS=24;
 const n=v=>String(v??'').trim();
 export default function DragonbaneAbilityPanels({
- data,addToArray,updateArrayField,removeFromArray
+ data,addToArray,updateArrayField,removeFromArray,setData
 }){
  const abilities=Array.isArray(data?.habilidadesFeiticos)?data.habilidadesFeiticos:[];
  const ancestry=data?.bio?.ancestralidade||'';
  const proposals=dragonbaneInnateSuggestions(ancestry,abilities);
  const counted=abilities.length;
-
- const add=(kind,extra={})=>addToArray('habilidadesFeiticos',createDragonbaneAbility(kind,extra));
+ const [expanded,setExpanded]=React.useState(()=>Object.fromEntries(
+  DRAGONBANE_ABILITY_KINDS.map(k=>[
+   k.id,
+   ['inata','heroica','magia'].includes(k.id)||dragonbaneAbilityList(data,k.id).length>0
+  ])
+ ));
+ const toggle=(kind)=>setExpanded(old=>({...old,[kind]:!old[kind]}));
+ const add=(kind,extra={})=>{
+  setExpanded(old=>({...old,[kind]:true}));
+  addToArray('habilidadesFeiticos',createDragonbaneAbility(kind,extra));
+ };
  const change=(index,field,value)=>updateArrayField('habilidadesFeiticos',index,field,value);
+ const rename=(index,value)=>{
+  if(typeof setData==='function')setData(current=>renameDragonbaneAbility(current,index,value));
+  else change(index,'nome',value);
+ };
  return <div className="db-resources" aria-label="Habilidades e magias de Dragonbane">
-   <div className="db-resources-banner">
-    <div>
-     <span className="db-resources-kicker">REGISTRO DE PERSONAGEM</span>
-     <h2>Habilidades e Magia</h2>
-     <p>Inatas, heroicas, feitiços e truques agora ficam em seções distintas.</p>
-    </div>
-    <span className="db-resources-counter">{counted} registro{counted===1?'':'s'}</span>
+   <div className="db-resources-banner db-section-title">
+     <h2>HABILIDADES E MAGIAS</h2>
+     <span className="db-resources-counter">{counted} registro{counted===1?'':'s'}</span>
    </div>
+   <p className="db-resources-intro">Recursos organizados por origem e magia, preservando o visual clássico da ficha.</p>
    {DRAGONBANE_ABILITY_KINDS.map(kind=>{
     const entries=dragonbaneAbilityList(data,kind.id);
     const isMagic=kind.id==='magia'||kind.id==='truque';
     const legacy=kind.id==='outro';
     return <section className={'db-resource-section db-resource-section--'+kind.id} key={kind.id} aria-label={kind.nome}>
-     <div className="db-resource-section-head">
-      <div><h3>{kind.nome}</h3><p>{kind.caption}</p></div>
-      <button type="button" className="db-resource-add" onClick={()=>add(kind.id)} aria-label={'Adicionar em '+kind.nome}>+ Adicionar</button>
+     <div className="db-resource-section-head db-section-title">
+      <button type="button" className="db-resource-expand" onClick={()=>toggle(kind.id)} aria-expanded={!!expanded[kind.id]} aria-controls={'db-resource-group-'+kind.id}>
+       <span className="db-resource-chevron" aria-hidden="true">{expanded[kind.id]?'▾':'▸'}</span>
+       <span>{kind.nome}</span>
+       <small className="db-resource-count">{entries.length}</small>
+      </button>
+      <button type="button" className="db-add-btn db-add-red db-resource-add" onClick={()=>add(kind.id)} aria-label={'Adicionar em '+kind.nome}>+ Adic.</button>
      </div>
+     {expanded[kind.id]&&<div className="db-resource-section-content" id={'db-resource-group-'+kind.id}>
+       <p className="db-resource-hint">{kind.caption}</p>
      {kind.id==='inata'&&<div className="db-innate-suggestions">
        <div><b>Ancestralidade: {ancestry||'não informada'}</b><small>A sugestão é opcional. Alterar a ancestralidade não apaga habilidades já salvas.</small></div>
        {proposals.length>0&&<div className="db-innate-suggestion-actions">{proposals.map(x=><button type="button" key={x.nome}
@@ -42,19 +58,19 @@ export default function DragonbaneAbilityPanels({
         title={'Adicionar habilidade inata: '+x.nome}>+ {x.nome}</button>)}</div>}
        {!ancestry&&<small>Preencha a ancestralidade na parte superior da ficha para receber sugestões do livro.</small>}
      </div>}
-     {entries.length===0&&<p className="db-resource-empty">{legacy?'Suas anotações antigas sem categoria aparecerão aqui.':'Nenhum registro nesta seção. Use + Adicionar quando precisar.'}</p>}
+     {entries.length===0&&<p className="db-resource-empty">{legacy?'As anotações antigas sem categoria ficam aqui para você organizar.':'Nenhum registro nesta seção.'}</p>}
      <div className="db-resource-list">
-      {entries.map(({entry,index})=><article className="db-resource-card" key={'resource-'+index}>
+      {entries.map(({entry,index})=><article className="db-resource-card" data-label={kind.short.toUpperCase()} key={'resource-'+index}>
        <div className="db-resource-main">
         <label className="db-resource-name">
          <span>Nome</span>
          <textarea rows={legacy||n(entry.nome).includes('\n')?2:1} value={entry.nome||''}
-          onChange={e=>change(index,'nome',e.target.value)} placeholder={isMagic?'Nome do '+(kind.id==='truque'?'truque':'feitiço'):'Nome da habilidade'} />
+          onChange={e=>rename(index,e.target.value)} placeholder={isMagic?'Nome do '+(kind.id==='truque'?'truque':'feitiço'):'Nome da habilidade'} />
         </label>
         <label className="db-resource-cost">
          <span>{kind.id==='magia'?'PD / Poder':'Custo em PD'}</span>
-         <input type="text" value={entry.fv_nvl??entry.pd_nivel??''} onChange={e=>change(index,'fv_nvl',e.target.value)}
-          placeholder={kind.id==='truque'?'1 PD':'—'} aria-label={'Custo ou nível de '+(entry.nome||kind.nome)}/>
+         <input type="text" value={kind.id==='truque'?'1 PD':(entry.fv_nvl??entry.pd_nivel??'')} readOnly={kind.id==='truque'} onChange={e=>change(index,'fv_nvl',e.target.value)}
+          placeholder="—" aria-label={'Custo ou nível de '+(entry.nome||kind.nome)}/>
         </label>
        </div>
        <div className="db-resource-summary-row">
@@ -95,6 +111,7 @@ export default function DragonbaneAbilityPanels({
        </details>
       </article>)}
      </div>
+     </div>}
     </section>;
    })}
    <div className="db-resource-notes">
