@@ -78,6 +78,18 @@ export function dragonbaneInnateSuggestions(ancestry,abilities){
  const existing=(Array.isArray(abilities)?abilities:[]).map(entry=>norm(entry?.nome).split('\n')[0]);
  return(DRAGONBANE_INNATE_CATALOG[key]||[]).filter(entry=>!existing.includes(norm(entry.nome)));
 }
+// Ao editar um nome legado, fixa a classificação inferida naquele momento.
+ // Isso evita que o cartão mude de seção enquanto o usuário está digitando.
+export function renameDragonbaneAbility(data,index,name){
+ const entries=data?.habilidadesFeiticos;
+ if(!Array.isArray(entries)||index<0||index>=entries.length||!entries[index])return data;
+ const original=entries[index];
+ const pinnedType=original.tipo||dragonbaneAbilityKind(original);
+ const updated=[...entries];
+ updated[index]={...original,tipo:pinnedType,nome:String(name)};
+ return {...data,habilidadesFeiticos:updated};
+}
+
 export function dragonbanePdfAbilityOrder(items){
  const list=Array.isArray(items)?items:[];
  const rank={inata:0,heroica:1,magia:2,truque:3,outro:4};
