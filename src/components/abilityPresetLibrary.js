@@ -9,6 +9,9 @@ const STARTERS = {
     ],
     rituais: [
       { nome:'Luz de Vigília', circulo:1, elemento:'A definir', execucao:'A definir', alcance:'Curto', duracao:'Cena', resistencia:'Nenhuma', desc:'Uma luminosidade fraca revela formas e detalhes próximos. Modelo narrativo original; ajuste custo, elemento e efeitos com o mestre.' }
+    ],
+    poderesParanormais: [
+      { nome:'Eco do Silêncio', elemento:'A definir', requisito:'A definir', custo:'A definir', desc:'O personagem percebe um ruído que não existe para os outros. Exemplo narrativo original do PJLite; defina efeitos e custo com o mestre.' }
     ]
   },
   skyfall: {
@@ -64,6 +67,7 @@ export const removeAbilityPreset = (id) => {
 
 export const abilityPresetKindName = kind => ({
   habilidades:'Habilidades e poderes',
+  poderesParanormais:'Poderes paranormais',
   rituais:'Rituais',
   magias:'Magias'
 }[kind] || 'Modelos');
