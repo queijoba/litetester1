@@ -15,7 +15,7 @@ function addButton(block, target, kind) {
   if (!block.includes(found)) throw new Error('Modelos prontos: botão não encontrado: '+kind);
   return block.replace(found,found+'<button type="button" className="pjlite-preset-button" onClick={()=>setPresetKind(\''+kind+'\')}>📚 Biblioteca</button>');
 }
-function addSave(block, target, kind) {
+function addSave(block, target, kind, variable='x') {
   const text="savePreset('"+kind+"'";
   if (block.includes(text)) return block;
   if (!block.includes(target)) throw new Error('Modelos prontos: editor não encontrado: '+kind);
@@ -48,8 +48,10 @@ skyfall=patchZone(skyfall,"{tab==='poderes'","{tab==='magias'",zone=>{
   zone=addButton(zone,'<button className="skyfall-add" onClick={()=>{const categoria=novaCategoriaHabilidade.trim()||\'Geral\';add(\'habilidades\',{nome:\'\',origem:\'\',categoria,custoEnfase:\'\',descritores:\'\',desc:\'\' });setNovaCategoriaHabilidade(categoria);}}>+ Habilidade nessa categoria</button>','habilidades');
   return addSave(zone,'<textarea rows="3" value={x.desc||\'\'} onChange={e=>patch(\'habilidades\',i,\'desc\',e.target.value)} placeholder="Descrição / lembrete"/>','habilidades');
 });
-if(!skyfall.includes("setPresetKind('magias')"))throw new Error('Seletor de magias removido por script anterior');
-if(!skyfall.includes("savePreset('magias'"))throw new Error('Salvamento de magias removido por script anterior');
+skyfall=patchZone(skyfall,"{tab==='magias'","{tab==='inventario'",zone=>{
+  zone=addButton(zone,'>+ Magia</button>','magias');
+  return addSave(zone,'<textarea rows="3" value={m.desc||\'\'} onChange={e=>patch(\'magias\',i,\'desc\',e.target.value)} placeholder="Efeito / lembrete"/>','magias','m');
+});
 if(!skyfall.includes('<AbilityPresetPicker'))throw new Error('Seletor ausente do editor Skyfall');
 await writeFile(skyfallPath,skyfall,'utf8');
 console.log('✓ Catálogos de Habilidades, Poderes Paranormais, Rituais e Magias ligados após o build final.');
