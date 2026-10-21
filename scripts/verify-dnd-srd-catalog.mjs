@@ -20,7 +20,8 @@ for(const entry of spells){
  assert.ok(x.desc.length>30,'Magia sem descrição '+x.nomeOriginal);
  assert.ok(x.nivel>=0&&x.nivel<=9);
  assert.ok(Array.isArray(x.classes)&&x.classes.length>0);
- assert.ok(x.idiomaDescricao==='en');
+ assert.equal(x.idiomaDescricao,'pt');
+ assert.ok(x.paginaLivro,'Magia sem referência bibliográfica: '+x.nomeOriginal);
  assert.ok(x.fonte.includes('SRD 5.2.1'));
  for(const key of ['tempo','alcance','duracao','escola','verbal','somatico','material','concentracao','ritual'])
   assert.ok(x[key]!==undefined,x.nomeOriginal+' campo ausente '+key);
@@ -71,7 +72,9 @@ assert.ok(modal.includes('Magias da minha classe'));
 assert.ok(modal.includes('Todas as magias SRD'));
 assert.ok(modal.includes('onlyAvailableLevel'));
 assert.ok(modal.includes('Disponível no nível'));
-assert.ok(modal.includes('Descrição original do SRD em inglês'));
+assert.ok(!modal.includes('Descrição original do SRD em inglês'));
+assert.ok(modal.includes('entry.paginaLivro'));
+assert.ok(!modal.includes('Nome no SRD:'));
 const app=readFileSync('src/PJLiteApp.jsx','utf8');
 assert.ok(app.includes('classLevel={Number(data.bio?.nivel || 1)}'));
 console.log('✓ D&D SRD: 339 magias, 220 habilidades, 12 classes/subclasses, filtros de nível/classe e créditos verificados.');
