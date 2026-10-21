@@ -32,3 +32,22 @@
 .ordem-library-footer{background:#1b1b1b;color:#d6d3cf;font-size:9px;padding:10px 14px;line-height:1.4}
 .ordem-library-empty,.ordem-library-placeholder{font-size:12px;color:#807a73;padding:13px}
 @media(max-width:700px){.ordem-library-overlay{align-items:flex-end;padding:0}.ordem-library-modal{border-left:0;border-right:0;border-bottom:0;max-height:94dvh;height:94dvh;width:100%;border-radius:9px 9px 0 0}.ordem-library-header{padding:13px 16px}.ordem-library-header h2{font-size:20px}.ordem-library-header p{font-size:9px}.ordem-library-tabs{gap:3px}.ordem-library-tabs button{font-size:10px;padding:8px 10px}.ordem-library-controls{grid-template-columns:1fr;gap:6px}.ordem-library-body{grid-template-columns:1fr;grid-template-rows:minmax(145px,34%) minmax(0,1fr)}.ordem-library-results{border-right:0;border-bottom:2px solid #b4afa5;overflow:auto}.ordem-library-detail{padding:14px 16px}.ordem-library-detail h3{font-size:20px}.ordem-library-context{font-size:9px;flex-wrap:wrap;padding:4px 12px 8px}.ordem-library-footer{font-size:8px}}
+
+
+/* Biblioteca 2024: filtros contextuais, leitura em dispositivo móvel */
+.ordem-library-controls{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch}
+.ordem-library-controls input[type=search]{min-width:160px;flex:2 1 250px}
+.ordem-library-controls select{min-width:105px;flex:1 1 140px;max-width:100%}
+.ordem-library-warning{border-left:3px solid #b12b2b;background:#f8e8de;color:#732222;border-radius:2px;padding:10px 12px;margin:8px 0;line-height:1.5;font-size:12px;font-weight:700}
+.ordem-library-context{flex-wrap:wrap;gap:7px}
+.ordem-library-context button.active{background:#782125;color:#fff;border-color:#782125}
+.ordem-library-result-card small{white-space:normal}
+@media(max-width:700px){
+ .ordem-library-overlay{padding:0;align-items:flex-end}
+ .ordem-library-modal{max-height:91dvh;height:91dvh;border:0;border-top:5px solid #991c23;border-radius:12px 12px 0 0}
+ .ordem-library-controls{gap:5px;padding:8px}
+ .ordem-library-controls input[type=search]{flex:1 1 100%;min-width:0}
+ .ordem-library-controls select{flex:1 1 140px;min-width:0;font-size:12px}
+ .ordem-library-context{padding:6px 10px}
+ .ordem-library-header{padding:12px}
+}
