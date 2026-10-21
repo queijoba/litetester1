@@ -8,18 +8,19 @@ import './dndLibraryModal.css';
 const circle=value=>Math.max(0,Math.min(9,Number(String(value??'0').match(/\d+/)?.[0]||0)));
 const classNameFor=id=>DND_2024_CLASSES.find(entry=>entry.id===id)?.label||'';
 
-export default function DndLibraryModal({open,initialTab='classe',className='',subclass='',onChoose,onClose}){
+export default function DndLibraryModal({open,initialTab='classe',className='',subclass='',classLevel=1,onChoose,onClose}){
  const [tab,setTab]=useState(initialTab);
  const [query,setQuery]=useState('');
  const [selected,setSelected]=useState('');
  const [allClasses,setAllClasses]=useState(false);
  const [level,setLevel]=useState('all');
+ const [onlyAvailableLevel,setOnlyAvailableLevel]=useState(false);
  const [revision,setRevision]=useState(0);
  const currentClass=getDndClassByLabel(className);
  useEffect(()=>{
   if(!open)return;
   setTab(initialTab==='magias'?'magias':'classe');
-  setQuery('');setSelected('');setAllClasses(false);setLevel('all');
+  setQuery('');setSelected('');setAllClasses(false);setLevel('all');setOnlyAvailableLevel(false);
   setRevision(n=>n+1);
  },[open,initialTab]);
  useEffect(()=>{
@@ -29,8 +30,8 @@ export default function DndLibraryModal({open,initialTab='classe',className='',s
   return()=>window.removeEventListener('keydown',onKey);
  },[open,onClose]);
  const entries=useMemo(()=>getDndLibraryEntries({
-  tab,classId:currentClass?.id,subclass,query,level,allClasses
- }),[tab,currentClass?.id,subclass,query,level,allClasses,revision]);
+  tab,classId:currentClass?.id,subclass,query,level,allClasses,classLevel,onlyAvailableLevel
+ }),[tab,currentClass?.id,subclass,query,level,allClasses,classLevel,onlyAvailableLevel,revision]);
  const allowed=item=>canUseDndEntry(item.entry,tab,currentClass?.id,subclass);
  const insert=item=>{
   if(!allowed(item))return;
@@ -38,7 +39,7 @@ export default function DndLibraryModal({open,initialTab='classe',className='',s
   onClose();
  };
  const setCategory=value=>{
-  setTab(value);setQuery('');setSelected('');setLevel('all');setAllClasses(false);
+  setTab(value);setQuery('');setSelected('');setLevel('all');setAllClasses(false);setOnlyAvailableLevel(false);
  };
  const remove=item=>{
   if(item.source!=='personal'||!window.confirm('Excluir este modelo pessoal? As fichas existentes não serão alteradas.'))return;
@@ -58,7 +59,11 @@ export default function DndLibraryModal({open,initialTab='classe',className='',s
     </div>
     <div className="pjlite-dnd-library-filters">
      {tab==='magias'?<>
-      <b className="pjlite-dnd-library-context">Grimório • Círculos</b>
+      <div className="pjlite-dnd-library-context"><b>Grimório • Círculos</b><span>{currentClass?'Classe: '+currentClass.label:'Escolha uma classe para filtrar magias'}</span></div>
+      <div className="pjlite-dnd-library-chips">
+       <button type="button" className={!allClasses?'active':''} onClick={()=>{setAllClasses(false);setSelected('');}}>Magias da minha classe</button>
+       <button type="button" className={allClasses?'active':''} onClick={()=>{setAllClasses(true);setSelected('');}}>Todas as magias SRD</button>
+      </div>
       <div className="pjlite-dnd-library-chips">
        {[['all','Todos'],['0','Truques'],...Array.from({length:9},(_,i)=>[String(i+1),(i+1)+'º'])].map(([value,label])=>
         <button type="button" key={value} className={level===value?'active':''} onClick={()=>{setLevel(value);setSelected('');}}>{label}</button>)}
@@ -70,6 +75,7 @@ export default function DndLibraryModal({open,initialTab='classe',className='',s
       <div className="pjlite-dnd-library-chips">
        <button type="button" className={!allClasses?'active':''} onClick={()=>{setAllClasses(false);setSelected('');}}>Minha classe</button>
        <button type="button" className={allClasses?'active':''} onClick={()=>{setAllClasses(true);setSelected('');}}>Todas as classes</button>
+       <button type="button" className={onlyAvailableLevel?'active':''} onClick={()=>{setOnlyAvailableLevel(value=>!value);setSelected('');}} title="Filtrar habilidades obtidas no nível atual">{onlyAvailableLevel?'✓ Até nível '+classLevel:'Todos os níveis'}</button>
       </div>
      </>}
      <label className="pjlite-dnd-library-search"><span aria-hidden="true">⌕</span>
@@ -90,7 +96,7 @@ export default function DndLibraryModal({open,initialTab='classe',className='',s
           <span className="pjlite-dnd-library-chevron">{expanded?'⌃':'⌄'}</span>
           <span><strong>{item.name}</strong><small>{tab==='magias'
             ?(circle(entry.nivel)===0?'Truque':circle(entry.nivel)+'º círculo')+(entry.escola?' • '+entry.escola:'')
-            :[entry.classe||classNameFor(entry.classId)||'Modelo geral',entry.subclasse].filter(Boolean).join(' • ')}</small></span>
+            :[entry.classe||classNameFor(entry.classId)||'Modelo geral',entry.subclasse,entry.nivelMinimo?'Nível '+entry.nivelMinimo:''].filter(Boolean).join(' • ')}</small></span>
          </button>
          <button type="button" className="pjlite-dnd-library-plus" onClick={()=>insert(item)} disabled={!allowed(item)}
           aria-label={'Adicionar '+item.name} title={allowed(item)?'Adicionar à ficha':'Disponível apenas para a classe/subclasse correspondente'}>+</button>
@@ -103,7 +109,11 @@ export default function DndLibraryModal({open,initialTab='classe',className='',s
           {entry.dano&&<span>Efeito: {entry.dano}</span>}
           {entry.classId&&<span>Classe: {classNameFor(entry.classId)}</span>}
           {entry.subclasse&&<span>Subclasse: {entry.subclasse}</span>}
+          {entry.nivelMinimo!=null&&<span>Disponível no nível {entry.nivelMinimo}</span>}
+          {Array.isArray(entry.classes)&&entry.classes.length>0&&<span>Classes: {entry.classes.map(classNameFor).join(', ')}</span>}
          </div>
+         {entry.nomeOriginal&&entry.nomeOriginal!==entry.nome&&<small>Nome no SRD: {entry.nomeOriginal}</small>}
+         {entry.idiomaDescricao==='en'&&<small className="pjlite-dnd-library-lang">Descrição original do SRD em inglês, editável após adicionar.</small>}
          <p>{entry.desc||'Sem descrição cadastrada.'}</p>
          <small>{item.source==='personal'?'Modelo pessoal':entry.fonte||'Exemplo original do PJLite'}</small>
          {item.source==='personal'&&<button type="button" className="pjlite-dnd-library-remove" onClick={()=>remove(item)}>Excluir modelo pessoal</button>}
@@ -115,8 +125,8 @@ export default function DndLibraryModal({open,initialTab='classe',className='',s
        'Nenhum modelo encontrado. Tente outra pesquisa ou salve seu próprio modelo.'}</p>}
      </div>
     </div>
-    <footer className="pjlite-dnd-library-footer">As habilidades de classe e subclasse são modelos editáveis, não reproduções integrais dos livros. Magias SRD: D&D SRD 5.2.1 sob CC BY 4.0.
-     <a href="https://www.dndbeyond.com/srd" target="_blank" rel="noopener noreferrer"> Créditos ↗</a>
+    <footer className="pjlite-dnd-library-footer">Inclui conteúdo do System Reference Document 5.2.1 de Wizards of the Coast LLC, adaptado para o PJLite, sob Creative Commons Atribuição 4.0. Subclasses fora do SRD recebem apenas modelos de anotação.
+     <a href="https://www.dndbeyond.com/srd" target="_blank" rel="noopener noreferrer"> Fonte</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">Licença CC BY 4.0 ↗</a>
     </footer>
    </section>
   </div>,document.body
