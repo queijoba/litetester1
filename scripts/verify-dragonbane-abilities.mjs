@@ -57,6 +57,15 @@ assert.equal(formData.cartao_05_nome,'[Truque] Ignição');
 assert.equal(formData.cartao_05_fv_nivel,'1 PD');
 assert.equal(formData.cartao_06_nome,'Minha habilidade caseira');
 assert.equal(formData.cartao_06_habilidade,true);
+const legacyWithDescription={nome:'Registro antigo',descricao:'Descrição anterior',fv_nvl:'3 PD'};
+const last={};
+const legacyForm={
+ getTextField(name){return{setText(v){last[name]=v;}}},
+ getCheckBox(){return{check(){},uncheck(){}}}
+};
+fillDragonbanePdf(legacyForm,{bio:{nome:'Teste 2'},habilidadesFeiticos:[legacyWithDescription]});
+assert.equal(last.cartao_01_descricao_1,'Descrição anterior','Preservar conteúdo do campo legado descricao');
+
 
 const panel=readFileSync('src/systems/dragonbane/components/AbilityPanels.jsx','utf8');
 const editor=readFileSync('src/systems/dragonbane/components/Editor.jsx','utf8');
@@ -68,6 +77,9 @@ assert.ok(panel.includes('preparada'));
 assert.ok(panel.includes('grau'));
 assert.ok(panel.includes('habilidadesFeiticos'));
 assert.ok(panel.includes('Categoria'));
+assert.ok(panel.includes("entry.desc!==undefined?entry.desc"),'Preservar desc e descricao no editor');
+assert.ok(app.includes("h.desc !== undefined ? h.desc : h.descricao"),'Ficha Chat deve manter prioridade consistente de descrições');
+
 assert.ok(editor.includes('<DragonbaneAbilityPanels'));
 assert.ok(editor.includes("id: 'poderes', label: 'Habilidades & Magia'"));
 assert.ok(editor.includes("mobileTab === 'poderes'"));
