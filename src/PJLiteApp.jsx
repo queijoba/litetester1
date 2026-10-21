@@ -24,6 +24,7 @@ import { MODELOS_3DET_NPCS, MODELOS_3DET_CRIATURAS } from './systems/3det/threat
 import { generate3DetChatText } from './systems/3det/chat.js';
 import { generate3DetThreatChatText } from './systems/3det/threatChat.js';
 import DragonbaneEditor from './systems/dragonbane/components/Editor.jsx';
+import {DRAGONBANE_ABILITY_KINDS,dragonbaneAbilityList,dragonbaneMagicSchool,dragonbaneAbilityKind} from './systems/dragonbane/abilities.js';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import JSZip from 'jszip';
@@ -1039,13 +1040,24 @@ const { useState, useEffect, useRef } = React;
                 }
 
                 if ((item.habilidadesFeiticos || []).length) {
-                    text += `\n✨ HABILIDADES E MAGIAS\n\n`;
-                    item.habilidadesFeiticos.forEach(h => {
-                        text += `- ✦${safe(h.nome,'Habilidade').toUpperCase()}\n\n`;
-                        const desc = hasText(h.descricao) ? h.descricao : h.desc;
-                        if (hasText(desc)) text += `${compactText(desc)}`;
-                        if (hasText(h.fv_nvl)) text += `${hasText(desc) ? ' ' : ''}(Custo/Nv: ${h.fv_nvl})`;
-                        text += `\n\n`;
+                    text += `\n✨ HABILIDADES E MAGIAS\n`;
+                    DRAGONBANE_ABILITY_KINDS.forEach(kind => {
+                        const entries = dragonbaneAbilityList(item,kind.id);
+                        if (!entries.length) return;
+                        text += `\n[${kind.nome.toUpperCase()}]\n\n`;
+                        entries.forEach(({entry:h}) => {
+                            text += `- ✦ ${safe(h.nome,'Registro').toUpperCase()}\n`;
+                            const desc = hasText(h.descricao) ? h.descricao : h.desc;
+                            if (hasText(desc)) text += `${compactText(desc)}\n`;
+                            if (hasText(h.fv_nvl)) text += `PD/Nível: ${h.fv_nvl}\n`;
+                            if (['magia','truque'].includes(dragonbaneAbilityKind(h))) {
+                                text += `Escola: ${dragonbaneMagicSchool(h)}`;
+                                if (kind.id === 'magia') text += ` | Grau: ${h.grau || 1} | ${h.preparada?'Preparado':'Não marcado como preparado'}`;
+                                text += '\n';
+                            }
+                            if (hasText(h.fonte)) text += `Fonte: ${h.fonte}${hasText(h.pagina)?' • p. '+h.pagina:''}\n`;
+                            text += '\n';
+                        });
                     });
                 }
 
