@@ -7,7 +7,7 @@ const [skyCss,ordemData,ordemEditor,main,skyIndex,ordemIndex]=await Promise.all(
 ]);
 need(skyCss,['PJ LITE 0.8.3 SKYFALL ORIGINAL SHEET LAYOUT','grid-template-columns:repeat(6','grid-template-areas:"photo identity" "attrs attrs"'],'Skyfall original');
 need(ordemData,['nivelExperiencia:1','nivelExperiencia:false'],'Ordem NEX/Nível data');
-need(ordemEditor,['Usar NEX & Experiência','ordem-level-badge','1 nível equivale a 5% de NEX'],'Ordem NEX/Nível UI');
+need(ordemEditor,['Usar NEX & Experiência','ordem-level-badge','NEX continua registrando exposição paranormal'],'Ordem NEX/Nível UI');
 need(main,['installSkyfallPdfExport','installOrdemPdfExport'],'PDF installs');
 need(skyIndex,['installSkyfallPdfExport'],'Skyfall PDF index');
 need(ordemIndex,['installOrdemPdfExport'],'Ordem PDF index');
