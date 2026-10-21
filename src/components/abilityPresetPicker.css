@@ -27,3 +27,17 @@
 .pjlite-preset-button{border:1px solid #527360!important;background:#deeadc!important;color:#274630!important;border-radius:5px!important;padding:6px 9px!important;font:700 11px system-ui!important;cursor:pointer;white-space:normal}
 .pjlite-preset-save{border:1px solid #bbcbb7!important;background:#f3f4e8!important;color:#38533b!important;border-radius:4px!important;padding:5px 7px!important;font:700 10px system-ui!important;white-space:nowrap;cursor:pointer}
 @media(max-width:560px){.pjlite-presets-dialog{max-height:92dvh;min-height:310px}.pjlite-presets-layout{grid-template-columns:1fr;grid-template-rows:minmax(100px,36%) minmax(140px,64%)}.pjlite-presets-results{border-right:0;border-bottom:1px solid #c1cbbf}.pjlite-presets-search{flex-wrap:wrap;gap:5px}.pjlite-presets-detail{padding:10px}.pjlite-presets-header{padding:11px 13px}}
+
+/* Ícones de biblioteca nas barras de ferramentas: não ocupam linhas extras. */
+.pjlite-preset-button{display:inline-grid!important;place-items:center!important;flex:0 0 30px!important;width:30px!important;height:30px!important;min-width:30px!important;min-height:30px!important;max-width:30px;padding:0!important;line-height:1!important;font-size:15px!important;font-weight:normal!important;vertical-align:middle!important;white-space:nowrap!important;cursor:pointer}
+.pjlite-preset-save{display:inline-grid!important;place-items:center!important;flex:0 0 27px!important;width:27px!important;height:27px!important;min-width:27px!important;min-height:27px!important;padding:0!important;font-size:17px!important;line-height:1!important;vertical-align:middle!important;cursor:pointer}
+.pjlite-preset-button:focus-visible,.pjlite-preset-save:focus-visible{outline:2px solid #5f9276!important;outline-offset:2px}
+.pjlite-preset-button:disabled{opacity:.35;cursor:not-allowed}
+.dnd-v6-preset-header-actions,.dnd-v6-preset-toolbar-actions,.dnd-v6-preset-card-actions{display:flex;align-items:center;gap:6px;min-width:0}
+.dnd-v6-preset-header-actions{flex-wrap:wrap;justify-content:flex-end}
+.dnd-v6-preset-toolbar-actions{flex:0 0 auto;justify-content:flex-end}
+.dnd-v6-preset-toolbar-actions>.dnd-v6-spell-count{flex:0 0 auto}
+.dnd-v6-feature-head .dnd-v6-preset-card-actions{display:flex;gap:4px;align-items:center}
+.dnd-v6-wrapper .dnd-v6-lane-head .pjlite-preset-button{min-height:30px!important}
+.dnd-v6-wrapper .dnd-v6-spell-order .pjlite-preset-save{height:28px!important;min-height:28px!important;width:28px!important}
+@media(max-width:560px){.dnd-v6-preset-toolbar-actions{width:100%;justify-content:flex-end}.dnd-v6-preset-header-actions{gap:4px}.dnd-v6-preset-header-actions>.pjlite-preset-button{flex-basis:30px}}
