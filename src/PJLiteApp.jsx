@@ -1,6 +1,8 @@
 import DndCharacterEditor from './systems/dnd5e/components/CharacterEditor.jsx';
 import DndLibraryModal from './components/DndLibraryModal.jsx';
 import { buildSpeciesApplication, buildFeatApplication } from './components/dndSpeciesFeatActions.js';
+import {buildBackgroundApplication} from './components/dndBackgroundActions.js';
+import {findAbilityPresets} from './components/abilityPresetLibrary.js';
 import { getDndClassByLabel } from './systems/dnd5e/classPanels.js';
 import DndThreatEditor from './systems/dnd5e/components/ThreatEditor.jsx';
 import FabulaCharacterEditor from './systems/fabulaUltima/components/CharacterEditor.jsx';
@@ -3023,6 +3025,18 @@ const { useState, useEffect, useRef } = React;
             }
 
             const addFromDndLibrary = (entry, tab, choiceName='') => {
+                if(tab==='antecedentes'){
+                    try {
+                        const previous=Array.isArray(data.caracteristicas)?data.caracteristicas:[];
+                        const availableFeats=findAbilityPresets('dnd5e','talentos');
+                        const selected=buildBackgroundApplication(entry,previous,availableFeats);
+                        updateField('bio.antecedente',selected.background);
+                        updateField('caracteristicas',selected.features);
+                        setMobileTab('recursos');
+                        showToast('Antecedente '+selected.background+' registrado. Revise atributos, perícias, ferramenta e equipamentos.');
+                    }catch(error){showToast(error.message||'Não foi possível adicionar o antecedente.');}
+                    return;
+                }
                 if(tab==='especies'){
                     try {
                         const chosen=buildSpeciesApplication(entry,choiceName,data.caracteristicas,data.status);
@@ -3031,7 +3045,7 @@ const { useState, useEffect, useRef } = React;
                         updateField('caracteristicas',chosen.features);
                         if(chosen.size)updateField('status.tamanho',chosen.size);
                         if(chosen.speed)updateField('status.deslocamento',chosen.speed);
-                        setMobileTab('habilidades');
+                        setMobileTab('recursos');
                         showToast(chosen.especie+' aplicada com '+chosen.traitCount+' traços. Confira escolhas, PV e magias manualmente.');
                     }catch(error){showToast(error.message||'Não foi possível aplicar a espécie.');}
                     return;
@@ -3040,7 +3054,7 @@ const { useState, useEffect, useRef } = React;
                     const built=buildFeatApplication(entry,data.caracteristicas);
                     if(built.duplicate){showToast('Esse talento já está na ficha e não é repetível.');return;}
                     updateField('caracteristicas',built.features);
-                    setMobileTab('habilidades');
+                    setMobileTab('recursos');
                     showToast('Talento '+entry.nome+' registrado na ficha. Confira os efeitos.');
                     return;
                 }
