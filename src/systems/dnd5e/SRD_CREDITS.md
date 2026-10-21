@@ -6,7 +6,15 @@ Este módulo do PJLite inclui material adaptado do *System Reference Document 5.
 
 O SRD 5.2.1 está licenciado sob a Creative Commons Attribution 4.0 International (CC BY 4.0), disponível em https://creativecommons.org/licenses/by/4.0/ .
 
-O PJLite é um projeto independente e não é afiliado, patrocinado ou endossado pela Wizards of the Coast LLC.
+O PJLite é um projeto independente, gratuito e feito por fãs; não é afiliado, patrocinado nem endossado pela Wizards of the Coast LLC.
+
+## Aviso obrigatório — Política de Conteúdo de Fãs
+
+**“PJLite é um conteúdo de fã não oficial permitido sob a Política de Conteúdo de Fãs. Não aprovado/endossado pela Wizards. Porções do material usado são propriedade da Wizards of the Coast. ©Wizards of the Coast LLC.”**
+
+Política de Conteúdo de Fãs: https://company.wizards.com/pt-BR/legal/fancontentpolicy
+
+A Política de Conteúdo de Fãs NÃO transforma materiais exclusivos do Livro do Jogador em conteúdo Creative Commons. Essa parte do catálogo usa apenas referências, nomes e resumos editoriais independentes, sem transcrições extensas do livro. O PJLite não substitui a obra oficial. O conteúdo SRD segue CC BY 4.0, separado do conteúdo não-SRD.
 
 ## Modificações realizadas
 
@@ -27,9 +35,11 @@ As referências consultam a numeração **impressa** do `D&D5.5e-Livro-do-jogado
 - 12 subclasses disponibilizadas no SRD 5.2.1, com 58 características registradas.
 - 339 magias do SRD 5.2.1, do círculo 0 ao 9, com componentes, escola, duração, alcance e listas de classe.
 - 9 espécies e 33 traços de espécie do SRD 5.2.1. Para espécies que exigem escolha, a ficha registra a opção selecionada.
+- Aasimar do Livro do Jogador 2024, com cinco traços em resumos originais não-SRD; a Revelação Celestial é escolhida a cada transformação.
 - 17 talentos do SRD 5.2.1 (4 de Origem, 2 Gerais, 4 de Estilo de Luta e 7 Dádivas Épicas), com avisos sobre nível e pré-requisitos.
+- Catálogo complementar com 60 entradas de talentos do Livro do Jogador 2024 que não estavam no SRD, cada uma com nome, categoria, pré-requisito quando aplicável e resumo curto original. Estes registros não têm licença CC BY 4.0 e são identificados separadamente.
 - Outras subclasses visíveis na ficha, mas que não estão no SRD, recebem apenas espaços de anotação próprios, não textos reproduzidos do Livro do Jogador.
-- Aasimar faz parte do Livro do Jogador 2024, mas foi intencionalmente excluído do SRD 5.2.1 pela Wizards of the Coast LLC. Pode ser cadastrado manualmente pelo jogador, sem transcrever o texto não licenciado.
+- Aasimar e talentos exclusivos do Livro do Jogador são apresentados como resumos de consulta não oficiais, sem copiar o texto protegido. Consulte o livro para a redação completa e possíveis diferenças de interpretação.
 - As aplicações de espécies e talentos não alteram automaticamente atributos, PV, lista de magias ou cálculos adicionais que dependam de escolhas do jogador.
 - Os modelos pessoais armazenados pelo usuário no navegador continuam privados e editáveis.
 
