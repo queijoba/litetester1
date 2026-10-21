@@ -3357,6 +3357,7 @@ const { useState, useEffect, useRef } = React;
                         initialTab={dndLibraryTab}
                         className={data.bio?.classe || ''}
                         subclass={data.bio?.subclasse || ''}
+                        classLevel={Number(data.bio?.nivel || 1)}
                         onChoose={addFromDndLibrary}
                         onClose={()=>setDndLibraryOpen(false)}
                     />}
