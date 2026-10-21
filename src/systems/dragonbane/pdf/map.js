@@ -138,7 +138,7 @@ export function fillDragonbanePdf(form, item) {
       isMagic&&'Escola: '+dragonbaneMagicSchool(hab),
       kind==='magia'&&hab?.grau&&'Grau '+hab.grau,
       kind==='magia'&&hab?.preparada&&'Preparado',
-      hab?.descricao??hab?.desc??'',
+      hab?.desc||hab?.descricao||'',
       rawLines.join(' '),
       hab?.conjuracao&&'Conjuração: '+hab.conjuracao,
       hab?.alcance&&'Alcance: '+hab.alcance,
