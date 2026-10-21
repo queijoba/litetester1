@@ -6,7 +6,7 @@ import './ordem-library.css';
 
 const tabs=[['origens','Origens'],['trilhas','Trilhas'],['habilidades','Poderes'],['poderesParanormais','Paranormais'],['rituais','Rituais']];
 const normalize=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-const allSources=['Todas as fontes','Livro Básico v1.3','Sobrevivendo ao Horror','Arquivos Secretos #01','Arquivos Secretos #05','Arquivos Secretos #06','Arquivos Secretos #09'];
+const allSources=['Todas as fontes','Livro Básico v1.3','Sobrevivendo ao Horror','Arquivos Secretos #01','Arquivos Secretos #03','Arquivos Secretos #05','Arquivos Secretos #06','Arquivos Secretos #07','Arquivos Secretos #09'];
 export default function OrdemLibraryModal({open=false,initialTab='habilidades',classe='',trilha='',nex=5,onChoose,onClose}){
  const [tab,setTab]=useState('habilidades');
  const [source,setSource]=useState('Todas as fontes');
