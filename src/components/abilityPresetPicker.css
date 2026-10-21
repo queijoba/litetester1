@@ -1,0 +1,29 @@
+.pjlite-presets-backdrop{position:fixed;inset:0;z-index:99990;display:grid;place-items:center;background:rgba(5,12,10,.7);padding:14px}
+.pjlite-presets-dialog{display:flex;flex-direction:column;width:min(750px,100%);max-height:min(85vh,740px);min-height:270px;border:1px solid #667466;border-radius:8px;background:#f2efdf;color:#20332a;box-shadow:0 24px 70px #0008;overflow:hidden;font:13px/1.45 system-ui,sans-serif}
+.pjlite-presets-header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;background:#1b2b24;color:#f2eee0}
+.pjlite-presets-header h3{margin:2px 0 0;font-size:17px;font-weight:800}
+.pjlite-presets-kicker{font:700 10px/1.3 ui-monospace,monospace;letter-spacing:.06em;color:#8ea89a}
+.pjlite-presets-close{flex:none;border:1px solid #799084!important;border-radius:6px!important;width:33px;height:33px;background:#263e32!important;color:#fff!important;font-size:24px;line-height:1;cursor:pointer}
+.pjlite-presets-search{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid #bcc6b9}
+.pjlite-presets-search input{flex:1;min-width:0;border:1px solid #b8c4b7!important;border-radius:5px!important;background:#fff!important;color:#1b2b24!important;padding:9px 10px!important;font:inherit!important;outline-offset:2px}
+.pjlite-presets-search small{color:#6a736a;white-space:nowrap}
+.pjlite-presets-layout{display:grid;grid-template-columns:minmax(165px,.42fr) minmax(0,.58fr);min-height:0;flex:1;overflow:hidden}
+.pjlite-presets-results{overflow-y:auto;border-right:1px solid #c1cbbf;background:#e8e7d6;padding:9px;min-height:130px}
+.pjlite-presets-option{display:grid;gap:3px;width:100%;text-align:left;padding:10px;margin-bottom:6px;border:1px solid #cad0c6!important;border-radius:6px!important;background:#f8f7ed!important;color:#2f4235!important;cursor:pointer}
+.pjlite-presets-option.selected{border-color:#48735a!important;background:#d8e5d7!important}
+.pjlite-presets-option strong{font-weight:800;overflow-wrap:anywhere}
+.pjlite-presets-option span{font-size:10px;color:#66776a}
+.pjlite-presets-empty{padding:12px;color:#556759}
+.pjlite-presets-detail{padding:14px;overflow-y:auto;min-width:0}
+.pjlite-presets-detail h4{font-size:18px;font-weight:800;margin:5px 0 10px;overflow-wrap:anywhere}
+.pjlite-presets-detail p{white-space:pre-wrap;line-height:1.65;overflow-wrap:anywhere;margin:12px 0}
+.pjlite-presets-meta{display:flex;flex-wrap:wrap;gap:5px}
+.pjlite-presets-meta span{border:1px solid #c7d0c4;border-radius:4px;padding:4px 6px;font-size:11px;color:#4d604f}
+.pjlite-presets-footer{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.pjlite-presets-use{border:1px solid #243e2f!important;border-radius:5px!important;background:#284737!important;color:white!important;padding:9px 12px!important;font:700 12px system-ui!important;cursor:pointer}
+.pjlite-presets-delete{border:1px solid #9b6d67!important;border-radius:5px!important;background:#f2dcd9!important;color:#6d3733!important;padding:9px 10px!important;font:700 12px system-ui!important;cursor:pointer}
+.pjlite-presets-placeholder{color:#637569;padding:22px 0}
+.pjlite-presets-note{padding:9px 14px;border-top:1px solid #c0cbbd;font-size:10px;color:#607066;background:#e9e6d8}
+.pjlite-preset-button{border:1px solid #527360!important;background:#deeadc!important;color:#274630!important;border-radius:5px!important;padding:6px 9px!important;font:700 11px system-ui!important;cursor:pointer;white-space:normal}
+.pjlite-preset-save{border:1px solid #bbcbb7!important;background:#f3f4e8!important;color:#38533b!important;border-radius:4px!important;padding:5px 7px!important;font:700 10px system-ui!important;white-space:nowrap;cursor:pointer}
+@media(max-width:560px){.pjlite-presets-dialog{max-height:92dvh;min-height:310px}.pjlite-presets-layout{grid-template-columns:1fr;grid-template-rows:minmax(100px,36%) minmax(140px,64%)}.pjlite-presets-results{border-right:0;border-bottom:1px solid #c1cbbf}.pjlite-presets-search{flex-wrap:wrap;gap:5px}.pjlite-presets-detail{padding:10px}.pjlite-presets-header{padding:11px 13px}}
