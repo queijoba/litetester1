@@ -5,6 +5,11 @@ import srdSpells3 from '../systems/dnd5e/srd521-spells-3.js';
 import srdSpells4 from '../systems/dnd5e/srd521-spells-4.js';
 import srdClassFeatures from '../systems/dnd5e/srd521-features-classes.js';
 import srdSubclassFeatures from '../systems/dnd5e/srd521-features-subclasses.js';
+import srdSpecies from '../systems/dnd5e/srd521-species.js';
+import srdFeats from '../systems/dnd5e/srd521-feats.js';
+
+export const DND_SRD_SPECIES_COUNT = srdSpecies.length;
+export const DND_SRD_FEATS_COUNT = srdFeats.length;
 
 export const DND_SRD_SPELL_COUNT = srdSpells1.length+srdSpells2.length+srdSpells3.length+srdSpells4.length;
 export const DND_SRD_FEATURE_COUNT = srdClassFeatures.length+srdSubclassFeatures.length;
@@ -96,6 +101,12 @@ const dndSubclassOutline=DND_2024_CLASSES.flatMap(cls=>(cls.subclasses||[])
   _srdId:'outline:'+cls.id+':'+name
  })));
 const dndCatalog={
+ especies:srdSpecies.map(species=>({
+  ...species,
+  desc:species.tracos.map(trait=>trait.nome+': '+trait.resumoPt).join('\n'),
+  resumoPt:'Tamanho: '+species.tamanho+' | Deslocamento: '+species.deslocamentoMetros+' m',
+ })),
+ talentos:srdFeats,
  magias:[...srdSpells1,...srdSpells2,...srdSpells3,...srdSpells4].map(entry=>{
   const translated=(STARTERS.dnd5e.magias||[]).find(item=>item.nomeOriginal===entry.nomeOriginal||item.nome===entry.nome);
   if(!translated)return entry;
@@ -161,5 +172,7 @@ export const abilityPresetKindName = kind => ({
   caracteristicas:'Habilidades da classe',
   poderesParanormais:'Poderes paranormais',
   rituais:'Rituais',
-  magias:'Magias'
+  magias:'Magias',
+  especies:'Espécies',
+  talentos:'Talentos'
 }[kind] || 'Modelos');
