@@ -1,0 +1,34 @@
+.ordem-library-overlay{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.8);display:flex;justify-content:center;align-items:center;padding:18px;backdrop-filter:blur(3px)}
+.ordem-library-modal{display:flex;flex-direction:column;max-width:960px;width:100%;max-height:min(90dvh,920px);background:#e9e8e3;border:3px solid #131313;border-top:5px solid #991c23;box-shadow:0 18px 90px #000;color:#181818;overflow:hidden;font-family:system-ui,Arial,sans-serif}
+.ordem-library-header{display:flex;justify-content:space-between;gap:14px;padding:15px 22px;background:#151515;color:#fff}
+.ordem-library-header small{letter-spacing:.19em;color:#d3a3a3;font-weight:900;font-size:9px}
+.ordem-library-header h2{font-family:Georgia,serif;font-size:26px;line-height:1.1;font-weight:900;margin:4px 0 5px;color:#fff}
+.ordem-library-header p{font-size:11px;color:#c7c7c7}
+.ordem-library-header>button{font-size:29px;font-weight:900;align-self:flex-start;line-height:1;color:#fff;padding:2px 8px}
+.ordem-library-tabs{display:flex;gap:2px;background:#d4d0c7;padding:8px;overflow-x:auto}
+.ordem-library-tabs button{flex:1 0 auto;border:1px solid #bbb7b1;font-size:11px;font-weight:900;color:#242424;padding:10px 12px;background:#faf8f4;white-space:nowrap}
+.ordem-library-tabs button.active{background:#8d1a21;color:#fff;border-color:#6a1519}
+.ordem-library-controls{display:grid;grid-template-columns:minmax(0,1fr) 215px;gap:8px;padding:10px 14px 6px}
+.ordem-library-controls input,.ordem-library-controls select{width:100%;border:1px solid #79746d;background:white;color:#111;padding:9px 10px;border-radius:2px;font-size:12px}
+.ordem-library-context{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:3px 15px 11px;border-bottom:1px solid #b4afa5;font-size:11px;color:#555}
+.ordem-library-context button{border:1px solid #777;background:#eee;padding:5px 8px;color:#252525;font-size:10px;font-weight:800}
+.ordem-library-context button.active{background:#9b3136;color:#fff}
+.ordem-library-body{display:grid;grid-template-columns:40% 60%;min-height:0;flex:1}
+.ordem-library-results{overflow:auto;border-right:2px solid #bbb7af;padding:8px;max-height:100%}
+.ordem-library-count{font-size:9px;letter-spacing:.06em;font-weight:900;text-transform:uppercase;color:#736e68;padding:5px 8px}
+.ordem-library-results>button{border-bottom:1px solid #d0cbc2;display:flex;flex-direction:column;gap:3px;padding:10px;width:100%;text-align:left;transition:background .15s}
+.ordem-library-results>button strong{font:900 13px Georgia,serif;color:#231f1c}
+.ordem-library-results>button small{font-size:10px;color:#796763}
+.ordem-library-results>button:hover,.ordem-library-results>button.selected{background:#ddd5c9;border-left:3px solid #9e262b}
+.ordem-library-detail{overflow:auto;padding:22px 23px;min-height:220px;color:#181818}
+.ordem-library-source{color:#9c2226;letter-spacing:.14em;font-size:9px;font-weight:900;text-transform:uppercase}
+.ordem-library-detail h3{font:900 25px Georgia,serif;border-bottom:3px double #3a3631;padding-bottom:9px;margin:7px 0 10px;color:#161616}
+.ordem-library-tags{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}
+.ordem-library-tags span{background:#242424;color:#fff;padding:3px 7px;font-size:9px}
+.ordem-library-description{white-space:pre-line;margin-top:10px;line-height:1.6;font-size:13px}
+.ordem-library-detail p{margin-bottom:9px}
+.ordem-library-copyright{font-size:10px;color:#786c61;margin:18px 0;line-height:1.5}
+.ordem-library-insert{background:#7f1c20!important;color:#fff!important;font-size:12px;font-weight:900;padding:10px 17px;margin:4px 0}
+.ordem-library-footer{background:#1b1b1b;color:#d6d3cf;font-size:9px;padding:10px 14px;line-height:1.4}
+.ordem-library-empty,.ordem-library-placeholder{font-size:12px;color:#807a73;padding:13px}
+@media(max-width:700px){.ordem-library-overlay{align-items:flex-end;padding:0}.ordem-library-modal{border-left:0;border-right:0;border-bottom:0;max-height:94dvh;height:94dvh;width:100%;border-radius:9px 9px 0 0}.ordem-library-header{padding:13px 16px}.ordem-library-header h2{font-size:20px}.ordem-library-header p{font-size:9px}.ordem-library-tabs{gap:3px}.ordem-library-tabs button{font-size:10px;padding:8px 10px}.ordem-library-controls{grid-template-columns:1fr;gap:6px}.ordem-library-body{grid-template-columns:1fr;grid-template-rows:minmax(145px,34%) minmax(0,1fr)}.ordem-library-results{border-right:0;border-bottom:2px solid #b4afa5;overflow:auto}.ordem-library-detail{padding:14px 16px}.ordem-library-detail h3{font-size:20px}.ordem-library-context{font-size:9px;flex-wrap:wrap;padding:4px 12px 8px}.ordem-library-footer{font-size:8px}}
