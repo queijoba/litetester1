@@ -20,6 +20,18 @@ export const DRAGONBANE_INNATE_CATALOG={
  ]
 };
 const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+
+const KNOWN_HEROIC_NAMES=new Set(['Tiro Duplo','Veterano','Apunhalar pelas Costas','Pernas do Mar'].map(norm));
+const KNOWN_ELEMENTAL_SPELLS=new Set(['Bola de Fogo','Pilar','Lufada de Vento'].map(norm));
+const KNOWN_ELEMENTAL_TRICKS=new Set(['Calor/Frio','Nuvem de Fumaça','Ignição'].map(norm));
+const KNOWN_INNATES=new Set(Object.values(DRAGONBANE_INNATE_CATALOG).flat().map(x=>norm(x.nome)));
+export function dragonbaneMagicSchool(item){
+ if(item?.escola)return item.escola;
+ const name=norm(String(item?.nome||'').split(/\r?\n/)[0]);
+ if(KNOWN_ELEMENTAL_SPELLS.has(name)||KNOWN_ELEMENTAL_TRICKS.has(name))return'Elementalismo';
+ return'Magia Geral';
+}
+
 export function dragonbaneAncestryKey(name){
  const n=norm(name);
  if(n.includes('humano'))return'humano';
@@ -32,12 +44,20 @@ export function dragonbaneAncestryKey(name){
  return'';
 }
 export function dragonbaneAbilityKind(item){
- if(item?.magia===true||item?.isSpell===true)return'magia';
  const raw=norm(item?.tipo||item?.categoria||'');
  if(['inata','ancestral','ancestralidade','habilidade inata','especie','especie/linhagem'].includes(raw))return'inata';
  if(['heroica','habilidade heroica','profissao'].includes(raw))return'heroica';
  if(raw.includes('truque'))return'truque';
  if(raw.includes('magia')||raw.includes('feitico')||raw.includes('spell'))return'magia';
+ if(raw==='outro')return'outro';
+ if(item?.magia===true||item?.isSpell===true)return'magia';
+ // Migração virtual: apenas nomes inequívocos já presentes nos modelos antigos.
+ // Os demais continuam editáveis em Outros, sem alterar o save original.
+ const name=norm(String(item?.nome||'').split(/\r?\n/)[0]);
+ if(KNOWN_INNATES.has(name))return'inata';
+ if(KNOWN_HEROIC_NAMES.has(name))return'heroica';
+ if(KNOWN_ELEMENTAL_SPELLS.has(name))return'magia';
+ if(KNOWN_ELEMENTAL_TRICKS.has(name))return'truque';
  return'outro';
 }
 export function dragonbaneAbilityList(data,kind){
