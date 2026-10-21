@@ -38,3 +38,6 @@
 .pjlite-dnd-library-footer{padding:8px 14px;border-top:1px solid #c3ad96;font-size:10px;color:#776254;background:#f1e7da}
 .pjlite-dnd-library-footer a{color:#9b3826;text-decoration:underline}
 @media(max-width:600px){.pjlite-dnd-library-backdrop{align-items:flex-end;padding:0}.pjlite-dnd-library{width:100%;height:min(75dvh,790px);border-radius:15px 15px 0 0;border-width:1px 0 0}.pjlite-dnd-library-top{padding:14px 16px}.pjlite-dnd-library-top h2{font-size:19px}.pjlite-dnd-library-tabs{padding:4px 11px 0}.pjlite-dnd-library-filters{padding:11px 13px}.pjlite-dnd-library-content{padding:10px}.pjlite-dnd-library-item-head{min-height:59px}}
+
+.pjlite-toolbar-library{display:inline-grid!important;place-items:center!important;width:30px!important;height:30px!important;min-height:30px!important;min-width:30px!important;padding:0!important;border:1px solid #ffffff55!important;border-radius:5px!important;background:#0005!important;color:#fff!important;font-size:16px!important;line-height:1!important;cursor:pointer!important}
+.pjlite-toolbar-library:hover,.pjlite-toolbar-library:focus-visible{background:#0009!important;outline:2px solid #fff5;outline-offset:2px}
