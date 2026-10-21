@@ -12,10 +12,14 @@ O PJLite é um projeto independente e não é afiliado, patrocinado ou endossado
 
 - Conversão de características, magias, espécies e talentos para os campos editáveis de fichas digitais do PJLite.
 - Organização por classe, subclasse, nível, círculos de magia, espécie, ancestralidade, categoria de talento e pré-requisitos.
-- Tradução de nomes e campos principais para português brasileiro quando revisados; trechos de descrição não traduzidos aparecem identificados como texto original em inglês.
+- Nomes, campos e resumos de consulta da biblioteca estão em português brasileiro. Os resumos não são traduções integrais de todas as regras do SRD; consulte o livro para limitações e detalhes.
 - Exemplos criados originalmente pelo PJLite são identificados como tais.
 
-As descrições do SRD são uma consulta auxiliar. Aplique as regras com seu Mestre e consulte o SRD para validar detalhes e atualizações.
+As descrições resumidas são uma consulta auxiliar; a biblioteca não substitui as regras integrais. Aplique as regras com seu Mestre e consulte o SRD para validar detalhes e atualizações.
+
+## Numeração de páginas
+
+As referências consultam a numeração **impressa** do `D&D5.5e-Livro-do-jogador.pdf` disponibilizado pelo usuário no Google Drive, não as posições do arquivo PDF. Estão verificadas as páginas individuais de 9 espécies, 17 talentos, 219 magias e 58 características de classe. Para o restante, é indicada explicitamente a seção do livro ou o intervalo de páginas de seu capítulo. Referências de página não implicam reprodução do texto do Livro do Jogador.
 
 ## Cobertura desta versão
 
