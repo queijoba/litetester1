@@ -3,24 +3,27 @@ import {createPortal} from 'react-dom';
 import {DND_2024_CLASSES,getDndClassByLabel} from '../systems/dnd5e/classPanels.js';
 import {removeAbilityPreset} from './abilityPresetLibrary.js';
 import {getDndLibraryEntries,canUseDndEntry} from './dndLibraryFilters.js';
+import {featRequirementWarnings} from './dndSpeciesFeatActions.js';
 import './dndLibraryModal.css';
 
 const circle=value=>Math.max(0,Math.min(9,Number(String(value??'0').match(/\d+/)?.[0]||0)));
 const classNameFor=id=>DND_2024_CLASSES.find(entry=>entry.id===id)?.label||'';
 
-export default function DndLibraryModal({open,initialTab='classe',className='',subclass='',classLevel=1,onChoose,onClose}){
+export default function DndLibraryModal({open,initialTab='classe',className='',subclass='',classLevel=1,attributes={},features=[],currentSpecies='',onChoose,onClose}){
  const [tab,setTab]=useState(initialTab);
  const [query,setQuery]=useState('');
  const [selected,setSelected]=useState('');
  const [allClasses,setAllClasses]=useState(false);
  const [level,setLevel]=useState('all');
+ const [featCategory,setFeatCategory]=useState('todas');
+ const [selectedChoice,setSelectedChoice]=useState('');
  const [onlyAvailableLevel,setOnlyAvailableLevel]=useState(false);
  const [revision,setRevision]=useState(0);
  const currentClass=getDndClassByLabel(className);
  useEffect(()=>{
   if(!open)return;
-  setTab(initialTab==='magias'?'magias':'classe');
-  setQuery('');setSelected('');setAllClasses(false);setLevel('all');setOnlyAvailableLevel(false);
+  setTab(['magias','especies','talentos'].includes(initialTab)?initialTab:'classe');
+  setQuery('');setSelected('');setAllClasses(false);setLevel('all');setOnlyAvailableLevel(false);setFeatCategory('todas');setSelectedChoice('');
   setRevision(n=>n+1);
  },[open,initialTab]);
  useEffect(()=>{
@@ -30,16 +33,24 @@ export default function DndLibraryModal({open,initialTab='classe',className='',s
   return()=>window.removeEventListener('keydown',onKey);
  },[open,onClose]);
  const entries=useMemo(()=>getDndLibraryEntries({
-  tab,classId:currentClass?.id,subclass,query,level,allClasses,classLevel,onlyAvailableLevel
- }),[tab,currentClass?.id,subclass,query,level,allClasses,classLevel,onlyAvailableLevel,revision]);
+  tab,classId:currentClass?.id,subclass,query,level,allClasses,classLevel,onlyAvailableLevel,featCategory
+ }),[tab,currentClass?.id,subclass,query,level,allClasses,classLevel,onlyAvailableLevel,featCategory,revision]);
  const allowed=item=>canUseDndEntry(item.entry,tab,currentClass?.id,subclass);
  const insert=item=>{
   if(!allowed(item))return;
-  onChoose({...item.entry},tab);
+  if(tab==='especies'&&item.entry.escolha&&!selectedChoice){
+    setSelected(item.id);
+    return;
+  }
+  if(tab==='talentos'){
+    const warnings=featRequirementWarnings(item.entry,{level:classLevel,attributes,classId:currentClass?.id,selectedFeatures:features});
+    if(warnings.length&&!window.confirm('Verifique os pré-requisitos antes de adicionar:\\n• '+warnings.join('\\n• ')+'\\n\\nAdicionar mesmo assim com autorização do Mestre?'))return;
+  }
+  onChoose({...item.entry},tab,tab==='especies'?selectedChoice:'');
   onClose();
  };
  const setCategory=value=>{
-  setTab(value);setQuery('');setSelected('');setLevel('all');setAllClasses(false);setOnlyAvailableLevel(false);
+  setTab(value);setQuery('');setSelected('');setLevel('all');setAllClasses(false);setOnlyAvailableLevel(false);setFeatCategory('todas');setSelectedChoice('');
  };
  const remove=item=>{
   if(item.source!=='personal'||!window.confirm('Excluir este modelo pessoal? As fichas existentes não serão alteradas.'))return;
@@ -54,11 +65,23 @@ export default function DndLibraryModal({open,initialTab='classe',className='',s
      <button type="button" className="pjlite-dnd-library-close" aria-label="Fechar" onClick={onClose}>×</button>
     </header>
     <div className="pjlite-dnd-library-tabs" role="tablist" aria-label="Categoria">
-     {[['classe','Classe'],['subclasse','Subclasse'],['magias','Magias']].map(([id,label])=>
+     {[['classe','Classe'],['subclasse','Subclasse'],['magias','Magias'],['especies','Espécies'],['talentos','Talentos']].map(([id,label])=>
       <button type="button" role="tab" key={id} aria-selected={tab===id} className={tab===id?'active':''} onClick={()=>setCategory(id)}>{label}</button>)}
     </div>
     <div className="pjlite-dnd-library-filters">
-     {tab==='magias'?<>
+     {tab==='especies'?<>
+      <div className="pjlite-dnd-library-context"><b>Espécies do SRD 5.2.1</b><span>{currentSpecies?'Ficha atual: '+currentSpecies:'Escolha uma espécie para preencher os traços.'}</span></div>
+      <small>Ao aplicar, o PJLite atualiza a espécie e registra seus traços; escolhas de linhagem ficam anotadas na ficha.</small>
+     </>:tab==='talentos'?<>
+      <div className="pjlite-dnd-library-context"><b>Talentos do SRD 5.2.1</b><span>Nível do personagem: {classLevel}</span></div>
+      <div className="pjlite-dnd-library-chips">
+       {['todas','Origem','Geral','Estilo de Luta','Dádiva Épica'].map(category=><button key={category} type="button"
+        className={featCategory===category?'active':''} onClick={()=>{setFeatCategory(category);setSelected('');}}>
+        {category==='todas'?'Todos':category}</button>)}
+       <button type="button" className={onlyAvailableLevel?'active':''} onClick={()=>{setOnlyAvailableLevel(value=>!value);setSelected('');}}>
+        {onlyAvailableLevel?'✓ Até nível '+classLevel:'Todos os níveis'}</button>
+      </div>
+     </>:tab==='magias'?<>
       <div className="pjlite-dnd-library-context"><b>Grimório • Círculos</b><span>{currentClass?'Classe: '+currentClass.label:'Escolha uma classe para filtrar magias'}</span></div>
       <div className="pjlite-dnd-library-chips">
        <button type="button" className={!allClasses?'active':''} onClick={()=>{setAllClasses(false);setSelected('');}}>Magias da minha classe</button>
@@ -92,16 +115,38 @@ export default function DndLibraryModal({open,initialTab='classe',className='',s
        return <article className={'pjlite-dnd-library-item'+(expanded?' expanded':'')} key={item.id}>
         <div className="pjlite-dnd-library-item-head">
          <button type="button" className="pjlite-dnd-library-expand" aria-expanded={expanded}
-          onClick={()=>setSelected(expanded?'':item.id)}>
+          onClick={()=>{setSelected(expanded?'':item.id);setSelectedChoice('');}}>
           <span className="pjlite-dnd-library-chevron">{expanded?'⌃':'⌄'}</span>
           <span><strong>{item.name}</strong><small>{tab==='magias'
             ?(circle(entry.nivel)===0?'Truque':circle(entry.nivel)+'º círculo')+(entry.escola?' • '+entry.escola:'')
+            :tab==='especies'?(entry.tamanho+' • '+entry.deslocamentoMetros+' m • '+entry.tracos?.length+' traços')
+            :tab==='talentos'?(entry.categoria+(entry.nivelMinimo>1?' • Nível '+entry.nivelMinimo+'+':''))
             :[entry.classe||classNameFor(entry.classId)||'Modelo geral',entry.subclasse,entry.nivelMinimo?'Nível '+entry.nivelMinimo:''].filter(Boolean).join(' • ')}</small></span>
          </button>
          <button type="button" className="pjlite-dnd-library-plus" onClick={()=>insert(item)} disabled={!allowed(item)}
           aria-label={'Adicionar '+item.name} title={allowed(item)?'Adicionar à ficha':'Disponível apenas para a classe/subclasse correspondente'}>+</button>
         </div>
         {expanded&&<div className="pjlite-dnd-library-detail">
+         {tab==='especies'&&<>
+          <div className="pjlite-dnd-library-metadata"><span>Tipo: {entry.tipoCriatura}</span><span>Tamanho: {entry.tamanho}</span><span>Deslocamento: {entry.deslocamentoMetros} m</span></div>
+          <div className="pjlite-dnd-species-traits">
+           {(entry.tracos||[]).map(trait=><details key={trait.id}><summary><b>{trait.nome}</b> — {trait.resumoPt}</summary><p>{trait.desc}</p></details>)}
+          </div>
+          {entry.escolha&&<label className="pjlite-dnd-species-choice"><strong>{entry.escolha.label} (obrigatório)</strong>
+           <select value={selectedChoice} onChange={e=>setSelectedChoice(e.target.value)}>
+            <option value="">Selecione a opção...</option>
+            {entry.escolha.options.map(x=><option key={x.name} value={x.name}>{x.name}</option>)}
+           </select>
+           {selectedChoice&&<small>{entry.escolha.options.find(x=>x.name===selectedChoice)?.desc}</small>}
+          </label>}
+          <small>Os efeitos ficam escritos na ficha; bônus de PV, magias e proficiências não são recalculados automaticamente.</small>
+         </>}
+         {tab==='talentos'&&<>
+          <div className="pjlite-dnd-library-metadata"><span>{entry.categoria}</span><span>Nível {entry.nivelMinimo}+</span>{entry.requisito&&<span>Req.: {entry.requisito}</span>}</div>
+          <p><b>Resumo:</b> {entry.resumoPt}</p>
+          {featRequirementWarnings(entry,{level:classLevel,attributes,classId:currentClass?.id,selectedFeatures:features}).length>0&&
+            <div className="pjlite-dnd-feat-warning">⚠ {featRequirementWarnings(entry,{level:classLevel,attributes,classId:currentClass?.id,selectedFeatures:features}).join(' • ')}</div>}
+         </>}
          <div className="pjlite-dnd-library-metadata">
           {entry.tempo&&<span>Tempo: {entry.tempo}</span>}
           {entry.alcance&&<span>Alcance: {entry.alcance}</span>}
@@ -114,7 +159,7 @@ export default function DndLibraryModal({open,initialTab='classe',className='',s
          </div>
          {entry.nomeOriginal&&entry.nomeOriginal!==entry.nome&&<small>Nome no SRD: {entry.nomeOriginal}</small>}
          {entry.idiomaDescricao==='en'&&<small className="pjlite-dnd-library-lang">Descrição original do SRD em inglês, editável após adicionar.</small>}
-         <p>{entry.desc||'Sem descrição cadastrada.'}</p>
+         {tab==='especies'?null:<p>{entry.desc||'Sem descrição cadastrada.'}</p>}
          <small>{item.source==='personal'?'Modelo pessoal':entry.fonte||'Exemplo original do PJLite'}</small>
          {item.source==='personal'&&<button type="button" className="pjlite-dnd-library-remove" onClick={()=>remove(item)}>Excluir modelo pessoal</button>}
         </div>}
@@ -125,7 +170,7 @@ export default function DndLibraryModal({open,initialTab='classe',className='',s
        'Nenhum modelo encontrado. Tente outra pesquisa ou salve seu próprio modelo.'}</p>}
      </div>
     </div>
-    <footer className="pjlite-dnd-library-footer">Inclui conteúdo do System Reference Document 5.2.1 de Wizards of the Coast LLC, adaptado para o PJLite, sob Creative Commons Atribuição 4.0. Subclasses fora do SRD recebem apenas modelos de anotação.
+    <footer className="pjlite-dnd-library-footer">Espécies, talentos, magias e características provêm do System Reference Document 5.2.1 de Wizards of the Coast LLC, adaptado para o PJLite, sob Creative Commons Atribuição 4.0. Subclasses fora do SRD recebem apenas modelos de anotação.
      <a href="https://www.dndbeyond.com/srd" target="_blank" rel="noopener noreferrer"> Fonte</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">Licença CC BY 4.0 ↗</a>
     </footer>
    </section>
