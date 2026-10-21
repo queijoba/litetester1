@@ -33,14 +33,15 @@ assert.equal(storeAbilityPreset('skyfall','magias',{nome:'',desc:'Nada'}).reason
 const ordem=readFileSync('src/systems/ordemParanormal/components/CharacterEditor.jsx','utf8');
 const skyfall=readFileSync('src/systems/skyfall/components/CharacterEditor.jsx','utf8');
 const picker=readFileSync('src/components/AbilityPresetPicker.jsx','utf8');
-for(const [code,name,kinds] of [
- [ordem,'Ordem',['habilidades','rituais']],
- [skyfall,'Skyfall',['habilidades','magias']],
-]){
- assert.ok(code.includes('AbilityPresetPicker'),name+' deve montar o seletor');
- assert.ok(code.includes('storeAbilityPreset'),name+' deve salvar modelos');
- for(const kind of kinds)assert.ok(code.includes("setPresetKind('"+kind+"')"),name+' abre '+kind);
-}
+const ordemModal=readFileSync('src/systems/ordemParanormal/OrdemLibraryModal.jsx','utf8');
+const app=readFileSync('src/PJLiteApp.jsx','utf8');
+assert.ok(app.includes('<OrdemLibraryModal'),'Ordem usa a biblioteca na barra principal');
+assert.ok(ordemModal.includes("['habilidades','Poderes']")&&ordemModal.includes("['rituais','Rituais']"),'Ordem oferece poderes e rituais');
+assert.ok(ordem.includes('storeAbilityPreset'),'Ordem permite salvar modelos próprios');
+assert.ok(!ordem.includes("setPresetKind('"),'Ordem não deve render botões de biblioteca dentro da ficha');
+assert.ok(skyfall.includes('AbilityPresetPicker'),'Skyfall deve montar o seletor');
+assert.ok(skyfall.includes('storeAbilityPreset'),'Skyfall deve salvar modelos');
+for(const kind of ['habilidades','magias'])assert.ok(skyfall.includes("setPresetKind('"+kind+"')"),'Skyfall abre '+kind);
 assert.ok(picker.includes('createPortal'),'Modal deve ficar acima da ficha');
 assert.ok(picker.includes('role="dialog"'),'Modal deve ser acessível');
 assert.ok(picker.includes('aria-modal="true"'));
