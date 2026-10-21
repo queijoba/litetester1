@@ -1,28 +1,12 @@
 import React,{useEffect,useMemo,useState} from 'react';
 import {createPortal} from 'react-dom';
 import {DND_2024_CLASSES,getDndClassByLabel} from '../systems/dnd5e/classPanels.js';
-import {findAbilityPresets,removeAbilityPreset} from './abilityPresetLibrary.js';
+import {removeAbilityPreset} from './abilityPresetLibrary.js';
+import {getDndLibraryEntries,canUseDndEntry} from './dndLibraryFilters.js';
 import './dndLibraryModal.css';
 
-const normalize=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-const circle=value=>Math.max(0,Math.min(9,Number(String(value??'0').match(/\d+/)?.[0]||0)));
+const circle=value=>Math.max(0,Math.min(9,Number(String(value??'0').match(/\\d+/)?.[0]||0)));
 const classNameFor=id=>DND_2024_CLASSES.find(entry=>entry.id===id)?.label||'';
-
-export const getDndLibraryEntries=({tab,classId,subclass,query='',level='all',allClasses=false})=>{
- const kind=tab==='magias'?'magias':'caracteristicas';
- const needle=normalize(query);
- return findAbilityPresets('dnd5e',kind).filter(({entry})=>{
-  if(tab==='magias')return level==='all'||circle(entry.nivel)===Number(level);
-  if((entry.origem==='subclasse')!==(tab==='subclasse'))return false;
-  if(!allClasses&&entry.classId&&entry.classId!==classId)return false;
-  if(!allClasses&&tab==='subclasse'&&!subclass)return false;
-  if(!allClasses&&tab==='subclasse'&&entry.subclasse&&entry.subclasse!==subclass)return false;
-  return true;
- }).filter(({entry,name})=>!needle||normalize([
-   name,entry.desc,entry.classe,classNameFor(entry.classId),entry.subclasse,entry.escola,entry.fonte,
-   tab==='magias'?String(circle(entry.nivel))+' círculo':''
- ].join(' ')).includes(needle));
-};
 
 export default function DndLibraryModal({open,initialTab='classe',className='',subclass='',onChoose,onClose}){
  const [tab,setTab]=useState(initialTab);
@@ -47,9 +31,7 @@ export default function DndLibraryModal({open,initialTab='classe',className='',s
  const entries=useMemo(()=>getDndLibraryEntries({
   tab,classId:currentClass?.id,subclass,query,level,allClasses
  }),[tab,currentClass?.id,subclass,query,level,allClasses,revision]);
- const allowed=item=>tab==='magias'||!!currentClass &&
-   (!item.entry.classId||item.entry.classId===currentClass.id) &&
-   (tab!=='subclasse'||!!subclass&&(!item.entry.subclasse||item.entry.subclasse===subclass));
+ const allowed=item=>canUseDndEntry(item.entry,tab,currentClass?.id,subclass);
  const insert=item=>{
   if(!allowed(item))return;
   onChoose({...item.entry},tab);
