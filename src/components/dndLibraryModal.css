@@ -57,3 +57,7 @@
 .pjlite-dnd-feat-warning{border-left:3px solid #bb772f;background:#fff0d2;color:#6b4b21;padding:10px;font:700 11px/1.5 system-ui;margin:9px 0;border-radius:4px}
 .pjlite-dnd-library-filters>small{font-size:10px;color:#856d5d}
 @media(max-width:600px){.pjlite-dnd-library-tabs{gap:1px;padding:4px 7px 0}.pjlite-dnd-library-tabs>button{font-size:11px!important;padding:10px 10px!important}.pjlite-dnd-species-traits details{padding:8px}}
+
+/* Página impressa do livro em cada cartão. */
+.pjlite-dnd-page-ref{display:block;margin-top:3px;color:#8c4b32;font:700 10px/1.4 system-ui,sans-serif;white-space:normal;overflow-wrap:anywhere}
+.pjlite-dnd-booknote{display:block;margin-top:10px;color:#806f62;font:10px/1.5 system-ui,sans-serif}
