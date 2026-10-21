@@ -72,10 +72,10 @@ export default function DndLibraryModal({open,initialTab='classe',className='',s
     </div>
     <div className="pjlite-dnd-library-filters">
      {tab==='especies'?<>
-      <div className="pjlite-dnd-library-context"><b>Espécies do SRD 5.2.1</b><span>{currentSpecies?'Ficha atual: '+currentSpecies:'Escolha uma espécie para preencher os traços.'}</span></div>
+      <div className="pjlite-dnd-library-context"><b>Espécies do Livro do Jogador 2024</b><span>{currentSpecies?'Ficha atual: '+currentSpecies:'Escolha uma espécie para preencher os traços.'}</span></div>
       <small>Ao aplicar, o PJLite atualiza a espécie e registra seus traços; escolhas de linhagem ficam anotadas na ficha.</small>
      </>:tab==='talentos'?<>
-      <div className="pjlite-dnd-library-context"><b>Talentos do SRD 5.2.1</b><span>Nível do personagem: {classLevel}</span></div>
+      <div className="pjlite-dnd-library-context"><b>Talentos do Livro do Jogador 2024</b><span>Nível do personagem: {classLevel}</span></div>
       <div className="pjlite-dnd-library-chips">
        {['todas','Origem','Geral','Estilo de Luta','Dádiva Épica'].map(category=><button key={category} type="button"
         className={featCategory===category?'active':''} onClick={()=>{setFeatCategory(category);setSelected('');}}>
@@ -122,7 +122,7 @@ export default function DndLibraryModal({open,initialTab='classe',className='',s
           <span><strong>{item.name}</strong>{entry.paginaLivro&&<em className="pjlite-dnd-page-ref">{entry.paginaConferida?'Livro do Jogador, '+entry.paginaLivro:entry.paginaLivro}</em>}<small>{tab==='magias'
             ?(circle(entry.nivel)===0?'Truque':circle(entry.nivel)+'º círculo')+(entry.escola?' • '+entry.escola:'')
             :tab==='especies'?(entry.tamanho+' • '+entry.deslocamentoMetros+' m • '+entry.tracos?.length+' traços')
-            :tab==='talentos'?(entry.categoria+(entry.nivelMinimo>1?' • Nível '+entry.nivelMinimo+'+':''))
+            :tab==='talentos'?(entry.categoria+(entry.nivelMinimo>1?' • Nível '+entry.nivelMinimo+'+':'')+(entry.fonteTipo==='livro-jogador-2024'?' • Livro do Jogador':' • SRD'))
             :[entry.classe||classNameFor(entry.classId)||'Modelo geral',entry.subclasse,entry.nivelMinimo?'Nível '+entry.nivelMinimo:''].filter(Boolean).join(' • ')}</small></span>
          </button>
          <button type="button" className="pjlite-dnd-library-plus" onClick={()=>insert(item)} disabled={!allowed(item)}
@@ -141,7 +141,7 @@ export default function DndLibraryModal({open,initialTab='classe',className='',s
            </select>
            {selectedChoice&&<small>{entry.escolha.options.find(x=>x.name===selectedChoice)?.desc}</small>}
           </label>}
-          <small>Os efeitos ficam escritos na ficha; bônus de PV, magias e proficiências não são recalculados automaticamente.</small>
+          <small>Os efeitos entram na ficha, mas bônus de atributos, PV, magias e proficiências devem ser conferidos manualmente. Nos Aasimar, a transformação celestial é escolhida a cada ativação.</small>
          </>}
          {tab==='talentos'&&<>
           <div className="pjlite-dnd-library-metadata"><span>{entry.categoria}</span><span>Nível {entry.nivelMinimo}+</span>{entry.requisito&&<span>Req.: {entry.requisitoPt||entry.requisito}</span>}</div>
@@ -163,6 +163,7 @@ export default function DndLibraryModal({open,initialTab='classe',className='',s
 
          {tab==='especies'?null:<p>{entry.desc||'Sem descrição cadastrada.'}</p>}
          {entry.paginaLivro&&<small className="pjlite-dnd-booknote">{entry.paginaConferida?'Página impressa conferida no Livro do Jogador 2024.':'Referência por capítulo/seção do Livro do Jogador; página específica ainda não conferida.'}</small>}
+         {entry.fonteTipo==='livro-jogador-2024'&&<small className="pjlite-dnd-library-fansource">Resumo independente criado pelo PJLite; este texto não faz parte do SRD. Confira o Livro do Jogador 2024 para detalhes.</small>}
          <small>{item.source==='personal'?'Modelo pessoal':entry.fonte||'Exemplo original do PJLite'}</small>
          {item.source==='personal'&&<button type="button" className="pjlite-dnd-library-remove" onClick={()=>remove(item)}>Excluir modelo pessoal</button>}
         </div>}
@@ -173,7 +174,7 @@ export default function DndLibraryModal({open,initialTab='classe',className='',s
        'Nenhum modelo encontrado. Tente outra pesquisa ou salve seu próprio modelo.'}</p>}
      </div>
     </div>
-    <footer className="pjlite-dnd-library-footer">Espécies, talentos, magias e características provêm do System Reference Document 5.2.1 de Wizards of the Coast LLC, adaptado para o PJLite, sob Creative Commons Atribuição 4.0. Subclasses fora do SRD recebem apenas modelos de anotação.
+    <footer className="pjlite-dnd-library-footer">Parte da biblioteca usa o SRD 5.2.1 (CC BY 4.0); Aasimar e outros talentos têm apenas resumos autorais de referência ao Livro do Jogador 2024. O PJLite é feito por fãs, independente e não endossado pela Wizards of the Coast LLC., adaptado para o PJLite, sob Creative Commons Atribuição 4.0. Subclasses fora do SRD recebem apenas modelos de anotação.
      <a href="https://www.dndbeyond.com/srd" target="_blank" rel="noopener noreferrer"> Fonte</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">Licença CC BY 4.0 ↗</a>
     </footer>
    </section>
