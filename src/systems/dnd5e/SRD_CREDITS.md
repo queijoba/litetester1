@@ -37,7 +37,8 @@ As referências consultam a numeração **impressa** do `D&D5.5e-Livro-do-jogado
 - 9 espécies e 33 traços de espécie do SRD 5.2.1. Para espécies que exigem escolha, a ficha registra a opção selecionada.
 - Aasimar do Livro do Jogador 2024, com cinco traços em resumos originais não-SRD; a Revelação Celestial é escolhida a cada transformação.
 - 17 talentos do SRD 5.2.1 (4 de Origem, 2 Gerais, 4 de Estilo de Luta e 7 Dádivas Épicas), com avisos sobre nível e pré-requisitos.
-- Catálogo complementar com 58 entradas de talentos do Livro do Jogador 2024 que não estavam no SRD, cada uma com nome, categoria, pré-requisito quando aplicável e resumo curto original. Estes registros não têm licença CC BY 4.0 e são identificados separadamente.
+- Catálogo complementar com 58 entradas de talentos do Livro do Jogador 2024 que não estavam no SRD, cada uma com nome, categoria, pré-requisito quando aplicável e resumo curto original.
+- 16 antecedentes do Livro do Jogador 2024, capítulo 4 (pp. 178–185), com atributos permitidos, perícias, ferramentas e talentos de origem. As regras integrais do equipamento e da distribuição de atributos devem ser consultadas no livro. Estes registros não têm licença CC BY 4.0 e são identificados separadamente.
 - Outras subclasses visíveis na ficha, mas que não estão no SRD, recebem apenas espaços de anotação próprios, não textos reproduzidos do Livro do Jogador.
 - Aasimar e talentos exclusivos do Livro do Jogador são apresentados como resumos de consulta não oficiais, sem copiar o texto protegido. Consulte o livro para a redação completa e possíveis diferenças de interpretação.
 - As aplicações de espécies e talentos não alteram automaticamente atributos, PV, lista de magias ou cálculos adicionais que dependam de escolhas do jogador.
