@@ -1,0 +1,89 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import {
+ DND_SRD_SPECIES_COUNT,DND_SRD_FEATS_COUNT,findAbilityPresets
+} from '../src/components/abilityPresetLibrary.js';
+import {getDndLibraryEntries,canUseDndEntry} from '../src/components/dndLibraryFilters.js';
+import {buildSpeciesApplication,buildFeatApplication,featRequirementWarnings,DND_CATALOG_ORIGIN} from '../src/components/dndSpeciesFeatActions.js';
+
+globalThis.localStorage={getItem:()=>null,setItem:()=>{},removeItem:()=>{}};
+assert.equal(DND_SRD_SPECIES_COUNT,9);
+assert.equal(DND_SRD_FEATS_COUNT,17);
+const species=findAbilityPresets('dnd5e','especies');
+const feats=findAbilityPresets('dnd5e','talentos');
+assert.equal(species.length,9);
+assert.equal(feats.length,17);
+const counts={Origem:4,Geral:2,'Estilo de Luta':4,'Dádiva Épica':7};
+for(const [type,num] of Object.entries(counts))
+ assert.equal(feats.filter(x=>x.entry.categoria===type).length,num,type);
+assert.equal(new Set(species.map(x=>x.name)).size,9);
+assert.equal(new Set(feats.map(x=>x.name)).size,17);
+assert.ok(species.reduce((n,s)=>n+s.entry.tracos.length,0)>=30);
+for(const record of species) {
+ const x=record.entry;
+ assert.ok(x.tracos.every(t=>t.resumoPt&&t.desc&&t.fonte));
+ assert.ok(x.tamanho&&x.deslocamentoMetros);
+}
+const elf=species.find(x=>x.entry.id==='elfo').entry;
+assert.equal(elf.escolha.options.length,3);
+assert.equal(species.find(x=>x.entry.id==='draconato').entry.escolha.options.length,10);
+assert.equal(species.find(x=>x.entry.id==='golias').entry.escolha.options.length,6);
+const old=[{tipo:'classe',nome:'Meu poder'},{tipo:'especie',nome:'Traço de homebrew'},{tipo:'especie',nome:'Legado antigo',bibliotecaOrigem:DND_CATALOG_ORIGIN}];
+assert.throws(()=>buildSpeciesApplication(elf,'',old),/Escolha uma linhagem/);
+const change=buildSpeciesApplication(elf,'Elfo da Floresta',old,{tamanho:'Médio',deslocamento:'9 m'});
+assert.equal(change.especie,'Elfo');
+assert.equal(change.variacao,'Elfo da Floresta');
+assert.equal(change.speed,'10,5 m');
+assert.equal(change.size,'Médio');
+assert.ok(change.features.some(x=>x.nome==='Meu poder'));
+assert.ok(change.features.some(x=>x.nome==='Traço de homebrew'));
+assert.ok(!change.features.some(x=>x.nome==='Legado antigo'));
+assert.ok(change.features.some(x=>x.nome.includes('Linhagem Élfica — Elfo da Floresta')));
+assert.equal(buildSpeciesApplication(elf,'Elfo da Floresta',change.features).features.filter(x=>x.especieId==='elfo').length,elf.tracos.length+1);
+const dwarf=species.find(x=>x.entry.id==='anao').entry;
+const changed=buildSpeciesApplication(dwarf,'',change.features,{deslocamento:'12 m'});
+assert.equal(changed.speed,null);
+assert.ok(!changed.features.some(x=>x.especieId==='elfo'));
+assert.ok(changed.features.some(x=>x.especieId==='anao'));
+assert.ok(changed.features.some(x=>x.nome==='Traço de homebrew'));
+assert.equal(buildSpeciesApplication(species.find(x=>x.entry.id==='humano').entry,'',[],{}).size,'Médio');
+
+const feat=feats.find(x=>x.name==='Agarrador').entry;
+assert.ok(featRequirementWarnings(feat,{level:3,attributes:{for:12,des:11}}).length>=2);
+assert.equal(featRequirementWarnings(feat,{level:5,attributes:{for:13,des:10}}).length,0);
+const style=feats.find(x=>x.name==='Arquearia').entry;
+assert.ok(featRequirementWarnings(style,{level:3,attributes:{},classId:'mago'}).length);
+assert.equal(featRequirementWarnings(style,{level:3,attributes:{},classId:'guerreiro'}).length,0);
+const boon=feats.find(x=>x.entry.categoria==='Dádiva Épica').entry;
+assert.ok(featRequirementWarnings(boon,{level:18}).length>0);
+assert.equal(featRequirementWarnings(boon,{level:20}).length,0);
+const first=buildFeatApplication(feat,[{tipo:'classe',nome:'Ação'}]);
+assert.equal(first.duplicate,false);
+assert.equal(first.features.at(-1).tipo,'talento');
+assert.match(first.features.at(-1).desc,/Agarrador|agarr/i);
+assert.equal(buildFeatApplication(feat,first.features).duplicate,true);
+const repeat=feats.find(x=>x.entry.nomeOriginal==='Skilled').entry;
+assert.equal(repeat.repetivel,true);
+assert.equal(buildFeatApplication(repeat,buildFeatApplication(repeat,[]).features).duplicate,false);
+
+const allSpecies=getDndLibraryEntries({tab:'especies',query:'elfo'});
+assert.ok(allSpecies.some(x=>x.entry.id==='elfo'));
+const options=getDndLibraryEntries({tab:'especies',query:'drow'});
+assert.ok(options.some(x=>x.entry.id==='elfo'));
+const darkvision=getDndLibraryEntries({tab:'especies',query:'visão no escuro'});
+assert.ok(darkvision.some(x=>x.entry.id==='anao'));
+assert.ok(getDndLibraryEntries({tab:'talentos',featCategory:'Origem'}).every(x=>x.entry.categoria==='Origem'));
+assert.ok(getDndLibraryEntries({tab:'talentos',featCategory:'Dádiva Épica',onlyAvailableLevel:true,classLevel:1}).length===0);
+assert.ok(getDndLibraryEntries({tab:'talentos',featCategory:'Dádiva Épica',onlyAvailableLevel:true,classLevel:20}).length===7);
+assert.ok(canUseDndEntry(feat,'talentos'), 'Talento selecionável, com aviso de requisito');
+const app=readFileSync('src/PJLiteApp.jsx','utf8');
+const modal=readFileSync('src/components/DndLibraryModal.jsx','utf8');
+assert.ok(app.includes("updateField('bio.linhagem'"),'Campo de espécie atual');
+assert.ok(app.includes("updateField('bio.varianteEspecie'"),'Linhagem selecionada');
+assert.ok(app.includes("tab==='talentos'"),'Adicionar talento');
+assert.ok(modal.includes("['especies','Espécies']"));
+assert.ok(modal.includes("['talentos','Talentos']"));
+assert.ok(modal.includes('selectedChoice'),'Escolha de variante');
+assert.ok(modal.includes('featRequirementWarnings'),'Aviso de talentos');
+assert.ok(!app.includes("updateField('bio.raca'"),'Usar campo de espécie existente');
+console.log('✓ D&D espécies/talentos: 9 espécies, 17 talentos, linhagens, requisitos, busca e fichas existentes verificadas.');
