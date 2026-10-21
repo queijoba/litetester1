@@ -11,6 +11,7 @@ const BASE_TABS=[['agente','Agente'],['pericias','Perícias'],['combate','Combat
 export default function OrdemCharacterEditor({scope}){
  const {data,updateField,setData,optimizeImageFile,showToast}=scope;
  const [tab,setTab]=useState('agente');
+ const [paperMode,setPaperMode]=useState(true);
  if(data?.system!=='ordemParanormal'||data?.type!=='pc')return null;
  const tabs=[...BASE_TABS,...(data.opcionais?.evolucaoPatentes?[['evolucao','Evolução']]:[])];
  const patch=(field,i,key,value)=>{const d=JSON.parse(JSON.stringify(data));const a=Array.isArray(d[field])?d[field]:[];a[i]={...(a[i]||{}),[key]:value};d[field]=a;setData(d);};
@@ -31,9 +32,9 @@ export default function OrdemCharacterEditor({scope}){
  const skillBonus=id=>num(data.pericias?.[id]?.grau)+num(data.pericias?.[id]?.outros);
  const pct=(cur,max)=>`${Math.max(0,Math.min(100,(num(cur)/Math.max(1,num(max)))*100))}%`;
  const meter=(kind,label,curKey,maxKey)=><div className={`ordem-meter ordem-meter--${kind}`} style={{'--fill':pct(s[curKey],s[maxKey])}}><span>{label}</span><div className="ordem-meter-fields"><input type="number" value={s[curKey]??0} onChange={e=>updateField(`status.${curKey}`,num(e.target.value))}/><b>/</b><input type="number" value={s[maxKey]??0} onChange={e=>updateField(`status.${maxKey}`,num(e.target.value))}/></div></div>;
- return <div className="ordem-sheet p-3 sm:p-5">
+ return <div className={paperMode?'ordem-sheet ordem-paper-sheet p-3 sm:p-5':'ordem-sheet p-3 sm:p-5'}>
   <div className="ordem-hero"><div className="ordem-seal" aria-hidden="true"><span>O</span><small>R</small></div><div><div className="ordem-kicker">ORDO REALITAS // IDENTIFICAÇÃO DE AGENTE</div><h2>FICHA DE AGENTE</h2><p>Livro Básico v1.3 • Sobrevivendo ao Horror • Arquivos Secretos</p></div><div className="ordem-progression-badges"><div className="ordem-nex"><span>NEX</span><div><input type="number" min="0" max="100" value={b.nex??5} onChange={e=>updateField('bio.nex',num(e.target.value))}/><b>%</b></div></div>{data.opcionais?.nivelExperiencia&&<div className="ordem-level-badge"><span>NÍVEL</span><input type="number" min="1" max="20" value={b.nivelExperiencia??1} onChange={e=>updateField('bio.nivelExperiencia',Math.max(1,num(e.target.value)))}/></div>}</div></div>
-  <div className="ordem-file-ribbon"><span>ARQUIVO CONFIDENCIAL</span><span>REGISTRO DE AGENTE</span><span>{b.nome||'IDENTIDADE NÃO INFORMADA'}</span></div>
+  <div className="ordem-file-ribbon"><span>ARQUIVO CONFIDENCIAL</span><span>REGISTRO DE AGENTE</span><span className="ordem-file-agent-name">{b.nome||'IDENTIDADE NÃO INFORMADA'}</span><button className="ordem-view-toggle" type="button" aria-pressed={paperMode} onClick={()=>setPaperMode(value=>!value)} title="Alternar entre ficha documental clara e tema escuro">{paperMode?'◐ Escuro':'▤ Ficha PDF'}</button></div>
   <div className="ordem-tabs">{tabs.map(([id,n])=><button key={id} className={tab===id?'active':''} onClick={()=>setTab(id)}>{n}</button>)}</div>
 
   {tab==='agente'&&<div className="space-y-3">
