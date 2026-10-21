@@ -13,13 +13,13 @@ function addButton(block, target, kind) {
   }[kind]||'>+ Magia</button>';
   const found=block.includes(target)?target:fallback;
   if (!block.includes(found)) throw new Error('Modelos prontos: botão não encontrado: '+kind);
-  return block.replace(found,found+'<button type="button" className="pjlite-preset-button" onClick={()=>setPresetKind(\''+kind+'\')}>📚 Biblioteca</button>');
+  return block.replace(found,found+'<button type="button" className="pjlite-preset-button" onClick={()=>setPresetKind(\''+kind+'\')}'+' title="Abrir biblioteca" aria-label="Abrir biblioteca de modelos">📚</button>');
 }
 function addSave(block, target, kind, variable='x') {
   const text="savePreset('"+kind+"'";
   if (block.includes(text)) return block;
   if (!block.includes(target)) throw new Error('Modelos prontos: editor não encontrado: '+kind);
-  const patched=block.replace(target,target+'<button type="button" className="pjlite-preset-save" onClick={()=>savePreset(\''+kind+'\',x)}>☆ Salvar modelo</button>');
+  const patched=block.replace(target,target+'<button type="button" className="pjlite-preset-save" title="Salvar como modelo" aria-label="Salvar como modelo" onClick={()=>savePreset(\''+kind+'\',x)}>☆</button>');
   return variable==='x' ? patched : patched.replace("savePreset('"+kind+"',x)", "savePreset('"+kind+"',"+variable+")");
 }
 function patchZone(text,start,end,fn){
