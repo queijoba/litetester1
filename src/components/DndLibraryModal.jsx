@@ -119,7 +119,7 @@ export default function DndLibraryModal({open,initialTab='classe',className='',s
          <button type="button" className="pjlite-dnd-library-expand" aria-expanded={expanded}
           onClick={()=>{setSelected(expanded?'':item.id);setSelectedChoice('');}}>
           <span className="pjlite-dnd-library-chevron">{expanded?'⌃':'⌄'}</span>
-          <span><strong>{item.name}</strong><small>{tab==='magias'
+          <span><strong>{item.name}</strong>{entry.paginaLivro&&<em className="pjlite-dnd-page-ref">{entry.paginaConferida?'Livro do Jogador, '+entry.paginaLivro:entry.paginaLivro}</em>}<small>{tab==='magias'
             ?(circle(entry.nivel)===0?'Truque':circle(entry.nivel)+'º círculo')+(entry.escola?' • '+entry.escola:'')
             :tab==='especies'?(entry.tamanho+' • '+entry.deslocamentoMetros+' m • '+entry.tracos?.length+' traços')
             :tab==='talentos'?(entry.categoria+(entry.nivelMinimo>1?' • Nível '+entry.nivelMinimo+'+':''))
@@ -159,9 +159,10 @@ export default function DndLibraryModal({open,initialTab='classe',className='',s
           {entry.nivelMinimo!=null&&<span>Disponível no nível {entry.nivelMinimo}</span>}
           {Array.isArray(entry.classes)&&entry.classes.length>0&&<span>Classes: {entry.classes.map(classNameFor).join(', ')}</span>}
          </div>
-         {entry.nomeOriginal&&entry.nomeOriginal!==entry.nome&&<small>Nome no SRD: {entry.nomeOriginal}</small>}
-         {entry.idiomaDescricao==='en'&&<small className="pjlite-dnd-library-lang">Descrição original do SRD em inglês, editável após adicionar.</small>}
+
+
          {tab==='especies'?null:<p>{entry.desc||'Sem descrição cadastrada.'}</p>}
+         {entry.paginaLivro&&<small className="pjlite-dnd-booknote">{entry.paginaConferida?'Página impressa conferida no Livro do Jogador 2024.':'Referência por capítulo/seção do Livro do Jogador; página específica ainda não conferida.'}</small>}
          <small>{item.source==='personal'?'Modelo pessoal':entry.fonte||'Exemplo original do PJLite'}</small>
          {item.source==='personal'&&<button type="button" className="pjlite-dnd-library-remove" onClick={()=>remove(item)}>Excluir modelo pessoal</button>}
         </div>}
