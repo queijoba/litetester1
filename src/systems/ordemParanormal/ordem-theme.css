@@ -72,3 +72,18 @@ body.theme-ordem .ordem-sheet .ordem-card,body.theme-dark .ordem-sheet .ordem-ca
 .ordem-sheet .ordem-evolution-grid{display:grid;grid-template-columns:1fr 1fr 1fr 34px;gap:6px}
 .ordem-sheet .ordem-panel-actions{align-items:center}
 @media(max-width:640px){.ordem-sheet .ordem-mental-switch{flex-direction:column;align-items:stretch}.ordem-sheet .ordem-mental-switch select{max-width:none;width:100%}.ordem-sheet .ordem-dt-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ordem-sheet .ordem-skill-head,.ordem-sheet .ordem-skill{grid-template-columns:minmax(0,1fr) 32px 42px 60px 45px;gap:3px}.ordem-sheet .ordem-skill strong{font-size:10px}.ordem-sheet .ordem-evolution-grid{grid-template-columns:1fr 1fr}.ordem-sheet .ordem-evolution-grid button{grid-column:2}}
+
+/* PJ LITE 0.8.3 ORDEM AUTO THEME — edição papel, sem substituição das cores */
+.ordem-sheet .ordem-optional-rule{display:flex!important;align-items:flex-start;gap:9px;margin:9px 0 10px;padding:10px;background:#f2f0e9;border:1px solid #a9a39a}
+.ordem-sheet .ordem-optional-rule>input{width:auto!important;min-width:15px!important;margin-top:4px;accent-color:#9c252b}
+.ordem-sheet .ordem-optional-rule>span{display:flex;flex-direction:column;gap:3px;font-size:10px}
+.ordem-sheet .ordem-optional-rule strong{color:#272523}
+.ordem-sheet .ordem-optional-rule small{color:#69645e;line-height:1.45}
+.ordem-sheet .ordem-meters--pd{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.ordem-sheet .ordem-auto-note{display:block;color:#5f5b55;font-size:8px;line-height:1.3;text-align:center;margin-top:3px}
+.ordem-sheet .ordem-skills-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:5px}
+.ordem-sheet .ordem-skill-head,.ordem-sheet .ordem-skill{grid-template-columns:minmax(140px,1fr) 70px 55px 55px 72px 55px!important;min-width:525px}
+.ordem-sheet .ordem-skill-attr-select{text-align:center!important;font-size:11px!important}
+.ordem-sheet .ordem-skill-dice,.ordem-sheet .ordem-skill-bonus{display:block;text-align:center;font-size:10px;font-weight:900;color:#792126}
+.ordem-sheet .ordem-auto-help{font-size:10px;color:#756e65;margin-top:10px}
+@media(max-width:640px){.ordem-sheet .ordem-meters--pd{grid-template-columns:repeat(2,minmax(0,1fr))!important}.ordem-sheet .ordem-skill-head,.ordem-sheet .ordem-skill{grid-template-columns:128px 65px 48px 50px 62px 52px!important;min-width:495px}.ordem-sheet .ordem-optional-rule{padding:8px!important}}
