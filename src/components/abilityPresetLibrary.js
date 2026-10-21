@@ -10,6 +10,8 @@ import srdFeats from '../systems/dnd5e/srd521-feats.js';
 import phbFeats from '../systems/dnd5e/phb2024-feats-summaries.js';
 import phbAasimar from '../systems/dnd5e/phb2024-species-aasimar.js';
 import phbBackgrounds from '../systems/dnd5e/phb2024-backgrounds.js';
+import phbSubclassProfiles from '../systems/dnd5e/phb2024-subclass-profiles.js';
+import phbClassOptions from '../systems/dnd5e/phb2024-class-options.js';
 import {ORDEM_LIBRARY_CATALOG} from '../systems/ordemParanormal/libraryCatalog.js';
 import {localizeDndSrdEntry} from './dndSrdPortuguese.js';
 
@@ -96,18 +98,9 @@ const STARTERS = {
 // Templates tied to the player's class/subclass. Mechanical text from non-SRD
 // supplements is never reproduced; each is explicitly an editable worksheet.
 const officialSrdSubclassNames=new Set(srdSubclassFeatures.map(item=>item.classId+'::'+item.subclasse));
-const dndSubclassOutline=DND_2024_CLASSES.flatMap(cls=>(cls.subclasses||[])
- .filter(name=>!officialSrdSubclassNames.has(cls.id+'::'+name))
- .map(name=>({
-  nome:'Ficha de '+name,
-  nomeOriginal:'Template for '+name,
-  tipo:'classe',origem:'subclasse',classId:cls.id,classe:cls.label,subclasse:name,
-  desc:'MODELO DE ANOTAÇÃO (NÃO OFICIAL). Esta subclasse não possui a descrição completa no SRD 5.2.1. Consulte seu Livro do Jogador ou suplemento autorizado e anote os benefícios e níveis aqui. O PJLite não atribui efeitos automaticamente.',
-  fonte:'Modelo de anotação PJLite · conteúdo não presente no SRD 5.2.1',
-  idiomaDescricao:'pt',
-  nivelMinimo:3,
-  _srdId:'outline:'+cls.id+':'+name
- })));
+const dndSubclassProfiles=phbSubclassProfiles.filter(item=>!officialSrdSubclassNames.has(item.classId+'::'+item.subclasse));
+export const DND_PHB2024_EXTRA_SUBCLASSES_COUNT=dndSubclassProfiles.length;
+export const DND_PHB2024_CLASS_OPTIONS_COUNT=phbClassOptions.length;
 const dndCatalog={
  antecedentes:phbBackgrounds,
  especies:[...srdSpecies,...phbAasimar].map(species=>({
@@ -128,7 +121,7 @@ const dndCatalog={
    salvaguarda:translated.salvaguarda||entry.salvaguarda||''
   };
  }),
- caracteristicas:[...srdClassFeatures,...srdSubclassFeatures,...dndSubclassOutline]
+ caracteristicas:[...srdClassFeatures,...srdSubclassFeatures,...dndSubclassProfiles,...phbClassOptions]
 };
 
 const normalize = value => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR').trim();
