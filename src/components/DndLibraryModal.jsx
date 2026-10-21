@@ -38,8 +38,10 @@ export default function DndLibraryModal({open,initialTab='classe',className='',s
  const allowed=item=>canUseDndEntry(item.entry,tab,currentClass?.id,subclass);
  const insert=item=>{
   if(!allowed(item))return;
-  if(tab==='especies'&&item.entry.escolha&&!selectedChoice){
+  if(tab==='especies'&&item.entry.escolha&&(!selectedChoice||selected!==item.id||
+      !item.entry.escolha.options.some(option=>option.name===selectedChoice))){
     setSelected(item.id);
+    setSelectedChoice('');
     return;
   }
   if(tab==='talentos'){
@@ -142,7 +144,7 @@ export default function DndLibraryModal({open,initialTab='classe',className='',s
           <small>Os efeitos ficam escritos na ficha; bônus de PV, magias e proficiências não são recalculados automaticamente.</small>
          </>}
          {tab==='talentos'&&<>
-          <div className="pjlite-dnd-library-metadata"><span>{entry.categoria}</span><span>Nível {entry.nivelMinimo}+</span>{entry.requisito&&<span>Req.: {entry.requisito}</span>}</div>
+          <div className="pjlite-dnd-library-metadata"><span>{entry.categoria}</span><span>Nível {entry.nivelMinimo}+</span>{entry.requisito&&<span>Req.: {entry.requisitoPt||entry.requisito}</span>}</div>
           <p><b>Resumo:</b> {entry.resumoPt}</p>
           {featRequirementWarnings(entry,{level:classLevel,attributes,classId:currentClass?.id,selectedFeatures:features}).length>0&&
             <div className="pjlite-dnd-feat-warning">⚠ {featRequirementWarnings(entry,{level:classLevel,attributes,classId:currentClass?.id,selectedFeatures:features}).join(' • ')}</div>}
