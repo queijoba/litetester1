@@ -19,7 +19,8 @@ function addSave(block, target, kind, variable='x') {
   const text="savePreset('"+kind+"'";
   if (block.includes(text)) return block;
   if (!block.includes(target)) throw new Error('Modelos prontos: editor não encontrado: '+kind);
-  return block.replace(target,target+'<button type="button" className="pjlite-preset-save" onClick={()=>savePreset(\''+kind+'\',x)}>☆ Salvar modelo</button>');
+  const patched=block.replace(target,target+'<button type="button" className="pjlite-preset-save" onClick={()=>savePreset(\''+kind+'\',x)}>☆ Salvar modelo</button>');
+  return variable==='x' ? patched : patched.replace("savePreset('"+kind+"',x)", "savePreset('"+kind+"',"+variable+")");
 }
 function patchZone(text,start,end,fn){
   const a=text.indexOf(start),b=text.indexOf(end,a+start.length);
