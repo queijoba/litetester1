@@ -174,8 +174,13 @@ export default function DndLibraryModal({open,initialTab='classe',className='',s
        'Nenhum modelo encontrado. Tente outra pesquisa ou salve seu próprio modelo.'}</p>}
      </div>
     </div>
-    <footer className="pjlite-dnd-library-footer">Parte da biblioteca usa o SRD 5.2.1 (CC BY 4.0); Aasimar e outros talentos têm apenas resumos autorais de referência ao Livro do Jogador 2024. O PJLite é feito por fãs, independente e não endossado pela Wizards of the Coast LLC., adaptado para o PJLite, sob Creative Commons Atribuição 4.0. Subclasses fora do SRD recebem apenas modelos de anotação.
-     <a href="https://www.dndbeyond.com/srd" target="_blank" rel="noopener noreferrer"> Fonte</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">Licença CC BY 4.0 ↗</a>
+    <footer className="pjlite-dnd-library-footer">
+     <strong>PJLite — projeto de fã não oficial.</strong> Não aprovado ou endossado pela Wizards of the Coast.
+     Parte do conteúdo pertence à Wizards of the Coast LLC. ©Wizards of the Coast LLC.
+     O SRD 5.2.1 segue CC BY 4.0; Aasimar e talentos exclusivos do Livro do Jogador usam somente resumos próprios de consulta.
+     <a href="https://www.dndbeyond.com/srd" target="_blank" rel="noopener noreferrer"> SRD</a> ·
+     <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer"> Licença</a> ·
+     <a href="https://company.wizards.com/pt-BR/legal/fancontentpolicy" target="_blank" rel="noopener noreferrer"> Conteúdo de fãs</a>
     </footer>
    </section>
   </div>,document.body
