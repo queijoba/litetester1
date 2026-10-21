@@ -41,3 +41,19 @@
 
 .pjlite-toolbar-library{display:inline-grid!important;place-items:center!important;width:30px!important;height:30px!important;min-height:30px!important;min-width:30px!important;padding:0!important;border:1px solid #ffffff55!important;border-radius:5px!important;background:#0005!important;color:#fff!important;font-size:16px!important;line-height:1!important;cursor:pointer!important}
 .pjlite-toolbar-library:hover,.pjlite-toolbar-library:focus-visible{background:#0009!important;outline:2px solid #fff5;outline-offset:2px}
+
+/* Espécies, linhagens e talentos: detalhes compactos e editáveis. */
+.pjlite-dnd-library-tabs{max-width:100%;overflow-x:auto;scrollbar-width:thin;flex:none;white-space:nowrap}
+.pjlite-dnd-library-tabs>button{flex:0 0 auto!important}
+.pjlite-dnd-species-traits{display:grid;gap:5px;margin:10px 0}
+.pjlite-dnd-species-traits details{background:#f0e9de;border:1px solid #d0beaa;border-radius:6px;padding:9px}
+.pjlite-dnd-species-traits summary{cursor:pointer;font:12px/1.5 system-ui,sans-serif;color:#47372c;overflow-wrap:anywhere}
+.pjlite-dnd-species-traits summary b{color:#8d3d28}
+.pjlite-dnd-species-traits p{margin:8px 0 0;padding-top:8px;border-top:1px dashed #c6b5a3;font-size:11px}
+.pjlite-dnd-species-choice{display:grid;gap:7px;background:#e9dfce;border:1px solid #b79f84;border-radius:7px;padding:10px;margin:12px 0}
+.pjlite-dnd-species-choice strong{font-size:12px}
+.pjlite-dnd-species-choice select{width:100%;padding:9px!important;border:1px solid #a9957e!important;border-radius:5px!important;color:#39291f!important;background:#fffaf0!important;font:12px system-ui!important}
+.pjlite-dnd-species-choice small{font:11px/1.5 system-ui;color:#70503d}
+.pjlite-dnd-feat-warning{border-left:3px solid #bb772f;background:#fff0d2;color:#6b4b21;padding:10px;font:700 11px/1.5 system-ui;margin:9px 0;border-radius:4px}
+.pjlite-dnd-library-filters>small{font-size:10px;color:#856d5d}
+@media(max-width:600px){.pjlite-dnd-library-tabs{gap:1px;padding:4px 7px 0}.pjlite-dnd-library-tabs>button{font-size:11px!important;padding:10px 10px!important}.pjlite-dnd-species-traits details{padding:8px}}
