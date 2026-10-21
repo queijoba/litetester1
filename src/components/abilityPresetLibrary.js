@@ -1,3 +1,5 @@
+import { DND_2024_CLASSES } from '../systems/dnd5e/classPanels.js';
+
 const STORAGE_KEY = 'pjlite_ability_presets_v1';
 
 // Examples authored for PJLite; not transcriptions of official game powers.
@@ -68,6 +70,26 @@ const STARTERS = {
   }
 };
 
+// Templates tied to the player's class/subclass. Mechanical text from non-SRD
+// supplements is never reproduced; each is explicitly an editable worksheet.
+const dndClassTemplates = DND_2024_CLASSES.flatMap(cls => {
+  const basic = (cls.fields || []).slice(0,2).map(field => ({
+    nome:field.label,
+    tipo:'classe', origem:'classe', classId:cls.id, classe:cls.label,
+    desc:'Modelo editável de '+cls.label+'. Anote aqui os usos, efeitos e limites de '+field.label+
+      ' conforme o livro utilizado na sua mesa. Este campo não altera os contadores automaticamente.',
+    fonte:'Modelo de organização PJLite'
+  }));
+  const subclasses = (cls.subclasses || []).map(sub => ({
+    nome:'Recurso de '+sub,
+    tipo:'classe', origem:'subclasse', classId:cls.id, classe:cls.label, subclasse:sub,
+    desc:'Modelo editável para registrar a habilidade obtida com '+sub+
+      '. Consulte a descrição oficial da sua subclasse e preencha o efeito, nível e recarga na ficha.',
+    fonte:'Modelo de organização PJLite'
+  }));
+  return [...basic,...subclasses];
+});
+
 const normalize = value => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR').trim();
 const clone = entry => JSON.parse(JSON.stringify(entry));
 const load = () => {
@@ -83,7 +105,11 @@ const persist = rows => {
 
 export const findAbilityPresets = (system, kind) => {
   const local = load().filter(p=>p.system===system && p.kind===kind).map(p=>({...p, entry:clone(p.entry), source:'personal'}));
-  const builtins = (STARTERS[system]?.[kind] || []).map((entry,index)=>({
+  const defaultEntries = [
+    ...(STARTERS[system]?.[kind] || []),
+    ...(system==='dnd5e' && kind==='caracteristicas' ? dndClassTemplates : []),
+  ];
+  const builtins = defaultEntries.map((entry,index)=>({
     id: 'example-'+system+'-'+kind+'-'+index,
     system, kind, name:entry.nome, entry:clone(entry), source:'example'
   }));
