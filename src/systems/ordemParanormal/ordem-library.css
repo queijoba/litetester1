@@ -51,3 +51,8 @@
  .ordem-library-context{padding:6px 10px}
  .ordem-library-header{padding:12px}
 }
+
+
+.ordem-library-element-choice{display:grid;gap:7px;background:#eee4da;border-left:4px solid #8e292d;padding:10px 12px;margin:10px 0;font-size:12px;color:#322422}
+.ordem-library-element-choice select{max-width:100%;padding:9px;border:1px solid #b29f90;background:#fff;color:#241c18;border-radius:2px}
+.ordem-library-insert:disabled{opacity:.5;cursor:not-allowed}
