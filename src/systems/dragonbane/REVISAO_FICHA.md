@@ -1,3 +1,5 @@
+> **Estado atual no LiteTester — 22/10/2026:** por solicitação do usuário, a interface foi restaurada à ficha clássica, com o quadro único **Habilidades e Magias**. A divisão experimental em três abas e os painéis novos descritos abaixo pertencem ao histórico, e não estão ativos no editor. A exportação PDF, a leitura de dados antigos e os utilitários de compatibilidade permanecem no código. A restauração não limpa nem migra fichas salvas.
+
 # Dragonbane — revisão da ficha do PJLite
 
 Fonte principal consultada: `Dragonbane-Livro-de-Regras-v1.1.pdf`, Google Drive do projeto. Referências de paginação impressa: ancestralidades pp. 9–12, habilidades heroicas pp. 26/35–39 e magia pp. 57–69.
