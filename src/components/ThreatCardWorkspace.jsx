@@ -13,7 +13,7 @@ export default function ThreatCardWorkspace({data,onOpen,children}){
     <button type="button" onClick={onOpen}>Ampliar card <span aria-hidden="true">↗</span></button>
    </div>
    <div className="pj-threat-workspace-preview-scroll"><ThreatStatCard data={data} compact /></div>
-   <p className="pj-threat-workspace-tip">Para compartilhar com a mesa, amplie o card e faça uma captura da tela. As anotações privadas do mestre não aparecem no card.</p>
+   <p className="pj-threat-workspace-tip">Para compartilhar com a mesa, amplie e baixe o card em PNG. As anotações privadas do mestre não aparecem na imagem.</p>
   </aside>
  </div>;
 }
