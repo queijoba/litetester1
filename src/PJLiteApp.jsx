@@ -2,6 +2,9 @@ import DndCharacterEditor from './systems/dnd5e/components/CharacterEditor.jsx';
 import DndLibraryModal from './components/DndLibraryModal.jsx';
 import OrdemLibraryModal from './systems/ordemParanormal/OrdemLibraryModal.jsx';
 import SkyfallLibraryModal from './systems/skyfall/SkyfallLibraryModal.jsx';
+import FabulaLibraryModal from './systems/fabulaUltima/FabulaLibraryModal.jsx';
+import {applyFabulaLibrarySelection} from './systems/fabulaUltima/libraryActions.js';
+import ThreatCardModal from './components/ThreatCardModal.jsx';
 import OtherSystemLibraryModal from './components/OtherSystemLibraryModal.jsx';
 import {applyOtherSystemLibrarySelection} from './components/otherSystemLibraryActions.js';
 import {applySkyfallLibrarySelection} from './systems/skyfall/libraryActions.js';
@@ -1255,6 +1258,8 @@ const { useState, useEffect, useRef } = React;
             const [dndLibraryTab, setDndLibraryTab] = useState('classe');
             const [ordemLibraryOpen,setOrdemLibraryOpen] = useState(false);
             const [skyfallLibraryOpen,setSkyfallLibraryOpen] = useState(false);
+            const [fabulaLibraryOpen,setFabulaLibraryOpen] = useState(false);
+            const [threatCardOpen,setThreatCardOpen] = useState(false);
             const [otherLibraryOpen,setOtherLibraryOpen] = useState(false);
             const [deleteConfirmId, setDeleteConfirmId] = useState(null);
             const [toastMsg, setToastMsg] = useState('');
@@ -3054,6 +3059,14 @@ const { useState, useEffect, useRef } = React;
                 }catch(error){showToast(error.message||'Não foi possível usar esta referência.');}
             };
 
+            const addFromFabulaLibrary=(entry,kind)=>{
+                try{
+                    const result=applyFabulaLibrarySelection(data,entry,kind);
+                    if(result.changed){setData(result.data);if(kind==='classe'||kind==='poder'||kind==='heroico')setFabulaTab('classes');else if(kind==='feitico')setFabulaTab('extra-magia');}
+                    showToast(result.message);
+                }catch(error){showToast(error.message||'Falha ao inserir opção de Fábula Última.');}
+            };
+
             const addFromSkyfallLibrary=(entry,kind)=>{
                 try{
                     const result=applySkyfallLibrarySelection(data,entry,kind);
@@ -3412,6 +3425,10 @@ const { useState, useEffect, useRef } = React;
                             {['somdas6','3det'].includes(data.system) && data.type === 'pc' && <button type="button" onClick={()=>setOtherLibraryOpen(true)}
                                 className="pjlite-toolbar-library" title={data.system==='3det'?'Biblioteca 3DeT Victory: vantagens, desvantagens e técnicas':'Biblioteca O Som das Seis: habilidades e antecedentes'}
                                 aria-label={'Biblioteca '+(data.system==='3det'?'3DeT Victory':'O Som das Seis')}>📚</button>}
+                            {data.system === 'fabula' && data.type === 'pc' && <button type="button" onClick={()=>setFabulaLibraryOpen(true)}
+                                className="pjlite-toolbar-library" aria-label="Biblioteca de Fábula Última" title="Biblioteca: classes, poderes e feitiços">📚</button>}
+                            {data.type !== 'pc' && data.system !== 'dragonbane' && <button type="button" onClick={()=>setThreatCardOpen(true)}
+                                className="pjlite-toolbar-library" aria-label="Visualizar card da ameaça" title="Visualizar e imprimir card da ameaça">🃏</button>}
                             {data.system === 'skyfall' && data.type === 'pc' && <button type="button" onClick={()=>setSkyfallLibraryOpen(true)}
                                 className="pjlite-toolbar-library" title="Biblioteca Skyfall: legados, classes, trilhas e magias"
                                 aria-label="Biblioteca Skyfall RPG">📚</button>}
@@ -3450,6 +3467,11 @@ const { useState, useEffect, useRef } = React;
                         open={otherLibraryOpen} system={data.system} data={data}
                         onChoose={addFromOtherLibrary}
                         onClose={()=>setOtherLibraryOpen(false)}/>}
+                    {data.system === 'fabula' && data.type === 'pc' && <FabulaLibraryModal
+                        open={fabulaLibraryOpen} data={data}
+                        onChoose={addFromFabulaLibrary} onClose={()=>setFabulaLibraryOpen(false)}/>}
+                    {data.type !== 'pc' && data.system !== 'dragonbane' && <ThreatCardModal
+                        open={threatCardOpen} data={data} onClose={()=>setThreatCardOpen(false)}/>}
                     {data.system === 'skyfall' && data.type === 'pc' && <SkyfallLibraryModal
                         open={skyfallLibraryOpen} bio={data.bio||{}}
                         onChoose={addFromSkyfallLibrary}
