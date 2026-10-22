@@ -32,6 +32,7 @@ assert.equal(dragonbanePdfAbilityName(oldRecords[3]),'[Truque] Ignição');
 const data={habilidadesFeiticos:oldRecords};
 assert.equal(dragonbaneAbilityList(data,'outro').length,1);
 assert.equal(dragonbaneAbilityList(data,'magia')[0].index,2);
+assert.equal(dragonbaneAbilityList({habilidadesFeiticos:[null,undefined,'anotação',{},...oldRecords]},'outro').length,2,'Registros inválidos não podem derrubar o painel de habilidades');
 const made=createDragonbaneAbility('magia',{nome:'Magia teste',grau:2,escola:'Mentalismo',preparada:true});
 assert.equal(dragonbaneAbilityKind(made),'magia');
 assert.equal(made.preparada,true);
@@ -80,6 +81,9 @@ const css=readFileSync('src/systems/dragonbane/components/abilityPanels.css','ut
 assert.ok(panel.includes('dragonbaneInnateSuggestions'));
 assert.ok(panel.includes('DRAGONBANE_MAGIC_SCHOOLS'));
 assert.ok(panel.includes('preparada'));
+assert.ok(!panel.includes('rows={legacy||'), 'Editor não pode usar variável legacy inexistente na renderização dos cartões');
+assert.ok(panel.includes("rows={n(entry.nome).includes('\\n')?2:1}"), 'Nome deve acomodar texto antigo de múltiplas linhas');
+assert.ok(panel.includes('counted>MAX_PDF_CARDS&&'), 'Aviso do limite PDF deve aparecer em Habilidades e Magias');
 assert.ok(panel.includes('grau'));
 assert.ok(panel.includes('habilidadesFeiticos'));
 assert.ok(panel.includes('Categoria'));
