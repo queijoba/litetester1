@@ -40,7 +40,7 @@ export default function ThreatCardModal({open=false,data,onClose}){
    const pixelRatio=Math.min(2,8192/Math.max(width,height),Math.sqrt(20000000/(width*height)));
    const blob=await toBlob(node,{cacheBust:true,pixelRatio:Math.max(.75,pixelRatio)});
    if(!blob)throw new Error('Não foi possível criar o arquivo de imagem.');
-   const filename=(display.name||'Ameaca').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-zA-Z0-9_-]+/g,'_').replace(/^_+|_+$/g,'').slice(0,70)||'Ameaca';
+   const filename=(display.name||'Ameaca').normalize('NFD').replace(/\p{M}/gu,'').replace(/[^a-zA-Z0-9_-]+/g,'_').replace(/^_+|_+$/g,'').slice(0,70)||'Ameaca';
    const url=URL.createObjectURL(blob);
    const a=document.createElement('a');
    a.href=url;
