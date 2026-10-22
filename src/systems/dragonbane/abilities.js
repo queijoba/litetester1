@@ -62,7 +62,7 @@ export function dragonbaneAbilityKind(item){
 }
 export function dragonbaneAbilityList(data,kind){
  const list=Array.isArray(data?.habilidadesFeiticos)?data.habilidadesFeiticos:[];
- return list.map((entry,index)=>({entry,index})).filter(({entry})=>dragonbaneAbilityKind(entry)===kind);
+ return list.map((entry,index)=>({entry,index})).filter(({entry})=>entry&&typeof entry==='object'&&!Array.isArray(entry)&&dragonbaneAbilityKind(entry)===kind);
 }
 export function createDragonbaneAbility(kind='heroica',values={}){
  const tipo=DRAGONBANE_ABILITY_KINDS.some(x=>x.id===kind)?kind:'outro';
