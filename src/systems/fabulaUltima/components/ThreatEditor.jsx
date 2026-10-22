@@ -1,4 +1,3 @@
-import {ThreatStatCard} from '../../../components/ThreatCardModal.jsx';
 // Extraído automaticamente do antigo PJLiteApp monolítico.
 // Este arquivo agora é a fonte visual do editor deste sistema.
 export default function FabulaThreatEditor({ scope }) {
@@ -260,7 +259,6 @@ export default function FabulaThreatEditor({ scope }) {
     <>
       {isFabula && data.type !== 'pc' && (
                               <div className="p-3 md:p-5 fabula-threat-editor">
-                                  <div className="fabula-threat-workspace">
                                   <div className="fabula-threat-compact fabula-threat-readable space-y-4">
                                       <div className="fabula-threat-intro">
                                           <div><div className="fabula-pill-title">👾 Ameaça / PNJ</div><p className="text-xs text-gray-500 mt-2">Organização inspirada no bestiário, mas com campos maiores e leitura mais intuitiva.</p></div>
@@ -306,11 +304,7 @@ export default function FabulaThreatEditor({ scope }) {
                                           <FabulaThreatList title="📜 Regras Especiais" path="regrasEspeciais" items={data.regrasEspeciais||[]} add={()=>addToArray('regrasEspeciais',{nome:'',desc:''})} remove={removeFromArray} update={updateArrayField} move={moveArrayItem} />
                                       </div>
                                   </div>
-                                  <aside className="fabula-threat-live-preview" aria-label="Visualização do card de ameaça">
-                                      <p className="fabula-threat-live-label">🃏 Prévia da ameaça • abra o card na barra superior para imprimir</p>
-                                      <ThreatStatCard data={data} compact />
-                                  </aside>
-                                  </div>
+
                               </div>
                           )}
     </>
