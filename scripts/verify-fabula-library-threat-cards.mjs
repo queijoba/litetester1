@@ -62,7 +62,7 @@ assert.ok(app.includes('setFabulaLibraryOpen(true)')&&app.includes('<FabulaLibra
 assert.ok(app.includes('setThreatCardOpen(true)')&&app.includes('<ThreatCardModal'));
 assert.ok(app.includes("data.system !== 'dragonbane'"),'Dragonbane fica fora do modo card');
 assert.ok(modal.includes('Todos os livros')&&modal.includes('Minhas classes:'));
-assert.ok(editor.includes('<ThreatStatCard data={data} compact />'),'Prévia Fabula à direita');
-assert.ok(card.includes('window.print()')&&card.includes('createPortal'));
-assert.ok(printCss.includes('@page{size:A5 portrait')&&printCss.includes('body:has(.pj-threat-card-modal)'));
+assert.ok(!editor.includes('<ThreatStatCard data={data} compact />'),'A prévia Fabula é montada pelo workspace comum');
+assert.ok(!card.includes('window.print()')&&card.includes('createPortal'),'O modo card dispensa PDF');
+assert.ok(!printCss.includes('@page{size:A5 portrait'),'Sem layout de impressão obrigatório');
 console.log('✓ Fabula Ultima: 303 referências de cinco livros e cards de ameaças de seis sistemas com impressão A5.');
