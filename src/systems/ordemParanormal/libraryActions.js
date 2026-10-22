@@ -61,7 +61,7 @@ export function applyOrdemLibrarySelection(current,entry,kind){
  if(kind==='trilhas'){
   data.bio.trilha=entry.nome;
   data.habilidades=data.habilidades.filter(x=>!(x.tipo==='Trilha'&&fromCatalog(x)));
-  data.habilidades.push({...feature,nome:'Trilha: '+entry.nome});
+  data.habilidades.push({...feature,nome:'Trilha: '+entry.nome,progressao:Array.isArray(entry.progressao)?clone(entry.progressao):[],nexMinimo:entry.nexMinimo||0});
   return {changed:true,data,message:'Trilha '+entry.nome+' selecionada; registre os poderes adquiridos no NEX atual.'};
  }
  if(kind==='poderesParanormais'){

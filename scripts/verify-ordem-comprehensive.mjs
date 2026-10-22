@@ -11,10 +11,10 @@ const basic=entries.filter(x=>x.tipo==='ritual'&&x.fonte==='Livro Básico v1.3')
 const sah=entries.filter(x=>x.tipo==='ritual'&&x.fonte==='Sobrevivendo ao Horror');
 assert.equal(basic.length,82);
 assert.equal(sah.length,16);
-assert.equal(ORDEM_LIBRARY_COUNTS.ritual,100);
-assert.equal(ORDEM_LIBRARY_COUNTS.origem,37);
-assert.equal(ORDEM_LIBRARY_COUNTS.trilha,19);
-assert.equal(entries.length,212);
+assert.equal(ORDEM_LIBRARY_COUNTS.ritual,103);
+assert.equal(ORDEM_LIBRARY_COUNTS.origem,41);
+assert.equal(ORDEM_LIBRARY_COUNTS.trilha,25);
+assert.equal(entries.length,253);
 for(const rit of [...basic,...sah]){
  assert.ok(rit.nome&&rit.desc.length>=45);
  assert.ok(rit.circulo>=1&&rit.circulo<=4,rit.nome+' círculo não reconhecido');
@@ -28,6 +28,19 @@ assert.ok(basic.some(x=>x.nome==='Inexistir'&&x.circulo===4));
 assert.ok(sah.some(x=>x.nome==='Martírio de Sangue'&&x.circulo===4));
 assert.ok(entries.some(x=>x.fonte==='Arquivos Secretos #04'&&x.nome==='Granadeiro Blaster'));
 assert.ok(entries.some(x=>x.fonte==='Arquivos Secretos #04'&&x.nome==='Foco Gravitacional'));
+for(const [fonte,nome] of [
+ ['Arquivos Secretos #01','Maledictólogo'],
+ ['Arquivos Secretos #03','Combatente Performático'],
+ ['Arquivos Secretos #05','Criptologista do Oculto'],
+ ['Arquivos Secretos #06','Monstruoso'],
+ ['Arquivos Secretos #09','Incursor'],
+ ['Arquivos Secretos #09','Piloto de Drone']
+]) assert.ok(entries.some(x=>x.fonte===fonte&&x.nome===nome&&x.tipo==='trilha'),fonte+': '+nome);
+assert.ok(entries.some(x=>x.fonte==='Arquivos Secretos #01'&&x.nome==='Passagem de Conhecimento'&&x.circulo===2));
+assert.ok(entries.some(x=>x.fonte==='Arquivos Secretos #06'&&x.nome==='Hesitação Forçada'&&x.circulo===1&&x.elemento==='Conhecimento'));
+assert.ok(entries.some(x=>x.fonte==='Arquivos Secretos #05'&&x.nome==='Ácido Corrosivo'&&x.tipo==='poderParanormal'));
+const ids=new Set();for(const x of entries){assert.ok(!ids.has(x.id),'ID duplicado '+x.id);ids.add(x.id);}
+
 assert.ok(entries.every(x=>!/playtest|ordem 2|alpha/i.test([x.nome,x.fonte,x.desc].join(' '))));
 const category={origem:'origens',trilha:'trilhas',habilidade:'habilidades',poderParanormal:'poderesParanormais',ritual:'rituais'};
 for(const [kind,tab] of Object.entries(category))
@@ -56,6 +69,9 @@ assert.equal(re.data.habilidades.filter(x=>x.tipo==='Origem'&&x.bibliotecaOrigem
 const trail=entries.find(x=>x.nome==='Granadeiro Blaster');
 assert.ok(getOrdemLibraryWarnings(trail,'trilhas',{classe:'Combatente',nex:5}).length>=2);
 const tr=applyOrdemLibrarySelection(rr.data,trail,'trilhas');
+const droneTrail=entries.find(x=>x.nome==='Piloto de Drone');
+const hasDrone=applyOrdemLibrarySelection(rr.data,droneTrail,'trilhas');
+assert.deepEqual(hasDrone.data.habilidades.find(x=>x.tipo==='Trilha').progressao.map(x=>x.nex),[10,40,65,99]);
 assert.equal(tr.data.bio.trilha,'Granadeiro Blaster');
 assert.equal(tr.data.habilidades.filter(x=>x.tipo==='Trilha').length,1);
 const ritual=basic.find(x=>x.nome==='Amaldiçoar Arma');

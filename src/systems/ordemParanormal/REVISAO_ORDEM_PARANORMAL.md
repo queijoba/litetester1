@@ -29,3 +29,14 @@ Atualização independente para uso com o **Ordem Paranormal RPG v1.3**, **Sobre
 
 ## Créditos
 **PJLite é um projeto independente, feito por fãs, sem vínculo ou endosso dos titulares de Ordem Paranormal.** Os direitos sobre o universo, as regras e as obras originais pertencem a seus respectivos titulares, incluindo Rafael Lange e Jambô Editora. Cada resultado na biblioteca indica a fonte e a página ou o capítulo de consulta.
+
+## Complemento no LiteTester — 22/10/2026
+
+- Conferidos os PDFs dos pacotes **#01 v1.2, #03 v1.1, #04 v1.1, #05 v1.1, #06 v1.1, #07 v1.0 e #09 v1.0** no Drive do projeto.
+- Acrescentadas **41 referências complementares** verificadas dos pacotes #01, #03, #05, #06 e #09, com resumos próprios, fonte, página e categoria, sem reproduzir o texto completo.
+- Cobertura de origem/poder/trilha/ritual ampliada para **253 entradas**, das quais **103 rituais**, **41 origens** e **25 trilhas**.
+- Trilhas recém-catalogadas: **Maledictólogo**, **Combatente Performático**, **Criptologista do Oculto**, **Monstruoso**, **Incursor** e **Piloto de Drone**. Habilidades por NEX são oferecidas individualmente apenas quando foi possível verificar seus nomes e patamares.
+- Inserções a partir da biblioteca não concedem automaticamente todos os poderes de uma trilha. O jogador pode registrar os poderes compatíveis com seu NEX; o site informa fonte e página para consulta e edição.
+- O filtro de elemento agora interpreta rituais híbridos, como Sangue/Conhecimento.
+- **Pendências**: ampliar outros poderes e itens dos pacotes sem inventar entradas; revisar em tela a responsividade do novo catálogo. O pacote #08 não foi localizado nesta revisão e o #02 encontrado era uma HQ, portanto não se alegou cobertura completa.
+- O escopo desta etapa é apenas o LiteTester. O PJLite oficial continua inalterado.
