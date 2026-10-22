@@ -5,6 +5,9 @@ import SkyfallLibraryModal from './systems/skyfall/SkyfallLibraryModal.jsx';
 import FabulaLibraryModal from './systems/fabulaUltima/FabulaLibraryModal.jsx';
 import {applyFabulaLibrarySelection} from './systems/fabulaUltima/libraryActions.js';
 import ThreatCardModal from './components/ThreatCardModal.jsx';
+import ThreatCardWorkspace from './components/ThreatCardWorkspace.jsx';
+import OrdemThreatEditor from './systems/ordemParanormal/components/ThreatEditor.jsx';
+import SkyfallThreatEditor from './systems/skyfall/components/ThreatEditor.jsx';
 import OtherSystemLibraryModal from './components/OtherSystemLibraryModal.jsx';
 import {applyOtherSystemLibrarySelection} from './components/otherSystemLibraryActions.js';
 import {applySkyfallLibrarySelection} from './systems/skyfall/libraryActions.js';
@@ -3512,24 +3515,28 @@ const { useState, useEffect, useRef } = React;
                     {/* O Som das Seis — Personagem (integração linha 0.7) */}
                     <Som6CharacterEditor scope={systemEditorScope} />
 
-                    <Som6ThreatEditor scope={systemEditorScope} />
-
-                    <FabulaThreatEditor scope={systemEditorScope} />
-
                     {/* Editor D&D 5E */}
                     <DndCharacterEditor scope={systemEditorScope} />
 
-                    {/* Editor D&D 5E Bestiário */}
-
+                    {/* D&D mantém o editor + statblock clássico como referência visual. */}
                     <DndThreatEditor scope={systemEditorScope} />
 
-                    {/* 3DeT Victory — personagem e ameaças modularizados */}
                     <TresDeTCharacterEditor scope={systemEditorScope} />
-                    <TresDeTThreatEditor scope={systemEditorScope} />
                     <RotaZeroCharacterEditor scope={systemEditorScope} />
 
+                    {/* Ameaças: formulário editável e card sempre sincronizado, sem PDF. */}
+                    {data.type !== 'pc' && ['fabula','somdas6','3det','ordemParanormal','skyfall'].includes(data.system) && (
+                        <ThreatCardWorkspace data={data} onOpen={()=>setThreatCardOpen(true)}>
+                            <Som6ThreatEditor scope={systemEditorScope} />
+                            <FabulaThreatEditor scope={systemEditorScope} />
+                            <TresDeTThreatEditor scope={systemEditorScope} />
+                            <OrdemThreatEditor scope={systemEditorScope} />
+                            <SkyfallThreatEditor scope={systemEditorScope} />
+                        </ThreatCardWorkspace>
+                    )}
+
                     {/* Editor Dragonbane (Intacto) */}
-                    {!['dragonbane','dnd5e','fabula','somdas6','3det','rotaZero'].includes(data.system || 'dragonbane') && (
+                    {!['dragonbane','dnd5e','fabula','somdas6','3det','rotaZero','skyfall','ordemParanormal'].includes(data.system || 'dragonbane') && (
                         <div className="p-6 md:p-10 bg-amber-50 border-y border-amber-300 text-amber-950">
                             <h2 className="font-title font-bold text-lg">⚠ Formato de ficha não reconhecido</h2>
                             <p className="text-sm mt-2">Esta ficha parece ter vindo de uma versão ou sistema que o PJ Lite atual não reconhece. Os dados não foram apagados. Exporte um backup antes de editar e confira o campo de sistema na origem da ficha.</p>
