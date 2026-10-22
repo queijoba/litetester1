@@ -1,3 +1,4 @@
+import '../skyfall-theme.css';
 import React, { useState } from 'react';
 import { SKYFALL_ATTRIBUTES } from '../data.js';
 const n=v=>Number(v)||0;
