@@ -1,0 +1,42 @@
+/* Skyfall — biblioteca no estilo pergaminho, roxo e ouro da ficha. */
+.skyfall-lib-overlay{position:fixed;inset:0;z-index:560;display:flex;align-items:center;justify-content:center;background:rgba(22,14,29,.83);padding:14px;overscroll-behavior:contain}
+.skyfall-lib-overlay *{box-sizing:border-box;min-width:0}
+.skyfall-lib-modal{width:min(1050px,100%);max-height:min(93dvh,950px);display:flex;flex-direction:column;overflow:hidden;border:2px solid #b9914d;border-radius:13px;background:#f5f0e5;color:#352842;box-shadow:0 20px 80px rgba(0,0,0,.55)}
+.skyfall-lib-header{display:flex;justify-content:space-between;gap:12px;padding:13px 17px;color:#f6eee2;background:linear-gradient(110deg,#2d173e,#4c325e);border-bottom:4px solid #b9914d}
+.skyfall-lib-header small,.skyfall-lib-kicker{display:block;font-size:9px;letter-spacing:.12em;font-weight:900;color:#e3c78c}
+.skyfall-lib-header h2{margin:3px 0;font-family:Georgia,serif;font-size:22px;line-height:1.3;font-weight:900}
+.skyfall-lib-header p{color:#e3d7e9;font-size:11px;margin:0}
+.skyfall-lib-header>button{background:rgba(255,255,255,.12);border:1px solid #a38ba8;border-radius:7px;color:#fff;font-size:24px;font-weight:900;width:34px;height:34px;flex:0 0 auto;cursor:pointer}
+.skyfall-lib-tabs{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;background:#e5dac7;padding:7px;flex:0 0 auto}
+.skyfall-lib-tabs button{border:1px solid #d1c2a9;border-radius:7px;background:#f6f0e7;color:#503d60;font-size:10px;font-weight:900;min-height:36px;padding:7px 3px;cursor:pointer}
+.skyfall-lib-tabs button.active{background:#3b234d;color:#fff;border-color:#3b234d}
+.skyfall-lib-search{display:flex;flex-wrap:wrap;gap:6px;padding:9px 12px;border-bottom:1px solid #ddd0be}
+.skyfall-lib-search input,.skyfall-lib-search select{border:1px solid #b5a4b9;border-radius:6px;background:#fffdf7;color:#352842;font-size:12px;padding:8px;min-height:36px}
+.skyfall-lib-search input{flex:2 1 220px;min-width:130px}
+.skyfall-lib-search select{flex:1 1 130px}
+.skyfall-lib-context{display:flex;justify-content:space-between;align-items:center;gap:9px;padding:6px 12px;color:#594767;font-size:11px;border-bottom:1px solid #ddd0be}
+.skyfall-lib-context>span{flex:1}
+.skyfall-lib-context button{border:1px solid #9a84a7;border-radius:5px;background:#e9dfed;color:#432655;padding:6px 10px;cursor:pointer;font-size:10px;font-weight:900}
+.skyfall-lib-context button[aria-pressed=true]{background:#3b234d;color:#fff}
+.skyfall-lib-body{display:grid;grid-template-columns:minmax(210px,.85fr) minmax(0,1.4fr);flex:1;min-height:190px;overflow:hidden}
+.skyfall-lib-results{display:flex;flex-direction:column;gap:5px;overflow:auto;padding:10px;background:#ece4dc;border-right:1px solid #c7b6c7;overscroll-behavior:contain}
+.skyfall-lib-count{font-size:10px;font-weight:800;opacity:.8;padding:5px}
+.skyfall-lib-results>button{display:flex;flex-direction:column;align-items:flex-start;gap:3px;width:100%;text-align:left;border:1px solid #d0c2ce;border-radius:6px;background:#f8f4ee;color:#382c42;padding:8px 10px;cursor:pointer}
+.skyfall-lib-results>button.active{border-color:#95763f;border-left:4px solid #ad8649;background:#fffaf1}
+.skyfall-lib-results>button strong{font-size:12px;line-height:1.4}
+.skyfall-lib-results>button small{font-size:10px;color:#796782;line-height:1.4}
+.skyfall-lib-detail{padding:16px;overflow:auto;overscroll-behavior:contain}
+.skyfall-lib-detail .skyfall-lib-kicker{color:#7d608c}
+.skyfall-lib-detail h3{font-family:Georgia,serif;font-size:22px;line-height:1.24;color:#3c224e;margin:7px 0 11px;font-weight:900}
+.skyfall-lib-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
+.skyfall-lib-tags span{border:1px solid #cfbdd1;border-radius:5px;background:#efe7f2;color:#483453;padding:4px 7px;font-size:10px}
+.skyfall-lib-description{font-size:13px;line-height:1.65;white-space:pre-wrap;color:#352a3d}
+.skyfall-lib-note{font-size:11px;line-height:1.5;color:#746877;border-top:1px solid #d6c8d8;padding-top:9px;margin-top:15px}
+.skyfall-lib-warning{background:#fff3db;border-left:3px solid #b48734;padding:8px;color:#60491a;font-size:11px;line-height:1.5}
+.skyfall-lib-use{display:block;margin:14px 0 0;width:100%;padding:11px 14px;border:1px solid #8b6b36;border-radius:7px;background:#3b234d;color:#fff;font-size:12px;font-weight:900;cursor:pointer}
+.skyfall-lib-use:hover{background:#51346a}
+.skyfall-lib-empty,.skyfall-lib-placeholder{font-size:12px;line-height:1.6;padding:12px;color:#776981}
+.skyfall-lib-footer{flex:0 0 auto;border-top:1px solid #d7c5d7;padding:8px 12px;background:#eee5dd;color:#786980;font-size:10px;line-height:1.4}
+.skyfall-lib-back{display:none;border:1px solid #aa91b6;border-radius:5px;background:#efdeec;color:#3b234d;padding:6px 8px;font-size:11px;font-weight:900;margin-bottom:11px}
+@media(max-width:720px){.skyfall-lib-overlay{padding:5px}.skyfall-lib-modal{max-height:98dvh;border-radius:8px}.skyfall-lib-header{padding:10px}.skyfall-lib-header h2{font-size:18px}.skyfall-lib-header p{font-size:9px}.skyfall-lib-tabs{grid-template-columns:repeat(4,minmax(0,1fr));padding:5px;gap:3px}.skyfall-lib-tabs button{min-height:31px;font-size:9px;padding:5px 3px}.skyfall-lib-search{padding:5px}.skyfall-lib-search input,.skyfall-lib-search select{flex:1 1 45%;min-height:32px;font-size:11px;padding:6px}.skyfall-lib-context{padding:5px;font-size:10px}.skyfall-lib-body{display:block;overflow:hidden}.skyfall-lib-results,.skyfall-lib-detail{height:100%;border:0;overflow:auto}.skyfall-lib-body--has-selection .skyfall-lib-results{display:none}.skyfall-lib-body:not(.skyfall-lib-body--has-selection) .skyfall-lib-detail{display:none}.skyfall-lib-back{display:inline-block}.skyfall-lib-detail{padding:12px}.skyfall-lib-detail h3{font-size:19px}.skyfall-lib-footer{font-size:9px;padding:5px 9px}}
+@media(max-height:600px){.skyfall-lib-header{padding:6px 11px}.skyfall-lib-header p{display:none}.skyfall-lib-tabs button{min-height:28px}.skyfall-lib-detail{padding:10px}}
