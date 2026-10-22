@@ -48,3 +48,14 @@
  .pj-threat-card{max-width:100%!important;width:100%!important;margin:0!important;padding:4mm!important;box-shadow:none!important;color-adjust:exact;print-color-adjust:exact;-webkit-print-color-adjust:exact}
  .pj-threat-card-section{break-inside:avoid}
 }
+
+/* Editor de ameaça Fábula: prévia ao vivo alinhada ao D&D sem alterar os campos. */
+.fabula-threat-workspace{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(340px,.8fr);gap:17px;align-items:start}
+.fabula-threat-workspace>.fabula-threat-compact{min-width:0}
+.fabula-threat-live-preview{position:sticky;top:12px;max-height:86vh;overflow:auto;padding:13px 9px;border:1px solid #a9c8bf;background:#e9f4ef;border-radius:9px;box-shadow:0 5px 13px #052a2620}
+.fabula-threat-live-label{font-size:10px;line-height:1.5;text-align:center;font-weight:900;color:#20645a;margin:0 0 10px}
+.fabula-threat-live-preview .pj-threat-card{box-shadow:none;padding:12px;font-size:11px}
+.fabula-threat-live-preview .pj-threat-card-head h2{font-size:19px}
+.fabula-threat-live-preview .pj-threat-card-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:1199px){.fabula-threat-workspace{grid-template-columns:minmax(0,1fr)}.fabula-threat-live-preview{display:none}}
+@media print{.fabula-threat-live-preview{display:none!important}}
