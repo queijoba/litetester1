@@ -1,0 +1,38 @@
+.fabula-lib-shade{position:fixed;inset:0;z-index:580;display:flex;justify-content:center;align-items:center;padding:12px;background:rgba(8,34,38,.79)}
+.fabula-lib-shade *{box-sizing:border-box;min-width:0}
+.fabula-lib-dialog{width:min(1040px,100%);max-height:95dvh;display:flex;flex-direction:column;overflow:hidden;border:2px solid #bba35e;border-radius:13px;background:#f3f6f1;color:#224a47;box-shadow:0 24px 70px #001b1d77}
+.fabula-lib-head{display:flex;justify-content:space-between;gap:12px;background:linear-gradient(110deg,#12544d,#247d72);color:#fff;padding:15px;border-bottom:4px solid #c8b15b}
+.fabula-lib-head small{font-size:9px;font-weight:900;color:#e2dfac;letter-spacing:.13em}
+.fabula-lib-head h2{font-family:Georgia,serif;font-size:22px;font-weight:900;margin:4px 0;line-height:1.2}
+.fabula-lib-head p{margin:0;font-size:11px;opacity:.88}
+.fabula-lib-head>button{flex:none;width:34px;height:34px;border:1px solid #ffffff77;border-radius:6px;background:#ffffff11;color:white;font-size:25px;cursor:pointer}
+.fabula-lib-tabs{display:flex;flex-wrap:wrap;gap:6px;padding:9px;background:#e8f0eb;border-bottom:1px solid #c4d4cc}
+.fabula-lib-tabs button{flex:1 1 auto;border:1px solid #b7cec3;border-radius:6px;background:white;color:#28645a;padding:9px 8px;font-size:11px;font-weight:900;cursor:pointer}
+.fabula-lib-tabs button[aria-pressed=true]{background:#186158;color:white;border-color:#186158}
+.fabula-lib-filters{display:flex;flex-wrap:wrap;gap:6px;padding:10px;border-bottom:1px solid #c4d4cc}
+.fabula-lib-filters input,.fabula-lib-filters select{min-height:34px;padding:7px;border:1px solid #aac1b9;border-radius:6px;color:#24433d;background:#fff;font-size:12px}
+.fabula-lib-filters input{flex:2 1 210px}
+.fabula-lib-filters select{flex:1 1 150px}
+.fabula-lib-current{padding:8px 12px;border-bottom:1px solid #c4d4cc;display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px}
+.fabula-lib-current span{flex:1}
+.fabula-lib-current button{border:1px solid #7da99e;color:#15584d;background:#e4f6ed;border-radius:6px;font-size:10px;font-weight:900;padding:6px 8px}
+.fabula-lib-current button[aria-pressed=true]{color:white;background:#186158}
+.fabula-lib-body{display:grid;grid-template-columns:minmax(205px,.85fr) minmax(0,1.4fr);overflow:hidden;min-height:170px;flex:1}
+.fabula-lib-results{padding:10px;overflow:auto;display:flex;flex-direction:column;gap:5px;background:#e9f0ea;border-right:1px solid #c4d4cc;overscroll-behavior:contain}
+.fabula-lib-results>small{font-size:10px;opacity:.7;padding:5px}
+.fabula-lib-results>button{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;padding:9px 10px;border:1px solid #cfdbd2;border-radius:6px;background:white;color:#26534d;cursor:pointer}
+.fabula-lib-results>button.active{border-color:#137d6e;border-left:4px solid #b79a46;background:#fffef7}
+.fabula-lib-results>button strong{font-size:12px}
+.fabula-lib-results>button span{color:#728980;font-size:10px}
+.fabula-lib-detail{padding:18px;overflow:auto;overscroll-behavior:contain}
+.fabula-lib-detail>small{font-weight:900;letter-spacing:.1em;color:#428c7c;font-size:10px}
+.fabula-lib-detail h3{font-size:23px;font-family:Georgia,serif;color:#145b53;margin:9px 0;font-weight:900}
+.fabula-lib-tags{display:flex;flex-wrap:wrap;gap:5px}
+.fabula-lib-tags span{border:1px solid #b8d6c8;border-radius:5px;background:#e6f6eb;padding:5px 7px;font-size:10px}
+.fabula-lib-detail>p{font-size:12px;line-height:1.6;color:#385751;margin:13px 0}
+.fabula-lib-detail .fabula-lib-help{font-size:11px;border-top:1px solid #cddbd3;padding-top:10px;color:#6d857c}
+.fabula-lib-detail .fabula-lib-alert{background:#fff5d7;border-left:3px solid #c49f31;color:#5b4c28;padding:9px}
+.fabula-lib-use{width:100%;padding:11px;border:1px solid #c9b35f;border-radius:7px;color:white;background:#12675e;font-weight:900;font-size:12px;cursor:pointer}
+.fabula-lib-dialog footer{padding:8px 11px;border-top:1px solid #c4d4cc;font-size:10px;background:#eaf1eb;color:#6e837b}
+.fabula-lib-back{display:none;border:1px solid #afccbf;border-radius:5px;padding:6px 9px;font-size:11px;color:#165d53;font-weight:900;margin-bottom:12px}
+@media(max-width:650px){.fabula-lib-shade{padding:5px}.fabula-lib-dialog{max-height:98dvh}.fabula-lib-head{padding:10px}.fabula-lib-head h2{font-size:17px}.fabula-lib-tabs{padding:6px;gap:3px}.fabula-lib-tabs button{font-size:9px;padding:7px 5px}.fabula-lib-filters{padding:7px}.fabula-lib-filters input,.fabula-lib-filters select{flex:1 1 45%;font-size:11px;min-height:30px}.fabula-lib-body{display:block}.fabula-lib-results,.fabula-lib-detail{height:100%;border:0}.fabula-lib-body.has-selection .fabula-lib-results{display:none}.fabula-lib-body:not(.has-selection) .fabula-lib-detail{display:none}.fabula-lib-back{display:inline-block}}
