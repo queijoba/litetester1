@@ -339,8 +339,11 @@ export const AS_COMPLEMENTO = [
     "bibliotecaOrigem": "pj-op-official-index",
     "custo": "",
     "requisito": "",
-    "pericias": [],
-    "poderOrigem": "Consultar origem no suplemento"
+    "pericias": [
+      "Atualidades",
+      "Ciências"
+    ],
+    "poderOrigem": "Existe uma Explicação"
   },
   {
     "id": "op-as-complemento-06-024",
@@ -352,8 +355,27 @@ export const AS_COMPLEMENTO = [
     "bibliotecaOrigem": "pj-op-official-index",
     "custo": "",
     "requisito": "",
-    "pericias": [],
-    "poderOrigem": "Consultar origem no suplemento"
+    "pericias": [
+      "Fortitude",
+      "Vontade"
+    ],
+    "poderOrigem": "Forças para Enfrentar"
+  },
+  {
+    "id": "op-as-complemento-06-seguranca",
+    "nome": "Segurança Ex-Panacea",
+    "tipo": "origem",
+    "fonte": "Arquivos Secretos #06",
+    "pagina": "66",
+    "desc": "Ex-agente de segurança da Panacea, especializado em contenção e combate.",
+    "bibliotecaOrigem": "pj-op-official-index",
+    "custo": "",
+    "requisito": "",
+    "pericias": [
+      "Luta",
+      "Pontaria"
+    ],
+    "poderOrigem": "Técnicas de Contenção"
   },
   {
     "id": "op-as-complemento-06-025",
