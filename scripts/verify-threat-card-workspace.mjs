@@ -24,7 +24,15 @@ assert.ok(css.includes('position:sticky')&&css.includes('@media(max-width:700px)
 assert.ok(!fabula.includes('<ThreatStatCard data={data} compact />'),'Fabula não duplica card');
 assert.ok(ordem.includes("import '../ordem-theme.css'"),'Ordem importa seu tema');
 assert.ok(skyfall.includes("import '../skyfall-theme.css'"),'Skyfall importa seu tema');
-assert.ok(modal.includes('Copiar texto')&&!modal.includes('window.print()'),'Card para imagem sem PDF');
+assert.ok(modal.includes('Copiar texto')&&modal.includes('Baixar PNG')&&!modal.includes('window.print()'),'Card para imagem sem PDF');
+assert.ok(modal.includes("import {toBlob} from 'html-to-image'"),'Conversão real do card em PNG');
+assert.ok(modal.includes('ref={cardRef}')&&modal.includes('pixelRatio')&&modal.includes("a.download='Card_Ameaca_'"),'PNG com conteúdo integral e nome da ameaça');
+assert.ok(modal.includes('Gerando PNG')&&modal.includes('role="alert"'),'Feedback durante download de imagem');
+assert.ok(wrapper.includes('baixe o card em PNG'),'Prévia orienta compartilhar PNG');
+assert.ok(app.includes('baixar PNG do card da ameaça'),'Barra indica PNG, não impressão');
+const packageJson=JSON.parse(readFileSync('package.json','utf8'));
+assert.ok(packageJson.dependencies['html-to-image'],'Biblioteca HTML para PNG instalada');
+
 assert.ok(!cardCss.includes('@page{size:A5 portrait'),'Sem necessidade de gerar PDF');
 assert.ok(!dragonbane.includes('ThreatCardWorkspace'),'Dragonbane sem alterações');
 
@@ -50,4 +58,4 @@ assert.ok(!JSON.stringify(det).includes('surpresa'),'Notas internas de cada téc
 const som=buildThreatCardData({system:'somdas6',type:'ameaca',nome:'Pistoleiro',np:3,status:{pvAtual:8,pvMax:12,defesa:6,acoes:1,ataqueBonus:2,iniciativaBonus:1},notas:'ENCONTRA ARMADILHA'});
 assert.ok(!JSON.stringify(som).includes('ENCONTRA ARMADILHA'));
 
-console.log('✓ Cards de ameaças sincronizados em cinco editores, responsivos e sem revelar anotações do mestre ou gerar PDF.');
+console.log('✓ Cards de ameaças com prévia ao vivo, exportação PNG, sem PDF e sem revelar anotações privadas.');
