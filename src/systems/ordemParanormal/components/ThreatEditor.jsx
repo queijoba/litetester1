@@ -1,3 +1,4 @@
+import '../ordem-theme.css';
 import React,{useState} from 'react';
 import { ORDEM_ATTRIBUTES } from '../data.js';
 const n=v=>Number(v)||0;
