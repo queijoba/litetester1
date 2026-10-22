@@ -39,9 +39,11 @@ assert.ok(app.includes('<OrdemLibraryModal'),'Ordem usa a biblioteca na barra pr
 assert.ok(ordemModal.includes("['habilidades','Poderes de Classe']")&&ordemModal.includes("['poderesParanormais','Poderes Paranormais']")&&ordemModal.includes("['rituais','Rituais']"),'Ordem oferece poderes e rituais');
 assert.ok(ordem.includes('storeAbilityPreset'),'Ordem permite salvar modelos próprios');
 assert.ok(!ordem.includes("setPresetKind('"),'Ordem não deve render botões de biblioteca dentro da ficha');
-assert.ok(skyfall.includes('AbilityPresetPicker'),'Skyfall deve montar o seletor');
-assert.ok(skyfall.includes('storeAbilityPreset'),'Skyfall deve salvar modelos');
-for(const kind of ['habilidades','magias'])assert.ok(skyfall.includes("setPresetKind('"+kind+"')"),'Skyfall abre '+kind);
+assert.ok(skyfall.includes('storeAbilityPreset'),'Skyfall mantém modelos pessoais');
+assert.ok(!skyfall.includes('AbilityPresetPicker')&&!skyfall.includes('📚 Biblioteca</button>'),'A biblioteca Skyfall deve ficar apenas na barra superior');
+assert.ok(app.includes('SkyfallLibraryModal')&&app.includes('addFromSkyfallLibrary'),'Skyfall integra biblioteca principal');
+assert.ok(app.includes('setSkyfallLibraryOpen(true)'),'Ícone na barra abre a biblioteca Skyfall');
+assert.ok(readFileSync('src/systems/skyfall/SkyfallLibraryModal.jsx','utf8').includes('Filtrar camada'),'Skyfall filtra magias por camada');
 assert.ok(picker.includes('createPortal'),'Modal deve ficar acima da ficha');
 assert.ok(picker.includes('role="dialog"'),'Modal deve ser acessível');
 assert.ok(picker.includes('aria-modal="true"'));
