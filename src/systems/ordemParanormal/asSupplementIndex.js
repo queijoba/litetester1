@@ -116,7 +116,7 @@ export const AS_COMPLEMENTO = [
     "custo": "",
     "requisito": "Consultar condições especiais no suplemento",
     "elemento": "Sangue / Conhecimento",
-    "circulo": 4
+    "circulo": 2
   },
   {
     "id": "op-as-complemento-01-008",
@@ -450,7 +450,7 @@ export const AS_COMPLEMENTO = [
     "custo": "",
     "requisito": "",
     "elemento": "Conhecimento",
-    "circulo": 2
+    "circulo": 1
   },
   {
     "id": "op-as-complemento-06-033",
