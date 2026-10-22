@@ -1473,17 +1473,6 @@ export const FABULA_LIBRARY_CATALOG=[
     "nivelMaximo": 3
   },
   {
-    "id": "fu-0158",
-    "tipo": "poder",
-    "nome": "Poder Heroico Requisito Descrição",
-    "fonte": "Atlas Natural Fantasy",
-    "source": "natural",
-    "pagina": "159",
-    "desc": "Poder de classe. Confira efeito, NP máximo e requisitos no livro antes de escolher.",
-    "classe": "Mercador",
-    "nivelMaximo": 1
-  },
-  {
     "id": "fu-0159",
     "tipo": "classe",
     "nome": "Esper",
@@ -1558,17 +1547,6 @@ export const FABULA_LIBRARY_CATALOG=[
     "id": "fu-0166",
     "tipo": "poder",
     "nome": "Psicocinese",
-    "fonte": "Atlas Techno Fantasy",
-    "source": "techno",
-    "pagina": "151",
-    "desc": "Poder de classe. Confira efeito, NP máximo e requisitos no livro antes de escolher.",
-    "classe": "Esper",
-    "nivelMaximo": 1
-  },
-  {
-    "id": "fu-0167",
-    "tipo": "poder",
-    "nome": "Relógio Mental",
     "fonte": "Atlas Techno Fantasy",
     "source": "techno",
     "pagina": "151",
@@ -1685,17 +1663,6 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Poder de classe. Confira efeito, NP máximo e requisitos no livro antes de escolher.",
     "classe": "Piloto",
     "nivelMaximo": 5
-  },
-  {
-    "id": "fu-0178",
-    "tipo": "poder",
-    "nome": "O Veículo Do Piloto",
-    "fonte": "Atlas Techno Fantasy",
-    "source": "techno",
-    "pagina": "159",
-    "desc": "Poder de classe. Confira efeito, NP máximo e requisitos no livro antes de escolher.",
-    "classe": "Piloto",
-    "nivelMaximo": 1
   },
   {
     "id": "fu-0179",
@@ -2100,17 +2067,6 @@ export const FABULA_LIBRARY_CATALOG=[
     "nivelMaximo": 5
   },
   {
-    "id": "fu-0217",
-    "tipo": "poder",
-    "nome": "Benefícios Iniciais De Malandro",
-    "fonte": "Codex Extra",
-    "source": "codex",
-    "pagina": "57",
-    "desc": "Poder de classe. Confira efeito, NP máximo e requisitos no livro antes de escolher.",
-    "classe": "Lâmina Carmesim",
-    "nivelMaximo": 1
-  },
-  {
     "id": "fu-0218",
     "tipo": "poder",
     "nome": "Engabelar",
@@ -2164,17 +2120,6 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Poder de classe. Confira efeito, NP máximo e requisitos no livro antes de escolher.",
     "classe": "Malandro",
     "nivelMaximo": 2
-  },
-  {
-    "id": "fu-0223",
-    "tipo": "poder",
-    "nome": "Benefícios Iniciais De Necromante",
-    "fonte": "Codex Extra",
-    "source": "codex",
-    "pagina": "59",
-    "desc": "Poder de classe. Confira efeito, NP máximo e requisitos no livro antes de escolher.",
-    "classe": "Malandro",
-    "nivelMaximo": 1
   },
   {
     "id": "fu-0224",
@@ -2790,7 +2735,7 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Elementalista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Elementalista",
     "disciplina": "Elementalismo",
-    "pm": "",
+    "pm": "10",
     "ofensiva": false
   },
   {
@@ -2803,8 +2748,8 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Elementalista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Elementalista",
     "disciplina": "Elementalismo",
-    "pm": "",
-    "ofensiva": false
+    "pm": "20",
+    "ofensiva": true
   },
   {
     "id": "fu-spell-273",
@@ -2816,8 +2761,8 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Elementalista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Elementalista",
     "disciplina": "Elementalismo",
-    "pm": "",
-    "ofensiva": false
+    "pm": "10 × A",
+    "ofensiva": true
   },
   {
     "id": "fu-spell-274",
@@ -2829,8 +2774,8 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Elementalista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Elementalista",
     "disciplina": "Elementalismo",
-    "pm": "",
-    "ofensiva": false
+    "pm": "10 × A",
+    "ofensiva": true
   },
   {
     "id": "fu-spell-275",
@@ -2842,7 +2787,7 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Elementalista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Elementalista",
     "disciplina": "Elementalismo",
-    "pm": "",
+    "pm": "10",
     "ofensiva": false
   },
   {
@@ -2855,8 +2800,8 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Elementalista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Elementalista",
     "disciplina": "Elementalismo",
-    "pm": "",
-    "ofensiva": false
+    "pm": "20",
+    "ofensiva": true
   },
   {
     "id": "fu-spell-277",
@@ -2868,8 +2813,8 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Elementalista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Elementalista",
     "disciplina": "Elementalismo",
-    "pm": "",
-    "ofensiva": false
+    "pm": "10 × A",
+    "ofensiva": true
   },
   {
     "id": "fu-spell-278",
@@ -2881,7 +2826,7 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Elementalista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Elementalista",
     "disciplina": "Elementalismo",
-    "pm": "",
+    "pm": "5 × A",
     "ofensiva": false
   },
   {
@@ -2894,8 +2839,8 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Elementalista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Elementalista",
     "disciplina": "Elementalismo",
-    "pm": "",
-    "ofensiva": false
+    "pm": "20",
+    "ofensiva": true
   },
   {
     "id": "fu-spell-280",
@@ -2907,8 +2852,8 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Elementalista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Elementalista",
     "disciplina": "Elementalismo",
-    "pm": "",
-    "ofensiva": false
+    "pm": "20",
+    "ofensiva": true
   },
   {
     "id": "fu-spell-281",
@@ -2920,8 +2865,8 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Elementalista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Elementalista",
     "disciplina": "Elementalismo",
-    "pm": "",
-    "ofensiva": false
+    "pm": "10 × A",
+    "ofensiva": true
   },
   {
     "id": "fu-spell-282",
@@ -2933,8 +2878,8 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Elementalista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Elementalista",
     "disciplina": "Elementalismo",
-    "pm": "",
-    "ofensiva": false
+    "pm": "10 × A",
+    "ofensiva": true
   },
   {
     "id": "fu-spell-283",
@@ -2946,8 +2891,8 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Elementalista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Elementalista",
     "disciplina": "Elementalismo",
-    "pm": "",
-    "ofensiva": false
+    "pm": "20",
+    "ofensiva": true
   },
   {
     "id": "fu-spell-284",
@@ -2959,8 +2904,8 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Entropista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Entropista",
     "disciplina": "Entropismo",
-    "pm": "",
-    "ofensiva": false
+    "pm": "5",
+    "ofensiva": true
   },
   {
     "id": "fu-spell-285",
@@ -2972,8 +2917,8 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Entropista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Entropista",
     "disciplina": "Entropismo",
-    "pm": "",
-    "ofensiva": false
+    "pm": "10",
+    "ofensiva": true
   },
   {
     "id": "fu-spell-286",
@@ -2985,7 +2930,7 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Entropista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Entropista",
     "disciplina": "Entropismo",
-    "pm": "",
+    "pm": "10",
     "ofensiva": false
   },
   {
@@ -2998,7 +2943,7 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Entropista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Entropista",
     "disciplina": "Entropismo",
-    "pm": "",
+    "pm": "10",
     "ofensiva": false
   },
   {
@@ -3011,8 +2956,8 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Entropista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Entropista",
     "disciplina": "Entropismo",
-    "pm": "",
-    "ofensiva": false
+    "pm": "10",
+    "ofensiva": true
   },
   {
     "id": "fu-spell-289",
@@ -3024,8 +2969,8 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Entropista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Entropista",
     "disciplina": "Entropismo",
-    "pm": "",
-    "ofensiva": false
+    "pm": "10 × A",
+    "ofensiva": true
   },
   {
     "id": "fu-spell-290",
@@ -3037,8 +2982,8 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Entropista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Entropista",
     "disciplina": "Entropismo",
-    "pm": "",
-    "ofensiva": false
+    "pm": "15",
+    "ofensiva": true
   },
   {
     "id": "fu-spell-291",
@@ -3050,8 +2995,8 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Espiritualista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Espiritualista",
     "disciplina": "Espiritualismo",
-    "pm": "",
-    "ofensiva": false
+    "pm": "5 × A",
+    "ofensiva": true
   },
   {
     "id": "fu-spell-292",
@@ -3063,7 +3008,7 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Espiritualista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Espiritualista",
     "disciplina": "Espiritualismo",
-    "pm": "",
+    "pm": "5",
     "ofensiva": false
   },
   {
@@ -3076,7 +3021,7 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Espiritualista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Espiritualista",
     "disciplina": "Espiritualismo",
-    "pm": "",
+    "pm": "5 × A",
     "ofensiva": false
   },
   {
@@ -3089,7 +3034,7 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Espiritualista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Espiritualista",
     "disciplina": "Espiritualismo",
-    "pm": "",
+    "pm": "5 × A",
     "ofensiva": false
   },
   {
@@ -3102,7 +3047,7 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Espiritualista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Espiritualista",
     "disciplina": "Espiritualismo",
-    "pm": "",
+    "pm": "5 × A",
     "ofensiva": false
   },
   {
@@ -3115,7 +3060,7 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Espiritualista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Espiritualista",
     "disciplina": "Espiritualismo",
-    "pm": "",
+    "pm": "10 × A",
     "ofensiva": false
   },
   {
@@ -3128,7 +3073,7 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Espiritualista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Espiritualista",
     "disciplina": "Espiritualismo",
-    "pm": "",
+    "pm": "20",
     "ofensiva": false
   },
   {
@@ -3141,8 +3086,8 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Espiritualista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Espiritualista",
     "disciplina": "Espiritualismo",
-    "pm": "",
-    "ofensiva": false
+    "pm": "10",
+    "ofensiva": true
   },
   {
     "id": "fu-spell-299",
@@ -3154,8 +3099,8 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Espiritualista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Espiritualista",
     "disciplina": "Espiritualismo",
-    "pm": "",
-    "ofensiva": false
+    "pm": "10 × A",
+    "ofensiva": true
   },
   {
     "id": "fu-spell-300",
@@ -3167,7 +3112,7 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Espiritualista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Espiritualista",
     "disciplina": "Espiritualismo",
-    "pm": "",
+    "pm": "20",
     "ofensiva": false
   },
   {
@@ -3180,7 +3125,7 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Espiritualista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Espiritualista",
     "disciplina": "Espiritualismo",
-    "pm": "",
+    "pm": "5 × A",
     "ofensiva": false
   },
   {
@@ -3193,7 +3138,7 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Espiritualista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Espiritualista",
     "disciplina": "Espiritualismo",
-    "pm": "",
+    "pm": "5 × A",
     "ofensiva": false
   },
   {
@@ -3206,9 +3151,9 @@ export const FABULA_LIBRARY_CATALOG=[
     "desc": "Feitiço da classe Espiritualista. Consulte efeitos completos, alvos, PM, duração e teste no livro.",
     "classe": "Espiritualista",
     "disciplina": "Espiritualismo",
-    "pm": "",
-    "ofensiva": false
+    "pm": "5 × A",
+    "ofensiva": true
   }
 ];
 export const FABULA_LIBRARY_SOURCES=[{"key":"basico","name":"Livro Básico"},{"key":"high","name":"Atlas High Fantasy"},{"key":"natural","name":"Atlas Natural Fantasy"},{"key":"techno","name":"Atlas Techno Fantasy"},{"key":"codex","name":"Codex Extra"}];
-export const FABULA_LIBRARY_COUNTS={"classe":34,"poder":175,"heroico":61,"feitico":33};
+export const FABULA_LIBRARY_COUNTS={"classe":34,"poder":170,"heroico":61,"feitico":33};
