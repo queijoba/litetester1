@@ -29,7 +29,7 @@ export default function OrdemLibraryModal({open=false,initialTab='habilidades',c
   if(source!=='Todas as fontes'&&e.fonte!==source)return false;
   if(tab==='rituais'&&circle!=='Todos os círculos'&&Number(e.circulo)!==Number(circle))return false;
   if((tab==='rituais'||tab==='poderesParanormais')&&element!=='Todos os elementos'){
-   const values=[e.elemento,...(e.elementosPossiveis||[])].map(normalize);
+   const values=[...String(e.elemento||'').split(/\s*[\/,+]\s*/), ...(e.elementosPossiveis||[])].map(normalize);
    if(!values.includes(normalize(element))&&!values.includes('variavel'))return false;
   }
   if(onlyEligible&&getOrdemLibraryWarnings(e,tab,{classe,trilha,nex}).length>0)return false;
