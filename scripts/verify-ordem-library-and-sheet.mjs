@@ -6,8 +6,8 @@ import {normalizeOrdemPcData,initialOrdemPcData} from '../src/systems/ordemParan
 
 globalThis.localStorage={getItem:()=>null,setItem:()=>{},removeItem:()=>{}};
 assert.ok(ORDEM_LIBRARY_CATALOG.length>=95);
-assert.equal(ORDEM_LIBRARY_COUNTS.origem,37);
-assert.equal(ORDEM_LIBRARY_COUNTS.trilha,19);
+assert.equal(ORDEM_LIBRARY_COUNTS.origem,40);
+assert.equal(ORDEM_LIBRARY_COUNTS.trilha,25);
 assert.ok(ORDEM_LIBRARY_CATALOG.every(x=>x.nome&&x.tipo&&x.fonte&&x.desc&&x.pagina));
 assert.ok(ORDEM_LIBRARY_CATALOG.every(x=>!/playtest|alpha|ordem 2/i.test([x.nome,x.fonte,x.desc].join(' '))));
 assert.equal(findAbilityPresets('ordemParanormal','origens').length,ORDEM_LIBRARY_COUNTS.origem);
@@ -36,6 +36,8 @@ assert.ok(editor.includes('<option>Sobrevivente</option>'));
 assert.ok(editor.includes("gestao.prestigio")&&editor.includes("pdAtual")&&editor.includes("bio.estagio"));
 assert.ok(!editor.includes('📚 Biblioteca</button>'),'Botões de biblioteca devem ficar na barra superior');
 assert.ok(libui.includes("['origens','Origens']")&&libui.includes("['trilhas','Trilhas']"));
+assert.ok(libui.includes('ordem-library-progression')&&libui.includes("'habilidades'"),'Trilhas dos Arquivos Secretos devem oferecer progressão opcional');
+assert.ok(ORDEM_LIBRARY_CATALOG.some(x=>x.fonte==='Arquivos Secretos #09'&&x.nome==='Piloto de Drone'));
 assert.ok(stylesheet.includes('Atualização visual v2'));
 assert.ok(map.includes("Habilidade/Ritual - Página"));
 console.log('✓ Ordem Paranormal: '+ORDEM_LIBRARY_CATALOG.length+' referências, livros/acervos, ficha SaH, biblioteca, PDF e salvamentos legados verificados.');
