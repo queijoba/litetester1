@@ -63,7 +63,7 @@ export default function DragonbaneAbilityPanels({
        <div className="db-resource-main">
         <label className="db-resource-name">
          <span>Nome</span>
-         <textarea rows={legacy||n(entry.nome).includes('\n')?2:1} value={entry.nome||''}
+         <textarea rows={n(entry.nome).includes('\n')?2:1} value={entry.nome||''}
           onChange={e=>rename(index,e.target.value)} placeholder={isMagic?'Nome do '+(kind.id==='truque'?'truque':'feitiço'):'Nome da habilidade'} />
         </label>
         <label className="db-resource-cost">
@@ -113,7 +113,7 @@ export default function DragonbaneAbilityPanels({
      </div>}
     </section>;
    })}
-   {counted>MAX_PDF_CARDS&&visibleKinds.includes('outro')&&
+   {counted>MAX_PDF_CARDS&&
      <p className="db-resource-pdf-warning">A ficha PDF original comporta até {MAX_PDF_CARDS} cartões. Você possui {counted} registros; os demais continuam salvos no PJLite.</p>}
   
  </div>;
