@@ -29,8 +29,8 @@ export default function ThreatCardModal({open=false,data,onClose}){
   else window.prompt('Copie o card:',value);
  };
  return createPortal(<div className="pj-threat-card-modal" onMouseDown={e=>{if(e.target===e.currentTarget)onClose();}}>
-  <section className="pj-threat-card-panel" role="dialog" aria-modal="true" aria-label="Card para impressão da ameaça">
-   <nav className="pj-threat-card-toolbar no-print"><div><strong>🃏 Card da ameaça</strong><small>Pronto para captura de tela ou impressão</small></div><div><button type="button" onClick={copy}>Copiar texto</button><button type="button" onClick={()=>window.print()}>🖨️ Imprimir / PDF</button><button type="button" onClick={onClose} aria-label="Fechar card">✕</button></div></nav>
+  <section className="pj-threat-card-panel" role="dialog" aria-modal="true" aria-label="Card de apresentação da ameaça">
+   <nav className="pj-threat-card-toolbar no-print"><div><strong>🃏 Card da ameaça</strong><small>Visual limpo para compartilhar por captura de tela</small></div><div><button type="button" onClick={copy}>Copiar texto</button><button type="button" onClick={onClose} aria-label="Fechar card">✕</button></div></nav>
    <div className="pj-threat-card-scroll"><ThreatStatCard data={data}/></div>
   </section>
  </div>,document.body);
