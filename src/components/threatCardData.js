@@ -1,11 +1,11 @@
 // Adaptadores de visualização para fichas de ameaça; não modificam os dados do jogo.
 const val=(x,f='—')=>x===undefined||x===null||String(x).trim()===''?f:String(x);
 const list=v=>Array.isArray(v)?v:[];
-const normalizeItems=(arr,descriptionKeys=['desc','descricao','efeito','notas'])=>list(arr).map(x=>{
+const normalizeItems=(arr,descriptionKeys=['desc','descricao','efeito'])=>list(arr).map(x=>{
  if(typeof x==='string')return {nome:x,desc:''};
  const name=val(x?.nome??x?.titulo??x?.id,'').trim();
  const parts=descriptionKeys.map(k=>x?.[k]).filter(x=>x!==undefined&&x!==null&&String(x).trim());
- const other=[x?.dano&&'Dano '+x.dano,x?.bonus&&'Bônus '+x.bonus,x?.pm&&x.pm+' PM',x?.custo&&'Custo '+x.custo];
+ const other=[x?.teste&&'Teste '+x.teste,x?.bonus&&'Bônus '+x.bonus,x?.dano&&'Dano '+x.dano,x?.tipoDano&&x.tipoDano,x?.critico&&'Crítico '+x.critico,x?.alcance&&'Alcance '+x.alcance,x?.pm&&x.pm+' PM',x?.custo&&'Custo '+x.custo,x?.valor&&'Valor '+x.valor];
  return {nome:name,desc:[...other,...parts].filter(Boolean).join(' • ')};
 }).filter(x=>x.nome||x.desc);
 const stat=(title,value)=>({title,value:val(value)});
@@ -28,10 +28,11 @@ export function buildThreatCardData(data){
   common.details=[['Pontos de Ultima',data?.tipoNpc==='Vilão'?data?.pontosUltima:null],['Afinidades',Object.entries(data?.afinidades||{}).filter(([,v])=>v&&String(v).trim()).map(([k,v])=>k+': '+v).join(' • ')]].filter(v=>v[1]!==undefined&&v[1]!==null&&v[1]!=='');
   common.sections=[['Ataques',data?.ataques],['Feitiços',data?.feiticos],['Poderes',data?.poderes],['Outras ações',data?.outrasAcoes],['Regras especiais',data?.regrasEspeciais]];
  }else if(sys==='ordemParanormal'){
-  common.subtitle=[data?.tipo,data?.categoria].filter(Boolean).join(' • ');
+  common.subtitle=[data?.categoria,data?.elemento,data?.tamanho].filter(Boolean).join(' • ');
   common.badge='VD '+val(data?.vd??data?.valorDesafio??data?.nivel);
-  common.stats=[stat('PV',data?.pv??s.pvAtual??s.pv),stat('Def.',data?.defesa??s.defesa),stat('Desloc.',data?.deslocamento??s.deslocamento)];
+  common.stats=[stat('PV',val(s.pvAtual??data?.pv)+' / '+val(s.pvMax??data?.pvMax)),stat('Def.',s.defesa??data?.defesa),stat('Desloc.',s.deslocamento??data?.deslocamento)];
   common.attributes=['agi','for','int','pre','vig'].map(k=>stat(k.toUpperCase(),a[k])).filter(x=>x.value!=='—');
+  common.details=[['Perícias',Object.entries(data?.pericias||{}).filter(([,v])=>v!==undefined&&v!==null&&String(v).trim()).map(([k,v])=>k+': '+v).join(' • ')],['Resistências',data?.resistencias],['Imunidades',data?.imunidades],['Vulnerabilidades',data?.vulnerabilidades],['Sentidos',data?.sentidos],['Presença Perturbadora',data?.presencaPerturbadora]].filter(([,v])=>v!==undefined&&v!==null&&v!=='');
   common.sections=[['Ataques',data?.ataques],['Habilidades',data?.habilidades],['Poderes',data?.poderes],['Ações',data?.acoes],['Rituais',data?.rituais]];
  }else if(sys==='skyfall'){
   common.subtitle=[data?.tipo,data?.hierarquia,data?.arquetipo].filter(Boolean).join(' • ');
@@ -46,13 +47,13 @@ export function buildThreatCardData(data){
   common.stats=[stat('PV',val(s.pv?.atual)+' / '+val(s.pv?.max)),stat('PM',val(s.pm?.atual)+' / '+val(s.pm?.max)),stat('PA',val(s.pa?.atual)+' / '+val(s.pa?.max))];
   common.attributes=[stat('P',a.poder),stat('H',a.habilidade),stat('R',a.resistencia)];
   common.sections=[['Ações',data?.acoes],['Vantagens',data?.vantagens],['Desvantagens',data?.desvantagens],['Técnicas',data?.tecnicas]];
-  common.summary=data?.notas||common.summary;
+  common.summary=data?.conceito||''; // Anotações do mestre ficam somente no editor.
  }else if(sys==='somdas6'){
   common.subtitle=val(data?.tipoPdj,'Personagem da Juíza');
   common.badge='NP '+val(data?.np);
   common.stats=[stat('PV',val(s.pvAtual)+' / '+val(s.pvMax)),stat('Def.',s.defesa),stat('Ações',s.acoes),stat('Ataque',s.ataqueBonus),stat('Inic.',s.iniciativaBonus)];
   common.sections=[['Armas',data?.armas],['Habilidades',data?.habilidades]];
-  common.extra=data?.notas||'';
+  common.extra=''; // Notas particulares não aparecem em cards compartilháveis.
  }else{
   common.subtitle=val(data?.tipo||data?.categoria||data?.descricao,'Ameaça');
   common.badge=data?.nivel?'Nível '+data.nivel:'';

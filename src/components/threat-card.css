@@ -39,23 +39,9 @@
 .pj-threat-card-section h3{font-size:15px;margin:1px 0 6px;color:var(--tc-ink);font-weight:900;border-bottom:1px solid var(--tc-edge)}
 .pj-threat-card-credit{font-size:8px;text-align:right;color:#7e8176;margin-top:12px;font-family:system-ui;letter-spacing:.03em}
 @media(max-width:600px){.pj-threat-card-modal{padding:4px}.pj-threat-card-toolbar{align-items:flex-start;flex-direction:column}.pj-threat-card-toolbar>div:last-child{width:100%;justify-content:flex-start}.pj-threat-card-scroll{padding:5px}.pj-threat-card{padding:11px}.pj-threat-card-head h2{font-size:20px}.pj-threat-card-stats{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media print{
- @page{size:A5 portrait;margin:7mm}
- body:has(.pj-threat-card-modal)>*:not(.pj-threat-card-modal){display:none!important}
- .pj-threat-card-modal{position:static!important;padding:0!important;display:block!important;background:white!important;height:auto!important;overflow:visible!important}
- .pj-threat-card-panel,.pj-threat-card-scroll{width:100%!important;max-height:none!important;overflow:visible!important;display:block!important;padding:0!important;border:0!important;background:white!important;box-shadow:none!important}
- .pj-threat-card-toolbar{display:none!important}
- .pj-threat-card{max-width:100%!important;width:100%!important;margin:0!important;padding:4mm!important;box-shadow:none!important;color-adjust:exact;print-color-adjust:exact;-webkit-print-color-adjust:exact}
- .pj-threat-card-section{break-inside:avoid}
-}
 
-/* Editor de ameaça Fábula: prévia ao vivo alinhada ao D&D sem alterar os campos. */
-.fabula-threat-workspace{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(340px,.8fr);gap:17px;align-items:start}
-.fabula-threat-workspace>.fabula-threat-compact{min-width:0}
-.fabula-threat-live-preview{position:sticky;top:12px;max-height:86vh;overflow:auto;padding:13px 9px;border:1px solid #a9c8bf;background:#e9f4ef;border-radius:9px;box-shadow:0 5px 13px #052a2620}
-.fabula-threat-live-label{font-size:10px;line-height:1.5;text-align:center;font-weight:900;color:#20645a;margin:0 0 10px}
-.fabula-threat-live-preview .pj-threat-card{box-shadow:none;padding:12px;font-size:11px}
-.fabula-threat-live-preview .pj-threat-card-head h2{font-size:19px}
-.fabula-threat-live-preview .pj-threat-card-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
-@media(max-width:1199px){.fabula-threat-workspace{grid-template-columns:minmax(0,1fr)}.fabula-threat-live-preview{display:none}}
-@media print{.fabula-threat-live-preview{display:none!important}}
+/* O card é para apresentação na tela; nenhuma exportação em PDF é necessária. */
+.pj-threat-card-modal .pj-threat-card{box-shadow:0 5px 22px #1a20253a}
+.pj-threat-card-scroll{background:repeating-linear-gradient(135deg,#dce1e0,#dce1e0 16px,#d4dad8 16px,#d4dad8 32px)}
+.pj-threat-card-panel{border:1px solid #85949b}
+@media(max-width:700px){.pj-threat-card-scroll{padding:8px}.pj-threat-card{max-width:100%}}

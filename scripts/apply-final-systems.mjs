@@ -1,13 +1,14 @@
 import { readFile, writeFile } from 'node:fs/promises';
 const path='src/PJLiteApp.jsx';
 let s=await readFile(path,'utf8');
+const hasThreatWorkspace=s.includes('<ThreatCardWorkspace');
 if(s.includes('PJ LITE 0.9 FINAL SYSTEMS')){console.log('Final systems patch: already applied.');process.exit(0);}
 const rep=(from,to,label)=>{if(!s.includes(from))throw new Error(`Final systems patch: marker not found: ${label}`);s=s.replace(from,to);};
 
 rep("import { generate3DetThreatChatText } from './systems/3det/threatChat.js';",`import { generate3DetThreatChatText } from './systems/3det/threatChat.js';
 // PJ LITE 0.9 FINAL SYSTEMS — Skyfall RPG + Ordem Paranormal RPG
 import SkyfallCharacterEditor from './systems/skyfall/components/CharacterEditor.jsx';
-import SkyfallThreatEditor from './systems/skyfall/components/ThreatEditor.jsx';
+${hasThreatWorkspace?'':"import SkyfallThreatEditor from './systems/skyfall/components/ThreatEditor.jsx';"}
 import { initialSkyfallPcData, normalizeSkyfallPcData } from './systems/skyfall/data.js';
 import { initialSkyfallThreatData, normalizeSkyfallThreatData } from './systems/skyfall/threatData.js';
 import { MODELOS_SKYFALL_PC } from './systems/skyfall/models.js';
@@ -15,7 +16,7 @@ import { MODELOS_SKYFALL_AMEACAS } from './systems/skyfall/threatModels.js';
 import { generateSkyfallChatText, generateSkyfallThreatChatText } from './systems/skyfall/chat.js';
 import './systems/skyfall/skyfall-theme.css';
 import OrdemCharacterEditor from './systems/ordemParanormal/components/CharacterEditor.jsx';
-import OrdemThreatEditor from './systems/ordemParanormal/components/ThreatEditor.jsx';
+${hasThreatWorkspace?'':"import OrdemThreatEditor from './systems/ordemParanormal/components/ThreatEditor.jsx';"}
 import { initialOrdemPcData, normalizeOrdemPcData } from './systems/ordemParanormal/data.js';
 import { initialOrdemThreatData, normalizeOrdemThreatData } from './systems/ordemParanormal/threatData.js';
 import { MODELOS_ORDEM_PC } from './systems/ordemParanormal/models.js';
@@ -109,9 +110,15 @@ rep(`                        {showSom6ModelModal && ReactDOM.createPortal(`, `${
 
 rep(`const is3Det = data.system === '3det';`, `const is3Det = data.system === '3det';\n            const isSkyfall = data.system === 'skyfall';\n            const isOrdem = data.system === 'ordem';`, 'editor flags');
 rep(`const topBarColor = isDnd ? 'bg-[#922610]' : isFabula ? 'bg-teal-800' : isSom6 ? 'bg-red-950' : is3Det ? 'bg-zinc-950'`, `const topBarColor = isDnd ? 'bg-[#922610]' : isFabula ? 'bg-teal-800' : isSom6 ? 'bg-red-950' : is3Det ? 'bg-zinc-950' : isSkyfall ? 'bg-violet-950' : isOrdem ? 'bg-black'`, 'topbar');
+if(hasThreatWorkspace){
+  rep(`<TresDeTCharacterEditor scope={systemEditorScope} />`, `<TresDeTCharacterEditor scope={systemEditorScope} />\n                    <SkyfallCharacterEditor scope={systemEditorScope} />\n                    <OrdemCharacterEditor scope={systemEditorScope} />`, 'character editors');
+}else{
 rep(`{/* 3DeT Victory — personagem e ameaças modularizados */}\n                    <TresDeTCharacterEditor scope={systemEditorScope} />\n                    <TresDeTThreatEditor scope={systemEditorScope} />`, `{/* 3DeT Victory — personagem e ameaças modularizados */}\n                    <TresDeTCharacterEditor scope={systemEditorScope} />\n                    <TresDeTThreatEditor scope={systemEditorScope} />\n                    <SkyfallCharacterEditor scope={systemEditorScope} />\n                    <SkyfallThreatEditor scope={systemEditorScope} />\n                    <OrdemCharacterEditor scope={systemEditorScope} />\n                    <OrdemThreatEditor scope={systemEditorScope} />`, 'editors');
+}
 if (s.includes(`!['dragonbane','dnd5e','fabula','somdas6','3det','rotaZero'].includes`)) {
   s=s.replace(`!['dragonbane','dnd5e','fabula','somdas6','3det','rotaZero'].includes`, `!['dragonbane','dnd5e','fabula','somdas6','3det','skyfall','ordem','rotaZero'].includes`);
+} else if(s.includes(`'skyfall','ordemParanormal'].includes(data.system`)){
+  console.log('✓ Sistema de ameaças com nomes canônicos reconhecidos.');
 } else {
   rep(`!['dragonbane','dnd5e','fabula','somdas6','3det'].includes`, `!['dragonbane','dnd5e','fabula','somdas6','3det','skyfall','ordem'].includes`, 'known systems');
 }

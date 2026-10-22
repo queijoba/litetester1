@@ -1,0 +1,25 @@
+/* Área de edição de ameaças: referência D&D, preservando a aparência original dos formulários. */
+.pj-threat-workspace{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(330px,.82fr);gap:14px;align-items:start;padding:12px;background:linear-gradient(115deg,#f2f0eb,#e4e6e1);min-width:0}
+.pj-threat-workspace *{box-sizing:border-box}
+.pj-threat-workspace-editor{min-width:0;max-width:100%;overflow:hidden;border-radius:9px;box-shadow:0 2px 12px #00000010}
+.pj-threat-workspace-editor>div{max-width:none!important;width:100%;padding:12px!important}
+.pj-threat-workspace-editor .som6-sheet{max-width:none!important}
+.pj-threat-workspace-preview{min-width:0;position:sticky;top:12px;display:flex;flex-direction:column;gap:7px;background:#e6eae5;border:1px solid #b7c3bb;border-radius:10px;overflow:hidden;box-shadow:0 4px 17px #2028261c}
+.pj-threat-workspace-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:11px 12px;background:#25322f;color:white}
+.pj-threat-workspace-bar>div{display:flex;flex-direction:column;gap:2px}
+.pj-threat-workspace-bar strong{font-size:12px;font-weight:900}
+.pj-threat-workspace-bar small{font-size:10px;color:#b5cec2}
+.pj-threat-workspace-bar button{flex:none;background:#debd74;color:#242923;border:1px solid #f2d899;border-radius:6px;padding:8px 10px;font-size:10px;font-weight:900;cursor:pointer}
+.pj-threat-workspace-bar button:hover{background:#f3d391}
+.pj-threat-workspace-preview-scroll{padding:8px;max-height:min(72vh,1050px);overflow:auto;overscroll-behavior:contain}
+.pj-threat-workspace-preview-scroll>.pj-threat-card{max-width:none;width:100%;padding:13px;box-shadow:none;font-size:11px}
+.pj-threat-workspace-preview-scroll .pj-threat-card-head h2{font-size:19px}
+.pj-threat-workspace-preview-scroll .pj-threat-card-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+.pj-threat-workspace-tip{font-size:10px;line-height:1.45;margin:0;padding:2px 12px 10px;color:#53665d}
+.pj-threat-workspace--fabula .pj-threat-workspace-preview{background:#e6f4ee;border-color:#9bbfb1}
+.pj-threat-workspace--ordemparanormal .pj-threat-workspace-preview{background:#f2e8e8;border-color:#bb9898}
+.pj-threat-workspace--skyfall .pj-threat-workspace-preview{background:#ece5f0;border-color:#b5a4c3}
+.pj-threat-workspace--somdas6 .pj-threat-workspace-preview{background:#f0e5d5;border-color:#bfaa90}
+.pj-threat-workspace--3det .pj-threat-workspace-preview{background:#eee9d9;border-color:#b9ab8e}
+@media(max-width:1050px){.pj-threat-workspace{grid-template-columns:minmax(0,1fr)}.pj-threat-workspace-preview{position:static}.pj-threat-workspace-preview-scroll{max-height:500px}}
+@media(max-width:700px){.pj-threat-workspace{padding:5px;gap:9px}.pj-threat-workspace-preview{display:none}.pj-threat-workspace-editor>div{padding:6px!important}}
