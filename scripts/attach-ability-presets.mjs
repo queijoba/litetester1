@@ -53,6 +53,10 @@ await writeFile(ordemPath,ordem,'utf8');
 }
 
 let skyfall=await readFile(skyfallPath,'utf8');
+if(skyfall.includes('Acervo 📚 na barra superior')&&!skyfall.includes('AbilityPresetPicker')){
+ console.log('✓ Skyfall v2: biblioteca unificada da barra superior preservada.');
+}else{
+
 skyfall=patchZone(skyfall,"{tab==='poderes'","{tab==='magias'",zone=>{
   zone=addButton(zone,'<button className="skyfall-add" onClick={()=>{const categoria=novaCategoriaHabilidade.trim()||\'Geral\';add(\'habilidades\',{nome:\'\',origem:\'\',categoria,custoEnfase:\'\',descritores:\'\',desc:\'\' });setNovaCategoriaHabilidade(categoria);}}>+ Habilidade nessa categoria</button>','habilidades');
   return addSave(zone,'<textarea rows="3" value={x.desc||\'\'} onChange={e=>patch(\'habilidades\',i,\'desc\',e.target.value)} placeholder="Descrição / lembrete"/>','habilidades');
@@ -63,4 +67,5 @@ skyfall=patchZone(skyfall,"{tab==='magias'","{tab==='inventario'",zone=>{
 });
 if(!skyfall.includes('<AbilityPresetPicker'))throw new Error('Seletor ausente do editor Skyfall');
 await writeFile(skyfallPath,skyfall,'utf8');
+}
 console.log('✓ Catálogos de Habilidades, Poderes Paranormais, Rituais e Magias ligados após o build final.');
