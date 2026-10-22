@@ -12,9 +12,9 @@ const sah=entries.filter(x=>x.tipo==='ritual'&&x.fonte==='Sobrevivendo ao Horror
 assert.equal(basic.length,82);
 assert.equal(sah.length,16);
 assert.equal(ORDEM_LIBRARY_COUNTS.ritual,103);
-assert.equal(ORDEM_LIBRARY_COUNTS.origem,40);
+assert.equal(ORDEM_LIBRARY_COUNTS.origem,41);
 assert.equal(ORDEM_LIBRARY_COUNTS.trilha,25);
-assert.equal(entries.length,252);
+assert.equal(entries.length,253);
 for(const rit of [...basic,...sah]){
  assert.ok(rit.nome&&rit.desc.length>=45);
  assert.ok(rit.circulo>=1&&rit.circulo<=4,rit.nome+' círculo não reconhecido');
