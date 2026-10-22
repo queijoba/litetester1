@@ -3431,7 +3431,7 @@ const { useState, useEffect, useRef } = React;
                             {data.system === 'fabula' && data.type === 'pc' && <button type="button" onClick={()=>setFabulaLibraryOpen(true)}
                                 className="pjlite-toolbar-library" aria-label="Biblioteca de Fábula Última" title="Biblioteca: classes, poderes e feitiços">📚</button>}
                             {data.type !== 'pc' && data.system !== 'dragonbane' && <button type="button" onClick={()=>setThreatCardOpen(true)}
-                                className="pjlite-toolbar-library" aria-label="Visualizar card da ameaça" title="Visualizar e imprimir card da ameaça">🃏</button>}
+                                className="pjlite-toolbar-library" aria-label="Visualizar card da ameaça" title="Visualizar e baixar PNG do card da ameaça">🃏</button>}
                             {data.system === 'skyfall' && data.type === 'pc' && <button type="button" onClick={()=>setSkyfallLibraryOpen(true)}
                                 className="pjlite-toolbar-library" title="Biblioteca Skyfall: legados, classes, trilhas e magias"
                                 aria-label="Biblioteca Skyfall RPG">📚</button>}
