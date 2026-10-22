@@ -45,3 +45,12 @@
 .pj-threat-card-scroll{background:repeating-linear-gradient(135deg,#dce1e0,#dce1e0 16px,#d4dad8 16px,#d4dad8 32px)}
 .pj-threat-card-panel{border:1px solid #85949b}
 @media(max-width:700px){.pj-threat-card-scroll{padding:8px}.pj-threat-card{max-width:100%}}
+
+/* Captura somente o card, sem a barra do editor nem um PDF. */
+.pj-threat-card-capture{width:min(560px,100%);margin:0 auto;padding:8px}
+.pj-threat-card-capture>.pj-threat-card{width:100%;max-width:100%;margin:0;box-shadow:0 2px 10px #1a202533}
+.pj-threat-card-toolbar .pj-threat-card-png-btn{background:#16796b;border-color:#5abfb0}
+.pj-threat-card-toolbar .pj-threat-card-png-btn:hover{background:#0a6458}
+.pj-threat-card-toolbar button:disabled{cursor:wait;opacity:.65}
+.pj-threat-card-alert{background:#fff0db;color:#66411d;border-bottom:1px solid #bb8255;padding:9px 12px;font-size:12px;line-height:1.5}
+@media(max-width:600px){.pj-threat-card-capture{padding:5px}}
