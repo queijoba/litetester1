@@ -53,6 +53,7 @@ const citizen=catalog.find(x=>x.nome==='Popularidade');
 assert.ok(skyfallLibraryWarnings(citizen,'habilidade',{antecedente:'Agouro'}).length>0);
 const applied=applySkyfallLibrarySelection(r.data,citizen,'habilidade');
 assert.ok(applied.data.habilidades.some(x=>x.nome==='Popularidade'));
+assert.equal(applied.data.habilidades.find(x=>x.nome==='Popularidade').categoria,'Antecedente');
 assert.ok(applied.data.habilidades.some(x=>x.nome==='Habilidade pessoal'));
 assert.equal(normalizeSkyfallPcData(applied.data).habilidades.find(x=>x.nome==='Popularidade').pagina,citizen.pagina);
 assert.equal(applySkyfallLibrarySelection(applied.data,citizen,'habilidade').changed,false);
@@ -73,4 +74,9 @@ assert.ok(app.includes('<SkyfallLibraryModal')&&app.includes('applySkyfallLibrar
 assert.ok(app.includes('setSkyfallLibraryOpen(true)'));
 assert.ok(!sheet.includes('AbilityPresetPicker')&&!sheet.includes('📚 Biblioteca</button>'));
 assert.ok(sheet.includes('storeAbilityPreset'),'Salvar modelo manual continua disponível');
+const abilityGenerator=readFileSync('scripts/refine-skyfall-ability-categories.mjs','utf8');
+const spellGenerator=readFileSync('scripts/refine-skyfall-spells-order.mjs','utf8');
+assert.ok(abilityGenerator.includes("savePreset('habilidades',x)"),'Habilidades geradas mantêm salvar modelo');
+assert.ok(spellGenerator.includes("savePreset('magias',m)"),'Magias geradas mantêm salvar modelo');
+
 console.log('✓ Skyfall: 161 referências, camadas, categorias, restauração não destrutiva, biblioteca na barra e responsividade.');
