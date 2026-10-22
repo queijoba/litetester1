@@ -6,7 +6,7 @@ import {normalizeOrdemPcData,initialOrdemPcData} from '../src/systems/ordemParan
 
 globalThis.localStorage={getItem:()=>null,setItem:()=>{},removeItem:()=>{}};
 assert.ok(ORDEM_LIBRARY_CATALOG.length>=95);
-assert.equal(ORDEM_LIBRARY_COUNTS.origem,40);
+assert.equal(ORDEM_LIBRARY_COUNTS.origem,41);
 assert.equal(ORDEM_LIBRARY_COUNTS.trilha,25);
 assert.ok(ORDEM_LIBRARY_CATALOG.every(x=>x.nome&&x.tipo&&x.fonte&&x.desc&&x.pagina));
 assert.ok(ORDEM_LIBRARY_CATALOG.every(x=>!/playtest|alpha|ordem 2/i.test([x.nome,x.fonte,x.desc].join(' '))));
