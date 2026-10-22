@@ -125,3 +125,13 @@
  .ordem-library-context{padding-top:2px;padding-bottom:5px}
  .ordem-library-footer{padding:6px 11px}
 }
+
+/* Arquivos Secretos: consulta compacta de habilidades por NEX nas trilhas. */
+.ordem-library-progression{display:grid;gap:7px;margin:10px 0;padding:11px;border:1px solid #ad9184;border-radius:7px;background:rgba(95,40,37,.05)}
+.ordem-library-progression>small{font-size:11px;line-height:1.5;opacity:.8}
+.ordem-library-progression>div{display:grid;gap:6px}
+.ordem-library-progression-item{display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid rgba(103,71,69,.15);padding:6px 0;font-size:12px}
+.ordem-library-progression-item>span{flex:1;min-width:0}
+.ordem-library-progression-item>button{flex:0 0 auto;border:1px solid #772c2b;border-radius:5px;padding:5px 8px;color:#fff;background:#772c2b;font-size:11px;font-weight:700;cursor:pointer}
+.ordem-library-progression-item>button:disabled{opacity:.5;cursor:not-allowed}
+@media(max-width:560px){.ordem-library-progression-item{flex-wrap:wrap}.ordem-library-progression-item>button{margin-left:auto}}
