@@ -2,6 +2,8 @@ import DndCharacterEditor from './systems/dnd5e/components/CharacterEditor.jsx';
 import DndLibraryModal from './components/DndLibraryModal.jsx';
 import OrdemLibraryModal from './systems/ordemParanormal/OrdemLibraryModal.jsx';
 import SkyfallLibraryModal from './systems/skyfall/SkyfallLibraryModal.jsx';
+import OtherSystemLibraryModal from './components/OtherSystemLibraryModal.jsx';
+import {applyOtherSystemLibrarySelection} from './components/otherSystemLibraryActions.js';
 import {applySkyfallLibrarySelection} from './systems/skyfall/libraryActions.js';
 import {applyOrdemLibrarySelection} from './systems/ordemParanormal/libraryActions.js';
 import { buildSpeciesApplication, buildFeatApplication } from './components/dndSpeciesFeatActions.js';
@@ -1253,6 +1255,7 @@ const { useState, useEffect, useRef } = React;
             const [dndLibraryTab, setDndLibraryTab] = useState('classe');
             const [ordemLibraryOpen,setOrdemLibraryOpen] = useState(false);
             const [skyfallLibraryOpen,setSkyfallLibraryOpen] = useState(false);
+            const [otherLibraryOpen,setOtherLibraryOpen] = useState(false);
             const [deleteConfirmId, setDeleteConfirmId] = useState(null);
             const [toastMsg, setToastMsg] = useState('');
             
@@ -3043,6 +3046,14 @@ const { useState, useEffect, useRef } = React;
                 );
             }
 
+            const addFromOtherLibrary=(entry,kind)=>{
+                try{
+                    const result=applyOtherSystemLibrarySelection(data,entry,kind);
+                    if(result.changed)setData(result.data);
+                    showToast(result.message);
+                }catch(error){showToast(error.message||'Não foi possível usar esta referência.');}
+            };
+
             const addFromSkyfallLibrary=(entry,kind)=>{
                 try{
                     const result=applySkyfallLibrarySelection(data,entry,kind);
@@ -3398,6 +3409,9 @@ const { useState, useEffect, useRef } = React;
                         <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end items-center">
                             <input value={data.meta?.campanha || ''} onChange={e=>updateField('meta.campanha', e.target.value)} placeholder="Campanha" className="w-28 md:w-36 px-2 py-1 rounded text-xs text-gray-900 bg-white/90 border border-white/30" title="Campanha / pasta desta ficha" />
                             {saveStatus && <span className={`text-[10px] font-bold px-2 py-1 rounded ${saveStatus==='error'?'bg-red-900':saveStatus==='saving'?'bg-amber-700':'bg-black/30'}`}>{saveStatus==='pending'?'Alterado…':saveStatus==='saving'?'Salvando…':saveStatus==='saved'?'✓ Salvo':'Erro ao salvar'}</span>}
+                            {['somdas6','3det'].includes(data.system) && data.type === 'pc' && <button type="button" onClick={()=>setOtherLibraryOpen(true)}
+                                className="pjlite-toolbar-library" title={data.system==='3det'?'Biblioteca 3DeT Victory: vantagens, desvantagens e técnicas':'Biblioteca O Som das Seis: habilidades e antecedentes'}
+                                aria-label={'Biblioteca '+(data.system==='3det'?'3DeT Victory':'O Som das Seis')}>📚</button>}
                             {data.system === 'skyfall' && data.type === 'pc' && <button type="button" onClick={()=>setSkyfallLibraryOpen(true)}
                                 className="pjlite-toolbar-library" title="Biblioteca Skyfall: legados, classes, trilhas e magias"
                                 aria-label="Biblioteca Skyfall RPG">📚</button>}
@@ -3432,6 +3446,10 @@ const { useState, useEffect, useRef } = React;
                             {toastMsg}
                         </div>
                     )}
+                    {['somdas6','3det'].includes(data.system) && data.type === 'pc' && <OtherSystemLibraryModal
+                        open={otherLibraryOpen} system={data.system} data={data}
+                        onChoose={addFromOtherLibrary}
+                        onClose={()=>setOtherLibraryOpen(false)}/>}
                     {data.system === 'skyfall' && data.type === 'pc' && <SkyfallLibraryModal
                         open={skyfallLibraryOpen} bio={data.bio||{}}
                         onChoose={addFromSkyfallLibrary}
