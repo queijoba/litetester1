@@ -23,7 +23,7 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat,o
  const [resourceTitle,setResourceTitle]=React.useState(''),[resourceKind,setResourceKind]=React.useState('map'),[resourceUrl,setResourceUrl]=React.useState('');
  const [chatFile,setChatFile]=React.useState(null),[resourceFile,setResourceFile]=React.useState(null);
  const [sheetId,setSheetId]=React.useState(''),[editSheet,setEditSheet]=React.useState(null),[sheetDraft,setSheetDraft]=React.useState('');
- const [previewSheet,setPreviewSheet]=React.useState(null);
+ const [previewSheet,setPreviewSheet]=React.useState(null),[sheetError,setSheetError]=React.useState('');
  const [initiativeName,setInitiativeName]=React.useState(''),[initiativeScore,setInitiativeScore]=React.useState(''),[status,setStatus]=React.useState('');
  const [tableTitle,setTableTitle]=React.useState(''),[tableEntries,setTableEntries]=React.useState(''),[rollResult,setRollResult]=React.useState('');
  const [activeResource,setActiveResource]=React.useState('');
@@ -41,12 +41,25 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat,o
  const load=React.useCallback(async()=>{try{setJourneys(await listJourneys())}catch(error){console.error('Jornadas: listar',error);setStatus('Não foi possível carregar as campanhas.')}},[account?.id]);
  React.useEffect(()=>{if(account?.id)load();else setJourneys([])},[account?.id,load]);
  React.useEffect(()=>{setPreviewSheet(null);setEditSheet(null);if(!current){setDraft(null);return;}setDraft({...current,board:cleanBoard(current.board)});setTab('fichas');},[current?.id]);
- const refresh=async()=>{if(!current)return;try{
-  const [m,r,l,own]=await Promise.all([listJourneyMessages(current.id),listJourneyResources(current.id),listJourneySheets(current.id),getMyCloudSheets()]);
-  setMessages(m);setResources(r);setLinks(l);setMySheets(own);
- }catch(error){console.error('Jornadas: carregar sala',error);notify('Falha ao carregar a sala da campanha.')}};
+ const refresh=async()=>{if(!current)return;
+  // Chat ou PDF indisponível não pode impedir a lista de fichas de carregar.
+  const results=await Promise.allSettled([
+   listJourneyMessages(current.id),listJourneyResources(current.id),
+   listJourneySheets(current.id),getMyCloudSheets()
+  ]);
+  const setters=[setMessages,setResources,setLinks,setMySheets];
+  results.forEach((result,index)=>{
+   if(result.status==='fulfilled')setters[index](result.value||[]);
+   else console.error('Jornadas: carregar '+['chat','biblioteca','vínculos','minhas fichas'][index],result.reason);
+  });
+  const problems=[];
+  if(results[2].status==='rejected')problems.push('fichas vinculadas: '+(results[2].reason?.message||'falha ao consultar'));
+  if(results[3].status==='rejected')problems.push('minhas fichas na nuvem: '+(results[3].reason?.message||'falha ao consultar'));
+  setSheetError(problems.length?'Erro ao carregar '+problems.join(' / '):'');
+  return results;
+ };
  const refreshRoom=()=>run(async()=>{await Promise.all([refresh(),onRefreshGroups?.()])},'Jogadores e fichas atualizados.');
- React.useEffect(()=>{if(current)refresh()},[current?.id]);
+ React.useEffect(()=>{if(current){setSheetError('');setLinks([]);setMySheets([]);refresh().catch(error=>setSheetError(error?.message||'Falha de conexão com a nuvem.'));}},[current?.id]);
  React.useEffect(()=>{
   if(!current)return;
   const timer=setInterval(()=>{
@@ -84,7 +97,16 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat,o
   await addJourneyResource(current.id,resourceTitle||resourceFile?.name||'',kind,media||resourceUrl);
   setResourceTitle('');setResourceUrl('');setResourceFile(null);await refresh();
  },'Material incluído na campanha.');
- const addLink=()=>run(async()=>{await linkMySheet(current.id,sheetId);setSheetId('');await refresh()},'Ficha vinculada à Jornada.');
+ const addLinkFrom=id=>run(async()=>{
+  if(!current?.id||!id)throw new Error('Selecione uma ficha sincronizada.');
+  await linkMySheet(current.id,id);
+  // Só declarar sucesso quando a ficha estiver realmente visível na campanha.
+  const confirmed=await listJourneySheets(current.id);
+  if(!confirmed.some(row=>row.sheet_id===id))throw new Error('Não foi possível confirmar o vínculo na nuvem. Verifique sua conta e tente atualizar a sala.');
+  setLinks(confirmed);setSheetError('');setSheetId('');
+  await refresh();
+ },'Ficha vinculada e disponível na campanha.');
+ const addLink=()=>addLinkFrom(sheetId);
  const startSheetEdit=row=>{setEditSheet(row);setSheetDraft(JSON.stringify(row.sheets?.payload||{},null,2))};
  const applySheetEdit=()=>run(async()=>{
   let payload;try{payload=JSON.parse(sheetDraft)}catch{throw new Error('A ficha precisa conter JSON válido.')}
@@ -128,7 +150,8 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat,o
    </section>}
    {tab==='fichas'&&<section className="pjlite-jornadas-box journeys-compact-panel">
     <div className="journeys-panel-heading"><h4>🗂 Personagens e ameaças ({links.length})</h4><button type="button" className="secondary" onClick={()=>setTab('jogadores')}>👥 Jogadores ({members.length||1}) →</button></div>
-    {links.length===0?<div className="journeys-empty-sheets"><strong>Nenhuma ficha vinculada ainda.</strong><p>Cada jogador deve sincronizar uma ficha na Conta Lite e vinculá-la aqui.</p></div>:
+    {sheetError&&<div className="journeys-sheet-error" role="alert"><strong>Não foi possível carregar todas as fichas.</strong><p>{sheetError}</p><button type="button" onClick={refreshRoom}>↻ Tentar novamente</button></div>}
+    {links.length===0&&!sheetError?<div className="journeys-empty-sheets"><strong>Nenhuma ficha vinculada a esta campanha.</strong><p>Fichas sincronizadas na Conta Lite não aparecem automaticamente: cada jogador precisa vinculá-las à campanha aqui embaixo.</p></div>:
      <div className="journeys-character-grid">{links.map(row=>{
       const sheet=getJourneySheetSummary(row),mine=row.owner_id===account.id;
       return <article className="journeys-character-card" key={row.sheet_id}>
@@ -138,8 +161,9 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat,o
        </div>
        <button type="button" className="journeys-character-view" onClick={()=>{setEditSheet(null);setPreviewSheet(row)}} aria-label={'Consultar ficha de '+sheet.name}>Ver ficha</button>
       </article>})}</div>}
-    <details className="journeys-link-sheet"><summary>＋ Vincular ou gerenciar minhas fichas</summary>
+    <details className="journeys-link-sheet" open={links.length===0}><summary>＋ Vincular ou gerenciar minhas fichas</summary>
      <p>As fichas precisam estar sincronizadas na Conta Lite antes de vinculá-las à campanha.</p>
+     {mySheets.length>0&&<div className="journeys-link-sheet__available"><strong>Minhas fichas sincronizadas</strong>{mySheets.filter(s=>!links.some(row=>row.sheet_id===s.id)).map(s=><div key={s.id} className="journeys-link-sheet__row"><span>{s.name||'Ficha sem nome'} · {systemLabel[s.system]||s.system}</span><button type="button" disabled={busy} onClick={()=>addLinkFrom(s.id)}>+ Vincular à campanha</button></div>)}{mySheets.every(s=>links.some(row=>row.sheet_id===s.id))&&<small>Você já vinculou todas as suas fichas disponíveis.</small>}</div>}
      {mySheets.length>0?<div className="pjlite-jornadas-fields"><select value={sheetId} aria-label="Minha ficha na nuvem" onChange={e=>setSheetId(e.target.value)}>
       <option value="">Escolha uma ficha sua...</option>{mySheets.map(s=><option key={s.id} value={s.id}>{s.name} · {systemLabel[s.system]||s.system}</option>)}
      </select><button disabled={!sheetId||busy} className="pjlite-jornadas-primary" onClick={addLink}>+ Vincular</button></div>:<p>Você ainda não tem fichas sincronizadas. Abra a Home, sincronize uma ficha e retorne aqui.</p>}
