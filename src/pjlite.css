@@ -1794,3 +1794,8 @@ body { background-color: #e5e7eb; }
         body.theme-custom .dnd-main-tab.is-active::after { background:var(--custom-accent-color); }
         body.theme-custom .dnd-tab-context { background:color-mix(in srgb,var(--custom-window-color) 94%,var(--custom-accent-color) 6%); border-color:var(--custom-accent-color); }
         body.theme-custom .dnd-tab-context-name, body.theme-custom .dnd-tab-context-meta { color:var(--custom-text-color); }
+
+/* Standalone Jornadas main navigation */
+.pjlite-journeys-home-link{display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:7px;background:#265d55;border:1px solid #357e71;color:#fff!important;text-decoration:none;font-weight:900;font-size:13px;box-shadow:0 2px 8px #1c463924;transition:background .18s}
+.pjlite-journeys-home-link:hover,.pjlite-journeys-home-link:focus{background:#32776b;color:#fff!important;outline:2px solid #a6c6be;outline-offset:2px}
+@media(max-width:580px){.pjlite-journeys-home-link{padding:9px 12px}}
