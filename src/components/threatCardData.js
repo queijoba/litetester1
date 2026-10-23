@@ -12,7 +12,42 @@ const stat=(title,value)=>({title,value:val(value)});
 export function buildThreatCardData(data){
  const s=data?.status||{}, a=data?.atributos||{},sys=data?.system||'';
  const common={name:val(data?.nome,'Ameaça sem nome'),image:data?.imagem||data?.bio?.imagem||'',system:sys,subtitle:'',badge:'',stats:[],attributes:[],sections:[],details:[],summary:data?.descricao||data?.conceito||data?.tracos||'',extra:''};
- if(sys==='dnd5e'){
+ if(sys==='dragonbane'){
+  if(data?.type==='pnj'){
+   const role=data?.tipoPnj==='chefe'?'Chefe':'Lacaio';
+   common.subtitle=[role,data?.ancestralidade,data?.profissao].filter(Boolean).join(' • ');
+   common.badge='PNJ • '+role;
+   common.stats=[
+    stat('PV',val(s.pv?.atual)+' / '+val(s.pv?.max)),
+    ...(data?.tipoPnj==='chefe'?[stat('PD',val(s.pd?.atual)+' / '+val(s.pd?.max))]:[]),
+    stat('Movimento',data?.movimento),
+    stat('Armadura',data?.armaduraTipica?.valor),
+    stat('Dano bônus',data?.danoBonus)
+   ];
+   common.details=[
+    ['Armadura',data?.armaduraTipica?.nome],
+    ['Perícias',list(data?.pericias).filter(x=>x?.nome).map(x=>x.nome+(x.valor!==undefined&&x.valor!==null&&x.valor!==''?' '+x.valor:'')).join(' • ')]
+   ].filter(([,v])=>v!==undefined&&v!==null&&String(v).trim()!=='');
+   common.sections=[['Armas e ataques',list(data?.armas).map(x=>({
+    ...x,
+    desc:[x?.pericia!==undefined&&x?.pericia!==''?'Perícia '+x.pericia:'',x?.dano?'Dano '+x.dano:''].filter(Boolean).join(' • ')
+   }))],['Habilidades e feitiços',data?.feiticos]];
+   common.summary=''; // Atitude, motivação, segredos e tesouro permanecem apenas no editor.
+  }else{
+   common.subtitle=['Monstro',data?.tamanho].filter(Boolean).join(' • ');
+   common.badge='Ferocidade '+val(data?.ferocidade);
+   common.stats=[stat('PV',val(s.pv?.atual)+' / '+val(s.pv?.max)),
+    stat('Movimento',data?.movimento),stat('Armadura',data?.armadura),stat('Ações',data?.ferocidade)];
+   common.sections=[
+    ['Habilidades especiais',data?.habilidades],
+    ['Ataques do monstro (1d6)',list(data?.ataques).map((x,i)=>({
+     nome:String(x?.id??i+1),
+     desc:typeof x==='string'?x:String(x?.descricao||x?.desc||x?.nome||'')
+    })).filter(x=>x.desc.trim())]
+   ];
+   common.summary=''; // O card não divulga anotações ou informação de preparação do mestre.
+  }
+ }else if(sys==='dnd5e'){
   common.subtitle=[data?.tamanho,data?.tipo,data?.alinhamento].filter(Boolean).join(' • ');
   common.badge='ND '+val(data?.desafio);
   common.stats=[stat('CA',data?.ca),stat('PV',data?.pv),stat('Mov.',data?.deslocamento)];
