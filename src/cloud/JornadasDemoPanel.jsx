@@ -102,7 +102,7 @@ export default function JornadasDemoPanel({onExit,showToast}){
       <button type="button" className="secondary" onClick={()=>setResult('🎲 d20: '+Math.ceil(Math.random()*20))}>Rolar dado rápido</button>
     </section>}
     {page==='chat'&&<section className="pjlite-jornadas-demo__section">
-      <h3>Chat da campanha</h3><div className="pjlite-jornadas-demo__chat">{data.messages.map(m=><article key={m.id}><strong>{m.name}</strong><p>{m.body}</p></article>)}</div>
+      <h3>Chat de demonstração • somente neste dispositivo</h3><div className="pjlite-jornadas-demo__chat">{data.messages.map(m=><article key={m.id}><strong>{m.name}</strong><p>{m.body}</p></article>)}</div>
       <label>Mensagem <textarea rows={2} placeholder="Escreva algo para a mesa..." value={message} onChange={e=>setMessage(e.target.value)}/></label>
       <button onClick={addMessage}>Enviar na demonstração</button>
       <p className="pjlite-jornadas-demo__hint">Este chat simula o comportamento. Não envia mensagens pela internet.</p>
