@@ -25,7 +25,9 @@ assert.ok(account.includes("accountTab")&&account.includes("tab==='chat'"),'Chat
 assert.ok(chat.includes('listJourneyMessages')&&chat.includes('sendJourneyMessage'),'Chat deve usar o backend de campanha');
 assert.ok(chat.includes('uploadJourneyMedia'),'Chat deve suportar anexos privados');
 
-assert.ok(account.includes('Conquistas ON')&&account.includes('ON • visual completo')&&account.includes('OFF • somente símbolo'));
+assert.ok(account.includes('Conquistas</h3>')&&account.includes('ON • visual completo')&&account.includes('OFF • somente gatinho 🐱'));
+assert.ok(account.includes("achievementsOn?'◆':'🐱'"),'Conquistas OFF deve renderizar somente o gatinho');
+assert.ok(!account.includes('OFF • somente símbolo'),'Não usar o selo anterior no modo OFF');
 assert.ok(account.includes('pjlite_achievements_on_v1_')&&account.includes('pjlite-achievement-corner'));
 assert.ok(account.includes('getMyAchievements()'),'Conquistas devem vir da conta, não somente do navegador');
 assert.ok(account.includes('Acessar conteúdo →'),'Recompensa continua acessível sem expor seu nome');
@@ -76,6 +78,16 @@ assert.ok(storage.includes("false,26214400"),'Bucket privado limitado a 25 MB');
 assert.ok(storage.includes("journey_files_group_read")&&storage.includes("journey_files_group_upload"));
 assert.ok(storage.includes('pjlite_is_group_member'),'Mídia só para membros do grupo');
 assert.ok(api.includes("createSignedUrl(path,60*30)"),'Acesso temporário aos arquivos privados');
+const workspace=readFileSync('src/cloud/CampaignWorkspace.jsx','utf8');
+const newSchema=readFileSync('supabase/migrations/20261023_jornadas_mindmap_library.sql','utf8');
+assert.ok(panel.includes('<CampaignLibrary')&&panel.includes('<CampaignMindmap')&&panel.includes('<CampaignRecords')&&panel.includes('<CampaignNotes')&&panel.includes('<CampaignShield'),'Ferramentas novas devem estar ligadas à sala');
+assert.ok(hub.includes('jornadas-background-options')&&hub.includes('dragonbane_custom_bg'),'Tema com fundo igual à Home');
+assert.ok(workspace.includes('saveDmMindmap')&&workspace.includes('getDmMindmap'),'Mapa mental DM deve ser persistido');
+assert.ok(workspace.includes('Abrir em nova aba / baixar')&&workspace.includes('iframe'),'Biblioteca deve permitir leitura de PDFs');
+assert.ok(newSchema.includes('campaign_dm_mindmaps enable row level security'),'Mural DM deve ter RLS');
+assert.ok(newSchema.includes('visible_to_players'),'Material deve ser protegido no banco');
+assert.ok(api.includes('setJourneyResourceVisibility')&&api.includes('saveDmMindmap'),'Permissões e mapa devem possuir API real');
+
 assert.ok(api.includes("throw new Error('Use apenas links HTTPS.')"),'Não aceitar URLs inseguras');
 assert.ok(!app.includes('setDragonbaneLibraryOpen(true)'),'Editor clássico de Dragonbane não deve ganhar uma biblioteca nova');
 console.log('✓ Jornadas: interface real, login com retorno, grupos/convites, campanhas, chat privado e conquistas discretas.');
