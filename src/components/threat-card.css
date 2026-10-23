@@ -54,3 +54,10 @@
 .pj-threat-card-toolbar button:disabled{cursor:wait;opacity:.65}
 .pj-threat-card-alert{background:#fff0db;color:#66411d;border-bottom:1px solid #bb8255;padding:9px 12px;font-size:12px;line-height:1.5}
 @media(max-width:600px){.pj-threat-card-capture{padding:5px}}
+
+/* Cartão Dragonbane: papel envelhecido, bordas rubras e selos verdes. */
+.pj-threat-card--dragonbane{--tc-ink:#215249;--tc-edge:#8b4537;--tc-paper:#f8f0dc;border:2px solid var(--tc-edge);outline:1px solid #98a88e;outline-offset:-7px}
+.pj-threat-card--dragonbane .pj-threat-card-head{border-bottom:3px double var(--tc-edge)}
+.pj-threat-card--dragonbane .pj-threat-card-badge{background:#efe0b9;color:#73382b;border-radius:3px;font-family:Georgia,serif}
+.pj-threat-card--dragonbane .pj-threat-card-attributes,.pj-threat-card--dragonbane .pj-threat-card-section h3{border-color:#476b5a}
+.pj-threat-card--dragonbane .pj-threat-card-section h3{font-family:Georgia,serif;letter-spacing:.015em}

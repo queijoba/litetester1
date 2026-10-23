@@ -3430,7 +3430,7 @@ const { useState, useEffect, useRef } = React;
                                 aria-label={'Biblioteca '+(data.system==='3det'?'3DeT Victory':'O Som das Seis')}>📚</button>}
                             {data.system === 'fabula' && data.type === 'pc' && <button type="button" onClick={()=>setFabulaLibraryOpen(true)}
                                 className="pjlite-toolbar-library" aria-label="Biblioteca de Fábula Última" title="Biblioteca: classes, poderes e feitiços">📚</button>}
-                            {data.type !== 'pc' && data.system !== 'dragonbane' && <button type="button" onClick={()=>setThreatCardOpen(true)}
+                            {data.type !== 'pc' && <button type="button" onClick={()=>setThreatCardOpen(true)}
                                 className="pjlite-toolbar-library" aria-label="Visualizar card da ameaça" title="Visualizar e baixar PNG do card da ameaça">🃏</button>}
                             {data.system === 'skyfall' && data.type === 'pc' && <button type="button" onClick={()=>setSkyfallLibraryOpen(true)}
                                 className="pjlite-toolbar-library" title="Biblioteca Skyfall: legados, classes, trilhas e magias"
@@ -3473,7 +3473,7 @@ const { useState, useEffect, useRef } = React;
                     {data.system === 'fabula' && data.type === 'pc' && <FabulaLibraryModal
                         open={fabulaLibraryOpen} data={data}
                         onChoose={addFromFabulaLibrary} onClose={()=>setFabulaLibraryOpen(false)}/>}
-                    {data.type !== 'pc' && data.system !== 'dragonbane' && <ThreatCardModal
+                    {data.type !== 'pc' && <ThreatCardModal
                         open={threatCardOpen} data={data} onClose={()=>setThreatCardOpen(false)}/>}
                     {data.system === 'skyfall' && data.type === 'pc' && <SkyfallLibraryModal
                         open={skyfallLibraryOpen} bio={data.bio||{}}
@@ -3535,7 +3535,7 @@ const { useState, useEffect, useRef } = React;
                         </ThreatCardWorkspace>
                     )}
 
-                    {/* Editor Dragonbane (Intacto) */}
+                    {/* Editor Dragonbane: personagem clássico intocado; ameaça/PNJ exibidos no workspace. */}
                     {!['dragonbane','dnd5e','fabula','somdas6','3det','rotaZero','skyfall','ordemParanormal'].includes(data.system || 'dragonbane') && (
                         <div className="p-6 md:p-10 bg-amber-50 border-y border-amber-300 text-amber-950">
                             <h2 className="font-title font-bold text-lg">⚠ Formato de ficha não reconhecido</h2>
@@ -3543,7 +3543,9 @@ const { useState, useEffect, useRef } = React;
                         </div>
                     )}
 
-                    <DragonbaneEditor scope={systemEditorScope} />
+                    <ThreatCardWorkspace data={data} enabled={data.system==='dragonbane' && data.type!=='pc'} onOpen={()=>setThreatCardOpen(true)}>
+                        <DragonbaneEditor scope={systemEditorScope} />
+                    </ThreatCardWorkspace>
                 </div>
             );
         }
