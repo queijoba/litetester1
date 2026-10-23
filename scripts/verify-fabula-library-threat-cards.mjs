@@ -60,7 +60,7 @@ const card=readFileSync('src/components/ThreatCardModal.jsx','utf8');
 const printCss=readFileSync('src/components/threat-card.css','utf8');
 assert.ok(app.includes('setFabulaLibraryOpen(true)')&&app.includes('<FabulaLibraryModal'));
 assert.ok(app.includes('setThreatCardOpen(true)')&&app.includes('<ThreatCardModal'));
-assert.ok(app.includes("data.system !== 'dragonbane'"),'Dragonbane fica fora do modo card');
+assert.ok(app.includes("enabled={data.system==='dragonbane' && data.type!=='pc'}"),'Card Dragonbane deve funcionar apenas em monstros e PNJs');
 assert.ok(modal.includes('Todos os livros')&&modal.includes('Minhas classes:'));
 assert.ok(!editor.includes('<ThreatStatCard data={data} compact />'),'A prévia Fabula é montada pelo workspace comum');
 assert.ok(!card.includes('window.print()')&&card.includes('createPortal'),'O modo card dispensa PDF');
