@@ -185,7 +185,7 @@ export async function listGroups() {
 
   const { data: groups, error } = await client
     .from('groups')
-    .select('id,name,owner_id,invite_code,created_at,updated_at')
+    .select('id,name,owner_id,is_dm,invite_code,created_at,updated_at')
     .order('created_at', { ascending: false });
   if (error) throw error;
 
