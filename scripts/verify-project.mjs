@@ -86,7 +86,7 @@ if (!app.includes('@ralseibaiano') || !app.includes('inabakaoru')) throw new Err
 if (!app.includes("initial3DetPcData") || !app.includes('TresDeTCharacterEditor') || !app.includes('generate3DetChatText')) throw new Error('PJLiteApp.jsx não está integrando completamente o 3DeT Victory.');
 
 const indexHtml = await readFile('index.html', 'utf8');
-if (!indexHtml.includes('0.8.0v Alpha') || !indexHtml.includes('3DeT Victory')) throw new Error('index.html não anuncia a prévia 0.8.0 com 3DeT Victory.');
+if (!(indexHtml.includes('0.8.0v Alpha') || indexHtml.includes('1.1.0v Alpha')) || !indexHtml.includes('3DeT Victory')) throw new Error('index.html não anuncia a prévia 0.8.0 com 3DeT Victory.');
 for (const modulePath of [
   './systems/dragonbane/components/Editor.jsx',
   './systems/dnd5e/components/CharacterEditor.jsx',

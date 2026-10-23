@@ -119,12 +119,20 @@ export async function pushSheets(characters = [], threats = []) {
     system: cleanSheetSystem(item),
     name: cleanSheetName(item),
     payload: item,
-    client_updated_at: item?.meta?.updatedAt || item?.updatedAt || new Date().toISOString(),
+    client_updated_at: item?.meta?.updatedAt || item?.updatedAt || item?.meta?.createdAt || item?.createdAt || '1970-01-01T00:00:00.000Z',
   }));
 
+  // Não regravar na nuvem uma versão mais recente que chegou da Jornada pelo DM.
+  const {data:currentRows,error:readError}=await client.from('sheets')
+    .select('local_id,client_updated_at').eq('owner_id',user.id)
+    .in('local_id',rows.map(r=>r.local_id));
+  if(readError)throw readError;
+  const cloudTimes=new Map((currentRows||[]).map(r=>[r.local_id,Date.parse(r.client_updated_at)||0]));
+  const fresh=rows.filter(r=>!cloudTimes.has(r.local_id)||(Date.parse(r.client_updated_at)||0)>=cloudTimes.get(r.local_id));
+  if(!fresh.length)return [];
   const { data, error } = await client
     .from('sheets')
-    .upsert(rows, { onConflict: 'owner_id,local_id' })
+    .upsert(fresh, { onConflict: 'owner_id,local_id' })
     .select('id,local_id,updated_at');
   if (error) throw error;
   return data || [];
@@ -185,7 +193,7 @@ export async function listGroups() {
 
   const { data: groups, error } = await client
     .from('groups')
-    .select('id,name,owner_id,invite_code,created_at,updated_at')
+    .select('id,name,owner_id,is_dm,invite_code,created_at,updated_at')
     .order('created_at', { ascending: false });
   if (error) throw error;
 

@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import './pjlite.css';
 import PJLiteApp from './PJLiteApp.jsx';
+import JornadasHub from './cloud/JornadasHub.jsx';
 import './mobile-polish.css';
 import './mobile-systems-v8.css';
 import './mobile-attrs-v9.css';
@@ -16,7 +17,8 @@ import { installSkyfallPdfExport } from './systems/skyfall/index.js';
 import { installOrdemPdfExport } from './systems/ordemParanormal/index.js';
 import { installRotaZeroPdfExport } from './systems/rotaZero/index.js';
 
-createRoot(document.getElementById('root')).render(<PJLiteApp />);
+const isJourneys = new URLSearchParams(window.location.search).get('jornadas')==='1';
+createRoot(document.getElementById('root')).render(isJourneys ? <JornadasHub /> : <PJLiteApp />);
 installDragonbanePdfExport();
 installDndPdfExport();
 installFabulaPdfExport();
