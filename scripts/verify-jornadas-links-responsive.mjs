@@ -25,8 +25,8 @@ assert.ok(panel.includes('onClick={refreshRoom}'),'Repetir carregamento de perfi
 assert.ok(panel.includes('addLinkFrom(s.id)'),'Botão de vinculação direta nas fichas disponíveis');
 assert.ok(panel.includes('await listJourneySheets(current.id);'),'Ler o vínculo de volta depois da gravação');
 assert.ok(panel.includes('if(!confirmed.some(row=>row.sheet_id===id))'),'Não declarar sucesso sem confirmação do servidor');
-assert.ok(panel.includes('Fichas sincronizadas na Conta Lite não aparecem automaticamente'),
-  'Explicar que o vínculo é uma ação separada da sincronização');
+assert.ok(panel.includes('Cada jogador vincula suas próprias fichas'),
+  'Explicar que o dono compartilha os próprios personagens com a campanha');
 
 assert.ok(css.includes('@media (max-width:1110px)'),'Barra lateral adaptativa em janela reduzida');
 assert.ok(css.includes('grid-template-columns:repeat(4,minmax(0,1fr))'),'Menu com 4 atalhos sem sobreposição');

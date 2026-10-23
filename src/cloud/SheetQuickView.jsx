@@ -35,7 +35,9 @@ function CharacterResourceBar({resource,label,tone}){
 export function CharacterMiniSheet({row,ownerLabel,onView}){
  const sheet=getJourneySheetSummary(row);
  const title=[sheet.profession,sheet.ancestry].filter(Boolean).join(' · ');
- return <article className="journeys-character-card journey-mini-sheet">
+ return <article className="journeys-character-card journey-mini-sheet" role="button" tabIndex={0}
+   aria-label={'Abrir minificha de '+sheet.name} onClick={()=>onView?.()}
+   onKeyDown={event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();onView?.()}}}>
   <div className="journey-mini-sheet__identity">
    <CharacterPortrait url={sheet.portrait} name={sheet.name} size="card"/>
    <div className="journey-mini-sheet__heading">
@@ -64,9 +66,9 @@ export function CharacterMiniSheet({row,ownerLabel,onView}){
     ● {sheet.conditions.length} {sheet.conditions.length===1?'condição':'condições'} ativa{sheet.conditions.length===1?'':'s'}
    </small>}
   </>:<p className="journey-mini-sheet__no-data">Prévia indisponível para esta ficha.</p>}
-  <button type="button" className="journey-mini-sheet__open" onClick={onView} aria-label={'Consultar ficha de '+sheet.name}>
-   <span>▤ Consultar ficha</span><span aria-hidden="true">→</span>
-  </button>
+  <span className="journey-mini-sheet__open" aria-hidden="true">
+   <span>▤ Abrir ficha</span><span>→</span>
+  </span>
  </article>;
 }
 
