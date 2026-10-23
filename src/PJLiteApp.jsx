@@ -41,6 +41,7 @@ import JSZip from 'jszip';
 import LZString from 'lz-string';
 import { getMyAchievements,onAuthStateChange } from './cloud/supabaseCloud.js';
 import { listJourneys } from './cloud/jornadasCloud.js';
+import NewsBanner from './cloud/NewsBanner.jsx';
 
 const { useState, useEffect, useRef } = React;
 
@@ -62,6 +63,7 @@ const { useState, useEffect, useRef } = React;
         const SCHEMA_VERSION = 6;
 
         const UPDATE_LOG = [
+            { versao: '1.1.0v Alpha', descricao: 'Jornadas se tornou uma área independente da Home, com retorno visível, criação de campanha e orientação para iniciantes. O chat privado das campanhas ganhou uma aba própria na Conta Lite. A Home recebeu nova barra de Novidades e Log; Conquistas ON/OFF e o acesso ao ARG RZ-88 em Recebidos foram preservados.' },
             { versao: '0.9.5v Alpha • Jornadas (prévia)', descricao: 'A Conta Lite organiza grupos com DM, campanhas em Jornadas, fichas vinculadas com permissão opcional de edição pelo mestre, iniciativa, combate, chat por mensagens e links HTTPS de mídia, mapas e PDFs autorizados. Conquistas ON/OFF agora permite mostrar apenas o emblema do evento no canto da tela. Guias revisados com bibliotecas e cards de ameaças em PNG.' },
             { versao: '#088 FALHO', descricao: 'RZ-HR-12 // RETORNO: ███ // SINAL INCONSISTENTE. Um fragmento da remessa #088 não respondeu. Arquivo de evento: status não confirmado.' },
             { versao: '0.8.0v Alpha', descricao: '3DeT Victory entra na prévia do PJ Lite com ficha digital modular, retrato opcional, P/H/R, PA/PM/PV, perícias, FA/FD, vantagens, desvantagens, técnicas, inventário por raridade, Kit opcional, Ficha Chat e integração com saves/importação.' },
@@ -2159,30 +2161,7 @@ const { useState, useEffect, useRef } = React;
                                     🧭 Jornadas
                                 </a>
                             </div>
-                            <div className="mb-6 rounded border-2 border-[#922610] bg-[#fdf1dc] shadow-sm overflow-hidden">
-                                <div className={`px-4 ${newsCollapsed ? 'py-2' : 'py-3'} flex items-center justify-between gap-3`}>
-                                    <div className="min-w-0">
-                                        <div className="font-title font-bold text-[#922610] flex items-center gap-2">
-                                            <span>✨ 0.7.4v Alpha — prévia pronta para homologação</span>
-                                            {newsCollapsed && <span className="hidden sm:inline text-[10px] font-body font-bold uppercase tracking-widest text-[#922610]/70">minimizado</span>}
-                                        </div>
-                                        {!newsCollapsed && (
-                                            <div className="mt-1 space-y-2">
-                                                <div className="text-xs text-gray-700 space-y-1.5"><p>A <strong>0.7.4v Alpha</strong> reúne o polimento final desta prévia React antes de avaliarmos a migração para o projeto definitivo.</p><p><strong>D&amp;D 5.5e:</strong> ficha mobile refinada, navegação por abas mais confortável, recursos de classe/subclasse separados e grimório organizado por círculos. <strong>Guias e Tutoriais:</strong> fluxo inicial mais direto, explicações de salvamento e compartilhamento mais claras e instruções atualizadas de cada sistema.</p><p><strong>Projeto:</strong> revisão estrutural, CI/build reforçados e limpeza de ferramentas temporárias usadas durante a migração.</p></div>
-                                                <a href="https://t.me/boost/Baianoviado" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-xs font-bold text-sky-700 hover:text-sky-900 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-full px-3 py-1.5 shadow-sm transition-colors">
-                                                    <span>✈</span> Acompanhe anúncios e próximas novidades no Telegram ↗
-                                                </a>
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div className="flex items-center gap-2 shrink-0">
-                                        {!newsCollapsed && <span className="hidden md:inline bg-[#922610] text-white px-3 py-1 rounded text-[10px] font-bold uppercase tracking-widest">0.7.4v • alpha</span>}
-                                        <button onClick={() => setNewsCollapsed(v => !v)} className="bg-white/80 hover:bg-white text-[#922610] border border-[#c46b58] rounded px-2.5 py-1 text-xs font-bold shadow-sm" title={newsCollapsed ? 'Expandir novidades' : 'Minimizar novidades'} aria-label={newsCollapsed ? 'Expandir novidades' : 'Minimizar novidades'}>
-                                            {newsCollapsed ? '＋' : '−'}
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                            <NewsBanner collapsed={newsCollapsed} onToggle={()=>setNewsCollapsed(v=>!v)} log={UPDATE_LOG}/>
 
                             {/* Personagens */}
                             <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
@@ -2810,7 +2789,7 @@ const { useState, useEffect, useRef } = React;
                             <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] p-4 transition-opacity">
                                 <div className="bg-white rounded-sm shadow-2xl w-full max-w-4xl border-2 border-gray-800 overflow-hidden animate-fade-in-up flex flex-col">
                                     <div className="bg-gray-800 text-white p-3 flex justify-between items-center shrink-0">
-                                        <div><h2 className="font-title font-bold text-lg uppercase">Guias e Tutoriais</h2><div className="text-[9px] text-gray-300 font-bold uppercase tracking-widest">PJ Lite 0.7.4v Alpha</div></div>
+                                        <div><h2 className="font-title font-bold text-lg uppercase">Guias e Tutoriais</h2><div className="text-[9px] text-gray-300 font-bold uppercase tracking-widest">PJ Lite 1.1.0v Alpha</div></div>
                                         <button onClick={() => setShowGuideModal(false)} className="text-gray-400 hover:text-white text-2xl font-bold px-2">&times;</button>
                                     </div>
                                     <div className="flex bg-gray-200 border-b border-gray-300 shrink-0 overflow-x-auto">
