@@ -1,0 +1,32 @@
+.pjlite-account-chat{display:grid;gap:14px;color:#274844}
+.pjlite-account-chat__intro{display:flex;align-items:start;gap:10px;border:1px solid #cce0d5;background:#f1f8f4;border-radius:12px;padding:13px}
+.pjlite-account-chat__icon{font-size:26px}.pjlite-account-chat__intro h3{font:800 17px/1.25 Georgia,serif;margin:0 0 6px;color:#235b53}
+.pjlite-account-chat__intro p,.pjlite-account-chat__empty p{font-size:12px;line-height:1.6;color:#60746e;margin:0}
+.pjlite-account-chat__bar{display:flex;align-items:end;gap:8px;flex-wrap:wrap}
+.pjlite-account-chat__bar label{flex:1;min-width:180px;display:grid;gap:5px}
+.pjlite-account-chat label{font-size:11px;font-weight:850;color:#3e6a61}
+.pjlite-account-chat select,.pjlite-account-chat input,.pjlite-account-chat textarea{background:#fff;border:1px solid #bdd3c7;border-radius:7px;padding:9px;font:inherit;color:#284843;max-width:100%;width:100%}
+.pjlite-account-chat__bar button,.pjlite-account-chat__options button{padding:9px;border:1px solid #a9c9b9;border-radius:7px;font-weight:800;color:#336458}
+.pjlite-account-chat__header{display:flex;align-items:center;justify-content:space-between;gap:7px}
+.pjlite-account-chat__header strong{font:750 16px Georgia,serif}
+.pjlite-account-chat__header small{font-size:10px;color:#86968f}
+.pjlite-account-chat__messages{min-height:220px;max-height:330px;overflow-y:auto;display:flex;flex-direction:column;gap:9px;padding:12px;background:#f4f8f5;border:1px solid #d9e7dd;border-radius:10px}
+.pjlite-account-chat__messages article{max-width:92%;align-self:flex-start;background:white;border:1px solid #e0e7de;border-radius:10px;padding:10px 12px;overflow-wrap:anywhere}
+.pjlite-account-chat__messages article.is-mine{align-self:flex-end;background:#e8f4e9;border-color:#bed8c7}
+.pjlite-account-chat__meta{display:flex;flex-wrap:wrap;gap:7px;align-items:center;color:#4f7b6a}
+.pjlite-account-chat__meta strong{font-size:11px}.pjlite-account-chat__meta time{font-size:9px;color:#798d83}
+.pjlite-account-chat__messages p{font-size:12px;line-height:1.6;white-space:pre-wrap;margin:5px 0 0}
+.pjlite-account-chat__media{display:grid;gap:5px;margin-top:8px}.pjlite-account-chat__media img,.pjlite-account-chat__media video{max-width:100%;max-height:240px;border-radius:7px}
+.pjlite-account-chat__media a,.pjlite-account-chat__empty a{color:#1f7766;text-decoration:underline;font-size:12px;font-weight:800}
+.pjlite-account-chat__composer{display:grid;gap:9px}.pjlite-account-chat__composer>label{display:grid;gap:5px}
+.pjlite-account-chat__options{display:flex;gap:9px;flex-wrap:wrap;align-items:end}
+.pjlite-account-chat__options>label{flex:1 1 150px;display:grid;gap:5px}
+.pjlite-account-chat__options .pjlite-account-chat__attach{border:1px dashed #8aaea2;border-radius:8px;padding:11px;cursor:pointer;background:#f4faf6}
+.pjlite-account-chat__attach input{display:block;margin-top:5px;font-size:10px;padding:2px;border:0}
+.pjlite-account-chat__send{background:#24675d!important;color:#fff!important;border:0!important;border-radius:8px!important;padding:11px 16px!important;font-weight:900!important}
+.pjlite-account-chat__send:disabled{opacity:.5}
+.pjlite-account-chat__hint{color:#88998f;font-size:10px}
+.pjlite-account-chat__error{font-size:12px;color:#9b2e2e;border:1px solid #e7b9b9;border-radius:7px;background:#fff3f3;padding:9px}
+.pjlite-account-chat__empty{border:1px dashed #c0d6c6;padding:16px;border-radius:9px;display:grid;gap:8px}
+.pjlite-account-chat__chosen{font-size:11px;color:#346c61}.pjlite-account-chat__chosen button{background:none;border:0;text-decoration:underline;color:#ab3d35}
+@media(max-width:580px){.pjlite-account-chat__messages{max-height:270px}.pjlite-account-chat__header{flex-wrap:wrap}.pjlite-account-chat__intro{padding:10px}}
