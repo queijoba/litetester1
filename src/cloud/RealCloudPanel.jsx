@@ -413,7 +413,7 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
   if (!isSupabaseConfigured) return null;
 
   return <>
-    {!!account&&achievements.length>0&&<button type="button" className={'pjlite-achievement-corner '+(achievementsOn?'is-full':'is-minimal')} title="Suas conquistas — abrir Recebidos" onClick={()=>{setOpen(true);setTab('inbox')}} aria-label="Abrir conquistas e recebidos">
+    {!!account&&achievements.length>0&&<button type="button" className={'pjlite-achievement-corner '+(achievementsOn?'is-full':'is-minimal')+(achievements.some(x=>x.category==='EVENTO'||String(x.achievement_id).toLowerCase()==='rz-88')?' has-event':'')} title="Suas conquistas — abrir Recebidos" onClick={()=>{setOpen(true);setTab('inbox')}} aria-label="Abrir conquistas e recebidos">
       <span className="pjlite-achievement-emblem">◆</span>{achievementsOn&&<span className="pjlite-achievement-corner-text"><strong>{achievements.some(x=>x.category==='EVENTO')?'RZ-88 • EVENTO':'CONQUISTAS'}</strong><small>{achievements.map(x=>x.label).join(' • ')}</small></span>}
     </button>}
     <div className="pjlite-cloud-compact no-print">
