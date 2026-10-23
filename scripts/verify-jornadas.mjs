@@ -20,8 +20,16 @@ assert.ok(app.includes('pjlite:open-arg-material')&&app.includes("setGuideTab('r
 assert.ok(app.includes('#088 FALHO')&&app.includes('RZ-HR-12')&&app.includes('SINAL INCONSISTENTE'));
 assert.ok(argCss.includes('.pjlite-achievement-corner.is-minimal'));
 assert.ok(account.includes('setGroupMaster(group.id,true)'));
-assert.ok(account.includes('toggleDm(group)')&&account.includes('🧭 Jornadas'));
-assert.ok(account.includes('<JornadasPanel account={account} groups={groups} showToast={showToast}'));
+assert.ok(account.includes('toggleDm(group)')&&account.includes('href="/?jornadas=1"'));
+assert.ok(!account.includes('<JornadasPanel account={account}'),'Jornadas não deve ficar dentro de Conta e Nuvem');
+assert.ok(!account.includes('JornadasDemoPanel'),'Chave de teste não deve ficar no login da Conta Lite');
+const main=readFileSync('src/main.jsx','utf8');
+const hub=readFileSync('src/cloud/JornadasHub.jsx','utf8');
+const demo=readFileSync('src/cloud/JornadasDemoPanel.jsx','utf8');
+assert.ok(main.includes("get('jornadas')==='1'")&&main.includes('<JornadasHub />'),'Jornadas precisa ter rota própria');
+assert.ok(app.includes('href="/?jornadas=1"'),'Home deve mostrar acesso direto a Jornadas');
+assert.ok(hub.includes('JORNADAS-TESTE')&&hub.includes('<JornadasDemoPanel')&&hub.includes('<JornadasPanel'),'Prévia própria, teste e campanhas reais');
+assert.ok(demo.includes('pjlite_jornadas_demo_v1'),'Demonstração deve ser local e isolada');
 assert.ok(app.includes('setCampaignOptions')&&app.includes('data.meta?.campaignId'));
 assert.ok(app.includes('pjlite:jornadas-changed'),'Seletores atualizam as campanhas');
 assert.ok(app.includes("guideTab === 'jornadas'"),'Guia de Jornadas disponível');
