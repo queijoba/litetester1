@@ -1,10 +1,12 @@
 import * as React from 'react';
 import {SheetQuickView,CharacterPortrait,CharacterMiniSheet} from './SheetQuickView.jsx';
 import {getJourneySheetSummary} from './journeySheetSummary.js';
+import {pushSheets} from './supabaseCloud.js';
 import {
  listJourneys,createJourney,saveJourney,listJourneyMessages,sendJourneyMessage,
  listJourneyResources,addJourneyResource,removeJourneyResource,uploadJourneyMedia,
- getMyCloudSheets,listJourneySheets,linkMySheet,setMasterSheetEdit,unlinkMySheet,saveJourneySheet
+ getMyCloudSheets,listJourneySheets,linkMySheet,setMasterSheetEdit,unlinkMySheet,saveJourneySheet,
+ listJourneyDmSheets,linkDmSheet,unlinkDmSheet
 } from './jornadasCloud.js';
 import './jornadas.css';
 import {CampaignLibrary,CampaignMindmap,CampaignRecords,CampaignNotes,CampaignShield} from './CampaignWorkspace.jsx';
@@ -18,7 +20,7 @@ const levels={fabula:'Crise = metade do PV máximo; pontos de Fabula/Ultima depe
 export default function JornadasPanel({account,groups,showToast,onCreateThreat,onRequestGroups,onRefreshGroups}){
  const [journeys,setJourneys]=React.useState([]),[active,setActive]=React.useState(''),[tab,setTab]=React.useState('fichas');
  const [campaignName,setCampaignName]=React.useState(''),[groupId,setGroupId]=React.useState(''),[system,setSystem]=React.useState('dragonbane'),[busy,setBusy]=React.useState(false);
- const [draft,setDraft]=React.useState(null),[messages,setMessages]=React.useState([]),[resources,setResources]=React.useState([]),[links,setLinks]=React.useState([]),[mySheets,setMySheets]=React.useState([]);
+ const [draft,setDraft]=React.useState(null),[messages,setMessages]=React.useState([]),[resources,setResources]=React.useState([]),[links,setLinks]=React.useState([]),[dmLinks,setDmLinks]=React.useState([]),[mySheets,setMySheets]=React.useState([]);
  const [message,setMessage]=React.useState(''),[messageKind,setMessageKind]=React.useState('text'),[messageUrl,setMessageUrl]=React.useState('');
  const [resourceTitle,setResourceTitle]=React.useState(''),[resourceKind,setResourceKind]=React.useState('map'),[resourceUrl,setResourceUrl]=React.useState('');
  const [chatFile,setChatFile]=React.useState(null),[resourceFile,setResourceFile]=React.useState(null);
@@ -36,6 +38,8 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat,o
    : (members.find(m=>m.userId===id)?.name||'Jogador');
  const isDm=!!current&&current.owner_id===account?.id&&!!group?.is_dm;
  const dmGroups=groups.filter(g=>g.isOwner&&g.is_dm);
+ const playerSheets=mySheets.filter(s=>s.sheet_type==='pc');
+ const dmSheets=mySheets.filter(s=>s.sheet_type!=='pc');
  React.useEffect(()=>{if(dmGroups.length===1&&groupId!==dmGroups[0].id)setGroupId(dmGroups[0].id);},[groups,groupId]);
  const notify=text=>{setStatus(text);showToast?.(text)};
  const load=React.useCallback(async()=>{try{setJourneys(await listJourneys())}catch(error){console.error('Jornadas: listar',error);setStatus('Não foi possível carregar as campanhas.')}},[account?.id]);
@@ -45,21 +49,23 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat,o
   // Chat ou PDF indisponível não pode impedir a lista de fichas de carregar.
   const results=await Promise.allSettled([
    listJourneyMessages(current.id),listJourneyResources(current.id),
-   listJourneySheets(current.id),getMyCloudSheets()
+   listJourneySheets(current.id),getMyCloudSheets(),
+   isDm?listJourneyDmSheets(current.id):Promise.resolve([])
   ]);
-  const setters=[setMessages,setResources,setLinks,setMySheets];
+  const setters=[setMessages,setResources,setLinks,setMySheets,setDmLinks];
   results.forEach((result,index)=>{
    if(result.status==='fulfilled')setters[index](result.value||[]);
-   else console.error('Jornadas: carregar '+['chat','biblioteca','vínculos','minhas fichas'][index],result.reason);
+   else console.error('Jornadas: carregar '+['chat','biblioteca','personagens','minhas fichas','NPCs/ameaças'][index],result.reason);
   });
   const problems=[];
   if(results[2].status==='rejected')problems.push('fichas vinculadas: '+(results[2].reason?.message||'falha ao consultar'));
   if(results[3].status==='rejected')problems.push('minhas fichas na nuvem: '+(results[3].reason?.message||'falha ao consultar'));
+  if(results[4].status==='rejected')problems.push('NPCs/ameaças: '+(results[4].reason?.message||'falha ao consultar'));
   setSheetError(problems.length?'Erro ao carregar '+problems.join(' / '):'');
   return results;
  };
  const refreshRoom=()=>run(async()=>{await Promise.all([refresh(),onRefreshGroups?.()])},'Jogadores e fichas atualizados.');
- React.useEffect(()=>{if(current){setSheetError('');setLinks([]);setMySheets([]);refresh().catch(error=>setSheetError(error?.message||'Falha de conexão com a nuvem.'));}},[current?.id]);
+ React.useEffect(()=>{if(current){setSheetError('');setLinks([]);setDmLinks([]);setMySheets([]);refresh().catch(error=>setSheetError(error?.message||'Falha de conexão com a nuvem.'));}},[current?.id]);
  React.useEffect(()=>{
   if(!current)return;
   const timer=setInterval(()=>{
@@ -107,6 +113,27 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat,o
   await refresh();
  },'Ficha vinculada e disponível na campanha.');
  const addLink=()=>addLinkFrom(sheetId);
+ const addDmLink=id=>run(async()=>{
+  if(!isDm||!current?.id||!id)throw new Error('Abra sua campanha como mestre e escolha uma ameaça ou NPC sincronizado.');
+  await linkDmSheet(current.id,id);
+  const confirmed=await listJourneyDmSheets(current.id);
+  if(!confirmed.some(row=>row.sheet_id===id&&row.sheets))throw new Error('O NPC foi enviado, mas não foi possível confirmar a ficha. Atualize a sala.');
+  setDmLinks(confirmed);await refresh();
+ },'NPC ou ameaça adicionado à área privada do mestre.');
+ const removeDmLink=id=>run(async()=>{
+  if(!isDm)throw new Error('Área exclusiva do mestre.');
+  await unlinkDmSheet(current.id,id);setPreviewSheet(null);await refresh();
+ },'NPC ou ameaça removido da campanha. Sua ficha original foi preservada.');
+ const syncLocal=()=>run(async()=>{
+  const read=(key)=>{try{const rows=JSON.parse(localStorage.getItem(key)||'[]');return Array.isArray(rows)?rows.filter(x=>x&&typeof x==='object'&&x.id):[]}catch{return []}};
+  const chars=read('dragonbane_saved_characters');
+  const threats=read('dragonbane_saved_threats');
+  if(!chars.length&&!threats.length)throw new Error('Não há fichas salvas neste dispositivo. Crie ou importe uma ficha na Home primeiro.');
+  await pushSheets(chars,threats);
+  await refresh();
+ },'Fichas deste dispositivo enviadas à Conta Lite. Escolha quais vincular à campanha.');
+ const openSheet=row=>{setEditSheet(null);setPreviewSheet(row)};
+
  const startSheetEdit=row=>{setEditSheet(row);setSheetDraft(JSON.stringify(row.sheets?.payload||{},null,2))};
  const applySheetEdit=()=>run(async()=>{
   let payload;try{payload=JSON.parse(sheetDraft)}catch{throw new Error('A ficha precisa conter JSON válido.')}
@@ -123,7 +150,7 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat,o
    <div className="pjlite-jornadas-cards">{journeys.map(c=><button className="pjlite-jornadas-card jornadas-campaign-card" key={c.id} type="button" onClick={()=>setActive(c.id)}><div className="jornadas-campaign-cover" style={validHttp(c.board?.coverUrl)?{backgroundImage:'linear-gradient(0deg,rgba(18,44,33,.65),transparent 68%),url("'+c.board.coverUrl.replace(/"/g,'%22')+'")'}:{}}>{!validHttp(c.board?.coverUrl)&&<span className="jornadas-campaign-cover__icon">✦</span>}<span className="jornadas-campaign-role">{c.owner_id===account.id?'🛡 Mestre':'👤 Jogador'}</span></div><div className="jornadas-campaign-details"><strong>{c.name}</strong><small>{systemLabel[c.system]||c.system} · {groups.find(g=>g.id===c.group_id)?.name||'Grupo'}</small><small>👥 {groups.find(g=>g.id===c.group_id)?.members?.length||1} {(groups.find(g=>g.id===c.group_id)?.members?.length||1)===1?'participante':'participantes'}</small><span>Entrar na campanha →</span></div></button>)}{journeys.length===0&&<p className="pjlite-jornadas-empty">Ainda não há campanhas nos seus grupos.</p>}</div>
   </>:draft&&<div className="pjlite-jornadas-room">
    <div className="pjlite-jornadas-room-head"><button type="button" className="secondary" onClick={()=>{setActive('');setEditSheet(null)}}>← Campanhas</button><div><strong>{current.name}</strong><small>{group?.name} · {systemLabel[current.system]||current.system} · {isDm?'Mestre':'Jogador'} · 👥 {members.length||1} {members.length===1?'participante':'participantes'}</small></div>{isDm&&group?.invite_code&&<button type="button" className="secondary" title="Copiar convite para jogadores" onClick={async()=>{try{if(!navigator.clipboard?.writeText)throw new Error('clipboard');await navigator.clipboard.writeText(group.invite_code);notify('Código do grupo copiado. Compartilhe com os jogadores.')}catch{notify('Convite do grupo: '+group.invite_code)}}}>✉ Copiar convite</button>}<button type="button" className="secondary" title="Atualizar membros e fichas" onClick={refreshRoom}>↻</button></div>
-   <nav className="pjlite-jornadas-tabs" aria-label="Seções da campanha">{[['fichas','Personagens'],['jogadores','Jogadores'],['combate','Combates'],['biblioteca','Biblioteca'],['investigacao','Investigação'],['relatorios','Relatórios'],['anotacoes','Anotações'],['chat','Chat'],['tabelas','Dados e tabelas'],['resumo','Campanha'],...(isDm?[['mapamental','🧠 Mapa mental'],['escudo','🛡 Escudo do DM']]:[])].map(([key,title])=><button key={key} type="button" aria-pressed={tab===key} onClick={()=>{setTab(key);setEditSheet(null)}}>{title}</button>)}</nav>
+   <nav className="pjlite-jornadas-tabs" aria-label="Seções da campanha">{[['fichas','Personagens'],...(isDm?[['npcs','NPCs e Ameaças']]:[]),['jogadores','Jogadores'],['combate','Combates'],['biblioteca','Biblioteca'],['investigacao','Investigação'],['relatorios','Relatórios'],['anotacoes','Anotações'],['chat','Chat'],['tabelas','Dados e tabelas'],['resumo','Campanha'],...(isDm?[['mapamental','🧠 Mapa mental'],['escudo','🛡 Escudo do DM']]:[])].map(([key,title])=><button key={key} type="button" aria-pressed={tab===key} onClick={()=>{setTab(key);setEditSheet(null)}}>{title}</button>)}</nav>
    {tab==='resumo'&&<section className="pjlite-jornadas-box"><h4>📜 A campanha</h4><label>Nome<input value={draft.name||''} disabled={!isDm} onChange={e=>setDraft(x=>({...x,name:e.target.value}))}/></label><label>Imagem de capa (URL HTTPS)<input type="url" value={draft.board?.coverUrl||''} disabled={!isDm} onChange={e=>setBoard({coverUrl:e.target.value})} placeholder="https://.../imagem.jpg"/></label><label>Sinopse<textarea rows={3} value={draft.description||''} disabled={!isDm} onChange={e=>setDraft(x=>({...x,description:e.target.value}))}/></label><label>Anotações gerais — visíveis a todos<textarea rows={7} value={draft.notes||''} disabled={!isDm} onChange={e=>setDraft(x=>({...x,notes:e.target.value}))}/></label>{isDm&&<button className="pjlite-jornadas-primary" disabled={busy} onClick={save}>Salvar anotações</button>}<aside><b>Regras rápidas do sistema</b><p>{levels[draft.system]||'Consulte o livro básico do sistema para regras de combate, testes e condições.'}</p><small>Este resumo é um lembrete, não substitui o livro.</small></aside></section>}
    {tab==='biblioteca'&&<CampaignLibrary campaignId={current.id} isDm={isDm} notify={notify}/>}
    {tab==='mapamental'&&isDm&&<CampaignMindmap campaignId={current.id} isDm={isDm}/>}
@@ -149,7 +176,7 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat,o
     {members.length===0&&<small>Não foi possível carregar os demais perfis. Atualize a seção Grupos e convites para sincronizar os membros.</small>}
    </section>}
    {tab==='fichas'&&<section className="pjlite-jornadas-box journeys-compact-panel">
-    <div className="journeys-panel-heading"><h4>🗂 Personagens e ameaças ({links.length})</h4><button type="button" className="secondary" onClick={()=>setTab('jogadores')}>👥 Jogadores ({members.length||1}) →</button></div>
+    <div className="journeys-panel-heading"><h4>🗂 Personagens dos jogadores ({links.length})</h4><button type="button" className="secondary" onClick={()=>setTab('jogadores')}>👥 Jogadores ({members.length||1}) →</button></div>
     {sheetError&&<div className="journeys-sheet-error" role="alert"><strong>Não foi possível carregar todas as fichas.</strong><p>{sheetError}</p><button type="button" onClick={refreshRoom}>↻ Tentar novamente</button></div>}
     {links.length===0&&!sheetError?<div className="journeys-empty-sheets"><strong>Nenhuma ficha vinculada a esta campanha.</strong><p>Fichas sincronizadas na Conta Lite não aparecem automaticamente: cada jogador precisa vinculá-las à campanha aqui embaixo.</p></div>:
      <div className="journeys-character-grid">{links.map(row=>
@@ -157,20 +184,43 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat,o
        onView={()=>{setEditSheet(null);setPreviewSheet(row)}}/>
      )}</div>}
     <details className="journeys-link-sheet" open={links.length===0}><summary>＋ Vincular ou gerenciar minhas fichas</summary>
-     <p>As fichas precisam estar sincronizadas na Conta Lite antes de vinculá-las à campanha.</p>
-     {mySheets.length>0&&<div className="journeys-link-sheet__available"><strong>Minhas fichas sincronizadas</strong>{mySheets.filter(s=>!links.some(row=>row.sheet_id===s.id)).map(s=><div key={s.id} className="journeys-link-sheet__row"><span>{s.name||'Ficha sem nome'} · {systemLabel[s.system]||s.system}</span><button type="button" disabled={busy} onClick={()=>addLinkFrom(s.id)}>+ Vincular à campanha</button></div>)}{mySheets.every(s=>links.some(row=>row.sheet_id===s.id))&&<small>Você já vinculou todas as suas fichas disponíveis.</small>}</div>}
-     {mySheets.length>0?<div className="pjlite-jornadas-fields"><select value={sheetId} aria-label="Minha ficha na nuvem" onChange={e=>setSheetId(e.target.value)}>
-      <option value="">Escolha uma ficha sua...</option>{mySheets.map(s=><option key={s.id} value={s.id}>{s.name} · {systemLabel[s.system]||s.system}</option>)}
-     </select><button disabled={!sheetId||busy} className="pjlite-jornadas-primary" onClick={addLink}>+ Vincular</button></div>:<p>Você ainda não tem fichas sincronizadas. Abra a Home, sincronize uma ficha e retorne aqui.</p>}
+     <p>Cada jogador vincula suas próprias fichas para que o mestre e os membros autorizados possam consultá-las. A edição pelo mestre exige permissão do dono.</p>
+     {playerSheets.length>0&&<div className="journeys-link-sheet__available"><strong>Meus personagens na Conta Lite</strong>{playerSheets.filter(s=>!links.some(row=>row.sheet_id===s.id)).map(s=><div key={s.id} className="journeys-link-sheet__row"><span>{s.name||'Ficha sem nome'} · {systemLabel[s.system]||s.system}</span><button type="button" disabled={busy} onClick={()=>addLinkFrom(s.id)}>+ Vincular à campanha</button></div>)}{playerSheets.every(s=>links.some(row=>row.sheet_id===s.id))&&<small>Você já vinculou todas as suas fichas disponíveis.</small>}</div>}
+     {playerSheets.length>0?<div className="pjlite-jornadas-fields"><select value={sheetId} aria-label="Minha ficha na nuvem" onChange={e=>setSheetId(e.target.value)}>
+      <option value="">Escolha uma ficha sua...</option>{playerSheets.map(s=><option key={s.id} value={s.id}>{s.name} · {systemLabel[s.system]||s.system}</option>)}
+     </select><button disabled={!sheetId||busy} className="pjlite-jornadas-primary" onClick={addLink}>+ Vincular</button></div>:<p>Você ainda não tem personagens na nuvem. Use “Enviar fichas deste dispositivo” para trazer seus personagens locais.</p>}
      {links.filter(row=>row.owner_id===account.id).map(row=><div key={row.sheet_id} className="journeys-link-sheet__row"><span>{sheetName(row.sheets)}</span><label className="pjlite-jornadas-check"><input type="checkbox" checked={!!row.dm_can_edit} onChange={e=>run(async()=>{await setMasterSheetEdit(current.id,row.sheet_id,e.target.checked);await refresh()},'Permissão atualizada.')}/> Permitir edição pelo DM</label>
       <button type="button" disabled={busy} onClick={()=>run(async()=>{await unlinkMySheet(current.id,row.sheet_id);await refresh()},'Ficha desvinculada.')}>Desvincular</button></div>)}
     </details>
-    {isDm&&<a href="/" className="journeys-threat-create">+ Criar ameaça nas fichas →</a>}
+    <button type="button" className="journeys-threat-create" disabled={busy} onClick={syncLocal}>☁ Enviar fichas deste dispositivo para a Conta Lite</button>
     {editSheet&&<div className="pjlite-jornadas-sheet-editor"><h4>Edição avançada · {sheetName(editSheet.sheets)}</h4><p>A edição em JSON pode alterar todos os campos. Use somente se conhecer a estrutura desta ficha.</p><textarea spellCheck={false} rows={14} value={sheetDraft} disabled={!(editSheet.owner_id===account.id||(isDm&&editSheet.dm_can_edit))} onChange={e=>setSheetDraft(e.target.value)}/><div className="pjlite-jornadas-fields"><button type="button" onClick={()=>setEditSheet(null)}>Fechar</button>{(editSheet.owner_id===account.id||(isDm&&editSheet.dm_can_edit))&&<button className="pjlite-jornadas-primary" onClick={applySheetEdit} disabled={busy}>Salvar ficha na nuvem</button>}</div></div>}
+   </section>}
+
+   {tab==='npcs'&&isDm&&<section className="pjlite-jornadas-box journeys-compact-panel">
+     <div className="journeys-panel-heading"><h4>☠ NPCs e Ameaças do Mestre ({dmLinks.length})</h4><small>Área privada: somente o mestre pode consultar ou gerenciar estas fichas</small></div>
+     {sheetError&&<div className="journeys-sheet-error" role="alert"><p>{sheetError}</p><button type="button" onClick={refreshRoom}>↻ Atualizar</button></div>}
+     {dmLinks.length>0?<div className="journeys-character-grid">{dmLinks.map(row=><div key={row.sheet_id} className="journeys-dm-card">
+       <CharacterMiniSheet row={row} ownerLabel="Mestre" onView={()=>openSheet(row)}/>
+       <button type="button" className="journeys-dm-card__remove" disabled={busy} onClick={()=>removeDmLink(row.sheet_id)}>Remover da campanha</button>
+     </div>)}</div>:<div className="journeys-empty-sheets"><strong>Esta campanha ainda não tem NPCs ou ameaças.</strong><p>Escolha uma ficha sua abaixo para deixá-la à mão durante a sessão. Os jogadores não verão esta seção.</p></div>}
+     <div className="journeys-link-sheet__available">
+       <strong>NPCs e ameaças disponíveis na sua Conta Lite</strong>
+       {dmSheets.filter(sheet=>!dmLinks.some(row=>row.sheet_id===sheet.id)).map(sheet=><div className="journeys-link-sheet__row" key={sheet.id}>
+         <span>{sheet.name||'Sem nome'} · {systemLabel[sheet.system]||sheet.system} · {sheet.sheet_type==='ameaca'?'Ameaça':sheet.sheet_type}</span>
+         <button type="button" disabled={busy} onClick={()=>addDmLink(sheet.id)}>+ Adicionar à campanha</button>
+       </div>)}
+       {!dmSheets.length&&<p>Não há ameaças ou NPCs sincronizados nesta conta. Envie suas fichas do dispositivo ou crie uma na Home.</p>}
+     </div>
+     <button type="button" disabled={busy} className="journeys-threat-create" onClick={syncLocal}>☁ Enviar NPCs e ameaças deste dispositivo</button>
+     <a href="/" className="journeys-threat-create">＋ Criar NPC ou ameaça na Home →</a>
+     {editSheet&&<div className="pjlite-jornadas-sheet-editor"><h4>Edição avançada · {sheetName(editSheet.sheets)}</h4><p>Edite somente se conhecer a estrutura JSON desta ficha.</p>
+       <textarea spellCheck={false} rows={12} value={sheetDraft} disabled={!isDm||editSheet.owner_id!==account.id} onChange={e=>setSheetDraft(e.target.value)}/>
+       <div className="pjlite-jornadas-fields"><button type="button" onClick={()=>setEditSheet(null)}>Fechar</button><button type="button" className="pjlite-jornadas-primary" disabled={busy||editSheet.owner_id!==account.id} onClick={applySheetEdit}>Salvar ficha</button></div>
+     </div>}
    </section>}
    {previewSheet&&<SheetQuickView row={previewSheet} ownerLabel={memberName(previewSheet.owner_id)} onClose={()=>setPreviewSheet(null)}
       canEdit={previewSheet.owner_id===account.id||(isDm&&previewSheet.dm_can_edit)}
-      onEdit={()=>{startSheetEdit(previewSheet);setPreviewSheet(null);setTab('fichas')}}/>}
+      onEdit={()=>{const dmOnly=dmLinks.some(row=>row.sheet_id===previewSheet.sheet_id);startSheetEdit(previewSheet);setPreviewSheet(null);setTab(dmOnly?'npcs':'fichas')}}/>}
 
   </div>}
  </div>;
