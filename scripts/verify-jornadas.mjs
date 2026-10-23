@@ -28,9 +28,11 @@ assert.ok(chat.includes('uploadJourneyMedia'),'Chat deve suportar anexos privado
 assert.ok(account.includes('Conquistas ON')&&account.includes('ON • visual completo')&&account.includes('OFF • somente símbolo'));
 assert.ok(account.includes('pjlite_achievements_on_v1_')&&account.includes('pjlite-achievement-corner'));
 assert.ok(account.includes('getMyAchievements()'),'Conquistas devem vir da conta, não somente do navegador');
-assert.ok(account.includes('Para acessar o material do ARG'));
+assert.ok(account.includes('Acessar conteúdo →'),'Recompensa continua acessível sem expor seu nome');
+assert.ok(account.includes('visibleAchievement(tag)'),'Conquistas do grupo usam rótulo genérico');
+assert.ok(!account.includes('RZ-88 • EVENTO')&&!account.includes('◆ RZ-88 — Colaborador Rota Zero'),'O perfil não deve revelar nomes secretos');
 assert.ok(app.includes('pjlite:open-arg-material')&&app.includes("setGuideTab('rotazero')"));
-assert.ok(app.includes('#088 FALHO')&&app.includes('RZ-HR-12')&&app.includes('SINAL INCONSISTENTE'));
+assert.ok(!app.includes("versao: '#088 FALHO'"),'Incidente do ARG não deve aparecer no log público');
 assert.ok(argCss.includes('.pjlite-achievement-corner.is-minimal'));
 assert.ok(account.includes('setGroupMaster(group.id,true)'));
 assert.ok(account.includes('toggleDm(group)')&&account.includes('href="/?jornadas=1"'));
@@ -38,16 +40,20 @@ assert.ok(!account.includes('<JornadasPanel account={account}'),'Jornadas não d
 assert.ok(!account.includes('JornadasDemoPanel'),'Chave de teste não deve ficar no login da Conta Lite');
 const main=readFileSync('src/main.jsx','utf8');
 const hub=readFileSync('src/cloud/JornadasHub.jsx','utf8');
-const demo=readFileSync('src/cloud/JornadasDemoPanel.jsx','utf8');
+const clean=readFileSync('src/cloud/jornadas-clean.css','utf8');
 assert.ok(main.includes("get('jornadas')==='1'")&&main.includes('<JornadasHub />'),'Jornadas precisa ter rota própria');
 assert.ok(app.includes('href="/?jornadas=1"'),'Home deve mostrar acesso direto a Jornadas');
 assert.ok(hub.includes('Voltar à Home')&&hubCss.includes('.jornadas-site__home-link'),'Jornadas deve ter retorno visível');
-assert.ok(hub.includes('JORNADAS-TESTE')&&hub.includes('<JornadasDemoPanel')&&hub.includes('<JornadasPanel'),'Prévia própria, teste e campanhas reais');
-assert.ok(demo.includes('pjlite_jornadas_demo_v1'),'Demonstração deve ser local e isolada');
+assert.ok(hub.includes('<JornadasPanel')&&hub.includes('<AccountChatPanel'),'Campanhas e chat reais dentro de Jornadas');
+assert.ok(!hub.includes('JORNADAS-TESTE')&&!hub.includes('JornadasDemoPanel')&&!hub.includes('Mesa de demonstração'),'Interface não deve oferecer mesa simulada');
+for (const word of ['Conta Lite','Chat','Grupos e convites','Criar grupo de mestre','joinGroupByCode','setGroupMaster','onAuthStateChange']) assert.ok(hub.includes(word),'Falta fluxo real: '+word);
+assert.ok(hub.includes('navigate(\'account\')')&&hub.includes('navigate(\'chat\')'),'Abas de Conta e Chat precisam funcionar');
+assert.ok(groups.includes("get('jornadas')")===false||groups.includes('jornadas'),'Supabase deve tratar redirecionamento da sessão');
+assert.ok(clean.includes('@media(max-width:710px)'),'Jornadas devem manter navegação no celular');
 assert.ok(app.includes('setCampaignOptions')&&app.includes('data.meta?.campaignId'));
 assert.ok(app.includes('pjlite:jornadas-changed'),'Seletores atualizam as campanhas');
 assert.ok(app.includes("guideTab === 'jornadas'"),'Guia de Jornadas disponível');
-assert.ok(app.includes('Para acessar o material do ARG'),'Guia registra a recompensa');
+assert.ok(app.includes('pjlite:open-arg-material'),'Guia mantém acesso restrito ao material');
 
 for(const name of ['setGroupMaster','listJourneys','createJourney','saveJourney','listJourneyMessages','sendJourneyMessage','listJourneyResources','addJourneyResource','getMyCloudSheets','listJourneySheets','linkMySheet','setMasterSheetEdit','saveJourneySheet','uploadJourneyMedia'])
  assert.ok(api.includes('function '+name+'('),'Ação de nuvem ausente: '+name);
@@ -72,4 +78,4 @@ assert.ok(storage.includes('pjlite_is_group_member'),'Mídia só para membros do
 assert.ok(api.includes("createSignedUrl(path,60*30)"),'Acesso temporário aos arquivos privados');
 assert.ok(api.includes("throw new Error('Use apenas links HTTPS.')"),'Não aceitar URLs inseguras');
 assert.ok(!app.includes('setDragonbaneLibraryOpen(true)'),'Editor clássico de Dragonbane não deve ganhar uma biblioteca nova');
-console.log('✓ Jornadas: DM, grupos, fichas compartilhadas com consentimento, materiais privados, chat, guia e ARG.');
+console.log('✓ Jornadas: interface real, login com retorno, grupos/convites, campanhas, chat privado e conquistas discretas.');
