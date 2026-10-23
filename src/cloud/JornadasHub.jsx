@@ -103,19 +103,22 @@ export default function JornadasHub(){
        <span><strong>PJ LITE</strong><small>JORNADAS</small></span>
      </a>
      <nav aria-label="Navegação principal">
-       <a href="/">📜 Fichas</a>
+       <a href="/" className="jornadas-site__home-link" title="Voltar para a página inicial do PJ Lite">← Voltar à Home</a>
        <button className={mode==='lobby'?'is-active':''} onClick={exit}>🧭 Campanhas</button>
+       <a href="/?openAccount=1&accountTab=chat" title="Abrir Chat na Conta Lite">💬 Chat da Conta</a>
        {account?<span className="jornadas-site__user">● {account.name}</span>:<span className="jornadas-site__user">Prévia Alpha</span>}
      </nav>
    </header>
    <div className="jornadas-site__layout">
      <aside className="jornadas-site__side">
+       <a href="/" className="jornadas-site__sidebar-home">← Voltar ao PJLite Home</a>
        <div className="jornadas-site__side-title">SUA MESA</div>
        <button className={mode==='lobby'?'is-active':''} onClick={exit}>▦ Visão geral</button>
        <button className={mode==='demo'?'is-active':''} onClick={openDemo}>⚔ Mesa de demonstração</button>
        <button onClick={()=>{exit();setShowCreate(true)}}>＋ Criar Jornada</button>
        <div className="jornadas-site__side-divider"/>
        <div className="jornadas-site__side-title">FERRAMENTAS</div>
+       <a href="/?openAccount=1&accountTab=chat" className="jornadas-site__sidebar-chat">💬 Chat da Conta Lite ↗</a>
        <button onClick={openDemo}>🎲 Combate e dados</button>
        <button onClick={openDemo}>🗂 Fichas da mesa</button>
        <button onClick={openDemo}>📁 Arquivos e chat</button>
@@ -135,9 +138,9 @@ export default function JornadasHub(){
        </div>:<>
          <section className="jornadas-site__hero">
            <div>
-             <span className="jornadas-site__eyebrow">PJ LITE • CENTRO DE CAMPANHAS</span>
+             <span className="jornadas-site__eyebrow">PJ LITE • JORNADAS 1.1.0v ALPHA</span>
              <h1>Suas histórias têm<br/><em>um lugar próprio.</em></h1>
-             <p>Organize campanhas, reúna personagens, controle iniciativas e compartilhe pistas em uma mesa feita para mestres e jogadores.</p>
+             <p>Organize suas campanhas e fichas em uma área própria. Experimente sem conta ou entre na Conta Lite para jogar em grupo.</p>
              <div className="jornadas-site__hero-actions">
                <button onClick={()=>setShowCreate(true)}>＋ Criar Jornada</button>
                <button className="is-outline" onClick={openDemo}>Explorar mesa de exemplo →</button>
@@ -145,6 +148,11 @@ export default function JornadasHub(){
            </div>
            <div className="jornadas-site__hero-icon" aria-hidden="true">✦<span>🧭</span>✦</div>
          </section>
+         <div className="jornadas-site__quicksteps" aria-label="Como começar">
+            <div><strong>1. Abra uma campanha</strong><small>Escolha a demonstração ou crie sua Jornada</small></div>
+            <div><strong>2. Prepare a sessão</strong><small>Organize iniciativa, fichas e materiais</small></div>
+            <div><strong>3. Converse com o grupo</strong><small>Chat compartilhado em Conta Lite → Chat</small></div>
+         </div>
          <section className="jornadas-site__overview">
            <div className="jornadas-site__section-heading"><div><span className="jornadas-site__eyebrow">BIBLIOTECA</span><h2>Minhas Jornadas</h2></div><span className="jornadas-site__count">Prévia experimental</span></div>
            <div className="jornadas-site__cards">
@@ -160,7 +168,7 @@ export default function JornadasHub(){
            <form className="jornadas-site__code-form" onSubmit={unlock}><label htmlFor="jornadas-access-code">Chave de acesso à prévia</label><div><input id="jornadas-access-code" autoCapitalize="characters" autoComplete="off" spellCheck={false} value={code} onChange={e=>setCode(e.target.value)} placeholder="JORNADAS-TESTE"/><button>Entrar no teste</button></div></form>
          </section>
          <section className="jornadas-site__real">
-           <div><span className="jornadas-site__eyebrow">CONTA LITE • OPCIONAL</span><h2>Minhas campanhas compartilhadas</h2><p>Para campanhas com jogadores reais, o acesso à nuvem exige autenticação. A prévia acima funciona sem conta.</p></div>
+           <div><span className="jornadas-site__eyebrow">CONTA LITE • OPCIONAL</span><h2>Minhas campanhas compartilhadas</h2><p>Use o login somente para campanhas com outras pessoas e chats privados. Para testar, escolha a campanha de exemplo, sem precisar de conta.</p><a className="jornadas-site__chat-deeplink" href="/?openAccount=1&accountTab=chat">💬 Abrir Chat na Conta Lite →</a></div>
            {account?<div className="jornadas-site__real-account"><span>✓ Conectado: {account.name}</span><button onClick={async()=>{await signOut();setSession(null);setNotice('Você saiu da Conta Lite.')}}>Sair</button></div>:<div className="jornadas-site__login"><form onSubmit={login}><input aria-label="E-mail da Conta Lite" type="email" placeholder="Seu e-mail da Conta Lite" value={email} onChange={e=>setEmail(e.target.value)}/><button disabled={authBusy}>{authBusy?'Enviando…':'Receber link'}</button></form><button className="jornadas-site__google" onClick={async()=>{try{await signInWithGoogle()}catch(e){setNotice(e?.message||'Não foi possível entrar com Google.')}}}>Continuar com Google</button></div>}
            {account&&<>
              {!groups.some(g=>g.isOwner&&g.is_dm)&&<form className="jornadas-site__create-group" onSubmit={registerGroup}><label>Crie um grupo de mestre para começar</label><div><input placeholder="Nome do seu grupo" value={newGroup} onChange={e=>setNewGroup(e.target.value)}/><button disabled={groupBusy}>{groupBusy?'Criando…':'+ Criar grupo DM'}</button></div>{groupError&&<p role="alert">{groupError}</p>}</form>}
@@ -171,6 +179,6 @@ export default function JornadasHub(){
        {notice&&<div className="jornadas-site__notice" role="status">{notice}<button onClick={()=>setNotice('')} aria-label="Dispensar aviso">×</button></div>}
      </div>
    </div>
-   <footer className="jornadas-site__footer">PJ Lite • Jornadas Alpha — ferramentas independentes para personagens, mestres e campanhas.</footer>
+   <footer className="jornadas-site__footer">PJ Lite • 1.1.0v Alpha — Jornadas e Conta Lite são áreas independentes. <a href="/">← Voltar à Home</a></footer>
  </main>;
 }
