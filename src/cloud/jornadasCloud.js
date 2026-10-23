@@ -85,7 +85,23 @@ export async function listJourneySheets(campaignId){
 }
 export async function linkMySheet(campaignId,sheetId){
  const actor=await user();
- return check(await client().from('campaign_sheet_links').upsert({campaign_id:campaignId,sheet_id:sheetId,owner_id:actor.id},{onConflict:'campaign_id,sheet_id'}).select().single());
+ if(!campaignId||!sheetId)throw new Error('Selecione uma campanha e uma ficha sincronizada.');
+ // Inserção simples: upsert podia atualizar um vínculo existente e redefinir
+ // consentimentos (dm_can_edit). Nunca modificar permissão ao vincular.
+ const {data,error}=await client().from('campaign_sheet_links')
+  .insert({campaign_id:campaignId,sheet_id:sheetId,owner_id:actor.id})
+  .select('campaign_id,sheet_id,owner_id,dm_can_edit').single();
+ if(!error)return data;
+ if(error.code==='23505'){
+  const {data:existing,error:readError}=await client().from('campaign_sheet_links')
+   .select('campaign_id,sheet_id,owner_id,dm_can_edit')
+   .eq('campaign_id',campaignId).eq('sheet_id',sheetId).maybeSingle();
+  if(readError)throw readError;
+  if(existing?.owner_id===actor.id)return existing;
+ }
+ if(error.code==='42501')throw new Error('Não foi possível vincular: confirme que sua Conta Lite é membro deste grupo e que a ficha pertence à sua conta.');
+ if(error.code==='23503')throw new Error('A ficha ou a campanha não está mais disponível. Atualize a página.');
+ throw error;
 }
 export async function setMasterSheetEdit(campaignId,sheetId,enabled){
  const actor=await user();
