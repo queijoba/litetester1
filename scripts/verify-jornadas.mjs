@@ -12,14 +12,13 @@ const argCss=readFileSync('src/cloud/account-achievements.css','utf8');
 const groups=readFileSync('src/cloud/supabaseCloud.js','utf8');
 
 assert.ok(groups.includes('id,name,owner_id,is_dm,invite_code'));
-const news=readFileSync('src/cloud/NewsBanner.jsx','utf8');
 const chat=readFileSync('src/cloud/AccountChatPanel.jsx','utf8');
 const hubCss=readFileSync('src/cloud/jornadas-hub.css','utf8');
 const indexHtml=readFileSync('index.html','utf8');
 assert.ok(app.includes("versao: '1.1.0v Alpha'"),'A versão atual deve aparecer no log');
-assert.ok(app.includes('<NewsBanner collapsed={newsCollapsed}'), 'A Home deve mostrar a barra de novidades');
-assert.ok(news.includes('Log de atualizações')&&news.includes('argOpened'),'O log deve oferecer o registro #088');
-assert.ok(news.includes('RZ-88')&&news.includes('Conquistas ON/OFF'),'A barra deve explicar os controles do ARG');
+assert.ok(app.includes('✨ 1.1.0v Alpha — novas jornadas e conquistas')&&app.includes('newsCollapsed'), 'A Home deve preservar a barra clássica de novidades');
+assert.ok(app.includes('Log de Atualizações')&&app.includes('UPDATE_LOG.slice(0, 6)'), 'O histórico deve continuar em Sobre o Projeto');
+assert.ok(app.includes('Conquistas:</strong>')&&!app.includes('Chat e Rota Zero</span>'), 'Novidades devem mencionar apenas conquistas, sem destacar Rota Zero');
 assert.ok(indexHtml.includes('1.1.0v Alpha'),'Metadados devem mostrar a versão 1.1.0');
 assert.ok(account.includes('<AccountChatPanel account={account}'), 'Chat precisa existir na Conta Lite');
 assert.ok(account.includes("accountTab")&&account.includes("tab==='chat'"),'Chat acessível com link e aba');
