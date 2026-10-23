@@ -122,7 +122,14 @@ export default function JornadasHub(){
        <p>Laboratório experimental: a chave de teste não concede permissões da Conta Lite.</p>
      </aside>
      <div className="jornadas-site__content">
-       {mode==='demo'?<div className="jornadas-site__demo">
+       {showCreate?<form className="jornadas-site__create" onSubmit={createDemo}>
+          <span className="jornadas-site__eyebrow">CRIAR JORNADA • DEMONSTRAÇÃO</span>
+          <h2>Uma nova aventura começa</h2>
+          <p>Crie uma campanha fictícia para experimentar o espaço do mestre. Para campanhas reais com amigos, conecte a Conta Lite na página inicial.</p>
+          <label>Nome da campanha <input autoFocus maxLength={110} value={campaignName} onChange={e=>setCampaignName(e.target.value)} placeholder="O Segredo do Subterrâneo" required/></label>
+          <label>Sistema de RPG <select value={campaignSystem} onChange={e=>setCampaignSystem(e.target.value)}>{SYSTEMS.map(([id,label])=><option key={id} value={id}>{label}</option>)}</select></label>
+          <div className="jornadas-site__hero-actions"><button type="submit">Criar e entrar na sala →</button><button type="button" onClick={()=>setShowCreate(false)}>Cancelar</button></div>
+        </form>:mode==='demo'?<div className="jornadas-site__demo">
          <div className="jornadas-site__breadcrumb"><button onClick={exit}>Minhas Jornadas</button><span> / </span> Sala de demonstração</div>
          <JornadasDemoPanel key={demoRevision} onExit={exit} showToast={setNotice}/>
        </div>:<>
