@@ -98,6 +98,8 @@ export async function unlinkMySheet(campaignId,sheetId){
 export async function saveJourneySheet(sheetId,payload){
  await user();
  const name=String(payload?.bio?.nome||payload?.nome||'Ficha de RPG').slice(0,120);
+ const now=new Date().toISOString();
+ const safePayload={...payload,meta:{...(payload.meta||{}),updatedAt:now}};
  // Identidade e propriedade nunca são alteradas; RLS exige consentimento do jogador para edição pelo DM.
- return check(await client().from('sheets').update({name,payload,client_updated_at:new Date().toISOString()}).eq('id',sheetId).select('id,name,updated_at').single());
+ return check(await client().from('sheets').update({name,payload:safePayload,client_updated_at:now}).eq('id',sheetId).select('id,name,updated_at').single());
 }
