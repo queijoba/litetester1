@@ -29,7 +29,7 @@ export function buildThreatCardData(data){
     ['Perícias',list(data?.pericias).filter(x=>x?.nome).map(x=>x.nome+(x.valor!==undefined&&x.valor!==null&&x.valor!==''?' '+x.valor:'')).join(' • ')]
    ].filter(([,v])=>v!==undefined&&v!==null&&String(v).trim()!=='');
    common.sections=[['Armas e ataques',list(data?.armas).map(x=>({
-    ...x,
+    nome:x?.nome||'',
     desc:[x?.pericia!==undefined&&x?.pericia!==''?'Perícia '+x.pericia:'',x?.dano?'Dano '+x.dano:''].filter(Boolean).join(' • ')
    }))],['Habilidades e feitiços',data?.feiticos]];
    common.summary=''; // Atitude, motivação, segredos e tesouro permanecem apenas no editor.
