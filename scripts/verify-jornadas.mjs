@@ -45,6 +45,16 @@ const hub=readFileSync('src/cloud/JornadasHub.jsx','utf8');
 const clean=readFileSync('src/cloud/jornadas-clean.css','utf8');
 assert.ok(main.includes("get('jornadas')==='1'")&&main.includes('<JornadasHub />'),'Jornadas precisa ter rota própria');
 assert.ok(app.includes('href="/?jornadas=1"'),'Home deve mostrar acesso direto a Jornadas');
+
+assert.ok(app.includes('const [journeysSignedIn,setJourneysSignedIn]=useState(false)'),'Atalho Jornadas começa oculto');
+assert.ok(app.includes('journeysSignedIn&&<a href="/?jornadas=1"'),'Só mostra botão Jornadas a usuário autenticado');
+assert.ok(app.includes('getSession().then(session=>{if(alive)setJourneysSignedIn(!!session?.user)})'),'Sessão inicial controla acesso');
+assert.ok(app.includes('onAuthStateChange(session=>{if(alive)setJourneysSignedIn(!!session?.user)})'),'Botão reage ao login e logout');
+const crisCss=readFileSync('src/cloud/jornadas-cris.css','utf8');
+assert.ok(crisCss.includes('.jornadas-room-tools')&&crisCss.includes('@media(max-width:520px)'),'Ações rápidas e correções de overflow responsivas');
+assert.ok(panel.includes('jornadas-room-tools')&&panel.includes('aria-label="Seções da campanha"'),'Campanha deve ter atalhos e navegação acessível');
+assert.ok(panel.includes('!validHttp(c.board?.coverUrl)&&<span'),'Não mostrar ícone sobre a arte de capa personalizada');
+
 assert.ok(hub.includes('Voltar à Home')&&hubCss.includes('.jornadas-site__home-link'),'Jornadas deve ter retorno visível');
 assert.ok(hub.includes('<JornadasPanel')&&hub.includes('<AccountChatPanel'),'Campanhas e chat reais dentro de Jornadas');
 assert.ok(!hub.includes('JORNADAS-TESTE')&&!hub.includes('JornadasDemoPanel')&&!hub.includes('Mesa de demonstração'),'Interface não deve oferecer mesa simulada');
