@@ -39,7 +39,7 @@ export function getJourneySheetSummary(row){
  const displayName=nice(bio.nome||data.nome||sheet.name,'Ficha sem nome');
  const profession=nice(bio.classe||bio.profissao||bio.profissão||data.profissao||data.classe||
    (Array.isArray(data.classes)?data.classes.map(c=>c.nome).filter(Boolean).join(' · '):'')||
-   bio.identidade||data.tipo||data.cargo,'');
+   bio.identidade||data.tipoNpc||data.tipoPdj||data.patente||data.tipo||data.cargo,'');
  const ancestry=nice(bio.ancestralidade||bio.linhagem||bio.especie||data.ancestralidade||'');
  const level=nice(data.nivel??bio.nivel,'');
  const status=data.status||{};
@@ -47,7 +47,7 @@ export function getJourneySheetSummary(row){
  if(status.pv&&typeof status.pv==='object')hp=statPair(status.pv,'atual','max');
  if(!hp)hp=statPair(status,'pvAtual','pvMax');
  if(!hp&&status.vida)hp=statPair(status.vida,'atual','max');
- if(!hp&&typeof data.pv==='number')hp={current:String(data.pv),max:'—'};
+ if(!hp&&(typeof data.pv==='number'||(typeof data.pv==='string'&&data.pv.trim())))hp={current:String(data.pv),max:'—'};
  if(status.pd&&typeof status.pd==='object')resource={...statPair(status.pd,'atual','max'),label:'PD'};
  if(!resource){const mp=statPair(status,'pmAtual','pmMax');if(mp)resource={...mp,label:'PM'}}
  if(!resource){const mp=statPair(status,'sanidadeAtual','sanidadeMax');if(mp)resource={...mp,label:'Sanidade'}}
