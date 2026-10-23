@@ -7,6 +7,7 @@ import {
   signOut,
   onAuthStateChange,
   getProfile,
+  getMyAchievements,
   pushSheets,
   pullSheets,
   mirrorSheets,
@@ -22,6 +23,8 @@ import {
   dismissShare,
 } from './supabaseCloud.js';
 import AdminCloudPanel from './AdminCloudPanel.jsx';
+import JornadasPanel from './JornadasPanel.jsx';
+import {setGroupMaster,listJourneys} from './jornadasCloud.js';
 
 const STORAGE_KEY = 'dragonbane_saved_characters';
 const THREAT_STORAGE_KEY = 'dragonbane_saved_threats';
@@ -79,6 +82,9 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
   const [inbox, setInbox] = React.useState([]);
   const [emailDraft, setEmailDraft] = React.useState('');
   const [groupName, setGroupName] = React.useState('');
+  const [createAsDm, setCreateAsDm] = React.useState(false);
+  const [achievements, setAchievements] = React.useState([]);
+  const [achievementsOn,setAchievementsOn] = React.useState(true);
   const [inviteCode, setInviteCode] = React.useState('');
   const [shareDraft, setShareDraft] = React.useState({ sheetId: '', email: '', groupId: '' });
   const timerRef = React.useRef(null);
@@ -94,6 +100,21 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
   const isAdmin = String(account?.email || '').trim().toLowerCase() === 'nickreisgg55@gmail.com';
 
   const pendingInbox = inbox.filter(item => item.status === 'pending');
+  const argUnlocked=achievements.some(x=>String(x.achievement_id||'').toLowerCase()==='rz-88');
+  const achievementKey='pjlite_achievements_on_v1_'+(account?.id||'anonymous');
+  React.useEffect(()=>{if(!account){setAchievements([]);return;}let active=true;
+   try{setAchievementsOn(localStorage.getItem(achievementKey)!=='0')}catch{setAchievementsOn(true)}
+   getMyAchievements().then(rows=>{if(active)setAchievements(rows||[])}).catch(err=>console.error('Conta Lite: conquistas',err));
+   return()=>{active=false};
+  },[account?.id]);
+  const toggleAchievements=next=>{
+   setAchievementsOn(next);
+   try{localStorage.setItem(achievementKey,next?'1':'0')}catch{}
+  };
+  const openArgMaterial=()=>{
+   setOpen(false);
+   window.dispatchEvent(new CustomEvent('pjlite:open-arg-material'));
+  };
   const allSheets = [
     ...savedChars.map(item => ({ key: 'pc:' + item.id, item })),
     ...savedThreats.map(item => ({ key: 'threat:' + item.id, item })),
@@ -107,6 +128,7 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
     }
     try {
       const [nextGroups, nextInbox] = await Promise.all([listGroups(), listInbox()]);
+      window.dispatchEvent(new CustomEvent('pjlite:jornadas-changed'));
       setGroups(nextGroups || []);
       setInbox(nextInbox || []);
     } catch (error) {
@@ -270,11 +292,21 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
     }
   };
 
-  const handleCreateGroup = async () => {
+  const toggleDm=async(group)=>{
+    try{
+      await setGroupMaster(group.id,!group.is_dm);
+      await refreshSocial();
+      showToast(group.is_dm?'Modo DM desativado.':'Modo DM ativado. Este grupo pode criar Jornadas.');
+    }catch(error){console.error('Modo DM:',error);showToast('Não foi possível modificar o modo DM.');}
+  };
+
+    const handleCreateGroup = async () => {
     if (!groupName.trim()) return showToast('Dê um nome ao grupo.');
     try {
       const group = await createGroup(groupName);
+      if(createAsDm)await setGroupMaster(group.id,true);
       setGroupName('');
+      setCreateAsDm(false);
       await refreshSocial();
       showToast('Grupo criado. Código: ' + group.invite_code);
     } catch (error) {
@@ -380,6 +412,9 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
   if (!isSupabaseConfigured) return null;
 
   return <>
+    {!!account&&achievements.length>0&&<button type="button" className={'pjlite-achievement-corner '+(achievementsOn?'is-full':'is-minimal')} title="Suas conquistas — abrir Recebidos" onClick={()=>{setOpen(true);setTab('inbox')}} aria-label="Abrir conquistas e recebidos">
+      <span className="pjlite-achievement-emblem">◆</span>{achievementsOn&&<span className="pjlite-achievement-corner-text"><strong>{achievements.some(x=>x.category==='EVENTO')?'RZ-88 • EVENTO':'CONQUISTAS'}</strong><small>{achievements.map(x=>x.label).join(' • ')}</small></span>}
+    </button>}
     <div className="pjlite-cloud-compact no-print">
       <button type="button" className="pjlite-cloud-compact__button" onClick={()=>setOpen(true)} title="Conta e sincronização">
         <span className={'pjlite-cloud-compact__dot '+(account?(status==='error'?'is-error':status==='syncing'||status==='pending'?'is-working':'is-online'):'')}></span>
@@ -399,6 +434,7 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
         <div className="pjlite-cloud-settings__tabs">
           <button type="button" className={tab==='sync'?'active':''} onClick={()=>setTab('sync')}>☁ Sincronização</button>
           <button type="button" className={tab==='groups'?'active':''} onClick={()=>setTab('groups')}>♟ Grupos</button>
+          <button type="button" className={tab==='journeys'?'active':''} onClick={()=>setTab('journeys')}>🧭 Jornadas</button>
           <button type="button" className={tab==='inbox'?'active':''} onClick={()=>setTab('inbox')}>✉ Recebidos {pendingInbox.length>0&&<span className="pjlite-cloud-tab-badge">{pendingInbox.length}</span>}</button>
           {isAdmin&&<button type="button" className={tab==='admin'?'active':''} onClick={()=>setTab('admin')}>⚙ Administração</button>}
         </div>
@@ -416,12 +452,14 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
             </div>
             <div className="pjlite-cloud-settings__stats"><div><span>Neste dispositivo</span><strong>{savedChars.length+savedThreats.length}</strong><small>fichas</small></div><div><span>Nuvem real</span><strong>{remoteCount}</strong><small>fichas</small></div><div><span>Última sincronização</span><strong>{lastSync?new Date(lastSync).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'—'}</strong><small>{lastSync?new Date(lastSync).toLocaleDateString('pt-BR'):'Ainda não'}</small></div></div>
             <div className="pjlite-cloud-settings__group"><h3>Sincronização</h3><p><strong>Sincronizar agora</strong> faz a nuvem refletir as fichas deste dispositivo, inclusive removendo da nuvem as fichas que você apagou aqui. <strong>Mesclar da nuvem</strong> faz o contrário: traz para este dispositivo todas as fichas salvas na sua Conta Lite, sem apagar nenhuma.</p><div className="pjlite-cloud-actions"><button type="button" onClick={()=>{if(window.confirm('Sincronizar agora fará a nuvem ficar igual às fichas deste dispositivo. Fichas que existirem apenas na nuvem serão removidas. Continuar?'))syncNow(false,true)}}>☁ Sincronizar agora</button><button type="button" onClick={()=>pullAndMerge(false)}>↧ Mesclar da nuvem</button></div></div>
+            <div className="pjlite-cloud-settings__group"><h3>🏆 Conquistas ON</h3><p>Ative o visual completo das conquistas na tela. Desativado, apenas o símbolo colorido do evento aparece discretamente no canto. Sua conquista permanece na conta.</p><label className="pjlite-cloud-achievement-switch"><input type="checkbox" checked={achievementsOn} onChange={e=>toggleAchievements(e.target.checked)}/> <strong>{achievementsOn?'ON • visual completo':'OFF • somente símbolo'}</strong></label><div className="pjlite-cloud-achievement-list">{achievements.map(tag=><span key={tag.achievement_id} className={tag.category==='EVENTO'?'is-event':''}>◆ {tag.label||tag.achievement_id}</span>)}</div></div>
             <div className="pjlite-cloud-settings__group pjlite-cloud-settings__group--quiet"><h3>Conta</h3><div className="pjlite-cloud-actions"><button type="button" className="secondary" onClick={handleLogout}>Sair da Conta Lite</button></div></div>
-          </> : tab==='groups' ? <>
+          </> : tab==='journeys' ? <JornadasPanel account={account} groups={groups} showToast={showToast}/> : tab==='groups' ? <>
             <div className="pjlite-cloud-settings__group"><h3>Compartilhar ficha</h3><p>Envie uma cópia para uma pessoa que já tenha Conta Lite ou para um grupo inteiro.</p><div className="pjlite-cloud-form-stack"><label><span>Ficha</span><select value={shareDraft.sheetId} onChange={e=>setShareDraft(v=>({...v,sheetId:e.target.value}))}><option value="">Escolha uma ficha…</option>{allSheets.map(entry=><option key={entry.key} value={entry.key}>{sheetName(entry.item)} • {systemName(entry.item)}</option>)}</select></label><div className="pjlite-cloud-form-split"><label><span>Grupo</span><select value={shareDraft.groupId} onChange={e=>setShareDraft(v=>({...v,groupId:e.target.value,email:e.target.value?'':v.email}))}><option value="">Nenhum grupo</option>{groups.map(group=><option key={group.id} value={group.id}>{group.name} ({group.members?.length||0})</option>)}</select></label><label><span>Ou enviar para</span><input type="email" disabled={!!shareDraft.groupId} value={shareDraft.email} onChange={e=>setShareDraft(v=>({...v,email:e.target.value,groupId:''}))} placeholder="jogador@gmail.com"/></label></div><button type="button" className="pjlite-cloud-primary" onClick={handleShare}>Enviar cópia da ficha</button></div></div>
             <div className="pjlite-cloud-settings__group"><h3>Entrar em um grupo</h3><p>Digite o código recebido do mestre ou de outro jogador.</p><div className="pjlite-cloud-invite-join"><input value={inviteCode} onChange={e=>setInviteCode(e.target.value.toUpperCase())} placeholder="LITE-XXXXXX" maxLength={11}/><button type="button" className="pjlite-cloud-primary" onClick={handleJoin}>Entrar</button></div></div>
-            <div className="pjlite-cloud-settings__group"><h3>Meus grupos</h3><div className="pjlite-cloud-form-stack"><label><span>Nome do grupo</span><input value={groupName} onChange={e=>setGroupName(e.target.value)} placeholder="Ex.: Mesa de sexta"/></label><button type="button" className="secondary" onClick={handleCreateGroup}>+ Criar grupo</button></div><div className="pjlite-cloud-groups-list">{groups.length===0?<div className="pjlite-cloud-empty">Nenhum grupo ainda.</div>:groups.map(group=><article key={group.id} className="pjlite-cloud-group-card"><div className="pjlite-cloud-group-card__head"><div><strong>{group.name}</strong><span>{group.isOwner?'Você criou este grupo':'Você participa deste grupo'}</span></div><small>{group.members?.length||0} {(group.members?.length||0)===1?'membro':'membros'}</small></div><div className="pjlite-cloud-group-members"><div className="pjlite-cloud-group-members__title"><span>PERFIS DO GRUPO</span><small>Conquistas públicas da Conta Lite</small></div><div className="pjlite-cloud-group-members__grid">{(group.members||[]).map(member=><GroupMemberProfile key={member.userId||member.user_id} member={member} currentUserId={account?.id}/>)}</div></div><div className="pjlite-cloud-invite"><div><span>Código de convite</span><code>{group.invite_code}</code></div><div className="pjlite-cloud-invite-actions"><button type="button" onClick={()=>navigator.clipboard?.writeText(group.invite_code).then(()=>showToast('Código copiado.'))}>Copiar</button>{group.isOwner&&<button type="button" onClick={()=>handleRotate(group)}>↻ Novo código</button>}</div></div>{group.isOwner&&<button type="button" className="pjlite-cloud-icon-action" onClick={()=>handleDeleteGroup(group)} title="Remover grupo">×</button>}</article>)}</div></div>
+            <div className="pjlite-cloud-settings__group"><h3>Meus grupos</h3><div className="pjlite-cloud-form-stack"><label><span>Nome do grupo</span><input value={groupName} onChange={e=>setGroupName(e.target.value)} placeholder="Ex.: Mesa de sexta"/></label><label className="pjlite-cloud-achievement-switch"><input type="checkbox" checked={createAsDm} onChange={e=>setCreateAsDm(e.target.checked)}/><strong>DM — este grupo terá um mestre e poderá criar Jornadas</strong></label><button type="button" className="secondary" onClick={handleCreateGroup}>+ Criar grupo</button></div><div className="pjlite-cloud-groups-list">{groups.length===0?<div className="pjlite-cloud-empty">Nenhum grupo ainda.</div>:groups.map(group=><article key={group.id} className="pjlite-cloud-group-card"><div className="pjlite-cloud-group-card__head"><div><strong>{group.name}</strong><span>{group.isOwner?'Você criou este grupo':'Você participa deste grupo'} {group.is_dm?'• 🎲 DM':''}</span></div><small>{group.members?.length||0} {(group.members?.length||0)===1?'membro':'membros'}</small></div><div className="pjlite-cloud-group-members"><div className="pjlite-cloud-group-members__title"><span>PERFIS DO GRUPO</span><small>Conquistas públicas da Conta Lite</small></div><div className="pjlite-cloud-group-members__grid">{(group.members||[]).map(member=><GroupMemberProfile key={member.userId||member.user_id} member={member} currentUserId={account?.id}/>)}</div></div><div className="pjlite-cloud-invite"><div><span>Código de convite</span><code>{group.invite_code}</code></div><div className="pjlite-cloud-invite-actions"><button type="button" onClick={()=>navigator.clipboard?.writeText(group.invite_code).then(()=>showToast('Código copiado.'))}>Copiar</button>{group.isOwner&&<button type="button" onClick={()=>handleRotate(group)}>↻ Novo código</button>}</div></div><div className="pjlite-cloud-group-master-actions">{group.isOwner&&<button type="button" className="secondary" onClick={()=>toggleDm(group)}>{group.is_dm?'✓ DM ativo • Desativar':'🎲 Ativar DM'}</button>}{group.is_dm&&<button type="button" className="pjlite-cloud-primary" onClick={()=>setTab('journeys')}>🧭 Abrir Jornadas</button>}{group.isOwner&&<button type="button" className="pjlite-cloud-icon-action" onClick={()=>handleDeleteGroup(group)} title="Remover grupo">×</button>}</div></article>)}</div></div>
           </> : tab==='admin'&&isAdmin ? <AdminCloudPanel account={account} showToast={showToast} /> : <>
+            {argUnlocked&&<div className="pjlite-cloud-settings__group pjlite-cloud-arg-material"><h3>◆ RZ-88 — Colaborador Rota Zero</h3><p>Sua conquista foi identificada. O material do ARG permanece organizado na seção Rota Zero do Guia, sem misturar pistas às fichas recebidas.</p><button className="pjlite-cloud-primary" type="button" onClick={openArgMaterial}>Para acessar o material do ARG →</button></div>}
             <div className="pjlite-cloud-settings__group"><h3>Fichas recebidas</h3><p>As fichas compartilhadas aparecem aqui antes de serem incluídas na sua biblioteca.</p><div className="pjlite-cloud-inbox">{pendingInbox.length===0?<div className="pjlite-cloud-empty"><strong>Nenhuma ficha nova.</strong><span>Novos compartilhamentos aparecerão aqui.</span></div>:pendingInbox.map(packet=><article key={packet.id} className="pjlite-cloud-inbox-card is-new"><div className="pjlite-cloud-inbox-icon">✉</div><div className="pjlite-cloud-inbox-main"><strong>{packet.name||sheetName(packet.payload)}</strong><span>{packet.system||systemName(packet.payload)}</span><small>Recebida em {new Date(packet.sent_at).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})}</small><div className="pjlite-cloud-inbox-actions"><button type="button" className="pjlite-cloud-primary" onClick={()=>handleImport(packet)}>Incluir nas fichas</button><button type="button" className="secondary" onClick={()=>handleDismiss(packet)}>Descartar</button></div></div></article>)}</div></div>
           </>}
         </div>
