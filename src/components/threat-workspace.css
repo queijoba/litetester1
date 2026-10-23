@@ -23,3 +23,12 @@
 .pj-threat-workspace--3det .pj-threat-workspace-preview{background:#eee9d9;border-color:#b9ab8e}
 @media(max-width:1050px){.pj-threat-workspace{grid-template-columns:minmax(0,1fr)}.pj-threat-workspace-preview{position:static}.pj-threat-workspace-preview-scroll{max-height:500px}}
 @media(max-width:700px){.pj-threat-workspace{padding:5px;gap:9px}.pj-threat-workspace-preview{display:none}.pj-threat-workspace-editor>div{padding:6px!important}}
+
+/* Dragonbane: formulário antigo intacto dentro da área de card. */
+.pj-threat-workspace--dragonbane{grid-template-columns:minmax(0,1.3fr) minmax(315px,.8fr);background:linear-gradient(120deg,#eee7d4,#e3e3d8)}
+.pj-threat-workspace--dragonbane .pj-threat-workspace-preview{background:#f1ebd7;border-color:#93a594}
+.pj-threat-workspace--dragonbane .pj-threat-workspace-bar{background:#183e35}
+.pj-threat-workspace--dragonbane .pj-threat-workspace-bar button{background:#d5ba79;border-color:#e4ce98}
+.pj-threat-workspace--dragonbane .pj-threat-workspace-editor{background:white}
+@media(max-width:1260px){.pj-threat-workspace--dragonbane{grid-template-columns:minmax(0,1fr)}.pj-threat-workspace--dragonbane .pj-threat-workspace-preview{position:static}}
+@media(max-width:700px){.pj-threat-workspace--dragonbane{padding:5px}.pj-threat-workspace--dragonbane .pj-threat-workspace-preview{display:none}}
