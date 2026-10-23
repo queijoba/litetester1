@@ -1288,6 +1288,18 @@ const { useState, useEffect, useRef } = React;
             const [showGuideModal, setShowGuideModal] = useState(false);
             const [guideTab, setGuideTab] = useState('inicio');
             const [campaignOptions,setCampaignOptions]=useState([]);
+            const [pendingJourney,setPendingJourney]=useState(null);
+            useEffect(()=>{
+                const start=e=>{
+                    if(!e.detail?.id)return;
+                    setPendingJourney(e.detail);
+                    setView('dashboard');
+                    setCreateTarget('threat');
+                    setShowSystemModal(true);
+                };
+                window.addEventListener('pjlite:create-journey-threat',start);
+                return()=>window.removeEventListener('pjlite:create-journey-threat',start);
+            },[]);
             useEffect(()=>{
                 let alive=true;
                 const refresh=()=>{listJourneys().then(rows=>{if(alive)setCampaignOptions(rows||[])}).catch(()=>{if(alive)setCampaignOptions([])})};
@@ -1788,6 +1800,10 @@ const { useState, useEffect, useRef } = React;
                 templateData = normalize3DetPcData(templateData);
                 templateData = normalize3DetThreatData(templateData);
                 templateData.id = Date.now().toString();
+                if(pendingJourney&&templateData.type!=='pc'){
+                    templateData.meta={...(templateData.meta||{}),campaignId:pendingJourney.id,campanha:pendingJourney.name};
+                }
+                setPendingJourney(null);
                 setData(templateData);
                 setShowThreatModal(false);
                 setShowDndModelModal(false);
