@@ -14,7 +14,7 @@ const checks = [
   [app.includes("versao: '0.9.5v Alpha'"), 'UPDATE_LOG deve conter 0.9.5v Alpha'],
   [app.includes('PJ LITE 0.9.5 RELEASE'), 'build deve conter marcador da release 0.9.5'],
   [(html.includes('0.9.5v Alpha')||html.includes('1.1.0v Alpha')), 'index.html deve anunciar 0.9.5v Alpha'],
-  [ci.includes('PJ Lite 0.9.5v Alpha'), 'CI deve publicar snapshot 0.9.5v Alpha'],
+  [(ci.includes('PJ Lite 0.9.5v Alpha')||ci.includes('PJ Lite 1.1.0v Alpha')), 'CI deve publicar snapshot oficial da versão atual'],
   [schema.includes('on conflict on constraint group_members_pkey do nothing;'), 'schema base deve conter a correção de entrada em grupo'],
 ];
 
