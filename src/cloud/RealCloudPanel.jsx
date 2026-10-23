@@ -24,6 +24,7 @@ import {
 } from './supabaseCloud.js';
 import AdminCloudPanel from './AdminCloudPanel.jsx';
 import JornadasPanel from './JornadasPanel.jsx';
+import './account-achievements.css';
 import {setGroupMaster,listJourneys} from './jornadasCloud.js';
 
 const STORAGE_KEY = 'dragonbane_saved_characters';
