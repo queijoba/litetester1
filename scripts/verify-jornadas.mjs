@@ -12,6 +12,20 @@ const argCss=readFileSync('src/cloud/account-achievements.css','utf8');
 const groups=readFileSync('src/cloud/supabaseCloud.js','utf8');
 
 assert.ok(groups.includes('id,name,owner_id,is_dm,invite_code'));
+const news=readFileSync('src/cloud/NewsBanner.jsx','utf8');
+const chat=readFileSync('src/cloud/AccountChatPanel.jsx','utf8');
+const hubCss=readFileSync('src/cloud/jornadas-hub.css','utf8');
+const indexHtml=readFileSync('index.html','utf8');
+assert.ok(app.includes("versao: '1.1.0v Alpha'"),'A versão atual deve aparecer no log');
+assert.ok(app.includes('<NewsBanner collapsed={newsCollapsed}'), 'A Home deve mostrar a barra de novidades');
+assert.ok(news.includes('Log de atualizações')&&news.includes('argOpened'),'O log deve oferecer o registro #088');
+assert.ok(news.includes('RZ-88')&&news.includes('Conquistas ON/OFF'),'A barra deve explicar os controles do ARG');
+assert.ok(indexHtml.includes('1.1.0v Alpha'),'Metadados devem mostrar a versão 1.1.0');
+assert.ok(account.includes('<AccountChatPanel account={account}'), 'Chat precisa existir na Conta Lite');
+assert.ok(account.includes("accountTab")&&account.includes("tab==='chat'"),'Chat acessível com link e aba');
+assert.ok(chat.includes('listJourneyMessages')&&chat.includes('sendJourneyMessage'),'Chat deve usar o backend de campanha');
+assert.ok(chat.includes('uploadJourneyMedia'),'Chat deve suportar anexos privados');
+
 assert.ok(account.includes('Conquistas ON')&&account.includes('ON • visual completo')&&account.includes('OFF • somente símbolo'));
 assert.ok(account.includes('pjlite_achievements_on_v1_')&&account.includes('pjlite-achievement-corner'));
 assert.ok(account.includes('getMyAchievements()'),'Conquistas devem vir da conta, não somente do navegador');
@@ -28,6 +42,7 @@ const hub=readFileSync('src/cloud/JornadasHub.jsx','utf8');
 const demo=readFileSync('src/cloud/JornadasDemoPanel.jsx','utf8');
 assert.ok(main.includes("get('jornadas')==='1'")&&main.includes('<JornadasHub />'),'Jornadas precisa ter rota própria');
 assert.ok(app.includes('href="/?jornadas=1"'),'Home deve mostrar acesso direto a Jornadas');
+assert.ok(hub.includes('Voltar à Home')&&hubCss.includes('.jornadas-site__home-link'),'Jornadas deve ter retorno visível');
 assert.ok(hub.includes('JORNADAS-TESTE')&&hub.includes('<JornadasDemoPanel')&&hub.includes('<JornadasPanel'),'Prévia própria, teste e campanhas reais');
 assert.ok(demo.includes('pjlite_jornadas_demo_v1'),'Demonstração deve ser local e isolada');
 assert.ok(app.includes('setCampaignOptions')&&app.includes('data.meta?.campaignId'));
