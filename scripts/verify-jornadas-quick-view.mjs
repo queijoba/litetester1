@@ -40,7 +40,7 @@ const panel=readFileSync('src/cloud/JornadasPanel.jsx','utf8');
 const hub=readFileSync('src/cloud/JornadasHub.jsx','utf8');
 const preview=readFileSync('src/cloud/SheetQuickView.jsx','utf8');
 const css=readFileSync('src/cloud/jornadas-cris.css','utf8');
-for(const item of ["['jogadores','Jogadores']","tab==='jogadores'","journeys-character-grid","journeys-roster-grid","<SheetQuickView","onRefreshGroups","getJourneySheetSummary(row)"]){
+for(const item of ["['jogadores','Jogadores']","tab==='jogadores'","journeys-character-grid","journeys-roster-grid","<SheetQuickView","onRefreshGroups","<CharacterMiniSheet"]){
  assert.ok(panel.includes(item),'Jornadas precisa incluir '+item);
 }
 assert.ok(hub.includes('onRefreshGroups={refresh}'),'Atualizar membros reais do grupo no mesmo botão de atualizar sala');
