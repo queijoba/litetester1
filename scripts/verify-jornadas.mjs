@@ -52,7 +52,7 @@ assert.ok(app.includes('getSession().then(session=>{if(alive)setJourneysSignedIn
 assert.ok(app.includes('onAuthStateChange(session=>{if(alive)setJourneysSignedIn(!!session?.user)})'),'Botão reage ao login e logout');
 const crisCss=readFileSync('src/cloud/jornadas-cris.css','utf8');
 assert.ok(crisCss.includes('.jornadas-room-tools')&&crisCss.includes('@media(max-width:520px)'),'Ações rápidas e correções de overflow responsivas');
-assert.ok(panel.includes('jornadas-room-tools')&&panel.includes('aria-label="Seções da campanha"'),'Campanha deve ter atalhos e navegação acessível');
+assert.ok(!panel.includes('className="jornadas-room-tools"')&&panel.includes('aria-label="Seções da campanha"'),'Campanha deve ter barra única de navegação acessível');
 assert.ok(panel.includes('!validHttp(c.board?.coverUrl)&&<span'),'Não mostrar ícone sobre a arte de capa personalizada');
 
 assert.ok(hub.includes('Voltar à Home')&&hubCss.includes('.jornadas-site__home-link'),'Jornadas deve ter retorno visível');
