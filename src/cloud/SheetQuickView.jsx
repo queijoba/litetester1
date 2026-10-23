@@ -14,6 +14,62 @@ export function CharacterPortrait({url,name,size='small'}){
   {src?<img src={src} alt={'Retrato de '+name} loading="lazy"/>:<span aria-hidden="true">{(name||'?').trim().charAt(0).toUpperCase()}</span>}
  </span>;
 }
+
+function CharacterResourceBar({resource,label,tone}){
+ if(!resource)return null;
+ const current=Number(resource.current);
+ const maximum=Number(resource.max);
+ const fill=Number.isFinite(current)&&Number.isFinite(maximum)&&maximum>0
+  ?Math.max(0,Math.min(100,(current/maximum)*100)):null;
+ return <div className={'journey-mini-resource is-'+tone}>
+  <div className="journey-mini-resource__caption"><span>{label}</span><strong>{resource.current} / {resource.max}</strong></div>
+  <div className="journey-mini-resource__track" role={fill===null?undefined:'progressbar'}
+   aria-label={label} aria-valuenow={fill===null?undefined:Math.max(0,Math.min(maximum,current))}
+   aria-valuemin={fill===null?undefined:0} aria-valuemax={fill===null?undefined:maximum}>
+   {fill!==null?<span style={{width:fill+'%'}}/>:<span className="is-unknown"/>}
+  </div>
+ </div>;
+}
+// Miniatura inspirada na leitura rápida do CRIS, sem copiar suas artes ou
+// transformar fichas em imagens estáticas. Os dados vêm da ficha na nuvem.
+export function CharacterMiniSheet({row,ownerLabel,onView}){
+ const sheet=getJourneySheetSummary(row);
+ const title=[sheet.profession,sheet.ancestry].filter(Boolean).join(' · ');
+ return <article className="journeys-character-card journey-mini-sheet">
+  <div className="journey-mini-sheet__identity">
+   <CharacterPortrait url={sheet.portrait} name={sheet.name} size="card"/>
+   <div className="journey-mini-sheet__heading">
+    <span className="journey-mini-sheet__system">{displaySystem[sheet.system]||sheet.system||'Ficha de RPG'}</span>
+    <h4 title={sheet.name}>{sheet.name}</h4>
+    <p title={title}>{title||'Personagem'}</p>
+    {sheet.level&&<small>Nível {sheet.level}</small>}
+    <small className="journey-mini-sheet__owner">👤 {ownerLabel||'Jogador'}</small>
+   </div>
+  </div>
+  {sheet.hasPayload?<>
+   {sheet.attributes.length>0&&<div className="journey-mini-sheet__attributes" aria-label="Atributos da ficha">
+    {sheet.attributes.slice(0,6).map(attribute=><div key={attribute.label}>
+     <span>{attribute.label}</span><strong>{attribute.value}</strong>
+    </div>)}
+   </div>}
+   <div className="journey-mini-sheet__resources">
+    {sheet.hp&&<CharacterResourceBar label="VIDA" tone="life" resource={sheet.hp}/>}
+    {sheet.resource&&<CharacterResourceBar label={sheet.resource.label.toUpperCase()} tone="power" resource={sheet.resource}/>}
+    {!sheet.hp&&!sheet.resource&&<small className="journey-mini-sheet__no-data">Sem recursos padronizados nesta ficha.</small>}
+   </div>
+   {sheet.combat.length>0&&<div className="journey-mini-sheet__combat">
+    {sheet.combat.map(stat=><div key={stat.label}><span>{stat.label}</span><strong>{stat.value}</strong></div>)}
+   </div>}
+   {sheet.conditions.length>0&&<small className="journey-mini-sheet__conditions" title={sheet.conditions.join(', ')}>
+    ● {sheet.conditions.length} {sheet.conditions.length===1?'condição':'condições'} ativa{sheet.conditions.length===1?'':'s'}
+   </small>}
+  </>:<p className="journey-mini-sheet__no-data">Prévia indisponível para esta ficha.</p>}
+  <button type="button" className="journey-mini-sheet__open" onClick={onView} aria-label={'Consultar ficha de '+sheet.name}>
+   <span>▤ Consultar ficha</span><span aria-hidden="true">→</span>
+  </button>
+ </article>;
+}
+
 export function SheetQuickView({row,ownerLabel,onClose,onEdit,canEdit=false}){
  const [details,setDetails]=React.useState(false);
  const sheet=getJourneySheetSummary(row);
