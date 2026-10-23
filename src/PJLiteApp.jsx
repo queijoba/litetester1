@@ -39,7 +39,8 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import JSZip from 'jszip';
 import LZString from 'lz-string';
-import { getMyAchievements } from './cloud/supabaseCloud.js';
+import { getMyAchievements,onAuthStateChange } from './cloud/supabaseCloud.js';
+import { listJourneys } from './cloud/jornadasCloud.js';
 
 const { useState, useEffect, useRef } = React;
 
@@ -61,6 +62,8 @@ const { useState, useEffect, useRef } = React;
         const SCHEMA_VERSION = 6;
 
         const UPDATE_LOG = [
+            { versao: '0.9.5v Alpha • Jornadas (prévia)', descricao: 'A Conta Lite organiza grupos com DM, campanhas em Jornadas, fichas vinculadas com permissão opcional de edição pelo mestre, iniciativa, combate, chat por mensagens e links HTTPS de mídia, mapas e PDFs autorizados. Conquistas ON/OFF agora permite mostrar apenas o emblema do evento no canto da tela. Guias revisados com bibliotecas e cards de ameaças em PNG.' },
+            { versao: '#088 FALHO', descricao: 'RZ-HR-12 // RETORNO: ███ // SINAL INCONSISTENTE. Um fragmento da remessa #088 não respondeu. Arquivo de evento: status não confirmado.' },
             { versao: '0.8.0v Alpha', descricao: '3DeT Victory entra na prévia do PJ Lite com ficha digital modular, retrato opcional, P/H/R, PA/PM/PV, perícias, FA/FD, vantagens, desvantagens, técnicas, inventário por raridade, Kit opcional, Ficha Chat e integração com saves/importação.' },
             { versao: '0.7.4v Alpha', descricao: 'Prévia React pronta para homologação: D&D 5.5e recebeu polimento mobile completo, navegação por abas mais confortável, painel separado de classe/subclasse e grimório por círculos; Guias e Tutoriais foram ampliados com um fluxo rápido para iniciantes, explicações mais claras de salvamento e compartilhamento e instruções atualizadas por sistema; além de revisão estrutural, limpeza de scripts temporários e melhorias de estabilidade antes da avaliação para migração definitiva.' },
             { versao: '0.7.0v Alpha', descricao: 'Marco da linha 0.7: Guias e Tutoriais foram reescritos e ampliados para orientar melhor iniciantes e usuários recorrentes; Fabula Ultima ganhou seleção modular de suplementos e módulos extras por material, mantendo Arcanos, Magia & Rituais e Projetos no Livro Básico; O Som das Seis recebeu revisão visual e de experiência, habilidades mais compactas, reordenação e melhor leitura no desktop e celular; além de revisões gerais de tema, modo escuro, organização, compatibilidade e textos da interface.' },
@@ -1284,6 +1287,20 @@ const { useState, useEffect, useRef } = React;
             const [fabulaCreateSupplements, setFabulaCreateSupplements] = useState({ ...FABULA_DEFAULT_SUPPLEMENTS });
             const [showGuideModal, setShowGuideModal] = useState(false);
             const [guideTab, setGuideTab] = useState('inicio');
+            const [campaignOptions,setCampaignOptions]=useState([]);
+            useEffect(()=>{
+                let alive=true;
+                const refresh=()=>{listJourneys().then(rows=>{if(alive)setCampaignOptions(rows||[])}).catch(()=>{if(alive)setCampaignOptions([])})};
+                refresh();
+                const dispose=onAuthStateChange(()=>refresh());
+                window.addEventListener('pjlite:jornadas-changed',refresh);
+                return()=>{alive=false;dispose?.();window.removeEventListener('pjlite:jornadas-changed',refresh)};
+            },[]);
+            useEffect(()=>{
+                const show=()=>{setRotaZeroUnlocked(true);setGuideTab('rotazero');setShowGuideModal(true);};
+                window.addEventListener('pjlite:open-arg-material',show);
+                return()=>window.removeEventListener('pjlite:open-arg-material',show);
+            },[]);
 
             // Organização e segurança — linha 0.6
             const [searchQuery, setSearchQuery] = useState('');
@@ -2780,6 +2797,7 @@ const { useState, useEffect, useRef } = React;
                                     <div className="flex bg-gray-200 border-b border-gray-300 shrink-0 overflow-x-auto">
                                         <button onClick={() => setGuideTab('inicio')} className={`flex-1 py-2.5 px-4 text-xs font-bold uppercase text-center border-b-4 transition-colors whitespace-nowrap ${guideTab === 'inicio' ? 'border-gray-800 text-gray-900 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-300'}`}>Começando</button>
                                         <button onClick={() => setGuideTab('import')} className={`flex-1 py-2.5 px-4 text-xs font-bold uppercase text-center border-b-4 transition-colors whitespace-nowrap ${guideTab === 'import' ? 'border-gray-800 text-gray-900 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-300'}`}>Salvar & Compartilhar</button>
+                                        <button onClick={() => setGuideTab('jornadas')} className={`flex-1 py-2.5 px-4 text-xs font-bold uppercase text-center border-b-4 transition-colors whitespace-nowrap ${guideTab === 'jornadas' ? 'border-gray-800 text-gray-900 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-300'}`}>Jornadas</button>
                                         <button onClick={() => setGuideTab('fichas_db')} className={`flex-1 py-2.5 px-4 text-xs font-bold uppercase text-center border-b-4 transition-colors whitespace-nowrap ${guideTab === 'fichas_db' ? 'border-gray-800 text-gray-900 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-300'}`}>Fichas DB</button>
                                         <button onClick={() => setGuideTab('ameacas_db')} className={`flex-1 py-2.5 px-4 text-xs font-bold uppercase text-center border-b-4 transition-colors whitespace-nowrap ${guideTab === 'ameacas_db' ? 'border-gray-800 text-gray-900 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-300'}`}>Ameaças e PNJs</button>
                                         <button onClick={() => setGuideTab('dnd5e')} className={`flex-1 py-2.5 px-4 text-xs font-bold uppercase text-center border-b-4 transition-colors whitespace-nowrap ${guideTab === 'dnd5e' ? 'border-orange-600 text-orange-900 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-300'}`}>D&D 5.5e</button>
@@ -2804,7 +2822,7 @@ const { useState, useEffect, useRef } = React;
                                                     <div className="bg-white border rounded-lg p-4"><strong>3. Entenda onde seus dados ficam</strong><p className="text-xs mt-1">No computador, as fichas priorizam consulta lado a lado; no celular, algumas áreas viram abas. Procure sempre o título da seção antes de editar para evitar colocar a informação no campo errado.</p></div>
                                                     <div className="bg-white border rounded-lg p-4"><strong>4. Salve e faça backup</strong><p className="text-xs mt-1">O autosave ajuda, mas <strong>Salvar</strong> cria um ponto de histórico. Antes de trocar de computador, limpar o navegador ou fazer grandes mudanças, exporte também um ZIP/JSON.</p></div>
                                                     <div className="bg-white border rounded-lg p-4"><strong>5. Compartilhe sem complicação</strong><p className="text-xs mt-1"><strong>Ficha Chat</strong> gera um resumo legível; <strong>Código</strong> serve para importar a ficha em outro navegador; ZIP/JSON é a opção indicada para backup completo.</p></div>
-                                                    <div className="bg-white border rounded-lg p-4"><strong>6. Use o guia do seu sistema</strong><p className="text-xs mt-1">As abas Dragonbane, D&D 5.5e, Fabula Ultima e Som das Seis explicam uma ordem de preenchimento própria e destacam os recursos especiais de cada ficha.</p></div>
+                                                    <div className="bg-white border rounded-lg p-4"><strong>6. Use o guia do seu sistema ou Jornadas</strong><p className="text-xs mt-1">As abas Dragonbane, D&D 5.5e, Fabula Ultima e Som das Seis explicam uma ordem de preenchimento própria e destacam os recursos especiais de cada ficha.</p></div>
                                                 </div>
                                                 <div className="bg-amber-50 border border-amber-300 rounded-lg p-4 space-y-2">
                                                     <h3 className="font-bold text-amber-900">🧭 Se você nunca jogou RPG</h3>
@@ -2817,10 +2835,23 @@ const { useState, useEffect, useRef } = React;
                                                         <div><strong>Novo Personagem:</strong> cria uma nova ficha.</div><div><strong>Temas:</strong> muda somente a aparência do PJ Lite.</div>
                                                         <div><strong>Colar Código:</strong> importa uma ficha compartilhada como texto.</div><div><strong>ZIP/JSON:</strong> importa backups em arquivo.</div>
                                                         <div><strong>★ Favorito:</strong> facilita encontrar fichas importantes.</div><div><strong>⚙ Filtros:</strong> filtra por sistema e muda a ordenação.</div>
-                                                        <div><strong>💬 Ficha Chat:</strong> copia a ficha em um formato legível.</div><div><strong>🕘 Histórico:</strong> recupera versões salvas anteriormente.</div>
+                                                        <div><strong>💬 Ficha Chat:</strong> copia a ficha em um formato legível.</div><div><strong>🃏 Card de ameaça:</strong> prévia e exportação PNG para compartilhar sem PDF.</div><div><strong>🧭 Jornadas:</strong> campanhas, iniciativa, chat e fichas pelo grupo DM.</div><div><strong>🕘 Histórico:</strong> recupera versões salvas anteriormente.</div>
                                                     </div>
                                                 </div>
                                                 <div className="bg-sky-50 border border-sky-200 rounded-lg p-4"><strong className="text-sky-900">Dica para iniciantes:</strong><p className="text-xs mt-1">Se surgir um aviso de <strong>Revisão rápida</strong>, ele é apenas um lembrete de campos importantes que talvez tenham ficado vazios. Você ainda pode continuar usando a ficha normalmente.</p></div>
+                                            </div>
+                                        )}
+
+                                        {guideTab === 'jornadas' && (
+                                            <div className="space-y-4">
+                                                <div className="border border-teal-300 bg-teal-50 rounded-xl p-4"><h3 className="font-title font-black text-teal-900">🧭 Jornadas — grupos com DM</h3><p className="text-xs mt-2">Na <strong>Conta Lite → Grupos</strong>, crie um grupo e marque <strong>DM</strong>, ou ative DM em um grupo do qual você seja dono. Em <strong>Jornadas</strong>, crie uma campanha selecionando o grupo e o sistema. Membros desse grupo já poderão abrir a Jornada — sem um segundo código de convite.</p></div>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                                                  <div className="bg-white rounded-lg border p-4"><strong>⚔ Combates e iniciativa</strong><p>O mestre organiza a ordem de iniciativa, a rodada e anotações da cena. Os jogadores consultam as atualizações da campanha.</p></div>
+                                                  <div className="bg-white rounded-lg border p-4"><strong>🗂 Fichas do grupo</strong><p>Depois de sincronizar suas fichas na Conta Lite, vincule-as na aba Fichas da Jornada. O mestre pode consultar e somente editar uma ficha quando o dono marcar <strong>Permitir edição pelo DM</strong>. Antes de continuar editando em outro dispositivo, sincronize para não substituir a versão mais recente.</p></div>
+                                                  <div className="bg-white rounded-lg border p-4"><strong>💬 Chat e links</strong><p>Envie mensagens e links HTTPS de imagens, vídeos e músicas do YouTube. O envio direto de arquivos ainda não está disponível nesta prévia.</p></div>
+                                                  <div className="bg-white rounded-lg border p-4"><strong>🗺 Materiais</strong><p>O mestre registra links de mapas, tabelas e documentos, inclusive PDFs que esteja autorizado a compartilhar. Os recursos ficam vinculados à campanha e aos membros do grupo.</p></div>
+                                                </div>
+                                                <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-xs"><strong>🏆 Conquistas e ARG:</strong> Conta Lite → Sincronização → <strong>Conquistas ON</strong> controla a decoração. Em OFF permanece só o símbolo do evento no canto. Quem conquistou <strong>RZ-88</strong> encontra o botão <strong>Para acessar o material do ARG</strong> em Recebidos, abrindo o Guia de Rota Zero.</div>
                                             </div>
                                         )}
 
@@ -3423,7 +3454,12 @@ const { useState, useEffect, useRef } = React;
                             </span>
                         </div>
                         <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end items-center">
-                            <input value={data.meta?.campanha || ''} onChange={e=>updateField('meta.campanha', e.target.value)} placeholder="Campanha" className="w-28 md:w-36 px-2 py-1 rounded text-xs text-gray-900 bg-white/90 border border-white/30" title="Campanha / pasta desta ficha" />
+                            <div className="flex items-center gap-1">
+                              {campaignOptions.length>0&&<select aria-label="Vincular a uma Jornada" title="Selecionar Jornada do seu grupo" className="w-32 md:w-40 px-2 py-1 rounded text-xs text-gray-900 bg-white/90 border border-white/30" value={data.meta?.campaignId||''} onChange={e=>{const chosen=campaignOptions.find(c=>c.id===e.target.value);setData(prev=>({...prev,meta:{...(prev.meta||{}),campaignId:chosen?.id||'',campanha:chosen?.name||''}}));}}>
+                                <option value="">📁 Nome manual</option>{campaignOptions.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}
+                              </select>}
+                              {!data.meta?.campaignId&&<input value={data.meta?.campanha || ''} onChange={e=>updateField('meta.campanha', e.target.value)} placeholder="Campanha" className="w-28 md:w-36 px-2 py-1 rounded text-xs text-gray-900 bg-white/90 border border-white/30" title="Campanha / pasta desta ficha" />}
+                            </div>
                             {saveStatus && <span className={`text-[10px] font-bold px-2 py-1 rounded ${saveStatus==='error'?'bg-red-900':saveStatus==='saving'?'bg-amber-700':'bg-black/30'}`}>{saveStatus==='pending'?'Alterado…':saveStatus==='saving'?'Salvando…':saveStatus==='saved'?'✓ Salvo':'Erro ao salvar'}</span>}
                             {['somdas6','3det'].includes(data.system) && data.type === 'pc' && <button type="button" onClick={()=>setOtherLibraryOpen(true)}
                                 className="pjlite-toolbar-library" title={data.system==='3det'?'Biblioteca 3DeT Victory: vantagens, desvantagens e técnicas':'Biblioteca O Som das Seis: habilidades e antecedentes'}
