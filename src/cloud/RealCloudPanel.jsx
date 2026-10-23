@@ -24,6 +24,7 @@ import {
 } from './supabaseCloud.js';
 import AdminCloudPanel from './AdminCloudPanel.jsx';
 import JornadasPanel from './JornadasPanel.jsx';
+import JornadasDemoPanel from './JornadasDemoPanel.jsx';
 import './account-achievements.css';
 import {setGroupMaster,listJourneys} from './jornadasCloud.js';
 
@@ -82,6 +83,7 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
   const [groups, setGroups] = React.useState([]);
   const [inbox, setInbox] = React.useState([]);
   const [emailDraft, setEmailDraft] = React.useState('');
+  const [demoOpen,setDemoOpen] = React.useState(false);
   const [groupName, setGroupName] = React.useState('');
   const [createAsDm, setCreateAsDm] = React.useState(false);
   const [achievements, setAchievements] = React.useState([]);
@@ -270,7 +272,14 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
 
   const handleEmail = async () => {
     const email = String(emailDraft || '').trim().toLowerCase();
-    if (!email.includes('@')) return showToast('Digite um e-mail válido.');
+    // Chave pública apenas para demonstração LOCAL: não autentica nem concede acesso ao Supabase.
+    if (email === 'jornadas-teste') {
+      setDemoOpen(true);
+      setTab('journeys');
+      setEmailDraft('');
+      return showToast('🧭 Demonstração isolada aberta. Sem dados da nuvem.');
+    }
+    if (!email.includes('@')) return showToast('Digite um e-mail válido ou a chave de teste.');
     try {
       await signInWithOtp(email);
       showToast('✉️ Link de acesso enviado para o seu e-mail.');
@@ -433,18 +442,20 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
           <button type="button" className="pjlite-cloud-settings__close" onClick={()=>setOpen(false)} aria-label="Fechar">×</button>
         </header>
         <div className="pjlite-cloud-settings__tabs">
+          {demoOpen&&!account ? <button className="active" type="button">🧭 Demonstração local</button> : <>
           <button type="button" className={tab==='sync'?'active':''} onClick={()=>setTab('sync')}>☁ Sincronização</button>
           <button type="button" className={tab==='groups'?'active':''} onClick={()=>setTab('groups')}>♟ Grupos</button>
           <button type="button" className={tab==='journeys'?'active':''} onClick={()=>setTab('journeys')}>🧭 Jornadas</button>
           <button type="button" className={tab==='inbox'?'active':''} onClick={()=>setTab('inbox')}>✉ Recebidos {pendingInbox.length>0&&<span className="pjlite-cloud-tab-badge">{pendingInbox.length}</span>}</button>
           {isAdmin&&<button type="button" className={tab==='admin'?'active':''} onClick={()=>setTab('admin')}>⚙ Administração</button>}
+          </>}
         </div>
         <div className="pjlite-cloud-settings__content">
-          {!account ? <>
+          {demoOpen&&!account ? <JornadasDemoPanel onExit={()=>{setDemoOpen(false);setTab('sync')}} showToast={showToast}/> : !account ? <>
             <div className="pjlite-cloud-settings__intro"><span className="pjlite-cloud-settings__mark">☁</span><div><strong>Conta Lite real</strong><p>Suas fichas continuam locais, mas ao entrar elas também poderão ser sincronizadas entre dispositivos pelo Supabase.</p></div></div>
             <button type="button" className="pjlite-cloud-google pjlite-cloud-google--wide" onClick={handleGoogle}><span>G</span> Continuar com Google</button>
-            <div className="pjlite-cloud-settings__group"><h3>Ou entrar por e-mail</h3><p>Útil para testar a nuvem antes de terminarmos a configuração do Google.</p><div className="pjlite-cloud-form-stack"><label><span>E-mail</span><input type="email" value={emailDraft} onChange={e=>setEmailDraft(e.target.value)} placeholder="voce@gmail.com" onKeyDown={e=>{if(e.key==='Enter')handleEmail()}}/></label><button type="button" className="secondary" onClick={handleEmail}>Enviar link de acesso</button></div></div>
-            <div className="pjlite-cloud-settings__hint">Agora esta área usa o projeto real PJ Lite Cloud. A autenticação por Google ficará disponível assim que o provedor OAuth for habilitado.</div>
+            <div className="pjlite-cloud-settings__group"><h3>Entrar por e-mail ou chave de teste</h3><p>Digite o e-mail para receber um link ou use <strong>JORNADAS-TESTE</strong> neste campo para abrir a prévia sem login.</p><div className="pjlite-cloud-form-stack"><label><span>E-mail</span><input type="text" inputMode="email" autoComplete="off" value={emailDraft} onChange={e=>setEmailDraft(e.target.value)} placeholder="E-mail ou JORNADAS-TESTE" onKeyDown={e=>{if(e.key==='Enter')handleEmail()}}/></label><button type="button" className="secondary" onClick={handleEmail}>Continuar</button></div></div>
+            <div className="pjlite-cloud-settings__hint">A chave abre somente uma demonstração local. Não é senha da Conta Lite, não acessa fichas reais e não valida número de telefone. Para a nuvem, use a autenticação habitual.</div>
           </> : tab==='sync' ? <>
             <div className="pjlite-cloud-settings__account">
               <div className="pjlite-cloud-avatar">{account.avatar?<img src={account.avatar} alt="" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:'50%'}}/>:String(account.name||account.email||'?').charAt(0).toUpperCase()}</div>
