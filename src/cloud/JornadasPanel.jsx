@@ -143,7 +143,7 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat,o
      {mySheets.length>0?<div className="pjlite-jornadas-fields"><select value={sheetId} aria-label="Minha ficha na nuvem" onChange={e=>setSheetId(e.target.value)}>
       <option value="">Escolha uma ficha sua...</option>{mySheets.map(s=><option key={s.id} value={s.id}>{s.name} · {systemLabel[s.system]||s.system}</option>)}
      </select><button disabled={!sheetId||busy} className="pjlite-jornadas-primary" onClick={addLink}>+ Vincular</button></div>:<p>Você ainda não tem fichas sincronizadas. Abra a Home, sincronize uma ficha e retorne aqui.</p>}
-     {links.filter(row=>row.owner_id===account.id).map(row=><div key={row.sheet_id} className="journeys-link-sheet__row"><span>{sheetName(row.sheets)}</span><label className="pjlite-jornadas-check"><input type="checkbox" checked={!!row.dm_can_edit} onChange={e=>run(async()=>{await setMasterSheetEdit(current.id,row.sheet_id,e.target.checked);await refresh()},'Permissão atualizada.')}/> Permitir edição pelo mestre</label>
+     {links.filter(row=>row.owner_id===account.id).map(row=><div key={row.sheet_id} className="journeys-link-sheet__row"><span>{sheetName(row.sheets)}</span><label className="pjlite-jornadas-check"><input type="checkbox" checked={!!row.dm_can_edit} onChange={e=>run(async()=>{await setMasterSheetEdit(current.id,row.sheet_id,e.target.checked);await refresh()},'Permissão atualizada.')}/> Permitir edição pelo DM</label>
       <button type="button" disabled={busy} onClick={()=>run(async()=>{await unlinkMySheet(current.id,row.sheet_id);await refresh()},'Ficha desvinculada.')}>Desvincular</button></div>)}
     </details>
     {isDm&&<a href="/" className="journeys-threat-create">+ Criar ameaça nas fichas →</a>}
