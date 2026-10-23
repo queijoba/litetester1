@@ -1,0 +1,87 @@
+.jornadas-standalone{padding:0!important;margin:0!important;background:#f3f1eb!important}
+.jornadas-standalone #root{width:100%;min-height:100vh}
+.jornadas-site{--js-ink:#273d3d;--js-gold:#b58b45;--js-teal:#256a64;--js-muted:#617371;--js-border:#d8ded9;color:var(--js-ink);min-height:100vh;background:#f5f5f0;font:14px/1.5 system-ui,-apple-system,sans-serif}
+.jornadas-site *{box-sizing:border-box}
+.jornadas-site button,.jornadas-site input,.jornadas-site select,.jornadas-site textarea{font:inherit}
+.jornadas-site button{cursor:pointer}
+.jornadas-site button:disabled{opacity:.55;cursor:not-allowed}
+.jornadas-site__topbar{height:74px;display:flex;align-items:center;justify-content:space-between;padding:10px clamp(18px,4.5vw,60px);background:#fcfcf8;border-bottom:1px solid #dce2db;box-shadow:0 1px 12px #17302b0a}
+.jornadas-site__brand{display:flex;align-items:center;gap:12px;color:#264b47;text-decoration:none}
+.jornadas-site__brandmark{width:43px;height:43px;border:1px solid #bba66c;display:grid;place-items:center;color:#b28b48;font-size:22px;background:#f8f5eb;border-radius:12px}
+.jornadas-site__brand span:last-child{display:grid;letter-spacing:.14em}
+.jornadas-site__brand strong{font-family:Georgia,serif;font-size:17px;line-height:1.1}
+.jornadas-site__brand small{font-size:9px;font-weight:900;letter-spacing:.29em;color:#8f733f}
+.jornadas-site__topbar nav{display:flex;align-items:center;gap:10px}
+.jornadas-site__topbar nav a,.jornadas-site__topbar nav button{border:0;border-radius:8px;background:transparent;text-decoration:none;color:#4e6360;font-size:12px;font-weight:800;padding:11px 14px;white-space:nowrap}
+.jornadas-site__topbar nav .is-active{background:#e5eeeb;color:#1d615a}
+.jornadas-site__user{color:#6d8983;font-size:11px;margin-left:8px;max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.jornadas-site__layout{display:grid;grid-template-columns:226px minmax(0,1fr);max-width:1600px;margin:auto;min-height:calc(100vh - 126px)}
+.jornadas-site__side{padding:36px 16px;background:#f9faf7;border-right:1px solid #dce3dc;display:flex;flex-direction:column;gap:4px}
+.jornadas-site__side-title{font-size:10px;font-weight:950;letter-spacing:.14em;color:#7b9290;margin:0 10px 9px}
+.jornadas-site__side button{background:transparent;text-align:left;border:0;border-radius:8px;padding:12px 13px;color:#516b68;font-weight:800;font-size:12px}
+.jornadas-site__side button:hover{background:#eaf1ee}.jornadas-site__side button.is-active{background:#e3efeb;color:#235c55;border-left:3px solid #418d81}
+.jornadas-site__side-divider{height:1px;background:#e0e5e0;margin:16px 8px 19px}
+.jornadas-site__side p{font-size:11px;color:#85948e;line-height:1.7;margin:auto 9px 0;padding-top:30px}
+.jornadas-site__content{width:100%;min-width:0;padding:30px clamp(16px,3vw,55px) 70px;max-width:1230px;margin:0 auto}
+.jornadas-site__hero{background:linear-gradient(115deg,#1a413f 2%,#31665c 57%,#376957);border-radius:17px;padding:32px clamp(25px,4vw,49px);display:flex;align-items:center;justify-content:space-between;gap:16px;color:#fff;overflow:hidden;box-shadow:0 15px 38px #173d3130}
+.jornadas-site__hero>div:first-child{max-width:625px;z-index:1}
+.jornadas-site__eyebrow{display:block;font-size:10px;font-weight:900;letter-spacing:.2em;text-transform:uppercase;color:#b29355}
+.jornadas-site__hero .jornadas-site__eyebrow{color:#decc9a}
+.jornadas-site__hero h1{font-family:Georgia,serif;font-weight:750;font-size:clamp(28px,3.8vw,43px);line-height:1.16;margin:13px 0}
+.jornadas-site__hero h1 em{font-weight:400;color:#e4d5b4}
+.jornadas-site__hero p{line-height:1.75;font-size:13px;color:#e1ebe5;max-width:550px}
+.jornadas-site__hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:20px}
+.jornadas-site__hero-actions button,.jornadas-site__code-form button,.jornadas-site__login button,.jornadas-site__create-group button{background:#d8b977;color:#233e3d;padding:10px 17px;border:0;border-radius:8px;font-weight:900}
+.jornadas-site__hero-actions button.is-outline{border:1px solid #bdcfc4;background:transparent;color:#f6f8f0}
+.jornadas-site__hero-icon{flex:0 0 210px;width:210px;height:210px;border:2px solid #d6bc8066;border-radius:50%;display:flex;align-items:center;justify-content:space-around;position:relative;color:#dcc29066;font-size:35px;transform:rotate(-14deg)}
+.jornadas-site__hero-icon::after{content:'';position:absolute;inset:20px;border:1px dashed #cbb88299;border-radius:50%}
+.jornadas-site__hero-icon span{font-size:75px;transform:rotate(14deg);filter:drop-shadow(0 4px 4px #0003)}
+.jornadas-site__overview{margin-top:36px}
+.jornadas-site__section-heading{display:flex;justify-content:space-between;align-items:end;gap:12px;margin-bottom:17px}
+.jornadas-site h2{font:750 23px/1.25 Georgia,serif;color:#254840;margin:7px 0}
+.jornadas-site__count{font-size:11px;color:#81958b;font-weight:800}
+.jornadas-site__cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:15px}
+.jornadas-site__campaign{display:grid;text-align:left;padding:0!important;overflow:hidden;border:1px solid #d7dfd8;background:white;border-radius:12px;box-shadow:0 6px 15px #182f240a}
+.jornadas-site__campaign:hover,.jornadas-site__new:hover{border-color:#77a69b;box-shadow:0 8px 18px #182f241b}
+.jornadas-site__cover{height:100px;background:radial-gradient(ellipse at 30% 35%,#63735b,#314a46 70%);display:flex;justify-content:space-between;align-items:center;padding:20px;color:#f0d49d}
+.jornadas-site__cover span{font-size:47px}
+.jornadas-site__cover small{background:#213e39b8;color:#e4d6bb;font-size:9px;letter-spacing:.1em;border-radius:6px;padding:5px 8px}
+.jornadas-site__card-body{padding:16px;display:grid;gap:7px}
+.jornadas-site__card-body strong{font:700 21px Georgia,serif}
+.jornadas-site__card-body small{font-size:12px;color:#748480}
+.jornadas-site__card-body>span{font-size:11px;color:#38786d;font-weight:900;margin-top:7px}
+.jornadas-site__card-body b{float:right}
+.jornadas-site__new{border:2px dashed #b6cbc2;border-radius:12px;background:#f9fbf8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:200px;color:#3c7367}
+.jornadas-site__new strong{font-size:40px;font-weight:400;line-height:1}
+.jornadas-site__new span{font-weight:900;font-size:14px}.jornadas-site__new small{color:#8b9b91}
+.jornadas-site__access,.jornadas-site__real{background:white;border:1px solid #d9e4dc;border-radius:12px;padding:22px 24px;margin-top:30px}
+.jornadas-site__access{display:grid;grid-template-columns:1fr minmax(260px,.85fr);align-items:center;gap:25px}
+.jornadas-site__access-title{display:flex;gap:16px;align-items:start}
+.jornadas-site__access-title>span{font-size:28px}
+.jornadas-site__access h2,.jornadas-site__real h2{font-size:19px;margin:0 0 6px}
+.jornadas-site__access p,.jornadas-site__real p{font-size:12px;color:#657b73;margin:0;line-height:1.7}
+.jornadas-site__code-form{display:grid;gap:8px}
+.jornadas-site__code-form label{font-weight:900;font-size:11px;color:#567168}
+.jornadas-site__code-form>div,.jornadas-site__login form,.jornadas-site__create-group>div{display:flex;gap:6px}
+.jornadas-site__code-form input,.jornadas-site__login input,.jornadas-site__create-group input{padding:10px;border:1px solid #b9cdc2;border-radius:7px;min-width:0;flex:1}
+.jornadas-site__real{display:grid;gap:17px}
+.jornadas-site__login{display:flex;align-items:center;gap:11px;flex-wrap:wrap}
+.jornadas-site__login form{flex:1 1 360px}.jornadas-site__login button{white-space:nowrap}
+.jornadas-site__login button.jornadas-site__google{background:#edf4f0;border:1px solid #bdd1c7}
+.jornadas-site__real-account{display:flex;justify-content:space-between;align-items:center;padding:10px;background:#eef5f2;border-radius:7px}
+.jornadas-site__real-account button{border:1px solid #bccfc6;background:white;border-radius:6px;padding:6px 10px}
+.jornadas-site__create-group{display:grid;gap:6px}.jornadas-site__create-group label{font-weight:900;font-size:12px}
+.jornadas-site__notice{position:fixed;bottom:18px;right:18px;max-width:440px;z-index:100;background:#183e39;color:white;border-radius:10px;padding:12px 45px 12px 16px;box-shadow:0 5px 22px #0004}
+.jornadas-site__notice button{position:absolute;right:11px;top:9px;border:0;background:transparent;color:white;font-size:20px}
+.jornadas-site__breadcrumb{display:flex;gap:9px;align-items:center;color:#779189;font-size:12px;margin-bottom:13px}
+.jornadas-site__breadcrumb button{border:0;background:transparent;color:#3f766c;font-weight:900;cursor:pointer}
+.jornadas-site__demo{max-width:1110px;margin:auto}
+.jornadas-site__demo .pjlite-jornadas-demo__section{box-shadow:0 5px 15px #193b3210}
+.jornadas-site__footer{padding:16px;text-align:center;border-top:1px solid #dfe7de;font-size:11px;color:#83918b}
+.jornadas-site__create{max-width:580px;margin:25px auto;background:#fff;padding:30px;border:1px solid #dce5dc;border-radius:14px;display:grid;gap:16px;box-shadow:0 10px 25px #193b320e}
+.jornadas-site__create h2{margin:0}.jornadas-site__create>label{display:grid;gap:7px;font-weight:850}
+.jornadas-site__create input,.jornadas-site__create select{padding:11px;border:1px solid #b2c9be;border-radius:8px;width:100%}
+.jornadas-site__create button{padding:11px 16px;border-radius:8px;border:1px solid #9dbab0;background:#e5eee7;font-weight:900}
+.jornadas-site__create button[type=submit]{background:#27645e;color:white}
+@media(max-width:920px){.jornadas-site__layout{grid-template-columns:1fr}.jornadas-site__side{flex-direction:row;gap:4px;overflow:auto;align-items:center;padding:8px 14px}.jornadas-site__side button{white-space:nowrap}.jornadas-site__side-title,.jornadas-site__side-divider,.jornadas-site__side p{display:none}.jornadas-site__content{padding:18px 17px 44px}}
+@media(max-width:660px){.jornadas-site__topbar{height:auto;min-height:65px;padding:9px 14px}.jornadas-site__topbar nav{gap:2px}.jornadas-site__topbar nav a,.jornadas-site__topbar nav button{padding:8px;font-size:11px}.jornadas-site__user{display:none}.jornadas-site__hero{padding:23px 19px}.jornadas-site__hero-icon{display:none}.jornadas-site__access{grid-template-columns:1fr;padding:17px}.jornadas-site__code-form>div,.jornadas-site__login form{flex-wrap:wrap}.jornadas-site__code-form>div>*{flex:1 1 150px}.jornadas-site__real{padding:18px}.jornadas-site__section-heading{align-items:start}.jornadas-site__count{display:none}}
