@@ -3,7 +3,7 @@ import {toBlob} from 'html-to-image';
 import {createPortal} from 'react-dom';
 import {buildThreatCardData} from './threatCardData.js';
 import './threat-card.css';
-const statLabel={dnd5e:'D&D 5.5e',fabula:'Fábula Última',ordemParanormal:'Ordem Paranormal',skyfall:'Skyfall RPG','3det':'3D&T Victory',somdas6:'O Som das Seis',rotaZero:'Rota Zero'};
+const statLabel={dragonbane:'Dragonbane',dnd5e:'D&D 5.5e',fabula:'Fábula Última',ordemParanormal:'Ordem Paranormal',skyfall:'Skyfall RPG','3det':'3D&T Victory',somdas6:'O Som das Seis',rotaZero:'Rota Zero'};
 const systemClass=v=>String(v||'').replace(/[^a-z0-9]/gi,'').toLowerCase();
 export function ThreatStatCard({data,compact=false}){
  const card=buildThreatCardData(data);
