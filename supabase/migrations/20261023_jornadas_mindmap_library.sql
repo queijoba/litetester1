@@ -11,6 +11,7 @@ create table if not exists public.campaign_dm_mindmaps (
  constraint campaign_dm_mindmaps_payload_size check (octet_length(nodes::text)+octet_length(links::text)<=250000)
 );
 alter table public.campaign_dm_mindmaps enable row level security;
+grant select,insert,update,delete on public.campaign_dm_mindmaps to authenticated;
 drop policy if exists mindmap_dm_owner on public.campaign_dm_mindmaps;
 create policy mindmap_dm_owner on public.campaign_dm_mindmaps for all to authenticated
  using (owner_id=(select auth.uid()) and exists(select 1 from public.campaigns c where c.id=campaign_id and c.owner_id=(select auth.uid())))
