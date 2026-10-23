@@ -2157,7 +2157,7 @@ const { useState, useEffect, useRef } = React;
                                 <button onClick={() => { setGuideTab('inicio'); setShowGuideModal(true); }} className="flex items-center gap-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded shadow transition-colors font-bold text-sm">
                                     <SVGIcons.HelpCircle /> Guias e Tutoriais
                                 </button>
-                                <a href="/?jornadas=1" className="pjlite-journeys-home-link" title="Abrir Jornadas — área de campanhas">
+                                <a href="/?jornadas=1" target="_blank" rel="noopener noreferrer" className="pjlite-journeys-home-link" title="Abrir Jornadas em uma nova aba — área de campanhas">
                                     🧭 Jornadas
                                 </a>
                             </div>
