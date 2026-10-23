@@ -22,7 +22,7 @@ assert.ok(argCss.includes('.pjlite-achievement-corner.is-minimal'));
 assert.ok(account.includes('setGroupMaster(group.id,true)'));
 assert.ok(account.includes('toggleDm(group)')&&account.includes('🧭 Jornadas'));
 assert.ok(account.includes('<JornadasPanel account={account} groups={groups} showToast={showToast}'));
-assert.ok(app.includes('setCampaignOptions')&&app.includes('meta.campaignId'));
+assert.ok(app.includes('setCampaignOptions')&&app.includes('data.meta?.campaignId'));
 assert.ok(app.includes('pjlite:jornadas-changed'),'Seletores atualizam as campanhas');
 assert.ok(app.includes("guideTab === 'jornadas'"),'Guia de Jornadas disponível');
 assert.ok(app.includes('Para acessar o material do ARG'),'Guia registra a recompensa');
