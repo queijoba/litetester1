@@ -59,7 +59,7 @@ assert.ok(app.includes('pjlite:open-arg-material'),'Guia mantém acesso restrito
 
 for(const name of ['setGroupMaster','listJourneys','createJourney','saveJourney','listJourneyMessages','sendJourneyMessage','listJourneyResources','addJourneyResource','getMyCloudSheets','listJourneySheets','linkMySheet','setMasterSheetEdit','saveJourneySheet','uploadJourneyMedia'])
  assert.ok(api.includes('function '+name+'('),'Ação de nuvem ausente: '+name);
-for(const type of ['resumo','combate','fichas','chat','materiais'])
+for(const type of ['resumo','combate','fichas','chat','biblioteca','investigacao','relatorios','anotacoes','mapamental','escudo'])
  assert.ok(panel.includes("['"+type+"'"),'Aba Jornada ausente: '+type);
 assert.ok(panel.includes('Permitir edição pelo DM'),'Consentimento explícito do jogador');
 assert.ok(panel.includes('saveJourneySheet(editSheet.sheet_id'),'Mestre deve poder salvar uma ficha autorizada');
