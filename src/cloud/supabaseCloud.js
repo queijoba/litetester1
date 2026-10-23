@@ -36,7 +36,7 @@ export async function getSession() {
 
 export async function signInWithGoogle() {
   const client = requireClient();
-  const redirectTo = window.location.origin + window.location.pathname;
+  const redirectTo = window.location.origin + window.location.pathname + (new URLSearchParams(window.location.search).get('jornadas')==='1'?'?jornadas=1':'');
   const { data, error } = await client.auth.signInWithOAuth({
     provider: 'google',
     options: { redirectTo },
@@ -47,7 +47,7 @@ export async function signInWithGoogle() {
 
 export async function signInWithOtp(email) {
   const client = requireClient();
-  const redirectTo = window.location.origin + window.location.pathname;
+  const redirectTo = window.location.origin + window.location.pathname + (new URLSearchParams(window.location.search).get('jornadas')==='1'?'?jornadas=1':'');
   const { data, error } = await client.auth.signInWithOtp({
     email: String(email || '').trim().toLowerCase(),
     options: { emailRedirectTo: redirectTo },
