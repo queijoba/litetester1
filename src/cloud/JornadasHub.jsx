@@ -60,7 +60,7 @@ export default function JornadasHub(){
    }catch(error){setNotice('Não foi possível atualizar seus grupos. A demonstração continua disponível.');}
  },[session?.user?.id]);
  React.useEffect(()=>{if(session?.user)refresh();else{setProfile(null);setGroups([])}},[refresh,session?.user?.id]);
- const openDemo=()=>{setMode('demo');setNotice('')};
+ const openDemo=()=>{setShowCreate(false);setMode('demo');setNotice('')};
  const unlock=e=>{
    e?.preventDefault();
    if(code.trim().toUpperCase()!==DEMO_KEY){setNotice('Chave de demonstração inválida. Use JORNADAS-TESTE.');return;}
@@ -95,7 +95,7 @@ export default function JornadasHub(){
    }catch(error){setGroupError(error?.message||'Não foi possível criar o grupo.')}
    finally{setGroupBusy(false)}
  };
- const exit=()=>{setMode('lobby');setDemoTitle(demoName())};
+ const exit=()=>{setShowCreate(false);setMode('lobby');setDemoTitle(demoName())};
  return <main className="jornadas-site">
    <header className="jornadas-site__topbar">
      <a className="jornadas-site__brand" href="/" title="Voltar ao PJLite">
