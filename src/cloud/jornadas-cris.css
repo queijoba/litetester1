@@ -42,3 +42,65 @@
 .jornadas-background-options input[type=file]{padding:6px;font-size:11px}
 @media(max-width:710px){.jornadas-clean .jornadas-site__content{border:0;border-radius:0}.jornadas-clean .pjlite-jornadas-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.jornadas-campaign-cover{height:112px}.jornadas-clean .pjlite-jornadas-room{padding:8px}.jornadas-clean .pjlite-jornadas-tabs button{padding:8px!important;font-size:10px}.jornadas-clean .jornadas-site__topbar nav button{padding:8px 9px}}
 @media(max-width:450px){.jornadas-clean .pjlite-jornadas-cards{grid-template-columns:1fr}}
+
+
+/* Revisão responsiva PJLite / referência CRIS: ações claras sem trocar o tema. */
+.jornadas-clean .jornadas-site__layout,
+.jornadas-clean .jornadas-site__content,
+.jornadas-clean .pjlite-jornadas,
+.jornadas-clean .pjlite-jornadas-room,
+.jornadas-clean .campaign-workspace{min-width:0}
+.jornadas-clean .pjlite-jornadas-header{flex-wrap:wrap;align-items:center;gap:10px}
+.jornadas-clean .pjlite-jornadas-header>div{flex:1 1 210px;min-width:0}
+.jornadas-clean .pjlite-jornadas-cards{grid-template-columns:repeat(auto-fit,minmax(min(100%,235px),1fr));align-items:stretch}
+.jornadas-campaign-cover{isolation:isolate}
+.jornadas-campaign-cover__icon{pointer-events:none}
+.jornadas-campaign-card:focus-visible{outline:3px solid #327d62;outline-offset:3px}
+.jornadas-campaign-card .jornadas-campaign-details{min-width:0}
+.jornadas-campaign-card .jornadas-campaign-details strong{overflow-wrap:anywhere}
+.jornadas-campaign-role{z-index:1}
+.jornadas-room-tools{display:flex;align-items:stretch;gap:8px;overflow-x:auto;padding:11px 2px 9px;max-width:100%;scrollbar-width:thin;scrollbar-color:#87a797 #e8f1e8}
+.jornadas-room-tools>button{flex:1 0 auto;min-height:42px;min-width:110px;max-width:210px;border:1px solid #b7d4bf!important;background:#f7fbf6!important;color:#336a59!important;border-radius:8px!important;padding:9px 12px!important;font-size:11px!important;font-weight:850!important;white-space:nowrap}
+.jornadas-room-tools>button:hover{background:#e9f4eb!important;border-color:#6ca785!important}
+.jornadas-room-tools>button.is-active{background:#27665a!important;border-color:#27665a!important;color:#fff!important}
+.jornadas-room-tools>button:focus-visible,.jornadas-clean .pjlite-jornadas-tabs button:focus-visible{outline:2px solid #287761;outline-offset:2px}
+.jornadas-clean .pjlite-jornadas-tabs{max-width:100%;min-width:0;scrollbar-width:thin;scrollbar-color:#8aac99 #eff5ef;overscroll-behavior-inline:contain}
+.jornadas-clean .pjlite-jornadas-tabs button{flex:none;min-height:38px}
+.jornadas-clean .pjlite-jornadas-room-head strong{overflow-wrap:anywhere}
+.jornadas-clean .pjlite-jornadas-room-head button{min-height:37px}
+.jornadas-clean .pjlite-jornadas-fields{min-width:0}
+.jornadas-clean .pjlite-jornadas-fields>input,.jornadas-clean .pjlite-jornadas-fields>select{min-width:min(160px,100%)}
+.jornadas-clean .jornadas-clean__group-list article{min-width:0}
+.jornadas-clean .jornadas-clean__invite code{max-width:100%;overflow-wrap:anywhere}
+.jornadas-clean .jornadas-site__topbar{min-width:0}
+.jornadas-clean .jornadas-site__topbar nav{min-width:0}
+.jornadas-clean .campaign-workspace__fields{grid-template-columns:repeat(auto-fit,minmax(min(100%,155px),1fr))}
+.jornadas-clean .campaign-library-card__actions button{min-width:0}
+.jornadas-clean .campaign-reader{inset:3vh 3vw;max-width:none}
+.jornadas-clean .campaign-reader__head strong,.jornadas-clean .campaign-reader__head small{overflow-wrap:anywhere}
+.jornadas-clean .campaign-mindmap-layout,.jornadas-clean .campaign-mindmap-editor{min-width:0}
+.jornadas-clean .campaign-mindmap-editor{overflow-wrap:anywhere}
+@media(max-width:920px){
+ .jornadas-room-tools>button{min-width:125px;flex:0 0 auto}
+}
+@media(max-width:710px){
+ .jornadas-clean .pjlite-jornadas-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .jornadas-room-tools{padding-bottom:11px}
+ .jornadas-room-tools>button{min-height:40px;min-width:124px;font-size:10px!important}
+ .jornadas-clean .pjlite-jornadas-room-head>div{flex:1 1 100%}
+ .jornadas-clean .campaign-reader{inset:1vh 1vw;padding:10px;border-radius:7px}
+ .jornadas-clean .campaign-library-cover{height:113px}
+}
+@media(max-width:520px){
+ /* A navegação lateral continua visível: evita a barra superior estourar no celular. */
+ .jornadas-clean .jornadas-site__topbar nav button:not(:first-of-type){display:none}
+ .jornadas-clean .jornadas-site__topbar nav{gap:4px}
+ .jornadas-clean .jornadas-site__brandmark{width:32px;height:32px;font-size:18px}
+ .jornadas-clean .jornadas-site__topbar nav .jornadas-site__home-link{padding:8px!important}
+ .jornadas-clean .pjlite-jornadas-cards{grid-template-columns:1fr}
+ .jornadas-campaign-cover{height:145px}
+ .jornadas-room-tools>button{min-width:122px;max-width:none}
+ .jornadas-clean .pjlite-jornadas-room{padding:9px}
+ .jornadas-clean .jornadas-clean__pagehead{padding:12px}
+}
+@media(prefers-reduced-motion:reduce){.jornadas-campaign-card:hover{transform:none}}
