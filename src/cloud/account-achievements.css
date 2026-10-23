@@ -14,3 +14,9 @@
 .pjlite-cloud-group-master-actions{display:flex;align-items:center;gap:6px;justify-content:flex-end;flex-wrap:wrap;padding:8px 0}
 .pjlite-cloud-group-master-actions .secondary{border:1px solid #9db5bc;border-radius:6px;padding:7px 9px;font-size:10px;background:#f0f6f7;color:#355e64;font-weight:900}
 @media(max-width:640px){.pjlite-achievement-corner{bottom:10px;left:10px;max-width:220px}.pjlite-achievement-corner.is-full{padding:7px}.pjlite-cloud-group-master-actions{justify-content:flex-start}}
+
+/* Modo discreto: o gatinho ocupa exatamente o lugar do selo, sem texto. */
+.pjlite-achievement-corner.is-minimal{width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;padding:0!important;overflow:hidden!important;display:grid!important;place-items:center!important;left:14px!important;bottom:16px!important;max-width:40px!important;box-shadow:0 3px 12px #152b2755!important}
+.pjlite-achievement-corner.is-minimal .pjlite-achievement-emblem{width:100%;height:100%;font-size:23px;display:grid;place-items:center;color:#c3f4cc;text-shadow:none;line-height:1}
+.pjlite-achievement-corner.is-minimal .pjlite-achievement-corner-text{display:none!important}
+@media(max-width:640px){.pjlite-achievement-corner.is-minimal{left:10px!important;bottom:10px!important}}

@@ -1,0 +1,44 @@
+
+/* PJLite: navegação inspirada na simplicidade do CRIS, preservando o tema verde/pergaminho. */
+.jornadas-clean{background-color:#f5f5f0}
+.jornadas-clean .jornadas-site__content{background:linear-gradient(140deg,#fafbf8f2,#f4f8f2ee);border-left:1px solid #dee9df;min-height:calc(100vh - 130px);border-radius:0 0 14px 14px}
+.jornadas-clean .jornadas-site__side{background:#f8faf6f7}
+.jornadas-clean .jornadas-clean__pagehead{background:#f9fbf7e0;border-radius:11px;padding:15px}
+.jornadas-clean .jornadas-clean__intro{display:none}
+.jornadas-clean .pjlite-jornadas-header{background:#fbfdf9;border:1px solid #c9d9c9}
+.jornadas-clean .pjlite-jornadas-header h3{font:700 23px Georgia,serif;color:#245d51}
+.jornadas-clean .pjlite-jornadas-header p{font-size:12px}
+.jornadas-clean .pjlite-jornadas-box{background:#fefefd}
+.jornadas-new-campaign{padding:0!important;overflow:hidden}
+.jornadas-new-campaign summary{list-style:none;display:flex;justify-content:center;align-items:center;background:#275f55;color:white;cursor:pointer;font-size:12px;font-weight:900;padding:11px;min-height:43px}
+.jornadas-new-campaign summary::-webkit-details-marker{display:none}
+.jornadas-new-campaign>div{padding:12px}
+.jornadas-clean .pjlite-jornadas-cards{grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:15px}
+.jornadas-campaign-card{border:1px solid #c7dccc!important;padding:0!important;display:flex!important;flex-direction:column;gap:0!important;overflow:hidden;border-radius:13px!important;background:white!important;box-shadow:0 4px 17px #213a2918;min-height:227px}
+.jornadas-campaign-card:hover{transform:translateY(-2px);box-shadow:0 7px 20px #213a2926}
+.jornadas-campaign-cover{height:144px;width:100%;background:linear-gradient(150deg,#284f42,#558c72);background-position:center;background-size:cover;display:flex;align-items:center;justify-content:center;position:relative}
+.jornadas-campaign-cover__icon{font:70px Georgia,serif;color:#eaf5dd77;line-height:1}
+.jornadas-campaign-role{position:absolute;top:8px;left:9px;color:#fff;background:#1a3824b8;border:1px solid #ffffff35;border-radius:6px;padding:4px 8px;font-size:10px;font-weight:850}
+.jornadas-campaign-details{padding:12px;display:grid;gap:6px;flex:1;text-align:left;width:100%;font-size:12px}
+.jornadas-campaign-details strong{font:700 16px Georgia,serif;color:#295344}
+.jornadas-campaign-details small{font-size:10px;color:#748676}
+.jornadas-campaign-details span{font-size:11px;text-align:right;color:#24765b;font-weight:900;margin-top:auto}
+.jornadas-clean .pjlite-jornadas-room{background:#fbfcf9;border-radius:13px;border:1px solid #d3e0d3;padding:16px}
+.jornadas-clean .pjlite-jornadas-room-head{background:#edf5ed;padding:12px;border-radius:10px;border:1px solid #d2e2d3;display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.jornadas-clean .pjlite-jornadas-room-head>div{flex:1;min-width:160px}
+.jornadas-clean .pjlite-jornadas-room-head strong{font:700 21px Georgia,serif}
+.jornadas-clean .pjlite-jornadas-tabs{display:flex;overflow-x:auto;flex-wrap:nowrap;gap:4px;border-bottom:2px solid #d1e1d5;margin:14px 0;padding:0 2px 7px}
+.jornadas-clean .pjlite-jornadas-tabs button{white-space:nowrap;font-size:11px;font-weight:850;border:none!important;border-radius:7px!important;background:transparent!important;color:#5f7c6a!important;padding:10px!important}
+.jornadas-clean .pjlite-jornadas-tabs button[aria-pressed="true"]{background:#e6f2e9!important;color:#216351!important;box-shadow:inset 0 -2px #2a7d5d}
+.jornadas-clean .pjlite-jornadas-box h4{font-family:Georgia,serif;font-size:17px;color:#275b4e}
+.jornadas-clean .pjlite-jornadas-fields button,.jornadas-clean .pjlite-jornadas-room-head button{font-size:11px;font-weight:850}
+.jornadas-background-options{display:grid;gap:10px;padding:17px;margin:0 0 14px;background:#fafffcee;border:1px solid #bad7c5;border-radius:12px}
+.jornadas-background-options h2{font:700 18px Georgia,serif;color:#285c4e;margin:0 0 6px}
+.jornadas-background-options p{font-size:12px;color:#6c8479;margin:0}
+.jornadas-background-options label{display:grid;gap:5px;font-size:11px;font-weight:850;flex:1 1 190px;color:#395e53}
+.jornadas-background-options__row{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
+.jornadas-background-options__row button{background:#e7f1e8;border:1px solid #b3d1bd;border-radius:7px;padding:10px;color:#275b49;font-weight:850;font-size:11px}
+.jornadas-background-options input[type=range]{accent-color:#276451}
+.jornadas-background-options input[type=file]{padding:6px;font-size:11px}
+@media(max-width:710px){.jornadas-clean .jornadas-site__content{border:0;border-radius:0}.jornadas-clean .pjlite-jornadas-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.jornadas-campaign-cover{height:112px}.jornadas-clean .pjlite-jornadas-room{padding:8px}.jornadas-clean .pjlite-jornadas-tabs button{padding:8px!important;font-size:10px}.jornadas-clean .jornadas-site__topbar nav button{padding:8px 9px}}
+@media(max-width:450px){.jornadas-clean .pjlite-jornadas-cards{grid-template-columns:1fr}}
