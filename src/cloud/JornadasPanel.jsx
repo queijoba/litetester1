@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {SheetQuickView,CharacterPortrait} from './SheetQuickView.jsx';
+import {SheetQuickView,CharacterPortrait,CharacterMiniSheet} from './SheetQuickView.jsx';
 import {getJourneySheetSummary} from './journeySheetSummary.js';
 import {
  listJourneys,createJourney,saveJourney,listJourneyMessages,sendJourneyMessage,
@@ -152,15 +152,10 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat,o
     <div className="journeys-panel-heading"><h4>🗂 Personagens e ameaças ({links.length})</h4><button type="button" className="secondary" onClick={()=>setTab('jogadores')}>👥 Jogadores ({members.length||1}) →</button></div>
     {sheetError&&<div className="journeys-sheet-error" role="alert"><strong>Não foi possível carregar todas as fichas.</strong><p>{sheetError}</p><button type="button" onClick={refreshRoom}>↻ Tentar novamente</button></div>}
     {links.length===0&&!sheetError?<div className="journeys-empty-sheets"><strong>Nenhuma ficha vinculada a esta campanha.</strong><p>Fichas sincronizadas na Conta Lite não aparecem automaticamente: cada jogador precisa vinculá-las à campanha aqui embaixo.</p></div>:
-     <div className="journeys-character-grid">{links.map(row=>{
-      const sheet=getJourneySheetSummary(row),mine=row.owner_id===account.id;
-      return <article className="journeys-character-card" key={row.sheet_id}>
-       <CharacterPortrait url={sheet.portrait} name={sheet.name}/>
-       <div className="journeys-character-info"><strong>{sheet.name}</strong><small>{sheet.profession||systemLabel[sheet.system]||sheet.system} · {memberName(row.owner_id)}</small>
-        <div className="journeys-character-vitals">{sheet.hp&&<span>❤️ {sheet.hp.current}/{sheet.hp.max}</span>}{sheet.resource&&<span>✦ {sheet.resource.label} {sheet.resource.current}/{sheet.resource.max}</span>}</div>
-       </div>
-       <button type="button" className="journeys-character-view" onClick={()=>{setEditSheet(null);setPreviewSheet(row)}} aria-label={'Consultar ficha de '+sheet.name}>Ver ficha</button>
-      </article>})}</div>}
+     <div className="journeys-character-grid">{links.map(row=>
+      <CharacterMiniSheet key={row.sheet_id} row={row} ownerLabel={memberName(row.owner_id)}
+       onView={()=>{setEditSheet(null);setPreviewSheet(row)}}/>
+     )}</div>}
     <details className="journeys-link-sheet" open={links.length===0}><summary>＋ Vincular ou gerenciar minhas fichas</summary>
      <p>As fichas precisam estar sincronizadas na Conta Lite antes de vinculá-las à campanha.</p>
      {mySheets.length>0&&<div className="journeys-link-sheet__available"><strong>Minhas fichas sincronizadas</strong>{mySheets.filter(s=>!links.some(row=>row.sheet_id===s.id)).map(s=><div key={s.id} className="journeys-link-sheet__row"><span>{s.name||'Ficha sem nome'} · {systemLabel[s.system]||s.system}</span><button type="button" disabled={busy} onClick={()=>addLinkFrom(s.id)}>+ Vincular à campanha</button></div>)}{mySheets.every(s=>links.some(row=>row.sheet_id===s.id))&&<small>Você já vinculou todas as suas fichas disponíveis.</small>}</div>}
