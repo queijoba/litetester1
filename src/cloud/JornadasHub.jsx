@@ -149,7 +149,7 @@ export default function JornadasHub(){
        </div>
        {!groups.some(g=>g.isOwner&&g.is_dm)&&
         <div className="jornadas-clean__onboarding"><strong>Primeiro passo: criar um grupo de mestre</strong><p>É o grupo que permite convidar pessoas e controlar as permissões da mesa.</p><button onClick={()=>navigate('groups')}>+ Criar grupo e continuar →</button></div>}
-       <JornadasPanel account={account} groups={groups} showToast={setNotice} onRequestGroups={()=>navigate('groups')} onCreateThreat={()=>setNotice('Abra a Home e crie uma ameaça nas suas fichas; depois sincronize e vincule à Jornada.')}/>
+       <JornadasPanel account={account} groups={groups} onRefreshGroups={refresh} showToast={setNotice} onRequestGroups={()=>navigate('groups')} onCreateThreat={()=>setNotice('Abra a Home e crie uma ameaça nas suas fichas; depois sincronize e vincule à Jornada.')}/>
       </div>}
       {tab==='groups'&&<div className="jornadas-clean__groups">
        <div className="jornadas-clean__group-actions">
