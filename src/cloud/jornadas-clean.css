@@ -1,0 +1,70 @@
+
+/* Jornadas 1.1.0: espaço de campanhas reais, sem mesas simuladas. */
+.jornadas-clean{--js-teal:#245e56;background:#f5f5f0}
+.jornadas-clean .jornadas-site__layout{grid-template-columns:218px minmax(0,1fr)}
+.jornadas-clean .jornadas-site__side{gap:5px}
+.jornadas-clean .jornadas-site__side button{font-size:13px;border:1px solid transparent}
+.jornadas-clean .jornadas-site__side button.is-active{background:#e5f0e9;color:#235c53;border-color:#b8d6c4}
+.jornadas-clean .jornadas-site__sidebar-home{margin-top:22px}
+.jornadas-clean__sidebar-note{margin:14px 10px;color:#7d8f86;font-size:11px;line-height:1.6}
+.jornadas-clean .jornadas-site__content{max-width:1110px;width:100%;margin:auto;padding-top:30px}
+.jornadas-clean__pagehead{display:flex;justify-content:space-between;align-items:flex-end;gap:15px;padding:0 0 19px;border-bottom:1px solid #dce5dc;margin-bottom:20px}
+.jornadas-clean__pagehead h1{font:bold clamp(24px,4vw,36px)/1.15 Georgia,serif;color:#274b43;margin:6px 0}
+.jornadas-clean__pagehead p{font-size:12px;line-height:1.7;color:#75887d;margin:0;max-width:670px}
+.jornadas-clean__back{font-size:11px;font-weight:800;white-space:nowrap;text-decoration:none;color:#2c6559;border:1px solid #bed6c9;border-radius:8px;padding:9px 11px;background:white}
+.jornadas-clean__auth,.jornadas-clean__box{border:1px solid #d9e4d9;background:#fff;border-radius:12px;padding:20px;box-shadow:0 6px 24px #1a302313}
+.jornadas-clean__auth{display:grid;gap:17px;max-width:660px;margin:20px auto}
+.jornadas-clean__auth-description{text-align:center;padding:10px}
+.jornadas-clean__auth-description>span{font-size:36px}
+.jornadas-clean h2{font:700 18px Georgia,serif;color:#2b584d;margin:0 0 8px}
+.jornadas-clean__auth-description p,.jornadas-clean__box p{font-size:12px;line-height:1.7;color:#677d72;margin:0 0 10px}
+.jornadas-clean__auth form,.jornadas-clean__group-actions form{display:grid;gap:10px}
+.jornadas-clean label{font-size:11px;color:#496b5e;display:grid;gap:6px;font-weight:800}
+.jornadas-clean input,.jornadas-clean textarea,.jornadas-clean select{font-size:13px;color:#2c4b42;background:#fff;border:1px solid #c8dbce;border-radius:7px;min-height:38px;padding:9px;max-width:100%}
+.jornadas-clean__auth form button,.jornadas-clean__box>form button,.jornadas-clean__group-actions button,.jornadas-clean__account-actions button,.jornadas-clean__listhead button,.jornadas-clean__group-list button{border:1px solid #b1cabc;background:#edf6f0;color:#2a6554;border-radius:8px;padding:10px 13px;font-size:12px;font-weight:850}
+.jornadas-clean .jornadas-clean__primary{background:#24675d;color:#fff;border-color:#24675d;padding:12px 16px}
+.jornadas-clean__auth small{font-size:11px;color:#8b978e;text-align:center}
+.jornadas-clean__auth a,.jornadas-clean__account-actions a{color:#26685a;font-weight:900;text-decoration:none}
+.jornadas-clean__alert,.jornadas-clean__notice{display:flex;justify-content:space-between;align-items:center;gap:10px;border-radius:8px;padding:10px 13px;font-size:12px;margin-bottom:14px;border:1px solid #ecc7bd;background:#fff3f0;color:#823d35}
+.jornadas-clean__notice{background:#eaf6ec;border-color:#b4d5bb;color:#24624a}
+.jornadas-clean__alert button,.jornadas-clean__notice button{border:0;background:transparent;color:inherit;font-size:18px}
+.jornadas-clean__intro{padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:13px;border-radius:11px;border:1px solid #d3e3d8;background:#eaf4ed;margin-bottom:14px}
+.jornadas-clean__intro strong{font:700 17px Georgia,serif;color:#285a4f}
+.jornadas-clean__intro p{font-size:12px;color:#5b7569;line-height:1.5;margin:5px 0 0}
+.jornadas-clean__intro button,.jornadas-clean__onboarding button{border-radius:8px;background:#24675d;border:1px solid #24675d;color:white;font-weight:850;font-size:12px;padding:10px 12px;white-space:nowrap}
+.jornadas-clean__onboarding{border:1px solid #c7dabc;padding:17px;background:#f6faee;border-radius:11px;margin:0 0 14px}
+.jornadas-clean__onboarding strong{color:#486c3c;font:700 16px Georgia,serif}
+.jornadas-clean__onboarding p{font-size:12px;color:#6b8262;margin:5px 0 11px}
+.jornadas-clean .pjlite-jornadas{font-family:system-ui,-apple-system,sans-serif}
+.jornadas-clean .pjlite-jornadas-header{background:#fff;border-color:#d6e5da}
+.jornadas-clean .pjlite-jornadas-box{border-color:#d5e1d8}
+.jornadas-clean .pjlite-jornadas-primary{background:#286b60!important;border-color:#286b60!important}
+.jornadas-clean .pjlite-jornadas-card{border-color:#c0dcc7;background:linear-gradient(135deg,#f6faf4,#e9f3ed)}
+.jornadas-clean__group-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin:0 0 15px}
+.jornadas-clean__group-actions .jornadas-clean__box{display:grid;align-content:start}
+.jornadas-clean__listhead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:13px}
+.jornadas-clean__group-list{display:grid;gap:9px}
+.jornadas-clean__group-list article{background:#f8faf7;border:1px solid #dce7dc;border-radius:9px;padding:13px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.jornadas-clean__group-list article>div:first-child{flex:1;display:grid;gap:4px;min-width:135px}
+.jornadas-clean__group-list strong{font-size:13px;color:#2a594a}
+.jornadas-clean__group-list small{color:#7c8b7f;font-size:10px}
+.jornadas-clean__invite{display:flex;align-items:center;flex-wrap:wrap;gap:7px;flex:1 1 280px}
+.jornadas-clean__invite span{font-size:10px;color:#6a8475}
+.jornadas-clean__invite code{font-size:11px;color:#1f5b4d;background:#e7f5e9;border:1px dashed #b2d3bd;border-radius:5px;padding:7px}
+.jornadas-clean__group-list .jornadas-clean__enter{background:#276d5e;color:#fff}
+.jornadas-clean__chat{max-width:900px;margin:auto}
+.jornadas-clean__identity{display:flex;align-items:center;gap:14px;border-bottom:1px solid #dce6dc;padding:0 0 17px;margin-bottom:14px}
+.jornadas-clean__identity>div:last-child{display:grid;gap:3px}
+.jornadas-clean__identity strong{font:bold 19px Georgia,serif;color:#1f5d50}
+.jornadas-clean__identity small{font-size:11px;color:#74857b}
+.jornadas-clean__identity span{color:#31936e;font-size:10px;font-weight:900}
+.jornadas-clean__avatar{width:57px;height:57px;border-radius:50%;display:grid;place-items:center;color:#fff;background:#2d6b5e;font:700 26px Georgia,serif;overflow:hidden}
+.jornadas-clean__avatar img{height:100%;width:100%;object-fit:cover}
+.jornadas-clean__account{max-width:750px}
+.jornadas-clean__account-actions{display:flex;gap:9px;flex-wrap:wrap;margin:17px 0}
+.jornadas-clean__account-actions a{font-size:11px;padding:11px;background:#edf6ef;border-radius:8px;border:1px solid #c5d9c9}
+.jornadas-clean .jornadas-clean__logout{background:#fff;border:1px solid #dcb8b2;color:#943d39;border-radius:8px;font-size:11px;font-weight:800;padding:9px 12px}
+.jornadas-clean .jornadas-site__topbar nav{flex-wrap:nowrap}
+@media(max-width:960px){.jornadas-clean .jornadas-site__content{padding:22px 18px}.jornadas-clean .jornadas-site__layout{grid-template-columns:180px minmax(0,1fr)}}
+@media(max-width:710px){.jornadas-clean .jornadas-site__layout{display:block}.jornadas-clean .jornadas-site__side{padding:8px 12px;flex-direction:row;overflow-x:auto;gap:7px;border-bottom:1px solid #dce7dc;border-right:0}.jornadas-clean .jornadas-site__side .jornadas-site__side-title,.jornadas-clean .jornadas-site__side .jornadas-site__sidebar-home,.jornadas-clean .jornadas-site__side .jornadas-clean__sidebar-note{display:none}.jornadas-clean .jornadas-site__side button{flex:0 0 auto;white-space:nowrap;padding:9px 11px}.jornadas-clean__group-actions{grid-template-columns:1fr}.jornadas-clean__intro,.jornadas-clean__pagehead{align-items:flex-start;flex-wrap:wrap}.jornadas-clean__pagehead{margin-bottom:13px}.jornadas-clean .jornadas-site__topbar nav a.jornadas-site__home-link{display:inline-flex}.jornadas-clean .jornadas-site__user{display:none}}
+@media(max-width:480px){.jornadas-clean .jornadas-site__content{padding:15px 10px}.jornadas-clean .jornadas-site__topbar{padding:8px 10px;gap:6px}.jornadas-clean .jornadas-site__topbar nav{gap:4px}.jornadas-clean .jornadas-site__topbar nav button{padding:8px 7px;font-size:11px}.jornadas-clean .jornadas-site__brand strong{font-size:12px}.jornadas-clean .jornadas-site__brand small{font-size:7px}.jornadas-clean__back{display:none}.jornadas-clean__box,.jornadas-clean__auth{padding:13px}.jornadas-clean__intro{padding:11px}.jornadas-clean .jornadas-site__side button{font-size:11px}}
