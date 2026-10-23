@@ -1,0 +1,16 @@
+.pjlite-achievement-corner{position:fixed;bottom:16px;left:14px;z-index:295;display:flex;align-items:center;gap:9px;cursor:pointer;border:1px solid #708b78;border-radius:10px;background:linear-gradient(125deg,#142b27,#254b3f);color:#dfeeda;box-shadow:0 4px 20px #0005;padding:9px 11px;max-width:min(300px,90vw)}
+.pjlite-achievement-corner.is-minimal{border-radius:50%;width:44px;height:44px;padding:0;justify-content:center;border-color:#8cc987;background:linear-gradient(135deg,#245444,#0f2924)}
+.pjlite-achievement-emblem{display:inline-flex;align-items:center;justify-content:center;color:#9af0ad;font-size:24px;text-shadow:0 0 10px #56d48f}
+.pjlite-achievement-corner-text{display:grid;gap:2px;min-width:0;text-align:left}
+.pjlite-achievement-corner-text strong{color:#bceebf;font-size:10px;letter-spacing:.12em}
+.pjlite-achievement-corner-text small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#d0ded3;font-size:10px}
+.pjlite-cloud-achievement-switch{display:flex;align-items:center;gap:9px;background:#f0f6f2;border:1px solid #c3d9c6;border-radius:9px;padding:10px;font-size:11px;color:#335d48;cursor:pointer}
+.pjlite-cloud-achievement-switch input{accent-color:#26764e;width:17px;height:17px;flex:none}
+.pjlite-cloud-achievement-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.pjlite-cloud-achievement-list span{border-radius:6px;padding:5px 8px;font-size:10px;font-weight:900;background:#eef0f3;color:#586c85;border:1px solid #d1dae4}
+.pjlite-cloud-achievement-list span.is-event{border-color:#7dbe88;color:#285e37;background:#e9f9ec}
+.pjlite-cloud-arg-material{background:linear-gradient(120deg,#eef7eb,#e6f0e9)!important;border-color:#93c59c!important}
+.pjlite-cloud-arg-material h3{color:#2b673c!important}
+.pjlite-cloud-group-master-actions{display:flex;align-items:center;gap:6px;justify-content:flex-end;flex-wrap:wrap;padding:8px 0}
+.pjlite-cloud-group-master-actions .secondary{border:1px solid #9db5bc;border-radius:6px;padding:7px 9px;font-size:10px;background:#f0f6f7;color:#355e64;font-weight:900}
+@media(max-width:640px){.pjlite-achievement-corner{bottom:10px;left:10px;max-width:220px}.pjlite-achievement-corner.is-full{padding:7px}.pjlite-cloud-group-master-actions{justify-content:flex-start}}
