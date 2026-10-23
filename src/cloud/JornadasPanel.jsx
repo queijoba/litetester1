@@ -12,7 +12,7 @@ const validHttp=value=>{try{return new URL(value).protocol==='https:'}catch{retu
 const sheetName=s=>s?.name||s?.payload?.bio?.nome||s?.payload?.nome||'Ficha sem nome';
 const previewField=(p,k)=>p?.status?.[k]??p?.[k]??'';
 const levels={fabula:'Crise = metade do PV máximo; pontos de Fabula/Ultima dependem da criatura.',dragonbane:'Ferocidade indica quantas ações do monstro ocorrem por rodada. Na tabela de ataques, role 1d6.',dnd5e:'A iniciativa determina a ordem dos turnos; cada rodada reúne os turnos de todos os participantes.',ordemParanormal:'Compare Defesa e os testes de ataque; acompanhe PV e condições.',skyfall:'Acompanhe os recursos do personagem e efeitos narrativos da Sombra.',somdas6:'Acompanhe a iniciativa, a munição e as ações do turno.','3det':'Calcule FA e FD de acordo com o sistema; acompanhe PV, PM e PA.'};
-export default function JornadasPanel({account,groups,showToast,onCreateThreat}){
+export default function JornadasPanel({account,groups,showToast,onCreateThreat,onRequestGroups}){
  const [journeys,setJourneys]=React.useState([]),[active,setActive]=React.useState(''),[tab,setTab]=React.useState('resumo');
  const [campaignName,setCampaignName]=React.useState(''),[groupId,setGroupId]=React.useState(''),[system,setSystem]=React.useState('dragonbane'),[busy,setBusy]=React.useState(false);
  const [draft,setDraft]=React.useState(null),[messages,setMessages]=React.useState([]),[resources,setResources]=React.useState([]),[links,setLinks]=React.useState([]),[mySheets,setMySheets]=React.useState([]);
@@ -27,6 +27,7 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat})
  const group=groups.find(g=>g.id===current?.group_id);
  const isDm=!!current&&current.owner_id===account?.id&&!!group?.is_dm;
  const dmGroups=groups.filter(g=>g.isOwner&&g.is_dm);
+ React.useEffect(()=>{if(dmGroups.length===1&&groupId!==dmGroups[0].id)setGroupId(dmGroups[0].id);},[groups,groupId]);
  const notify=text=>{setStatus(text);showToast?.(text)};
  const load=React.useCallback(async()=>{try{setJourneys(await listJourneys())}catch(error){console.error('Jornadas: listar',error);setStatus('Não foi possível carregar as campanhas.')}},[account?.id]);
  React.useEffect(()=>{if(account?.id)load();else setJourneys([])},[account?.id,load]);
@@ -49,8 +50,10 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat})
  },[current?.id,tab,isDm]);
  const run=async(action,success)=>{setBusy(true);try{await action();if(success)notify(success);}catch(error){console.error('Jornadas',error);notify(error?.message||'Não foi possível concluir a operação.')}finally{setBusy(false)}};
  const newCampaign=()=>run(async()=>{
-  if(!groupId)throw new Error('Escolha um grupo com DM ativo.');
-  const created=await createJourney(groupId,campaignName,system);
+  const selectedGroup=groupId||(dmGroups.length===1?dmGroups[0].id:'');
+  if(!selectedGroup)throw new Error('Escolha um grupo de mestre.');
+  if(!campaignName.trim())throw new Error('Dê um nome à campanha.');
+  const created=await createJourney(selectedGroup,campaignName,system);
   await load();setActive(created.id);setCampaignName('');
  },'Jornada criada. Todos os membros do grupo já podem entrar.');
  const save=()=>run(async()=>{
@@ -84,7 +87,7 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat})
  return <div className="pjlite-jornadas">
   <div className="pjlite-jornadas-header"><div><small>CONTA LITE • GRUPOS E CAMPANHAS</small><h3>🧭 Jornadas</h3><p>Uma campanha pertence a um grupo. Seus membros entram automaticamente e o dono do grupo com a opção DM controla a mesa.</p></div><button type="button" className="secondary" onClick={()=>run(load,'Campanhas atualizadas.')}>↻ Atualizar</button></div>
   {status&&<div className="pjlite-jornadas-status" role="status">{status}</div>}
-  {!current?<><section className="pjlite-jornadas-box"><h4>Criar campanha</h4>{dmGroups.length===0?<p>Para criar uma Jornada, abra <strong>Grupos</strong>, crie um grupo ou marque <strong>DM</strong> em um grupo seu.</p>:<div className="pjlite-jornadas-fields"><select aria-label="Grupo com mestre" value={groupId} onChange={e=>setGroupId(e.target.value)}><option value="">Selecione o grupo DM...</option>{dmGroups.map(g=><option value={g.id} key={g.id}>{g.name}</option>)}</select><input aria-label="Nome da campanha" maxLength={120} placeholder="Nome da campanha" value={campaignName} onChange={e=>setCampaignName(e.target.value)}/><select aria-label="Sistema da campanha" value={system} onChange={e=>setSystem(e.target.value)}><option value="Livre">Sistema livre</option>{Object.entries(systemLabel).map(([k,v])=><option value={k} key={k}>{v}</option>)}</select><button type="button" disabled={busy} className="pjlite-jornadas-primary" onClick={newCampaign}>+ Criar Jornada</button></div>}</section>
+  {!current?<><section id="jornadas-create-form" className="pjlite-jornadas-box"><h4>＋ Criar campanha real</h4>{dmGroups.length===0?<div><p>Crie um grupo de mestre para habilitar campanhas compartilhadas.</p><button type="button" className="pjlite-jornadas-primary" onClick={onRequestGroups}>♟ Criar grupo →</button></div>:<div className="pjlite-jornadas-fields"><select aria-label="Grupo com mestre" value={groupId} onChange={e=>setGroupId(e.target.value)}><option value="">Selecione o grupo DM...</option>{dmGroups.map(g=><option value={g.id} key={g.id}>{g.name}</option>)}</select><input aria-label="Nome da campanha" maxLength={120} placeholder="Nome da campanha" value={campaignName} onChange={e=>setCampaignName(e.target.value)}/><select aria-label="Sistema da campanha" value={system} onChange={e=>setSystem(e.target.value)}><option value="Livre">Sistema livre</option>{Object.entries(systemLabel).map(([k,v])=><option value={k} key={k}>{v}</option>)}</select><button type="button" disabled={busy} className="pjlite-jornadas-primary" onClick={newCampaign}>+ Criar Jornada</button></div>}</section>
    <div className="pjlite-jornadas-cards">{journeys.map(c=><button className="pjlite-jornadas-card" key={c.id} type="button" onClick={()=>setActive(c.id)}><span>✦ {groups.find(g=>g.id===c.group_id)?.name||'Grupo'}</span><strong>{c.name}</strong><small>{systemLabel[c.system]||c.system} • {c.owner_id===account.id?'Mestre':'Jogador'}</small></button>)}{journeys.length===0&&<p className="pjlite-jornadas-empty">Ainda não há campanhas nos seus grupos.</p>}</div>
   </>:draft&&<div className="pjlite-jornadas-room">
    <div className="pjlite-jornadas-room-head"><button type="button" className="secondary" onClick={()=>{setActive('');setEditSheet(null)}}>← Jornadas</button><div><strong>{current.name}</strong><small>{group?.name} • {systemLabel[current.system]||current.system} • {isDm?'Mestre':'Jogador'}</small></div><button type="button" className="secondary" onClick={refresh}>↻</button></div>
