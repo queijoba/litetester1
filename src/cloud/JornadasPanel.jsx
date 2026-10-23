@@ -34,6 +34,17 @@ export default function JornadasPanel({account,groups,showToast}){
   setMessages(m);setResources(r);setLinks(l);setMySheets(own);
  }catch(error){console.error('Jornadas: carregar sala',error);notify('Falha ao carregar a sala da campanha.')}};
  React.useEffect(()=>{if(current)refresh()},[current?.id]);
+ React.useEffect(()=>{
+  if(!current)return;
+  const timer=setInterval(()=>{
+   if(tab==='chat')listJourneyMessages(current.id).then(setMessages).catch(()=>{});
+   if(tab==='combate'&&!isDm)listJourneys().then(rows=>{
+    const latest=rows.find(c=>c.id===current.id);
+    if(latest)setDraft({...latest,board:cleanBoard(latest.board)});
+   }).catch(()=>{});
+  },12000);
+  return()=>clearInterval(timer);
+ },[current?.id,tab,isDm]);
  const run=async(action,success)=>{setBusy(true);try{await action();if(success)notify(success);}catch(error){console.error('Jornadas',error);notify(error?.message||'Não foi possível concluir a operação.')}finally{setBusy(false)}};
  const newCampaign=()=>run(async()=>{
   if(!groupId)throw new Error('Escolha um grupo com DM ativo.');
