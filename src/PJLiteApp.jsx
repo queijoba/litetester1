@@ -1,3 +1,4 @@
+import {orderedDragonbaneAttributes} from './systems/dragonbane/attributes.js';
 import DndCharacterEditor from './systems/dnd5e/components/CharacterEditor.jsx';
 import DndLibraryModal from './components/DndLibraryModal.jsx';
 import OrdemLibraryModal from './systems/ordemParanormal/OrdemLibraryModal.jsx';
@@ -634,11 +635,17 @@ const { useState, useEffect, useRef } = React;
             clone.companheiros = Array.isArray(clone.companheiros) ? clone.companheiros : [];
             return clone;
         };
+        // Corrige apenas a ordem das chaves de fichas Dragonbane, sem
+        // mover pontuações entre atributos ou alterar fichas de outros sistemas.
+        const normalizeDragonbanePcData = item =>
+            item?.system === 'dragonbane' && item?.type === 'pc'
+                ? { ...item, atributos: orderedDragonbaneAttributes(item.atributos) }
+                : item;
         const getSavedCharacters = () => {
             try {
                 const raw = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
                 if (!Array.isArray(raw)) return [];
-                return raw.filter(x => x && typeof x === 'object').map(item => normalizeMetaItem({ ...item, system: item.system || 'dragonbane', type: 'pc' }));
+                return raw.filter(x => x && typeof x === 'object').map(item => normalizeDragonbanePcData(normalizeMetaItem({ ...item, system: item.system || 'dragonbane', type: 'pc' })));
             } catch { return []; }
         };
         const getSavedThreats = () => {
@@ -1510,6 +1517,7 @@ const { useState, useEffect, useRef } = React;
             const saveToLocal = (itemData, silent = false) => {
                 try {
                     let savingData = normalizeMetaItem(itemData);
+                    savingData = normalizeDragonbanePcData(savingData);
                     savingData = normalizeDndPcData(savingData);
                     savingData = normalizeFabulaPcData(savingData);
                     savingData = normalizeFabulaThreatData(savingData);
@@ -1746,6 +1754,7 @@ const { useState, useEffect, useRef } = React;
                 const char = savedChars.find(c => c.id === id);
                 if (char) {
                     let normalized = normalizeMetaItem(char);
+                    normalized = normalizeDragonbanePcData(normalized);
                     normalized = normalizeDndPcData(normalized);
                     normalized = normalizeFabulaPcData(normalized);
                     normalized = normalizeFabulaThreatData(normalized);
@@ -1990,6 +1999,8 @@ const { useState, useEffect, useRef } = React;
 
             const handleAttributeChange = (attr, value) => {
                 const newData = JSON.parse(JSON.stringify(data));
+                // Fichas antigas/incompletas também aceitam a edição de atributos.
+                newData.atributos = orderedDragonbaneAttributes(newData.atributos);
                 newData.atributos[attr].valor = value;
                 if (!newData.status?.manterDerivados) {
                     if (attr === 'for') { newData.derivados.danoBonusFor = getDanoBonus(value); newData.derivados.limiteSobrecarga = Math.ceil(value / 2); }
@@ -2054,6 +2065,7 @@ const { useState, useEffect, useRef } = React;
                 const allIds = new Set([...getSavedCharacters(), ...getSavedThreats()].map(x => x.id));
                 if (!clone.id || allIds.has(clone.id)) clone.id = `${Date.now()}-${Math.random().toString(36).slice(2,7)}`;
                 let normalizedData = normalizeMetaItem(clone);
+                normalizedData = normalizeDragonbanePcData(normalizedData);
                 normalizedData = normalizeDndPcData(normalizedData);
                 normalizedData = normalizeFabulaPcData(normalizedData);
                 normalizedData = normalizeFabulaThreatData(normalizedData);

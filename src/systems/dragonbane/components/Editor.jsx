@@ -1,3 +1,4 @@
+import {DRAGONBANE_ATTRIBUTE_ORDER,dragonbaneAttributeValue,dragonbaneAttributeCondition} from '../attributes.js';
 // Extraído automaticamente do antigo PJLiteApp monolítico.
 // Este arquivo agora é a fonte visual do editor deste sistema.
 export default function DragonbaneEditor({ scope }) {
@@ -317,14 +318,14 @@ export default function DragonbaneEditor({ scope }) {
       
                                           <div className={`${mobileTab === 'status' ? 'block' : 'hidden md:block'}`}>
                                               <div className="db-attributes-strip">
-                                                  {Object.keys(data.atributos || {}).map(attr => (
+                                                  {DRAGONBANE_ATTRIBUTE_ORDER.map(attr => (
                                                       <div key={`strip-${attr}`} className="db-attr-medallion">
                                                           <div className="db-attr-circle">
                                                               <span className="db-attr-name">{attr}</span>
-                                                              <input type="number" value={data.atributos[attr].valor} onChange={e => handleAttributeChange(attr, parseInt(e.target.value)||0)} />
+                                                              <input type="number" value={dragonbaneAttributeValue(data.atributos,attr)} onChange={e => handleAttributeChange(attr, parseInt(e.target.value)||0)} />
                                                           </div>
-                                                          <label className={`db-condition ${data.atributos[attr].condicao ? 'active' : ''}`}>
-                                                              <input type="checkbox" checked={data.atributos[attr].condicao} onChange={e => updateField(`atributos.${attr}.condicao`, e.target.checked)} className="cursor-pointer" />
+                                                          <label className={`db-condition ${dragonbaneAttributeCondition(data.atributos,attr) ? 'active' : ''}`}>
+                                                              <input type="checkbox" checked={dragonbaneAttributeCondition(data.atributos,attr)} onChange={e => updateField(`atributos.${attr}.condicao`, e.target.checked)} className="cursor-pointer" />
                                                               {{ for: 'Exausto', con: 'Adoecido', agl: 'Aturdido', int: 'Enraivecido', von: 'Assustado', car: 'Desanimado' }[attr]}
                                                           </label>
                                                       </div>
@@ -344,13 +345,13 @@ export default function DragonbaneEditor({ scope }) {
                                                   <div className="hidden">
                                                       <h2 style={getBarStyle()} className="font-title font-bold text-lg bg-dragon-dark text-white text-center py-1 mb-3 rounded-sm">ATRIBUTOS E CONDIÇÕES</h2>
                                                       <div className="grid grid-cols-2 gap-4">
-                                                          {Object.keys(data.atributos || {}).map(attr => (
+                                                          {DRAGONBANE_ATTRIBUTE_ORDER.map(attr => (
                                                               <div key={attr} className="border-2 border-gray-300 p-2 text-center rounded bg-gray-50 relative">
                                                                   <div className="font-title font-bold text-xl uppercase text-red-800">{attr}</div>
-                                                                  <input type="number" value={data.atributos[attr].valor} onChange={e => handleAttributeChange(attr, parseInt(e.target.value)||0)} className="w-full text-center text-2xl font-bold bg-transparent outline-none mb-2" />
+                                                                  <input type="number" value={dragonbaneAttributeValue(data.atributos,attr)} onChange={e => handleAttributeChange(attr, parseInt(e.target.value)||0)} className="w-full text-center text-2xl font-bold bg-transparent outline-none mb-2" />
                                                                   <div className="flex items-center justify-center gap-1 text-[10px] sm:text-xs">
-                                                                      <input type="checkbox" checked={data.atributos[attr].condicao} onChange={e => updateField(`atributos.${attr}.condicao`, e.target.checked)} className="cursor-pointer" />
-                                                                      <label className={`uppercase font-bold ${data.atributos[attr].condicao ? 'text-red-600' : 'text-gray-500'}`}>{{ for: 'Exausto', con: 'Adoecido', agl: 'Aturdido', int: 'Enraivecido', von: 'Assustado', car: 'Desanimado' }[attr]}</label>
+                                                                      <input type="checkbox" checked={dragonbaneAttributeCondition(data.atributos,attr)} onChange={e => updateField(`atributos.${attr}.condicao`, e.target.checked)} className="cursor-pointer" />
+                                                                      <label className={`uppercase font-bold ${dragonbaneAttributeCondition(data.atributos,attr) ? 'text-red-600' : 'text-gray-500'}`}>{{ for: 'Exausto', con: 'Adoecido', agl: 'Aturdido', int: 'Enraivecido', von: 'Assustado', car: 'Desanimado' }[attr]}</label>
                                                                   </div>
                                                               </div>
                                                           ))}

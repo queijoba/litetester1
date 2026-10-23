@@ -1,3 +1,4 @@
+import {DRAGONBANE_ATTRIBUTE_ORDER,dragonbaneAttributeValue,dragonbaneAttributeCondition} from '../attributes.js';
 import {dragonbaneAbilityKind,dragonbanePdfAbilityOrder,dragonbanePdfAbilityName,dragonbaneMagicSchool} from '../abilities.js';
 const clean = v => String(v ?? '')
   .replace(/[–—]/g, '-')
@@ -68,9 +69,10 @@ export function fillDragonbanePdf(form, item) {
   setText(form, 'fraqueza', bio.fraqueza);
   setText(form, 'aparencia', bio.aparencia);
 
-  ['for', 'con', 'agl', 'int', 'von', 'car'].forEach(key => {
-    setText(form, key, atr?.[key]?.valor ?? '');
-    setCheck(form, `condicao_${key}`, !!atr?.[key]?.condicao);
+  // Cada campo do template tem um nome estável, nunca uma posição no objeto importado.
+  DRAGONBANE_ATTRIBUTE_ORDER.forEach(key => {
+    setText(form, key, dragonbaneAttributeValue(atr, key));
+    setCheck(form, `condicao_${key}`, dragonbaneAttributeCondition(atr, key));
   });
 
   setText(form, 'bonus_for', der.danoBonusFor);
