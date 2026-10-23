@@ -16,7 +16,7 @@ need(ordem,['PJ LITE 0.8.3 ORDEM POWERS','PODERES PARANORMAIS',"sortOrdemByName(
 need(ordemDataText,['poderesParanormais:[]','migrados','/paranormal/i'],'Dados Ordem');
 need(ordemCss,['PJ LITE 0.8.3 ORDEM THEME','.ordem-paranormal-entry','.ordem-ritual-entry'],'Tema Ordem');
 need(ordemChat,['PODERES PARANORMAIS','RITUAIS','HABILIDADES & PODERES'],'Ficha Chat Ordem');
-need(app,['PJ LITE 0.8.3 ALPHA FINAL','PJ LITE 0.9.1 RELEASE BASE','PJ LITE 0.9.5 RELEASE',"versao: '0.9.1v Alpha'","versao: '0.9.5v Alpha'",'✨ 0.9.5v Alpha — Conta Lite e grupos em nuvem','Poderes Paranormais','Truques, Camada Superficial'],'App 0.9.5');
+need(app,['PJ LITE 0.8.3 ALPHA FINAL','PJ LITE 0.9.1 RELEASE BASE','PJ LITE 0.9.5 RELEASE',"versao: '0.9.1v Alpha'","versao: '0.9.5v Alpha'",'<NewsBanner collapsed={newsCollapsed}','Poderes Paranormais','Truques, Camada Superficial'],'App 0.9.5');
 if(!app.includes('const SCHEMA_VERSION = 7;'))throw new Error('Schema não atualizado para 7.');
 
 const ordemData=await import('../src/systems/ordemParanormal/data.js');
