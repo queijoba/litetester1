@@ -79,13 +79,53 @@ export async function getMyCloudSheets(){
  const actor=await user();
  return check(await client().from('sheets').select('id,local_id,name,sheet_type,system,owner_id').eq('owner_id',actor.id).order('updated_at',{ascending:false}))||[];
 }
-export async function listJourneySheets(campaignId){
+const SHEET_COLUMNS='id,local_id,name,sheet_type,system,owner_id,payload,client_updated_at';
+async function getLinkedSheetRows(table,campaignId){
  await user();
- return check(await client().from('campaign_sheet_links').select('campaign_id,sheet_id,owner_id,dm_can_edit,sheets(id,local_id,name,sheet_type,system,payload,client_updated_at)').eq('campaign_id',campaignId))||[];
+ const rows=check(await client().from(table).select('*').eq('campaign_id',campaignId))||[];
+ if(!rows.length)return [];
+ const ids=[...new Set(rows.map(row=>row.sheet_id))];
+ // Busca separada evita que falhas de relacionamento do PostgREST escondam todos
+ // os personagens. A leitura de 'sheets' ainda respeita RLS e consentimento.
+ const sheets=check(await client().from('sheets').select(SHEET_COLUMNS).in('id',ids))||[];
+ const byId=new Map(sheets.map(item=>[item.id,item]));
+ return rows.map(row=>({...row,sheets:byId.get(row.sheet_id)||null}));
+}
+export async function listJourneySheets(campaignId){
+ return getLinkedSheetRows('campaign_sheet_links',campaignId);
+}
+export async function listJourneyDmSheets(campaignId){
+ return getLinkedSheetRows('campaign_dm_sheets',campaignId);
+}
+export async function linkDmSheet(campaignId,sheetId){
+ const actor=await user();
+ if(!campaignId||!sheetId)throw new Error('Escolha a campanha e a ficha de NPC ou ameaça.');
+ const owned=check(await client().from('sheets').select('id,sheet_type').eq('id',sheetId).eq('owner_id',actor.id).maybeSingle());
+ if(!owned||owned.sheet_type==='pc')throw new Error('Somente ameaças e NPCs seus podem ser adicionados nesta área.');
+ const {data,error}=await client().from('campaign_dm_sheets')
+  .insert({campaign_id:campaignId,sheet_id:sheetId,owner_id:actor.id})
+  .select('campaign_id,sheet_id').single();
+ if(!error)return data;
+ if(error.code==='23505'){
+  const existing=check(await client().from('campaign_dm_sheets').select('campaign_id,sheet_id')
+   .eq('campaign_id',campaignId).eq('sheet_id',sheetId).maybeSingle());
+  if(existing)return existing;
+ }
+ if(error.code==='42501')throw new Error('Somente o mestre responsável por esta campanha pode incluir NPCs e ameaças.');
+ throw error;
+}
+export async function unlinkDmSheet(campaignId,sheetId){
+ const actor=await user();
+ const removed=check(await client().from('campaign_dm_sheets').delete()
+  .eq('campaign_id',campaignId).eq('sheet_id',sheetId).eq('owner_id',actor.id).select('sheet_id'))||[];
+ if(!removed.length)throw new Error('Não foi possível remover esta ficha da campanha.');
+ return removed;
 }
 export async function linkMySheet(campaignId,sheetId){
  const actor=await user();
  if(!campaignId||!sheetId)throw new Error('Selecione uma campanha e uma ficha sincronizada.');
+ const mine=check(await client().from('sheets').select('id,sheet_type').eq('id',sheetId).eq('owner_id',actor.id).maybeSingle());
+ if(!mine||mine.sheet_type!=='pc')throw new Error('Selecione uma ficha de personagem da sua Conta Lite. NPCs e ameaças possuem uma área exclusiva do mestre.');
  // Inserção simples: upsert podia atualizar um vínculo existente e redefinir
  // consentimentos (dm_can_edit). Nunca modificar permissão ao vincular.
  const {data,error}=await client().from('campaign_sheet_links')
