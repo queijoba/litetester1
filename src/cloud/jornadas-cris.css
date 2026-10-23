@@ -272,3 +272,43 @@
   white-space:normal;
   padding:8px 11px!important;
 }
+
+
+/* Seção privada de NPCs e ameaças — cards clicáveis sem duplicar a navegação. */
+.jornadas-clean .journeys-dm-card{
+ display:flex;flex-direction:column;gap:7px;min-width:0;
+ background:#f5f8f1;border:1px solid #d2dfd2;border-radius:11px;padding:5px;
+}
+.jornadas-clean .journeys-dm-card .journey-mini-sheet{flex:1;min-width:0}
+.jornadas-clean .journeys-dm-card__remove{
+ border:1px solid #e0c0ba!important;color:#8f5347!important;
+ background:#fff8f5!important;border-radius:7px!important;
+ font-weight:800!important;padding:9px!important;font-size:11px!important;
+}
+.jornadas-clean .journeys-dm-card__remove:disabled{opacity:.5}
+.jornadas-clean .journeys-threat-create{
+ background:transparent;border:1px solid #bbd5c5;border-radius:8px;
+ display:inline-flex;align-items:center;justify-content:center;
+ text-decoration:none;cursor:pointer;max-width:100%;font-weight:850;
+ padding:10px 12px;color:#2b7155;
+}
+.jornadas-clean .journeys-threat-create:focus-visible,
+.jornadas-clean .journeys-dm-card__remove:focus-visible{
+ outline:3px solid #80ae96;outline-offset:2px;
+}
+.jornadas-clean .journeys-character-card[role="button"]{cursor:pointer}
+.jornadas-clean .journeys-character-card[role="button"]:hover{
+ box-shadow:0 6px 20px #224c2e24;border-color:#72a888;
+}
+.jornadas-clean .journeys-character-card[role="button"]:focus-visible{
+ outline:3px solid #458a6c;outline-offset:3px;
+}
+.jornadas-clean .journeys-character-card .journey-mini-sheet__open{pointer-events:none}
+@media(max-width:520px){
+ .jornadas-clean .journeys-link-sheet__available .journeys-link-sheet__row{
+  align-items:stretch;flex-direction:column;
+ }
+ .jornadas-clean .journeys-link-sheet__available .journeys-link-sheet__row button{
+  width:100%;
+ }
+}
