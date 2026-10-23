@@ -1,0 +1,35 @@
+
+/* Consulta rápida de fichas — pergaminho/esmeralda PJLite. */
+.journey-portrait{display:inline-flex;flex:none;align-items:center;justify-content:center;background:linear-gradient(145deg,#c5ddcb,#749f84);border:1px solid #a9c7ae;overflow:hidden;border-radius:9px;font:700 24px Georgia,serif;color:#fff}
+.journey-portrait.is-small{width:46px;height:50px}.journey-portrait.is-large{width:76px;height:84px}
+.journey-portrait img{width:100%;height:100%;object-fit:cover}
+.journey-sheet-overlay{position:fixed;inset:0;z-index:10060;background:#09281b9c;display:flex;align-items:center;justify-content:center;padding:16px}
+.journey-sheet-modal{width:min(670px,100%);max-height:min(91vh,900px);overflow-y:auto;overscroll-behavior:contain;background:#fafcf7;border:2px solid #95baa4;box-shadow:0 24px 65px #09261e65;border-radius:14px;padding:19px;color:#294a3d;display:grid;gap:14px}
+.journey-sheet-modal__top{display:flex;align-items:center;gap:14px;min-width:0}
+.journey-sheet-modal__identity{flex:1;min-width:0}
+.journey-sheet-modal__identity h3{font:700 clamp(19px,3.5vw,27px) Georgia,serif;color:#21594c;margin:3px 0;overflow-wrap:anywhere}
+.journey-sheet-modal__identity small{font-size:11px;color:#728678}
+.journey-sheet-modal__identity p{color:#597869;margin:0;font-size:12px}
+.journey-sheet-modal .journey-sheet-close{align-self:flex-start;width:34px;height:34px;padding:0;background:#e8f3e9;color:#235c4d;border:1px solid #bed2c2;font-size:24px;border-radius:8px;line-height:1}
+.journey-sheet-vitals{display:flex;gap:10px;flex-wrap:wrap}
+.journey-sheet-vitals>div{flex:1 1 115px;background:#edf5ec;border:1px solid #c5ddc5;border-radius:9px;display:grid;gap:3px;padding:10px}
+.journey-sheet-vitals span{font-size:11px;color:#577664}.journey-sheet-vitals strong{font:700 19px Georgia,serif}
+.journey-sheet-vitals p{font-size:12px;color:#697d70}
+.journey-sheet-attributes{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.journey-sheet-attributes>div{border:1px solid #c5d9c7;background:#f2f7ed;display:grid;text-align:center;gap:4px;border-radius:7px;padding:9px 4px;min-width:0}
+.journey-sheet-attributes span{font-size:10px;color:#5a7665;font-weight:800;overflow-wrap:anywhere}
+.journey-sheet-attributes strong{font:700 18px Georgia,serif;color:#275748}
+.journey-sheet-conditions{font-size:12px;background:#fff7eb;border:1px solid #ecdabc;color:#795e3a;padding:10px;border-radius:8px;margin:0}
+.journey-sheet-details-toggle{border:1px solid #bbd3c2;background:#eaf4eb;border-radius:8px;color:#28624f;padding:10px 12px;font-weight:800;text-align:left}
+.journey-sheet-sections{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.journey-sheet-sections>div{background:white;border:1px solid #d7e5d8;border-radius:9px;padding:11px;min-width:0}
+.journey-sheet-sections h4{font:bold 14px Georgia,serif;margin:0 0 9px;color:#255e4c}
+.journey-sheet-sections ul{list-style:disc;padding-left:19px;margin:0;max-height:170px;overflow:auto}
+.journey-sheet-sections li,.journey-sheet-sections p{font-size:11px;color:#5b7466;line-height:1.5;overflow-wrap:anywhere}
+.journey-sheet-modal__footer{border-top:1px solid #dce5da;padding-top:12px;display:flex;align-items:center;justify-content:space-between;gap:13px;flex-wrap:wrap}
+.journey-sheet-modal__footer small{font-size:10px;color:#769081;max-width:340px}
+.journey-sheet-modal__footer>div{display:flex;gap:8px}
+.journey-sheet-modal__footer button{font-size:11px;font-weight:850;border:1px solid #b9d3c2;background:#e9f3e9;color:#2a6152;padding:10px 13px;border-radius:8px}
+.journey-sheet-modal__footer button.journey-sheet-edit{background:#27695a;color:#fff}
+.journey-sheet-empty{border:1px solid #e0d9b6;background:#fff6e7;border-radius:7px;padding:12px;color:#785e3f;font-size:12px}
+@media(max-width:590px){.journey-sheet-modal{padding:11px;gap:11px}.journey-sheet-sections{grid-template-columns:1fr}.journey-sheet-attributes{grid-template-columns:repeat(3,minmax(0,1fr))}.journey-sheet-modal__top{align-items:flex-start;gap:9px}.journey-portrait.is-large{width:57px;height:65px}.journey-sheet-modal__footer{align-items:stretch}.journey-sheet-modal__footer>div{width:100%;justify-content:flex-end}}
