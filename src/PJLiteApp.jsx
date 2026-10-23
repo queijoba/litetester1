@@ -2155,6 +2155,9 @@ const { useState, useEffect, useRef } = React;
                                 <button onClick={() => { setGuideTab('inicio'); setShowGuideModal(true); }} className="flex items-center gap-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded shadow transition-colors font-bold text-sm">
                                     <SVGIcons.HelpCircle /> Guias e Tutoriais
                                 </button>
+                                <a href="/?jornadas=1" className="pjlite-journeys-home-link" title="Abrir Jornadas — área de campanhas">
+                                    🧭 Jornadas
+                                </a>
                             </div>
                             <div className="mb-6 rounded border-2 border-[#922610] bg-[#fdf1dc] shadow-sm overflow-hidden">
                                 <div className={`px-4 ${newsCollapsed ? 'py-2' : 'py-3'} flex items-center justify-between gap-3`}>
@@ -2860,7 +2863,7 @@ const { useState, useEffect, useRef } = React;
 
                                         {guideTab === 'jornadas' && (
                                             <div className="space-y-4">
-                                                <div className="border border-teal-300 bg-teal-50 rounded-xl p-4"><h3 className="font-title font-black text-teal-900">🧭 Jornadas — grupos com DM</h3><p className="text-xs mt-2">Na <strong>Conta Lite → Grupos</strong>, crie um grupo e marque <strong>DM</strong>, ou ative DM em um grupo do qual você seja dono. Em <strong>Jornadas</strong>, crie uma campanha selecionando o grupo e o sistema. Membros desse grupo já poderão abrir a Jornada — sem um segundo código de convite.</p></div>
+                                                <div className="border border-teal-300 bg-teal-50 rounded-xl p-4"><h3 className="font-title font-black text-teal-900">🧭 Jornadas — grupos com DM</h3><p className="text-xs mt-2">Abra <strong>Jornadas</strong> pelo botão da página inicial do PJ Lite. A área de campanhas tem página própria, com mesas de exemplo e chave de teste sem login. Para campanhas reais, entre na Conta Lite e crie um grupo com DM; os membros desse grupo poderão participar sem outro código de convite.</p></div>
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
                                                   <div className="bg-white rounded-lg border p-4"><strong>⚔ Combates e iniciativa</strong><p>O mestre organiza a ordem de iniciativa, a rodada e anotações da cena. Os jogadores consultam as atualizações da campanha.</p></div>
                                                   <div className="bg-white rounded-lg border p-4"><strong>🗂 Fichas do grupo</strong><p>Depois de sincronizar suas fichas na Conta Lite, vincule-as na aba Fichas da Jornada. O mestre pode consultar e somente editar uma ficha quando o dono marcar <strong>Permitir edição pelo DM</strong>. Antes de continuar editando em outro dispositivo, sincronize para não substituir a versão mais recente.</p></div>
