@@ -61,10 +61,18 @@ export function getJourneySheetSummary(row){
  const traits=textList(data.habilidadesFeiticos||data.habilidades||data.caracteristicas||data.poderesHeroicos||[],10);
  const conditions=Object.entries(data.atributos||{}).filter(([,v])=>v&&typeof v==='object'&&v.condicao).map(([k])=>ATTRIBUTE_NAMES[k]||k.toUpperCase());
  const otherConditions=Object.entries(data.condicoes||{}).filter(([,v])=>v===true).map(([k])=>k);
+ // Dados de combate opcionais para a miniatura; não inventar números para sistemas
+ // ou fichas que não possuam determinado recurso.
+ const combat=[
+  {label:sys==='dnd5e'?'CA':'DEF',value:status.ca??status.defesa??data.ca??data.defesa},
+  {label:'INIC',value:status.iniciativa??data.iniciativa},
+  {label:'DESL',value:status.deslocamento??data.derivados?.movimento??data.deslocamento}
+ ].filter(item=>item.value!==undefined&&item.value!==null&&item.value!=='')
+  .map(item=>({label:item.label,value:nice(item.value)}));
  return {
   name:displayName,profession,ancestry,level,system:sys,
   portrait:nice(bio.imagem||bio.foto||data.imagem||data.retrato||''),
-  hp,resource,attributes:attrs,skills,equipment,traits,
+  hp,resource,attributes:attrs,skills,equipment,traits,combat,
   conditions:[...conditions,...otherConditions],
   sheetType:nice(sheet.sheet_type||data.type,'pc'),
   hasPayload:!!sheet.payload
