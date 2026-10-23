@@ -85,3 +85,18 @@
 .jornadas-site__create button[type=submit]{background:#27645e;color:white}
 @media(max-width:920px){.jornadas-site__layout{grid-template-columns:1fr}.jornadas-site__side{flex-direction:row;gap:4px;overflow:auto;align-items:center;padding:8px 14px}.jornadas-site__side button{white-space:nowrap}.jornadas-site__side-title,.jornadas-site__side-divider,.jornadas-site__side p{display:none}.jornadas-site__content{padding:18px 17px 44px}}
 @media(max-width:660px){.jornadas-site__topbar{height:auto;min-height:65px;padding:9px 14px}.jornadas-site__topbar nav{gap:2px}.jornadas-site__topbar nav a,.jornadas-site__topbar nav button{padding:8px;font-size:11px}.jornadas-site__user{display:none}.jornadas-site__hero{padding:23px 19px}.jornadas-site__hero-icon{display:none}.jornadas-site__access{grid-template-columns:1fr;padding:17px}.jornadas-site__code-form>div,.jornadas-site__login form{flex-wrap:wrap}.jornadas-site__code-form>div>*{flex:1 1 150px}.jornadas-site__real{padding:18px}.jornadas-site__section-heading{align-items:start}.jornadas-site__count{display:none}}
+
+/* 1.1.0v Alpha: navegação explícita Home / Jornadas / Conta */
+.jornadas-site__topbar nav a.jornadas-site__home-link{background:#27655c;color:#fff;border:1px solid #1d5b53;box-shadow:0 2px 5px #193f3419}
+.jornadas-site__topbar nav a.jornadas-site__home-link:hover{background:#1e524b}
+.jornadas-site__sidebar-home,.jornadas-site__sidebar-chat{display:block;text-decoration:none;color:#fff;background:#286258;border:1px solid #387f73;border-radius:8px;padding:12px 10px;margin-bottom:18px;font-size:12px;font-weight:900;text-align:center}
+.jornadas-site__sidebar-chat{color:#2f7468;background:#edf6f1;border-color:#c4d9ca;margin:0 0 10px;text-align:left}
+.jornadas-site__chat-deeplink{display:inline-flex;align-items:center;gap:6px;margin-top:11px;color:#2b786b;font-weight:900;font-size:12px;text-decoration:underline}
+.jornadas-site__quicksteps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:19px}
+.jornadas-site__quicksteps>div{padding:13px 15px;border:1px solid #d8e4da;border-radius:10px;background:white;display:grid;gap:3px}
+.jornadas-site__quicksteps strong{font-size:12px;color:#2f655e}
+.jornadas-site__quicksteps small{font-size:11px;color:#758780;line-height:1.5}
+.jornadas-site__footer a{color:#2a7065;font-weight:850;text-decoration:underline}
+@media(max-width:920px){.jornadas-site__sidebar-home,.jornadas-site__sidebar-chat{white-space:nowrap;margin:0;font-size:11px;padding:11px}}
+@media(max-width:710px){.jornadas-site__quicksteps{grid-template-columns:1fr}.jornadas-site__quicksteps>div{padding:10px 12px}.jornadas-site__topbar nav a.jornadas-site__home-link{font-size:11px;padding:8px}}
+@media(max-width:475px){.jornadas-site__topbar nav>a:not(.jornadas-site__home-link){display:none}}
