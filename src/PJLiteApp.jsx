@@ -39,7 +39,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import JSZip from 'jszip';
 import LZString from 'lz-string';
-import { getMyAchievements,onAuthStateChange } from './cloud/supabaseCloud.js';
+import { getMyAchievements,getSession,onAuthStateChange } from './cloud/supabaseCloud.js';
 import { listJourneys } from './cloud/jornadasCloud.js';
 
 const { useState, useEffect, useRef } = React;
@@ -1288,6 +1288,16 @@ const { useState, useEffect, useRef } = React;
             const [showGuideModal, setShowGuideModal] = useState(false);
             const [guideTab, setGuideTab] = useState('inicio');
             const [campaignOptions,setCampaignOptions]=useState([]);
+            // O acesso à área de campanhas exige Conta Lite ativa.
+            // Por padrão o atalho não aparece enquanto a sessão não foi verificada.
+            const [journeysSignedIn,setJourneysSignedIn]=useState(false);
+            useEffect(()=>{
+                let alive=true;
+                getSession().then(session=>{if(alive)setJourneysSignedIn(!!session?.user)})
+                  .catch(()=>{if(alive)setJourneysSignedIn(false)});
+                const unsubscribe=onAuthStateChange(session=>{if(alive)setJourneysSignedIn(!!session?.user)});
+                return()=>{alive=false;unsubscribe?.()};
+            },[]);
             const [pendingJourney,setPendingJourney]=useState(null);
             useEffect(()=>{
                 const start=e=>{
@@ -2155,9 +2165,9 @@ const { useState, useEffect, useRef } = React;
                                 <button onClick={() => { setGuideTab('inicio'); setShowGuideModal(true); }} className="flex items-center gap-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded shadow transition-colors font-bold text-sm">
                                     <SVGIcons.HelpCircle /> Guias e Tutoriais
                                 </button>
-                                <a href="/?jornadas=1" target="_blank" rel="noopener noreferrer" className="pjlite-journeys-home-link" title="Abrir Jornadas em uma nova aba — área de campanhas">
+                                {journeysSignedIn&&<a href="/?jornadas=1" target="_blank" rel="noopener noreferrer" className="pjlite-journeys-home-link" title="Abrir suas Jornadas — disponível para contas conectadas">
                                     🧭 Jornadas
-                                </a>
+                                </a>}
                             </div>
                             <div className="mb-6 rounded border-2 border-[#922610] bg-[#fdf1dc] shadow-sm overflow-hidden">
                                 <div className={`px-4 ${newsCollapsed ? 'py-2' : 'py-3'} flex items-center justify-between gap-3`}>
