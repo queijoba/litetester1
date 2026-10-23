@@ -6,6 +6,10 @@ import {
  dragonbaneAbilityList,dragonbanePdfAbilityOrder,dragonbanePdfAbilityName,dragonbaneMagicSchool,renameDragonbaneAbility
 } from '../src/systems/dragonbane/abilities.js';
 import {fillDragonbanePdf} from '../src/systems/dragonbane/pdf/map.js';
+import {
+ DRAGONBANE_ATTRIBUTE_ORDER,DRAGONBANE_ATTRIBUTE_NAMES,
+ dragonbaneAttributeValue,dragonbaneAttributeCondition,orderedDragonbaneAttributes
+} from '../src/systems/dragonbane/attributes.js';
 
 assert.deepEqual(DRAGONBANE_ABILITY_KINDS.map(x=>x.id),['inata','heroica','magia','truque','outro']);
 for(const [ancestry,key] of Object.entries({
@@ -104,3 +108,62 @@ assert.ok(app.includes('DRAGONBANE_ABILITY_KINDS.forEach'), 'Manter utilitários
 assert.ok(css.includes('#2e786a')&&css.includes('#f5edd4'), 'Manter paleta e recursos de compatibilidade');
 
 console.log('✓ Dragonbane: editor clássico restaurado, cartões editáveis, chat e PDF legado preservados.');
+
+
+// Ordem oficial consultada no Livro de Regras v1.1 e na ficha editável PT-BR do Drive.
+// Cada atributo possui um valor diferente para detectar troca silenciosa de posições.
+assert.deepEqual(DRAGONBANE_ATTRIBUTE_ORDER,['for','con','agl','int','von','car']);
+assert.deepEqual(Object.values(DRAGONBANE_ATTRIBUTE_NAMES),[
+ 'Força','Constituição','Agilidade','Inteligência','Vontade','Carisma'
+]);
+const reversedAttributes={
+ car:{valor:6,condicao:true},von:{valor:7,condicao:false},
+ int:{valor:8,condicao:true},agl:{valor:9,condicao:false},
+ con:{valor:10,condicao:true},for:{valor:11,condicao:false}
+};
+const reversedBefore=JSON.parse(JSON.stringify(reversedAttributes));
+const reordered=orderedDragonbaneAttributes(reversedAttributes);
+assert.deepEqual(Object.keys(reordered),DRAGONBANE_ATTRIBUTE_ORDER);
+assert.deepEqual(DRAGONBANE_ATTRIBUTE_ORDER.map(k=>dragonbaneAttributeValue(reordered,k)),[11,10,9,8,7,6]);
+assert.deepEqual(DRAGONBANE_ATTRIBUTE_ORDER.map(k=>dragonbaneAttributeCondition(reordered,k)),[false,true,false,true,false,true]);
+assert.deepEqual(reversedAttributes,reversedBefore,'Não modificar dados originais de fichas antigas.');
+assert.notEqual(reordered.for,reversedAttributes.for,'Normalização retorna cópias, sem alterar registros antigos.');
+const missing=orderedDragonbaneAttributes({von:{valor:17,condicao:true}});
+assert.equal(missing.von.valor,17);
+assert.equal(missing.con.valor,10);
+assert.equal(missing.for.valor,10);
+assert.equal(missing.von.condicao,true);
+assert.deepEqual(Object.keys(missing),DRAGONBANE_ATTRIBUTE_ORDER);
+assert.deepEqual(Object.keys(orderedDragonbaneAttributes({car:{valor:12},notaLegada:'não perder'})),[...DRAGONBANE_ATTRIBUTE_ORDER,'notaLegada']);
+
+for (const [kind,attrs] of Object.entries({
+ 'ficha nova':Object.fromEntries(DRAGONBANE_ATTRIBUTE_ORDER.map((key,i)=>[key,{valor:12+i,condicao:false}])),
+ 'ficha importada':reversedAttributes,
+ 'ficha antiga incompleta':missing,
+ 'modelo pronto':{...reversedAttributes},
+ 'ficha sincronizada':{...reversedAttributes},
+})){
+ const pdfData={};
+ const pdfForm={
+  getTextField(name){return {setText(value){pdfData[name]=value}}},
+  getCheckBox(name){return {check(){pdfData[name]=true},uncheck(){pdfData[name]=false}}}
+ };
+ fillDragonbanePdf(pdfForm,{bio:{nome:kind},atributos:attrs});
+ for(const key of DRAGONBANE_ATTRIBUTE_ORDER){
+  assert.equal(Number(pdfData[key]),dragonbaneAttributeValue(attrs,key),'Campo PDF trocado: '+kind+' / '+key);
+  assert.equal(pdfData['condicao_'+key],dragonbaneAttributeCondition(attrs,key),'Condição PDF trocada: '+kind+' / '+key);
+ }
+}
+const dragonbaneUi=readFileSync('src/systems/dragonbane/components/Editor.jsx','utf8');
+assert.equal(dragonbaneUi.split('DRAGONBANE_ATTRIBUTE_ORDER.map(attr => (').length-1,2,
+ 'A faixa desktop/mobile e o quadro de atributos devem seguir a mesma ordem');
+assert.ok(!dragonbaneUi.includes('Object.keys(data.atributos'),'A ordem não pode depender do JSON importado');
+const fullApp=readFileSync('src/PJLiteApp.jsx','utf8');
+assert.ok(fullApp.includes('const normalizeDragonbanePcData ='),'Fichas antigas precisam normalização específica');
+assert.ok(fullApp.includes('.map(item => normalizeDragonbanePcData(normalizeMetaItem('),'Fichas já salvas normalizadas na leitura');
+assert.ok(fullApp.includes('savingData = normalizeDragonbanePcData(savingData)'),'Fichas novas normalizadas ao salvar');
+assert.ok(fullApp.includes('normalized = normalizeDragonbanePcData(normalized)'),'Fichas salvas normalizadas ao abrir');
+assert.ok(fullApp.includes('normalizedData = normalizeDragonbanePcData(normalizedData)'),'Fichas importadas normalizadas');
+assert.ok(fullApp.includes('newData.atributos = orderedDragonbaneAttributes(newData.atributos)'),'Campos antigos editáveis');
+assert.ok(fullApp.includes("item?.system === 'dragonbane' && item?.type === 'pc'"),'Outros sistemas/ameaças não podem ser afetados');
+console.log('✓ Dragonbane: FOR, CON, AGL, INT, VON, CAR em fichas novas, salvas, importadas, modelos e PDF (valores/condições preservados).');
