@@ -5,6 +5,7 @@ import {getSession,onAuthStateChange,getProfile,listGroups,createGroup,joinGroup
 import {setGroupMaster} from './jornadasCloud.js';
 import './jornadas-hub.css';
 import './jornadas-clean.css';
+import './jornadas-cris.css';
 
 
 const BG_KEY='pjlite_jornadas_bg_v1';
