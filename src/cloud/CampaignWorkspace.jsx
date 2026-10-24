@@ -117,16 +117,68 @@ export function CampaignNotes({draft,setDraft,isDm,onSave,busy}){
   <div className="campaign-workspace__box">{[['general','Geral','Anotações da história...'],['future','Sessões futuras','Preparativos e próximos objetivos...'],['past','Sessões anteriores','O que aconteceu nas sessões?']].map(([k,title,ph])=><label key={k}>{title}<textarea rows={5} placeholder={ph} disabled={!isDm} value={notes[k]||''} onChange={e=>setNote(k,e.target.value)}/></label>)}{isDm&&<button className="campaign-workspace__primary" onClick={onSave} disabled={busy}>💾 Salvar anotações</button>}</div>
  </section>;
 }
-export function CampaignShield({draft,links,isDm,onTab}){
- if(!isDm)return null;
- const board=asBoard(draft),round=board.round||1;
+// Mantém as outras abas utilizáveis caso um erro inesperado aconteça
+// apenas no Escudo do Mestre, sem produzir a tela branca da aplicação.
+export class CampaignSectionBoundary extends React.Component {
+ constructor(props){super(props);this.state={failed:false}}
+ static getDerivedStateFromError(){return {failed:true}}
+ componentDidCatch(error,info){console.error('PJLite: erro na área do mestre',error,info)}
+ componentDidUpdate(previous){if(previous.resetKey!==this.props.resetKey&&this.state.failed)this.setState({failed:false})}
+ render(){
+  if(this.state.failed)return <section className="campaign-workspace campaign-shield-safe">
+   <h3>Não foi possível exibir esta seção.</h3>
+   <p>Suas campanhas e fichas continuam salvas. Volte aos personagens ou atualize a sala.</p>
+   <button type="button" onClick={()=>this.props.onTab?.('fichas')}>← Voltar aos personagens</button>
+  </section>;
+  return this.props.children;
+ }
+}
+export function CampaignShield({draft,links=[],dmLinks=[],isDm,onTab,onOpenSheet}){
  const [dice,setDice]=React.useState('d20'),[result,setResult]=React.useState('');
- const characters=links.map(x=>({id:x.sheet_id,name:labelOf(x.sheets),p:statsOf(x)}));
- const roll=()=>{const n=Math.max(2,Math.min(100,Number(dice.slice(1))||20));setResult('🎲 '+dice+': '+(Math.floor(Math.random()*n)+1))};
- return <section className="campaign-workspace"><header className="campaign-workspace__heading"><div><h3>🛡️ Escudo do Mestre</h3><p>Painel rápido com personagens, combate e atalhos. Acesso exclusivo de quem criou a campanha.</p></div><span className="campaign-workspace__private">🔒 Somente DM</span></header>
- <div className="campaign-shield-stats"><article><span>Rodada</span><strong>{round}</strong><button onClick={()=>onTab('combate')}>Gerenciar combate →</button></article><article><span>Fichas na mesa</span><strong>{characters.length}</strong><button onClick={()=>onTab('fichas')}>Abrir personagens →</button></article><article><span>Combate</span><strong>{board.initiative?.length||0}</strong><small>participantes na iniciativa</small></article></div>
- <div className="campaign-workspace__box"><h4>🎲 Rolagem rápida</h4><div className="campaign-workspace__actions"><select value={dice} onChange={e=>setDice(e.target.value)}>{['d4','d6','d8','d10','d12','d20','d100'].map(x=><option key={x}>{x}</option>)}</select><button onClick={roll}>Rolar</button>{result&&<strong role="status">{result}</strong>}</div></div>
- <div className="campaign-shield-characters">{characters.map(c=><article key={c.id} className="campaign-workspace__box"><h4>👤 {c.name}</h4><p>{c.p.system||'Personagem'}</p><div><small>PV: {c.p?.status?.pv??c.p?.pvAtual??c.p?.pv??'—'}</small><small>Defesa: {c.p?.status?.defesa??c.p?.defesa??'—'}</small></div></article>)}{!characters.length&&<div className="campaign-workspace__empty">Vincule fichas dos jogadores na aba Personagens para acompanhá-las aqui.</div>}</div>
- <div className="campaign-workspace__actions"><button onClick={()=>onTab('mapamental')}>🧠 Mapa mental →</button><button onClick={()=>onTab('biblioteca')}>📚 Biblioteca →</button><button onClick={()=>onTab('anotacoes')}>🗒️ Anotações →</button></div>
+ if(!isDm)return null;
+ const board=asBoard(draft),round=Number(board.round)||1;
+ const playerRows=Array.isArray(links)?links:[];
+ const dmRows=Array.isArray(dmLinks)?dmLinks:[];
+ const sheetRows=[...playerRows.map(r=>({...r,isNpc:false})),...dmRows.map(r=>({...r,isNpc:true}))];
+ const characters=sheetRows.map(row=>{
+  const sheet=row?.sheets||{},status=sheet?.payload?.status||{};
+  const pv=status?.pv;
+  const pvText=pv&&typeof pv==='object'
+   ?String(pv.atual??pv.current??'—')+' / '+String(pv.max??'—')
+   :String(status.pvAtual??sheet.payload?.pvAtual??pv??'—');
+  return {...row,name:labelOf(sheet),system:sheet.system||sheet.payload?.system||'Ficha',
+   life:pvText,defense:status?.defesa??sheet.payload?.defesa??sheet.payload?.ca??'—'};
+ });
+ const roll=()=>{
+  const n=Math.max(2,Math.min(100,Number(dice.slice(1))||20));
+  setResult('🎲 '+dice+': '+(Math.floor(Math.random()*n)+1));
+ };
+ return <section className="campaign-workspace campaign-shield-safe">
+  <header className="campaign-workspace__heading"><div><h3>🛡 Escudo do Mestre</h3>
+    <p>Personagens e ameaças acessíveis em um clique, dados e atalhos da sessão.</p></div>
+    <span className="campaign-workspace__private">🔒 Somente mestre</span>
+  </header>
+  <div className="campaign-shield-stats">
+    <article><span>Rodada</span><strong>{round}</strong><button type="button" onClick={()=>onTab('combate')}>Combate →</button></article>
+    <article><span>Personagens</span><strong>{playerRows.length}</strong><button type="button" onClick={()=>onTab('fichas')}>Ver fichas →</button></article>
+    <article><span>NPCs e ameaças</span><strong>{dmRows.length}</strong><button type="button" onClick={()=>onTab('npcs')}>Gerenciar →</button></article>
+  </div>
+  <div className="campaign-workspace__box"><h4>🎲 Rolagem rápida</h4>
+   <div className="campaign-workspace__actions"><select aria-label="Dado" value={dice} onChange={e=>setDice(e.target.value)}>
+    {['d4','d6','d8','d10','d12','d20','d100'].map(x=><option key={x} value={x}>{x}</option>)}
+   </select><button type="button" onClick={roll}>Rolar</button>{result&&<strong role="status">{result}</strong>}</div>
+  </div>
+  <div className="campaign-shield-characters">{characters.map(row=><button key={row.sheet_id} type="button"
+   className="campaign-shield-character" onClick={()=>onOpenSheet?.(row)}>
+   <strong>{row.isNpc?'☠':'👤'} {row.name}</strong><small>{row.system}</small>
+   <span>PV {row.life} · DEF {String(row.defense)}</span><em>Abrir ficha →</em>
+  </button>)}{!characters.length&&<div className="campaign-workspace__empty">
+   Vincule personagens na aba Personagens ou adicione NPCs na área do Mestre.
+  </div>}</div>
+  <div className="campaign-workspace__actions">
+   <button type="button" onClick={()=>onTab('mapamental')}>🧠 Mapa mental</button>
+   <button type="button" onClick={()=>onTab('biblioteca')}>📚 Biblioteca</button>
+   <button type="button" onClick={()=>onTab('anotacoes')}>🗒 Anotações</button>
+  </div>
  </section>;
 }
