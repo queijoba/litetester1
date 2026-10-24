@@ -28,7 +28,7 @@ assert.ok(hub.includes("const storageKey='pjlite_achievements_on_v1_'+account.id
 assert.ok(hub.includes('pjlite:achievements-visibility'),'React to achievement toggle without reloading');
 assert.ok(hub.includes("achievementsOn?'◆':'🐱'"),'OFF means cat only');
 assert.ok(hub.includes('{achievementsOn&&<span className="pjlite-achievement-corner-text">'),'Never render label in OFF');
-assert.ok(hub.includes("className={'jornadas-site jornadas-clean '+(theme==='night'"),'Night theme and classic selector required');
+assert.ok(hub.includes("className={'jornadas-site jornadas-clean '+(theme==='dark'"),'Home Modo Escuro theme option required');
 assert.ok(hub.includes("localStorage.setItem(THEME_KEY,next)"),'Theme persisted');
 assert.ok(css.includes('.jornadas-clean.jornadas-night')&&css.includes('.jornadas-night .jornadas-site__side'),'Night theme entire room + navigation');
 assert.ok(css.includes('.jornadas-night .pjlite-jornadas-tabs')&&css.includes('.jornadas-night .journeys-character-card'),'Night theme includes cards');
