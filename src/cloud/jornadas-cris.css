@@ -312,3 +312,112 @@
   width:100%;
  }
 }
+
+
+/* Barra curta: atalhos principais + seletor para recursos extras, sem scroll horizontal. */
+.jornadas-clean .pjlite-jornadas-tabs.pjlite-jornadas-tabs--compact{
+ display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;
+ gap:5px!important;overflow:visible!important;scrollbar-width:none!important;
+ align-items:stretch;padding:6px!important;
+}
+.jornadas-clean .pjlite-jornadas-tabs--compact>button,
+.jornadas-clean .pjlite-jornadas-tabs--compact>.jornadas-more-select{
+ display:flex;align-items:center;justify-content:center;min-width:0;width:100%;
+ text-align:center;white-space:normal!important;overflow-wrap:anywhere;
+ min-height:36px!important;padding:6px!important;font-size:11px!important;line-height:1.2;
+ border:1px solid #cbdacf!important;border-radius:7px!important;
+}
+.jornadas-clean .pjlite-jornadas-tabs--compact .jornadas-more-select{
+ appearance:auto;cursor:pointer;color:#285e4d!important;font-weight:800;
+ background:#ebf2e9!important;border-color:#b2ccbd!important;
+}
+.jornadas-clean .pjlite-jornadas-tabs--compact .jornadas-more-select.is-active{
+ box-shadow:inset 0 -3px #28755b;background:#dceadd!important;
+}
+@media(max-width:700px){
+ .jornadas-clean .pjlite-jornadas-tabs.pjlite-jornadas-tabs--compact{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ }
+}
+@media(max-width:420px){
+ .jornadas-clean .pjlite-jornadas-tabs.pjlite-jornadas-tabs--compact{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ }
+}
+.jornadas-clean .journey-sheet-unlink{
+ background:#fff7f3!important;border:1px solid #cf918c!important;
+ color:#9b4441!important;
+}
+.jornadas-clean .campaign-shield-safe{min-width:0;display:grid;gap:12px}
+.jornadas-clean .campaign-shield-characters{
+ display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,215px),1fr));gap:8px;
+}
+.jornadas-clean .campaign-shield-character{
+ display:grid!important;gap:4px;align-items:start;text-align:left;
+ background:#f3f7ef;border:1px solid #c8decf;border-radius:9px;
+ padding:11px;min-width:0;color:#305a48;
+}
+.jornadas-clean .campaign-shield-character strong{font:700 15px Georgia,serif}
+.jornadas-clean .campaign-shield-character small{color:#64806d;font-size:10px}
+.jornadas-clean .campaign-shield-character span{font-size:12px}
+.jornadas-clean .campaign-shield-character em{font-style:normal;color:#276e54;font-size:10px;font-weight:900}
+.jornadas-clean .campaign-shield-character:hover{border-color:#4f9370;background:#e9f1e8}
+.jornadas-clean .jornadas-theme-picker{
+ display:flex;align-items:center;gap:5px;min-width:0;padding:5px 8px;
+ border:1px solid #c8d8c8;border-radius:7px;background:#eef4ee;
+ color:#375b4d;font-size:11px;font-weight:800;
+}
+.jornadas-clean .jornadas-theme-picker select{
+ appearance:auto;border:0!important;outline:0;background:transparent!important;
+ color:inherit!important;min-width:85px;max-width:150px;
+ padding:2px;font-size:11px;cursor:pointer;
+}
+.jornadas-clean .jornadas-theme-picker select option{background:#f9faf8;color:#1d3f35}
+.jornadas-night .jornadas-theme-picker{background:#282530!important;border-color:#594562!important;color:#e6d0ef!important}
+.jornadas-night .jornadas-theme-picker select option{background:#242229;color:#f0e7f4}
+.jornadas-night .pjlite-jornadas-tabs--compact>.jornadas-more-select{
+ background:#302436!important;border-color:#694771!important;color:#f3dbfc!important;
+}
+.jornadas-night .campaign-shield-character{
+ background:#24212a!important;color:#f1e4fa!important;border-color:#5a4662!important;
+}
+.jornadas-night .campaign-shield-character small{color:#cbbad3!important}
+.jornadas-night .campaign-shield-character em{color:#df91f8!important}
+
+/* Temas e rótulos coincidentes com os disponíveis na Home. */
+.jornadas-home-theme-classic{
+ --campaign-accent:#775b3b;--campaign-paper:#f3ecdc;--campaign-ink:#50392d;
+}
+.jornadas-home-theme-dnd{
+ --campaign-accent:#922610;--campaign-paper:#fff4e5;--campaign-ink:#61251b;
+}
+.jornadas-home-theme-fabula{
+ --campaign-accent:#167f82;--campaign-paper:#eefbfa;--campaign-ink:#18565c;
+}
+.jornadas-home-theme-som6{
+ --campaign-accent:#881b1b;--campaign-paper:#f9f2e7;--campaign-ink:#682b2b;
+}
+.jornadas-home-theme-rotazero{
+ --campaign-accent:#355347;--campaign-paper:#e4e8df;--campaign-ink:#273e35;
+}
+.jornadas-home-theme-custom{
+ --campaign-accent:#416779;--campaign-paper:#edf3f4;--campaign-ink:#2e4c58;
+}
+.jornadas-clean:is(.jornadas-home-theme-classic,.jornadas-home-theme-dnd,.jornadas-home-theme-fabula,.jornadas-home-theme-som6,.jornadas-home-theme-rotazero,.jornadas-home-theme-custom)
+ .jornadas-site__side button.is-active{
+ background:var(--campaign-paper)!important;color:var(--campaign-ink)!important;
+ border-color:var(--campaign-accent)!important;
+}
+.jornadas-clean:is(.jornadas-home-theme-classic,.jornadas-home-theme-dnd,.jornadas-home-theme-fabula,.jornadas-home-theme-som6,.jornadas-home-theme-rotazero,.jornadas-home-theme-custom)
+ .pjlite-jornadas-tabs--compact button[aria-pressed="true"]{
+ background:var(--campaign-paper)!important;color:var(--campaign-ink)!important;
+ box-shadow:inset 0 -3px var(--campaign-accent)!important;
+}
+.jornadas-clean:is(.jornadas-home-theme-classic,.jornadas-home-theme-dnd,.jornadas-home-theme-fabula,.jornadas-home-theme-som6,.jornadas-home-theme-rotazero,.jornadas-home-theme-custom)
+ :is(.pjlite-jornadas-primary,.jornadas-clean__primary,.journey-mini-sheet__open){
+ background:var(--campaign-accent)!important;border-color:var(--campaign-accent)!important;color:#fff!important;
+}
+.jornadas-clean:is(.jornadas-home-theme-classic,.jornadas-home-theme-dnd,.jornadas-home-theme-fabula,.jornadas-home-theme-som6,.jornadas-home-theme-rotazero,.jornadas-home-theme-custom)
+ :is(.pjlite-jornadas-room-head,.pjlite-jornadas-box){
+ border-color:var(--campaign-accent)!important;
+}
