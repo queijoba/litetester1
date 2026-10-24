@@ -112,6 +112,8 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
   const toggleAchievements=next=>{
    setAchievementsOn(next);
    try{localStorage.setItem(achievementKey,next?'1':'0')}catch{}
+   // Mantenha a mesma preferência em Jornadas, na Home e em outras abas.
+   window.dispatchEvent(new CustomEvent('pjlite:achievements-visibility',{detail:{enabled:next}}));
   };
   const openArgMaterial=()=>{
    setOpen(false);
