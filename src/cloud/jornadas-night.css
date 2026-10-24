@@ -89,3 +89,18 @@
  .jornadas-night .jornadas-site__topbar{gap:4px}
  .jornadas-night .jornadas-site__topbar nav button{font-size:10px!important;padding:7px!important}
 }
+
+.jornadas-account-achievements{
+ display:grid;gap:8px;margin:16px 0;padding:13px;
+ border:1px solid #c7dacb;background:#f3f8f2;border-radius:9px;
+ color:#285b49;font-size:12px;
+}
+.jornadas-account-achievements>strong{font:700 15px Georgia,serif}
+.jornadas-account-achievements>small{color:#6b8171;font-size:10px}
+.jornadas-night .jornadas-account-achievements{
+ background:#25222b!important;border-color:#514158!important;color:#f1e6f5!important
+}
+.jornadas-night .jornadas-account-achievements>small{color:#bfb0c7!important}
+.jornadas-night .pjlite-cloud-achievement-switch{background:#2d2832!important;border-color:#675277!important;color:#e5d8ec!important}
+.jornadas-night .pjlite-cloud-achievement-switch input{accent-color:#ad5ada!important}
+.jornadas-night .journey-sheet-modal{color:#f4eafa}
