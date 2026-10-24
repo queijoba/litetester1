@@ -9,7 +9,7 @@ const preview=readFileSync('src/cloud/SheetQuickView.jsx','utf8');
 const dmSql=readFileSync('supabase/migrations/20261023_jornadas_dm_npc_sheets.sql','utf8');
 const privateSql=readFileSync('supabase/migrations/20261023_jornadas_private_npc_read.sql','utf8');
 
-assert.ok(panel.includes("['npcs','NPCs e Ameaças']"),'Apenas o mestre deve ter aba NPCs/Ameaças');
+assert.ok(panel.includes("['npcs','NPCs/Ameaças']"),'Apenas o mestre deve ter aba NPCs/Ameaças');
 assert.ok(panel.includes("tab==='npcs'&&isDm"),'A seção de NPCs deve ter proteção de papel');
 assert.ok(panel.includes("dmSheets=mySheets.filter(s=>s.sheet_type!=='pc')"),'A lista de NPCs separada das fichas de jogador');
 assert.ok(panel.includes("playerSheets=mySheets.filter(s=>s.sheet_type==='pc')"),'A lista de PCs não inclui ameaças');
