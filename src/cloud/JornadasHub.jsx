@@ -12,7 +12,14 @@ import './jornadas-night.css';
 
 const BG_KEY='pjlite_jornadas_bg_v1';
 const SHADE_KEY='pjlite_jornadas_shade_v1';
-const THEME_KEY='pjlite_jornadas_theme_v1';
+const THEME_KEY='dragonbane_theme_prefs'; // mesma preferência usada na Home
+const HOME_THEME_OPTIONS=[
+ ['default','Padrão'],['classic','Clássico DB'],
+ ['dnd','Dungeons & Dragons'],['fabula','Fábula Última'],
+ ['som6','O Som das Seis'],['dark','Modo Escuro'],
+ ['custom','Personalizado']
+];
+const allowedHomeThemes=new Set([...HOME_THEME_OPTIONS.map(([value])=>value),'rotazero']);
 const safeImage=value=>String(value||'').startsWith('data:image/')||(()=>{try{return new URL(value).protocol==='https:'}catch{return false}})();
 const compressBackground=file=>new Promise((resolve,reject)=>{
  if(!file||!file.type.startsWith('image/')){reject(new Error('Selecione uma imagem.'));return}
@@ -40,15 +47,23 @@ export default function JornadasHub(){
  const [newGroup,setNewGroup]=React.useState('');
  const [invite,setInvite]=React.useState('');
  const [showBg,setShowBg]=React.useState(false);
- const [theme,setTheme]=React.useState(()=>{try{return localStorage.getItem(THEME_KEY)==='classic'?'classic':'night'}catch{return 'night'}});
+ const [theme,setTheme]=React.useState(()=>{try{const saved=localStorage.getItem(THEME_KEY)||'default';return allowedHomeThemes.has(saved)?saved:'default'}catch{return 'default'}});
  const [achievements,setAchievements]=React.useState([]);
  const [achievementsOn,setAchievementsOn]=React.useState(true);
- const setJornadasTheme=()=>setTheme(current=>{const next=current==='night'?'classic':'night';try{localStorage.setItem(THEME_KEY,next)}catch{}return next});
+ const setJornadasTheme=next=>{
+  if(!allowedHomeThemes.has(next))return;
+  setTheme(next);try{localStorage.setItem(THEME_KEY,next)}catch{}
+ };
+ const rotaZeroThemeUnlocked=()=>{try{return localStorage.getItem('pjlite_rz_theme_unlocked_v1')==='1'}catch{return false}};
  const toggleAchievements=enabled=>{setAchievementsOn(enabled);try{if(account?.id)localStorage.setItem('pjlite_achievements_on_v1_'+account.id,enabled?'1':'0')}catch{}window.dispatchEvent(new CustomEvent('pjlite:achievements-visibility',{detail:{enabled}}));};
  const [background,setBackground]=React.useState(()=>{try{return localStorage.getItem(BG_KEY)||''}catch{return ''}});
  const [bgInput,setBgInput]=React.useState('');
  const [shade,setShade]=React.useState(()=>{try{return Number(localStorage.getItem(SHADE_KEY)||'0.22')}catch{return .22}});
- const backgroundStyle=background&&safeImage(background)?{backgroundImage:'linear-gradient(rgba(23,38,29,'+shade+'),rgba(23,38,29,'+shade+')),url("'+background.replace(/"/g,'%22')+'")',backgroundPosition:'center',backgroundSize:'cover',backgroundAttachment:'fixed'}:{};
+ const homeBackground=(()=>{try{return localStorage.getItem('dragonbane_custom_bg')||''}catch{return ''}})();
+ const effectiveBackground=background||(theme==='custom'?homeBackground:'');
+ const backgroundStyle=effectiveBackground&&safeImage(effectiveBackground)
+  ?{backgroundImage:'linear-gradient(rgba(23,38,29,'+shade+'),rgba(23,38,29,'+shade+')),url("'+effectiveBackground.replace(/"/g,'%22')+'")',
+    backgroundPosition:'center',backgroundSize:'cover',backgroundAttachment:'fixed'}:{};
  const saveBackground=v=>{try{localStorage.setItem(BG_KEY,v);setBackground(v);setError('')}catch{setError('Imagem grande demais para salvar neste navegador. Tente outra imagem ou use um link HTTPS.')}};
  const setHomeBackground=()=>{try{const v=localStorage.getItem('dragonbane_custom_bg')||'';if(!v){setNotice('Nenhum fundo personalizado salvo na Home.');return}saveBackground(v)}catch{setError('Não foi possível carregar o fundo da Home.')}};
  const uploadBg=async e=>{const file=e.target.files?.[0];if(!file)return;try{const compressed=await compressBackground(file);saveBackground(compressed)}catch(ex){setError(ex.message||'Falha ao enviar o fundo.')}};
@@ -117,12 +132,18 @@ export default function JornadasHub(){
   run(async()=>{await joinGroupByCode(invite);setInvite('');await refresh();navigate('campaigns')},'Você entrou no grupo. As campanhas compartilhadas aparecem abaixo.')};
  const rotate=group=>run(async()=>{await rotateGroupCode(group.id);await refresh()},'Novo código de convite criado.');
  const activeContent=tab==='campaigns'?'Minhas campanhas':tab==='groups'?'Grupos e convites':tab==='chat'?'Conversas':'Conta Lite';
- return <main className={'jornadas-site jornadas-clean '+(theme==='night'?'jornadas-night':'jornadas-classic')} style={backgroundStyle}>
+ return <main className={'jornadas-site jornadas-clean '+(theme==='dark'?'jornadas-night':'jornadas-classic')+' jornadas-home-theme-'+theme} style={backgroundStyle}>
   <header className="jornadas-site__topbar">
-   <a className="jornadas-site__brand" href="/" title="Voltar para o PJLite"><span className="jornadas-site__brandmark">◆</span><span><strong>PJ LITE</strong><small>JORNADAS</small></span></a>
+   <a className="jornadas-site__brand" href="/" title="Voltar para o PJLite"><span className="jornadas-site__brandmark">◆</span><span><strong>PJ LITE</strong><small>CAMPANHAS</small></span></a>
    <nav aria-label="Atalhos principais">
     <a className="jornadas-site__home-link" href="/">← Home</a>
-    <button type="button" onClick={setJornadasTheme} aria-label="Alternar tema de Jornadas">◐ {theme==='night'?'Tema escuro':'Tema clássico'}</button>
+    <label className="jornadas-theme-picker">◐ <span>Tema</span>
+      <select aria-label="Tema de Campanhas — igual à Home" value={theme}
+        onChange={event=>setJornadasTheme(event.target.value)}>
+        {HOME_THEME_OPTIONS.map(([value,label])=><option value={value} key={value}>{label}</option>)}
+        {rotaZeroThemeUnlocked()&&<option value="rotazero">Rota Zero</option>}
+      </select>
+    </label>
     <button type="button" onClick={()=>setShowBg(v=>!v)} aria-expanded={showBg}>🖼 Fundo</button>
     <button type="button" className={tab==='account'?'is-active':''} onClick={()=>navigate('account')}>☁ Conta Lite</button>
     <button type="button" className={tab==='chat'?'is-active':''} onClick={()=>navigate('chat')}>💬 Chat</button>
