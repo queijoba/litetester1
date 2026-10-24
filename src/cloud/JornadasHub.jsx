@@ -44,6 +44,7 @@ export default function JornadasHub(){
  const [achievements,setAchievements]=React.useState([]);
  const [achievementsOn,setAchievementsOn]=React.useState(true);
  const setJornadasTheme=()=>setTheme(current=>{const next=current==='night'?'classic':'night';try{localStorage.setItem(THEME_KEY,next)}catch{}return next});
+ const toggleAchievements=enabled=>{setAchievementsOn(enabled);try{if(account?.id)localStorage.setItem('pjlite_achievements_on_v1_'+account.id,enabled?'1':'0')}catch{}window.dispatchEvent(new CustomEvent('pjlite:achievements-visibility',{detail:{enabled}}));};
  const [background,setBackground]=React.useState(()=>{try{return localStorage.getItem(BG_KEY)||''}catch{return ''}});
  const [bgInput,setBgInput]=React.useState('');
  const [shade,setShade]=React.useState(()=>{try{return Number(localStorage.getItem(SHADE_KEY)||'0.22')}catch{return .22}});
@@ -184,6 +185,13 @@ export default function JornadasHub(){
       {tab==='account'&&<div className="jornadas-clean__box jornadas-clean__account">
         <div className="jornadas-clean__identity"><div className="jornadas-clean__avatar">{account.avatar?<img src={account.avatar} alt=""/>:account.name.charAt(0).toUpperCase()}</div><div><strong>{account.name}</strong><small>{account.email}</small><span>● Conta conectada</span></div></div>
         <p>Suas campanhas e conversas são compartilhadas com os grupos aos quais você pertence. As fichas são criadas e sincronizadas na Home.</p>
+        <div className="jornadas-account-achievements"><strong>🏆 Conquistas</strong>
+          <label className="pjlite-cloud-achievement-switch">
+            <input type="checkbox" checked={achievementsOn} onChange={event=>toggleAchievements(event.target.checked)}/>
+            <span>{achievementsOn?'ON · Conquistas visíveis':'OFF · Apenas o gatinho 🐱 no canto'}</span>
+          </label>
+          <small>Essa configuração vale também para a Home e não altera nenhuma conquista.</small>
+        </div>
         <div className="jornadas-clean__account-actions"><button type="button" onClick={()=>navigate('campaigns')}>🧭 Minhas campanhas</button><button type="button" onClick={()=>navigate('groups')}>♟ Meus grupos</button><button type="button" onClick={()=>navigate('chat')}>💬 Abrir Chat</button><a href="/?openAccount=1">☁ Configurações e sincronização →</a></div>
         <button type="button" className="jornadas-clean__logout" disabled={loading} onClick={logout}>Sair da Conta Lite</button>
        </div>}
