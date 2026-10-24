@@ -1,15 +1,18 @@
 import * as React from 'react';
 import JornadasPanel from './JornadasPanel.jsx';
 import AccountChatPanel from './AccountChatPanel.jsx';
-import {getSession,onAuthStateChange,getProfile,listGroups,createGroup,joinGroupByCode,rotateGroupCode,signInWithGoogle,signInWithOtp,signOut} from './supabaseCloud.js';
+import {getSession,onAuthStateChange,getMyAchievements,getProfile,listGroups,createGroup,joinGroupByCode,rotateGroupCode,signInWithGoogle,signInWithOtp,signOut} from './supabaseCloud.js';
 import {setGroupMaster} from './jornadasCloud.js';
 import './jornadas-hub.css';
 import './jornadas-clean.css';
 import './jornadas-cris.css';
+import './account-achievements.css';
+import './jornadas-night.css';
 
 
 const BG_KEY='pjlite_jornadas_bg_v1';
 const SHADE_KEY='pjlite_jornadas_shade_v1';
+const THEME_KEY='pjlite_jornadas_theme_v1';
 const safeImage=value=>String(value||'').startsWith('data:image/')||(()=>{try{return new URL(value).protocol==='https:'}catch{return false}})();
 const compressBackground=file=>new Promise((resolve,reject)=>{
  if(!file||!file.type.startsWith('image/')){reject(new Error('Selecione uma imagem.'));return}
@@ -37,6 +40,10 @@ export default function JornadasHub(){
  const [newGroup,setNewGroup]=React.useState('');
  const [invite,setInvite]=React.useState('');
  const [showBg,setShowBg]=React.useState(false);
+ const [theme,setTheme]=React.useState(()=>{try{return localStorage.getItem(THEME_KEY)==='classic'?'classic':'night'}catch{return 'night'}});
+ const [achievements,setAchievements]=React.useState([]);
+ const [achievementsOn,setAchievementsOn]=React.useState(true);
+ const setJornadasTheme=()=>setTheme(current=>{const next=current==='night'?'classic':'night';try{localStorage.setItem(THEME_KEY,next)}catch{}return next});
  const [background,setBackground]=React.useState(()=>{try{return localStorage.getItem(BG_KEY)||''}catch{return ''}});
  const [bgInput,setBgInput]=React.useState('');
  const [shade,setShade]=React.useState(()=>{try{return Number(localStorage.getItem(SHADE_KEY)||'0.22')}catch{return .22}});
@@ -51,6 +58,18 @@ export default function JornadasHub(){
   name:profile?.display_name||session.user.user_metadata?.full_name||session.user.user_metadata?.name||session.user.email?.split('@')[0]||'Jogador',
   avatar:profile?.avatar_url||session.user.user_metadata?.avatar_url||''
  }:null;
+ React.useEffect(()=>{
+   if(!account?.id){setAchievements([]);return}
+   let active=true;
+   const storageKey='pjlite_achievements_on_v1_'+account.id;
+   const read=()=>{try{if(active)setAchievementsOn(localStorage.getItem(storageKey)!=='0')}catch{if(active)setAchievementsOn(true)}};
+   read();
+   getMyAchievements().then(rows=>{if(active)setAchievements(rows||[])}).catch(()=>{if(active)setAchievements([])});
+   const changed=event=>{if(!event?.key||event.key===storageKey)read()};
+   window.addEventListener('storage',changed);
+   window.addEventListener('pjlite:achievements-visibility',read);
+   return()=>{active=false;window.removeEventListener('storage',changed);window.removeEventListener('pjlite:achievements-visibility',read)};
+ },[account?.id]);
  const navigate=React.useCallback(next=>{
   setTab(next);setError('');setNotice('');
   try{const u=new URL(window.location.href);u.searchParams.set('jornadas','1');u.searchParams.set('tab',next);window.history.replaceState({},'',u.pathname+u.search)}catch{}
@@ -97,11 +116,12 @@ export default function JornadasHub(){
   run(async()=>{await joinGroupByCode(invite);setInvite('');await refresh();navigate('campaigns')},'Você entrou no grupo. As campanhas compartilhadas aparecem abaixo.')};
  const rotate=group=>run(async()=>{await rotateGroupCode(group.id);await refresh()},'Novo código de convite criado.');
  const activeContent=tab==='campaigns'?'Minhas campanhas':tab==='groups'?'Grupos e convites':tab==='chat'?'Conversas':'Conta Lite';
- return <main className="jornadas-site jornadas-clean" style={backgroundStyle}>
+ return <main className={'jornadas-site jornadas-clean '+(theme==='night'?'jornadas-night':'jornadas-classic')} style={backgroundStyle}>
   <header className="jornadas-site__topbar">
    <a className="jornadas-site__brand" href="/" title="Voltar para o PJLite"><span className="jornadas-site__brandmark">◆</span><span><strong>PJ LITE</strong><small>JORNADAS</small></span></a>
    <nav aria-label="Atalhos principais">
     <a className="jornadas-site__home-link" href="/">← Home</a>
+    <button type="button" onClick={setJornadasTheme} aria-label="Alternar tema de Jornadas">◐ {theme==='night'?'Tema escuro':'Tema clássico'}</button>
     <button type="button" onClick={()=>setShowBg(v=>!v)} aria-expanded={showBg}>🖼 Fundo</button>
     <button type="button" className={tab==='account'?'is-active':''} onClick={()=>navigate('account')}>☁ Conta Lite</button>
     <button type="button" className={tab==='chat'?'is-active':''} onClick={()=>navigate('chat')}>💬 Chat</button>
@@ -170,6 +190,13 @@ export default function JornadasHub(){
      </>}
    </div>
   </div>
+  {account&&achievements.length>0&&<button type="button"
+    className={'pjlite-achievement-corner '+(achievementsOn?'is-full':'is-minimal')}
+    aria-label="Conquistas — acessar conta" title={achievementsOn?'Ver conquistas':'Conquistas minimizadas'}
+    onClick={()=>navigate('account')}>
+    <span className="pjlite-achievement-emblem" aria-hidden="true">{achievementsOn?'◆':'🐱'}</span>
+    {achievementsOn&&<span className="pjlite-achievement-corner-text"><strong>CONQUISTAS</strong><small>{achievements.length} desbloqueada{achievements.length===1?'':'s'}</small></span>}
+  </button>}
   <footer className="jornadas-site__footer">PJ Lite 1.1.0v Alpha · Campanhas vinculadas à Conta Lite · <a href="/">Voltar à Home</a></footer>
  </main>;
 }
