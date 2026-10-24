@@ -24,7 +24,7 @@ assert.ok(!html.includes('/dispatch/reward.js'),'Remove globally injected legacy
 assert.ok(!html.includes('lite-signal-preview'),'Remove misleading ARG preview icon from app');
 assert.ok(legacy.includes("badge.id='rz-achievement'"),'Legacy reward route remains available as a standalone resource');
 assert.ok(app.includes('pjlite:achievements-visibility'),'Account setting must notify the other UI');
-assert.ok(hub.includes("localStorage.getItem('pjlite_achievements_on_v1_'+account.id)"),'Jornadas should use account-specific preference');
+assert.ok(hub.includes("const storageKey='pjlite_achievements_on_v1_'+account.id")&&hub.includes("localStorage.getItem(storageKey)"),'Jornadas should use account-specific preference');
 assert.ok(hub.includes('pjlite:achievements-visibility'),'React to achievement toggle without reloading');
 assert.ok(hub.includes("achievementsOn?'◆':'🐱'"),'OFF means cat only');
 assert.ok(hub.includes('{achievementsOn&&<span className="pjlite-achievement-corner-text">'),'Never render label in OFF');
