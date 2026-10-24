@@ -15,7 +15,7 @@ for(const name of [
  assert.ok(sql.includes('security definer set search_path'),'Helper must isolate RLS and fix search_path');
  assert.ok(sql.includes('grant execute on function public.'+name),'Authenticated permission for '+name);
 }
-assert.ok(sql.includes('s.sheet_type=\\'pc\\'')&&sql.includes('l.dm_can_edit=true'),'Restrict PC access and DM edits');
+assert.ok(sql.includes("s.sheet_type='pc'")&&sql.includes('l.dm_can_edit=true'),'Restrict PC access and DM edits');
 assert.ok(sql.includes("g.owner_id=(select auth.uid())"),'DM permissions must enforce owner');
 assert.ok(sql.includes('drop policy if exists sheets_campaign_member_read'),'Remove mutually recursive sheet lookup');
 assert.ok(sql.includes('drop policy if exists campaign_links_member_select'),'Remove mutually recursive link lookup');
