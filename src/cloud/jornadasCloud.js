@@ -149,7 +149,36 @@ export async function setMasterSheetEdit(campaignId,sheetId,enabled){
 }
 export async function unlinkMySheet(campaignId,sheetId){
  const actor=await user();
- return check(await client().from('campaign_sheet_links').delete().eq('campaign_id',campaignId).eq('sheet_id',sheetId).eq('owner_id',actor.id));
+ const deleted=check(await client().from('campaign_sheet_links').delete()
+  .eq('campaign_id',campaignId).eq('sheet_id',sheetId).eq('owner_id',actor.id)
+  .select('campaign_id,sheet_id'))||[];
+ if(!deleted.length)throw new Error('Esta ficha não está vinculada à campanha ou você não é seu proprietário.');
+ return deleted[0];
+}
+// Edição visual da ficha existente usando o editor padrão do PJLite.
+// A validação no cliente melhora o UX; o UPDATE é revalidado pelas políticas RLS.
+export async function getJourneyEditableSheet(sheetId,campaignId){
+ const actor=await user();
+ if(!sheetId||!campaignId)throw new Error('Ficha ou campanha não informada.');
+ const sheet=check(await client().from('sheets')
+  .select('id,local_id,owner_id,name,system,sheet_type,payload')
+  .eq('id',sheetId).maybeSingle());
+ if(!sheet?.payload||typeof sheet.payload!=='object')throw new Error('Ficha não encontrada ou indisponível para sua Conta Lite.');
+ const campaign=check(await client().from('campaigns')
+  .select('id,owner_id,group_id').eq('id',campaignId).maybeSingle());
+ if(!campaign)throw new Error('Você não tem acesso à campanha.');
+ if(sheet.owner_id===actor.id){
+  const ownLink=sheet.sheet_type==='pc'
+   ?check(await client().from('campaign_sheet_links').select('sheet_id').eq('campaign_id',campaignId).eq('sheet_id',sheetId).maybeSingle())
+   :check(await client().from('campaign_dm_sheets').select('sheet_id').eq('campaign_id',campaignId).eq('sheet_id',sheetId).maybeSingle());
+  if(!ownLink)throw new Error('A ficha não está mais vinculada a esta campanha.');
+  return {...sheet,canEdit:true,isOwner:true};
+ }
+ if(campaign.owner_id!==actor.id||sheet.sheet_type!=='pc')throw new Error('Somente o dono da ficha ou o mestre autorizado pode editá-la.');
+ const link=check(await client().from('campaign_sheet_links')
+  .select('sheet_id,dm_can_edit').eq('campaign_id',campaignId).eq('sheet_id',sheetId).maybeSingle());
+ if(!link?.dm_can_edit)throw new Error('O proprietário não autorizou a edição pelo mestre.');
+ return {...sheet,canEdit:true,isOwner:false};
 }
 export async function saveJourneySheet(sheetId,payload){
  await user();
