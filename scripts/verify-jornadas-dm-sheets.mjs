@@ -9,14 +9,14 @@ const preview=readFileSync('src/cloud/SheetQuickView.jsx','utf8');
 const dmSql=readFileSync('supabase/migrations/20261023_jornadas_dm_npc_sheets.sql','utf8');
 const privateSql=readFileSync('supabase/migrations/20261023_jornadas_private_npc_read.sql','utf8');
 
-assert.ok(panel.includes("['npcs','NPCs e Ameaças']"),'Apenas o mestre deve ter aba NPCs/Ameaças');
+assert.ok(panel.includes("['npcs','NPCs/Ameaças']"),'Apenas o mestre deve ter aba NPCs/Ameaças');
 assert.ok(panel.includes("tab==='npcs'&&isDm"),'A seção de NPCs deve ter proteção de papel');
 assert.ok(panel.includes("dmSheets=mySheets.filter(s=>s.sheet_type!=='pc')"),'A lista de NPCs separada das fichas de jogador');
 assert.ok(panel.includes("playerSheets=mySheets.filter(s=>s.sheet_type==='pc')"),'A lista de PCs não inclui ameaças');
 assert.ok(panel.includes("isDm?listJourneyDmSheets(current.id):Promise.resolve([])"),'Não requisitar NPCs privados para jogadores');
 assert.ok(panel.includes("listJourneyDmSheets(current.id)"),'Área privada deve consultar backend');
 assert.ok(panel.includes("addDmLink(sheet.id)")&&panel.includes("removeDmLink(row.sheet_id)"),'Mestre deve adicionar/remover ameaças');
-assert.ok(panel.includes("setTab(dmOnly?'npcs':'fichas')"),'A edição retorna à aba correta');
+assert.ok(panel.includes("onEdit={()=>openNativeEditor(previewSheet)"),'A edição abre o editor original do PJLite');
 assert.ok(panel.includes("const syncLocal=()=>run(async()=>"),'Permitir enviar fichas locais explicitamente');
 assert.ok(panel.includes("pushSheets(chars,threats)"),'Personagens, NPCs e ameaças devem ter sincronização');
 assert.ok(api.includes("getLinkedSheetRows(table,campaignId)"),'Evitar nested join que oculta todas as fichas');

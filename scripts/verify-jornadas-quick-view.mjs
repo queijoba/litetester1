@@ -45,7 +45,7 @@ for(const item of ["['jogadores','Jogadores']","tab==='jogadores'","journeys-cha
 }
 assert.ok(hub.includes('onRefreshGroups={refresh}'),'Atualizar membros reais do grupo no mesmo botão de atualizar sala');
 assert.ok(!panel.includes('className="jornadas-room-tools"'),'A navegação duplicada deve ser removida');
-assert.equal(panel.split('className="pjlite-jornadas-tabs"').length-1,1,'A campanha tem uma única navegação');
+assert.equal(panel.split('className="pjlite-jornadas-tabs pjlite-jornadas-tabs--compact"').length-1,1,'A campanha tem uma única navegação compacta');
 assert.ok(panel.includes("setTab('fichas')"),'Abrir uma campanha diretamente na área de personagens');
 assert.ok(preview.includes('role="dialog"')&&preview.includes('aria-modal="true"'),'A prévia abre em diálogo acessível');
 assert.ok(preview.includes('canEdit&&sheet.hasPayload'),'Só editores autorizados têm acesso à edição avançada');

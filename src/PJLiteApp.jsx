@@ -41,7 +41,7 @@ import * as ReactDOM from 'react-dom';
 import JSZip from 'jszip';
 import LZString from 'lz-string';
 import { getMyAchievements,getSession,onAuthStateChange } from './cloud/supabaseCloud.js';
-import { listJourneys } from './cloud/jornadasCloud.js';
+import { listJourneys, getJourneyEditableSheet, saveJourneySheet } from './cloud/jornadasCloud.js';
 
 const { useState, useEffect, useRef } = React;
 
@@ -1248,6 +1248,8 @@ const { useState, useEffect, useRef } = React;
             const [savedChars, setSavedChars] = useState(getSavedCharacters());
             const [savedThreats, setSavedThreats] = useState(getSavedThreats());
             const [data, setData] = useState(initialData);
+            const [cloudEditing,setCloudEditing] = useState(null);
+            const [cloudEditorLoading,setCloudEditorLoading] = useState(false);
             
             const [theme, setTheme] = useState(() => { try { return localStorage.getItem(THEME_PREF_KEY) || 'default'; } catch { return 'default'; } });
             const [rotaZeroUnlocked, setRotaZeroUnlocked] = useState(() => { try { return localStorage.getItem('pjlite_rz_theme_unlocked_v1') === '1'; } catch { return false; } });
@@ -1305,6 +1307,57 @@ const { useState, useEffect, useRef } = React;
                 const unsubscribe=onAuthStateChange(session=>{if(alive)setJourneysSignedIn(!!session?.user)});
                 return()=>{alive=false;unsubscribe?.()};
             },[]);
+            // Abrir a ficha vinculada usando o editor original do PJLite.
+            // O salvamento em nuvem é explícito; evita auto-salvar fichas de
+            // outro jogador na biblioteca local do mestre.
+            useEffect(()=>{
+                let params;try{params=new URLSearchParams(window.location.search)}catch{return}
+                const sheetId=params.get('editSheet'),campaignId=params.get('campaignId');
+                if(!sheetId||!campaignId)return;
+                let live=true;setCloudEditorLoading(true);
+                getJourneyEditableSheet(sheetId,campaignId).then(sheet=>{
+                    if(!live)return;
+                    let imported={...sheet.payload,id:sheet.local_id||sheet.payload?.id||sheet.id,
+                       system:sheet.system||sheet.payload?.system||'dragonbane',
+                       type:sheet.sheet_type==='pc'?'pc':(sheet.payload?.type||sheet.sheet_type)};
+                    imported=normalizeMetaItem(imported);
+                    imported=normalizeDragonbanePcData(imported);
+                    imported=normalizeDndPcData(imported);
+                    imported=normalizeFabulaPcData(imported);
+                    imported=normalizeFabulaThreatData(imported);
+                    imported=normalizeSom6PcData(imported);
+                    imported=normalizeSom6PdjData(imported);
+                    imported=normalize3DetPcData(imported);
+                    imported=normalize3DetThreatData(imported);
+                    if(imported.system==='rotaZero'&&imported.type==='pc')imported=normalizeRotaZeroPcData(imported);
+                    setCloudEditing({sheetId:sheet.id,campaignId,localId:imported.id,
+                      system:sheet.system,sheetType:sheet.sheet_type,isOwner:sheet.isOwner});
+                    setData(imported);
+                    setDndPcTab('caracteristicas');setFabulaTab('perfil');setSom6Tab('perfil');
+                    setView('editor');
+                }).catch(error=>{if(live){console.error('Abrir ficha da campanha',error);showToast(error?.message||'Não foi possível abrir a ficha vinculada.')}})
+                  .finally(()=>{if(live)setCloudEditorLoading(false)});
+                return()=>{live=false};
+            },[]);
+            const saveCloudFromEditor=async()=>{
+                if(!cloudEditing||!data)return;
+                setSaveStatus('saving');
+                try{
+                    const updated={...data,id:cloudEditing.localId,
+                      system:cloudEditing.system||data.system,
+                      type:cloudEditing.sheetType==='pc'?'pc':data.type};
+                    await saveJourneySheet(cloudEditing.sheetId,updated);
+                    // O proprietário atualiza também sua cópia local.
+                    if(cloudEditing.isOwner&&!saveToLocal(updated,true))
+                        showToast('Ficha salva na campanha; não foi possível atualizar a cópia deste dispositivo.');
+                    else showToast('Ficha salva na campanha e atualizada na nuvem.');
+                    setSaveStatus('saved');
+                }catch(error){console.error('Salvar ficha da campanha',error);setSaveStatus('error');showToast(error?.message||'Não foi possível salvar na campanha.')}
+            };
+            const leaveCloudEditor=()=>{
+                if(saveStatus==='pending'&&!window.confirm('Sair sem salvar as alterações na campanha?'))return;
+                window.location.assign('/?jornadas=1&tab=campaigns');
+            };
             const [pendingJourney,setPendingJourney]=useState(null);
             useEffect(()=>{
                 const start=e=>{
@@ -1446,14 +1499,14 @@ const { useState, useEffect, useRef } = React;
 
             // Autosave com debounce: evita perder alterações sem gravar a cada tecla imediatamente.
             useEffect(() => {
-                if (view !== 'editor' || !data) return;
+                if (view !== 'editor' || !data || cloudEditing || cloudEditorLoading) return;
                 setSaveStatus('pending');
                 const timer = setTimeout(() => {
                     const ok = saveToLocal(data, true);
                     if (!ok) setSaveStatus('error');
                 }, 1400);
                 return () => clearTimeout(timer);
-            }, [data, view]);
+            }, [data, view, cloudEditing, cloudEditorLoading]);
 
             const getWindowStyle = () => {
                 if (theme !== 'custom') return {};
@@ -1974,6 +2027,7 @@ const { useState, useEffect, useRef } = React;
             };
 
             const returnToDashboard = () => {
+                if(cloudEditing){leaveCloudEditor();return;}
                 const wasRotaZero = data?.system === 'rotaZero';
                 if (view === 'editor' && data) {
                     const ok = saveToLocal(data, true);
@@ -2177,8 +2231,8 @@ const { useState, useEffect, useRef } = React;
                                 <button onClick={() => { setGuideTab('inicio'); setShowGuideModal(true); }} className="flex items-center gap-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded shadow transition-colors font-bold text-sm">
                                     <SVGIcons.HelpCircle /> Guias e Tutoriais
                                 </button>
-                                {journeysSignedIn&&<a href="/?jornadas=1" target="_blank" rel="noopener noreferrer" className="pjlite-journeys-home-link" title="Abrir suas Jornadas — disponível para contas conectadas">
-                                    🧭 Jornadas
+                                {journeysSignedIn&&<a href="/?jornadas=1" target="_blank" rel="noopener noreferrer" className="pjlite-journeys-home-link" title="Abrir suas campanhas — disponível para contas conectadas">
+                                    🗂 Campanha
                                 </a>}
                             </div>
                             <div className="mb-6 rounded border-2 border-[#922610] bg-[#fdf1dc] shadow-sm overflow-hidden">
@@ -3501,6 +3555,7 @@ const { useState, useEffect, useRef } = React;
                               </select>}
                               {!data.meta?.campaignId&&<input value={data.meta?.campanha || ''} onChange={e=>updateField('meta.campanha', e.target.value)} placeholder="Campanha" className="w-28 md:w-36 px-2 py-1 rounded text-xs text-gray-900 bg-white/90 border border-white/30" title="Campanha / pasta desta ficha" />}
                             </div>
+                            {cloudEditing&&<span className="text-[11px] rounded bg-violet-900 px-2 py-1 text-white font-bold">☁ Editando ficha da campanha</span>}
                             {saveStatus && <span className={`text-[10px] font-bold px-2 py-1 rounded ${saveStatus==='error'?'bg-red-900':saveStatus==='saving'?'bg-amber-700':'bg-black/30'}`}>{saveStatus==='pending'?'Alterado…':saveStatus==='saving'?'Salvando…':saveStatus==='saved'?'✓ Salvo':'Erro ao salvar'}</span>}
                             {['somdas6','3det'].includes(data.system) && data.type === 'pc' && <button type="button" onClick={()=>setOtherLibraryOpen(true)}
                                 className="pjlite-toolbar-library" title={data.system==='3det'?'Biblioteca 3DeT Victory: vantagens, desvantagens e técnicas':'Biblioteca O Som das Seis: habilidades e antecedentes'}
@@ -3524,8 +3579,8 @@ const { useState, useEffect, useRef } = React;
                                 <SVGIcons.MessageCircle /> Copiar Ficha
                             </button>
                             <button onClick={() => handleExport(data)} className="px-3 py-1 rounded text-xs md:text-sm font-bold transition-colors shadow bg-black/30 hover:bg-black/50 text-white" title="Baixar ZIP">ZIP</button>
-                            <button onClick={() => saveToLocal(data)} className="flex items-center gap-1 px-3 py-1 rounded text-xs md:text-sm font-bold transition-colors shadow bg-green-700 hover:bg-green-600 text-white">
-                                <SVGIcons.Save /> Salvar
+                            <button onClick={cloudEditing?saveCloudFromEditor:()=>saveToLocal(data)} disabled={cloudEditorLoading} className="flex items-center gap-1 px-3 py-1 rounded text-xs md:text-sm font-bold transition-colors shadow bg-green-700 hover:bg-green-600 text-white">
+                                <SVGIcons.Save /> {cloudEditing?'Salvar na campanha':'Salvar'}
                             </button>
                         </div>
                     </div>
