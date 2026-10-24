@@ -72,7 +72,7 @@ export function CharacterMiniSheet({row,ownerLabel,onView}){
  </article>;
 }
 
-export function SheetQuickView({row,ownerLabel,onClose,onEdit,canEdit=false}){
+export function SheetQuickView({row,ownerLabel,onClose,onEdit,onUnlink,canEdit=false,canUnlink=false}){
  const [details,setDetails]=React.useState(false);
  const sheet=getJourneySheetSummary(row);
  React.useEffect(()=>{
@@ -105,7 +105,9 @@ export function SheetQuickView({row,ownerLabel,onClose,onEdit,canEdit=false}){
    </>}
    <footer className="journey-sheet-modal__footer">
     <small>Consulta da ficha sincronizada. Edição depende da permissão do dono.</small>
-    <div><button type="button" onClick={onClose}>Fechar</button>{canEdit&&sheet.hasPayload&&<button className="journey-sheet-edit" type="button" onClick={onEdit}>✎ Edição avançada</button>}</div>
+    <div><button type="button" onClick={onClose}>Fechar</button>
+     {canUnlink&&<button className="journey-sheet-unlink" type="button" onClick={onUnlink}>Desvincular da campanha</button>}
+     {canEdit&&sheet.hasPayload&&<button className="journey-sheet-edit" type="button" onClick={onEdit}>✎ Editar no PJLite</button>}</div>
    </footer>
   </section>
  </div>;
