@@ -1,0 +1,91 @@
+/* Mesa escura opcional: hierarquia próxima ao CRIS, identidade PJLite preservada.
+ * Escopo apenas em Jornadas, sem alterar fichas e Home.
+ */
+.jornadas-clean.jornadas-night{
+  color-scheme:dark;
+  --j-bg:#121316;--j-panel:#1b1d20;--j-panel-alt:#232528;
+  --j-text:#eff3f0;--j-muted:#b3b8b7;--j-line:#3c4142;--j-accent:#b264ec;
+  background-color:var(--j-bg)!important;color:var(--j-text)!important;
+}
+.jornadas-night .jornadas-site__topbar{background:#17181c!important;border-color:#4b3c55!important;color:#f1eafa!important;box-shadow:0 1px 12px #0006}
+.jornadas-night .jornadas-site__brand,.jornadas-night .jornadas-site__brand strong{color:#f3edf8!important}
+.jornadas-night .jornadas-site__brand small{color:#cfa9ec!important}
+.jornadas-night .jornadas-site__brandmark{background:#28202c!important;border-color:#70558d!important;color:#b68ce3!important}
+.jornadas-night .jornadas-site__topbar nav button,.jornadas-night .jornadas-site__topbar nav a{background:#1b1c20!important;color:#dfd5e6!important;border:1px solid #59515e!important;border-radius:6px!important}
+.jornadas-night .jornadas-site__topbar nav button:hover,.jornadas-night .jornadas-site__topbar nav a:hover{background:#36263d!important;color:white!important;border-color:#9b54bf!important}
+.jornadas-night .jornadas-site__topbar nav .jornadas-site__home-link{background:#6d3295!important;color:white!important}
+.jornadas-night .jornadas-site__user{color:#ceccd1!important}
+.jornadas-night .jornadas-site__layout{background:transparent!important}
+.jornadas-night .jornadas-site__side{background:#17181b!important;border-color:#34363b!important}
+.jornadas-night .jornadas-site__side-title{color:#bcbac1!important}
+.jornadas-night .jornadas-site__side button{background:transparent!important;border:1px solid transparent!important;color:#c9cbd0!important}
+.jornadas-night .jornadas-site__side button:hover{background:#312539!important;color:#f9eeff!important}
+.jornadas-night .jornadas-site__side button.is-active{background:#42234f!important;border-color:#9854b9!important;color:#f5dcff!important}
+.jornadas-night .jornadas-site__sidebar-home{background:#24232a!important;color:#d9c7e7!important;border-color:#6a497b!important}
+.jornadas-night .jornadas-clean__sidebar-note{color:#9d9fa9!important}
+.jornadas-night .jornadas-site__content{background:#151619ed!important;border:0!important}
+.jornadas-night .jornadas-clean__pagehead,.jornadas-night .jornadas-clean__intro,.jornadas-night .pjlite-jornadas-header{
+ background:#1a1b1f!important;border:1px solid #33363b!important;box-shadow:none!important;
+}
+.jornadas-night :is(h1,h2,h3,h4),.jornadas-night .jornadas-clean__pagehead h1,
+.jornadas-night .pjlite-jornadas-room-head strong,.jornadas-night .journeys-panel-heading h4,
+.jornadas-night .pjlite-jornadas-box h4{color:#f2edf7!important}
+.jornadas-night :is(p,small,.jornadas-clean__pagehead p,.jornadas-clean__intro p){color:#bbc0c0}
+.jornadas-night .jornadas-site__eyebrow{color:#d4a0ef!important}
+.jornadas-night .jornadas-clean__back{background:#212026;color:#e9d5f2;border-color:#655172}
+.jornadas-night .jornadas-clean__box,.jornadas-night .jornadas-clean__auth,
+.jornadas-night .jornadas-clean__onboarding,.jornadas-night .pjlite-jornadas,
+.jornadas-night .pjlite-jornadas-room,.jornadas-night .pjlite-jornadas-box,
+.jornadas-night .pjlite-jornadas-room-head,.jornadas-night .campaign-workspace,
+.jornadas-night .campaign-library-card,.jornadas-night .campaign-workspace__card{
+ background:var(--j-panel)!important;color:var(--j-text)!important;border-color:var(--j-line)!important;box-shadow:none!important;
+}
+.jornadas-night .pjlite-jornadas-room-head{border-left:3px solid #995bc1!important}
+.jornadas-night .pjlite-jornadas-tabs{
+ background:#202024!important;border:1px solid #35343b!important;border-bottom:2px solid #75468a!important;
+}
+.jornadas-night .pjlite-jornadas-tabs button{background:transparent!important;color:#c0bec7!important}
+.jornadas-night .pjlite-jornadas-tabs button[aria-pressed="true"]{
+ background:#3c234d!important;color:#f2dbff!important;box-shadow:inset 0 -3px #bc65f2!important
+}
+.jornadas-night .pjlite-jornadas-tabs button:hover{background:#2d2734!important;color:#fff!important}
+.jornadas-night .jornadas-campaign-card,.jornadas-night .journeys-player-card,
+.jornadas-night .journeys-character-card,.jornadas-night .journeys-dm-card,
+.jornadas-night .journeys-empty-sheets,.jornadas-night .journeys-link-sheet__available,
+.jornadas-night .jornadas-clean__group-list article,.jornadas-night .journey-sheet-modal{
+ background:#212327!important;border-color:#45404b!important;color:#f1ecf6!important;
+}
+.jornadas-night .journey-mini-sheet,.jornadas-night .journeys-character-card.journey-mini-sheet{
+ background:linear-gradient(160deg,#222128,#191d20)!important;border:1px solid #4b3b53!important;border-top:3px solid #9652b5!important;
+}
+.jornadas-night .journey-mini-sheet__heading h4,.jornadas-night .journeys-player-info strong,
+.jornadas-night .journeys-character-info strong{color:#f2eaf9!important}
+.jornadas-night .journey-mini-sheet__heading p,.jornadas-night .journey-mini-sheet__system,
+.jornadas-night .journey-mini-sheet__owner{color:#c4b7cb!important}
+.jornadas-night .journey-mini-sheet__attributes>div,.jornadas-night .journey-sheet-attributes>div,
+.jornadas-night .journey-sheet-vitals>div{background:#2b2731!important;border-color:#514557!important}
+.jornadas-night .journey-mini-sheet__attributes strong,.jornadas-night .journey-sheet-attributes strong{color:#fff!important}
+.jornadas-night .journey-mini-sheet__attributes span,.jornadas-night .journey-sheet-attributes span{color:#c9b2d6!important}
+.jornadas-night .journey-mini-sheet__open,.jornadas-night .journeys-character-view,
+.jornadas-night .pjlite-jornadas-primary,.jornadas-night .jornadas-clean__primary{
+ background:#8744b3!important;border-color:#8744b3!important;color:#fff!important;
+}
+.jornadas-night .journey-mini-sheet__open:hover,.jornadas-night .pjlite-jornadas-primary:hover{background:#9f51ca!important}
+.jornadas-night :is(input,textarea,select){
+ background:#111215!important;color:#e9e5ef!important;border:1px solid #5a5660!important;
+}
+.jornadas-night :is(input,textarea,select):focus-visible{outline:2px solid #ad6acc!important;outline-offset:1px}
+.jornadas-night :is(button,a):focus-visible{outline:2px solid #c784ed!important;outline-offset:2px}
+.jornadas-night .jornadas-background-options{background:#1f1b25!important;border-color:#60466f!important;color:#f3e8fb!important}
+.jornadas-night .jornadas-clean__notice{background:#25382b!important;color:#d4f1d9!important;border-color:#496a50!important}
+.jornadas-night .jornadas-clean__alert,.jornadas-night .journeys-sheet-error{background:#38282a!important;border-color:#a25e65!important;color:#f5ced0!important}
+.jornadas-night .jornadas-site__footer{background:#161719!important;border-color:#33363b!important;color:#b2b2bd!important}
+.jornadas-night .jornadas-site__footer a{color:#cb9de5!important}
+.jornadas-night .jornadas-link-sheet__row,.jornadas-night .journeys-link-sheet__row{border-color:#3c3c45!important}
+.jornadas-night .journey-sheet-modal__top,.jornadas-night .journey-sheet-modal__footer{border-color:#4a4554!important}
+.jornadas-night .pjlite-achievement-corner{border-color:#9471a8!important}
+@media(max-width:1110px){.jornadas-night .jornadas-site__side{border-bottom:1px solid #43404a!important}}
+@media(max-width:600px){
+ .jornadas-night .jornadas-site__topbar{gap:4px}
+ .jornadas-night .jornadas-site__topbar nav button{font-size:10px!important;padding:7px!important}
+}
