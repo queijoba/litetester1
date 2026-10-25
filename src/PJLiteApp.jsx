@@ -1250,6 +1250,8 @@ const { useState, useEffect, useRef } = React;
             const [data, setData] = useState(initialData);
             const [cloudEditing,setCloudEditing] = useState(null);
             const [cloudEditorLoading,setCloudEditorLoading] = useState(false);
+            const cloudLastSavedRef=useRef('');
+            const cloudLatestSnapshotRef=useRef('');
             
             const [theme, setTheme] = useState(() => { try { return localStorage.getItem(THEME_PREF_KEY) || 'default'; } catch { return 'default'; } });
             const [rotaZeroUnlocked, setRotaZeroUnlocked] = useState(() => { try { return localStorage.getItem('pjlite_rz_theme_unlocked_v1') === '1'; } catch { return false; } });
@@ -1330,6 +1332,9 @@ const { useState, useEffect, useRef } = React;
                     imported=normalize3DetPcData(imported);
                     imported=normalize3DetThreatData(imported);
                     if(imported.system==='rotaZero'&&imported.type==='pc')imported=normalizeRotaZeroPcData(imported);
+                    cloudLastSavedRef.current=JSON.stringify(imported);
+                    cloudLatestSnapshotRef.current=cloudLastSavedRef.current;
+                    setSaveStatus('saved');
                     setCloudEditing({sheetId:sheet.id,campaignId,localId:imported.id,
                       system:sheet.system,sheetType:sheet.sheet_type,isOwner:sheet.isOwner});
                     setData(imported);
@@ -1339,23 +1344,37 @@ const { useState, useEffect, useRef } = React;
                   .finally(()=>{if(live)setCloudEditorLoading(false)});
                 return()=>{live=false};
             },[]);
+            // O editor normal da Home usa autosave local. Para fichas compartilhadas,
+            // nunca salvar automaticamente: sinalizar modificações e exigir salvar na nuvem.
+            useEffect(()=>{
+                if(!cloudEditing||cloudEditorLoading||view!=='editor'||!data)return;
+                try{
+                    const snapshot=JSON.stringify(data);
+                    cloudLatestSnapshotRef.current=snapshot;
+                    if(snapshot!==cloudLastSavedRef.current)
+                        setSaveStatus(previous=>previous==='saving'?'saving':'pending');
+                }catch{}
+            },[data,cloudEditing,cloudEditorLoading,view]);
             const saveCloudFromEditor=async()=>{
                 if(!cloudEditing||!data)return;
                 setSaveStatus('saving');
                 try{
+                    const savedSnapshot=JSON.stringify(data);
                     const updated={...data,id:cloudEditing.localId,
                       system:cloudEditing.system||data.system,
                       type:cloudEditing.sheetType==='pc'?'pc':data.type};
                     await saveJourneySheet(cloudEditing.sheetId,updated);
+                    cloudLastSavedRef.current=savedSnapshot;
                     // O proprietário atualiza também sua cópia local.
                     if(cloudEditing.isOwner&&!saveToLocal(updated,true))
                         showToast('Ficha salva na campanha; não foi possível atualizar a cópia deste dispositivo.');
                     else showToast('Ficha salva na campanha e atualizada na nuvem.');
-                    setSaveStatus('saved');
+                    setSaveStatus(cloudLatestSnapshotRef.current===savedSnapshot?'saved':'pending');
                 }catch(error){console.error('Salvar ficha da campanha',error);setSaveStatus('error');showToast(error?.message||'Não foi possível salvar na campanha.')}
             };
             const leaveCloudEditor=()=>{
-                if(saveStatus==='pending'&&!window.confirm('Sair sem salvar as alterações na campanha?'))return;
+                const hasChanges=cloudEditing&&data&&JSON.stringify(data)!==cloudLastSavedRef.current;
+                if((hasChanges||saveStatus==='saving'||saveStatus==='error')&&!window.confirm('Sair sem salvar as alterações na campanha?'))return;
                 window.location.assign('/?jornadas=1&tab=campaigns');
             };
             const [pendingJourney,setPendingJourney]=useState(null);
