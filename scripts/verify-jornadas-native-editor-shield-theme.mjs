@@ -17,6 +17,11 @@ assert.ok(editor.includes("setView('editor')"));
 assert.ok(editor.includes('if (view !== \'editor\' || !data || cloudEditing || cloudEditorLoading) return;'),
  'Edição compartilhada não deve ser salva silenciosamente na biblioteca local do mestre');
 assert.ok(editor.includes('await saveJourneySheet(cloudEditing.sheetId,updated)'));
+assert.ok(editor.includes("cloudLastSavedRef.current=JSON.stringify(imported)"),'Registrar estado inicial antes de editar ficha de campanha');
+assert.ok(editor.includes("if(snapshot!==cloudLastSavedRef.current)"),'Marcar mudanças pendentes no editor original');
+assert.ok(editor.includes("cloudLastSavedRef.current=savedSnapshot"),'Só marcar ficha salva após retorno da nuvem');
+assert.ok(editor.includes("cloudLatestSnapshotRef.current===savedSnapshot?'saved':'pending'"),'Não declarar salvo se usuário alterou a ficha durante upload');
+assert.ok(editor.includes("const hasChanges=cloudEditing&&data&&JSON.stringify(data)!==cloudLastSavedRef.current"),'Avisar antes de sair com mudanças não salvas');
 assert.ok(editor.includes("cloudEditing?'Salvar na campanha':'Salvar'"));
 assert.ok(cloud.includes("sheet.owner_id===actor.id"));
 assert.ok(cloud.includes("!link?.dm_can_edit"),'Não editar personagem de terceiro sem consentimento');
