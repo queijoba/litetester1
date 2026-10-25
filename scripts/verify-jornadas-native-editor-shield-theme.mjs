@@ -45,11 +45,13 @@ assert.ok(shield.includes("const dmRows=Array.isArray(dmLinks)?dmLinks:[]"));
 assert.ok(shield.includes("onOpenSheet?.(row)"));
 assert.ok(panel.includes('<CampaignSectionBoundary'));
 assert.ok(panel.includes('dmLinks={dmLinks}'));
-// Navegação sem deslizar com seletor "Mais".
-assert.ok(panel.includes('className="pjlite-jornadas-tabs pjlite-jornadas-tabs--compact"'));
-assert.ok(panel.includes('jornadas-more-select'));
-assert.ok(css.includes('grid-template-columns:repeat(5,minmax(0,1fr))'));
-assert.ok(css.includes('overflow:visible!important'));
+// Navegação aberta em duas linhas: sem dropdown de recursos.
+const nightCss=readFileSync('src/cloud/jornadas-night.css','utf8');
+assert.ok(panel.includes('className="pjlite-jornadas-tabs pjlite-jornadas-tabs--compact jornadas-tools-two-rows"'));
+assert.ok(!panel.includes('className={\'jornadas-more-select'),'Todos os recursos devem ficar visíveis');
+assert.ok(panel.includes('allTabs.map(([key,title])'),'Todos os recursos acessíveis em botões');
+assert.ok(nightCss.includes('grid-template-columns:repeat(7,minmax(0,1fr))'));
+assert.ok(nightCss.includes('overflow:visible!important'));
 // Temas com mesma chave/opções da Home, e alteração do botão.
 assert.ok(hub.includes("const THEME_KEY='dragonbane_theme_prefs'"));
 for(const label of ['Padrão','Clássico DB','Dungeons & Dragons','Fábula Última','O Som das Seis','Modo Escuro','Personalizado']){
