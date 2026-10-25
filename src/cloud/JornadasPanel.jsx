@@ -3,7 +3,7 @@ import {SheetQuickView,CharacterPortrait,CharacterMiniSheet} from './SheetQuickV
 import {getJourneySheetSummary} from './journeySheetSummary.js';
 import {pushSheets} from './supabaseCloud.js';
 import {
- listJourneys,createJourney,saveJourney,listJourneyMessages,sendJourneyMessage,
+ listJourneys,createJourney,saveJourney,deleteJourney,listJourneyMessages,sendJourneyMessage,
  listJourneyResources,addJourneyResource,removeJourneyResource,uploadJourneyMedia,
  getMyCloudSheets,listJourneySheets,linkMySheet,setMasterSheetEdit,unlinkMySheet,saveJourneySheet,
  listJourneyDmSheets,linkDmSheet,unlinkDmSheet
@@ -29,6 +29,7 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat,o
  const [initiativeName,setInitiativeName]=React.useState(''),[initiativeScore,setInitiativeScore]=React.useState(''),[status,setStatus]=React.useState('');
  const [tableTitle,setTableTitle]=React.useState(''),[tableEntries,setTableEntries]=React.useState(''),[rollResult,setRollResult]=React.useState('');
  const [activeResource,setActiveResource]=React.useState('');
+ const [deleteTarget,setDeleteTarget]=React.useState(null),[deleteName,setDeleteName]=React.useState('');
  const current=journeys.find(c=>c.id===active);
  const group=groups.find(g=>g.id===current?.group_id);
  const members=Array.isArray(group?.members)?group.members:[];
@@ -89,6 +90,26 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat,o
   const next=await saveJourney(draft,{name:draft.name,system:draft.system,description:draft.description,notes:draft.notes,board:draft.board});
   setJourneys(old=>old.map(c=>c.id===next.id?next:c));setDraft({...next,board:cleanBoard(next.board)});
  },'Anotações e mesa salvas para o grupo.');
+ const requestDelete=campaign=>{
+  if(busy||!campaign||campaign.owner_id!==account?.id||
+     !groups.some(g=>g.id===campaign.group_id&&g.isOwner&&g.is_dm))return;
+  setDeleteName('');setDeleteTarget({id:campaign.id,name:campaign.name,owner_id:campaign.owner_id});
+ };
+ const cancelDelete=()=>{if(busy)return;setDeleteTarget(null);setDeleteName('')};
+ const confirmDelete=()=>{
+  if(busy||!deleteTarget||deleteName!==deleteTarget.name||deleteTarget.owner_id!==account?.id)return;
+  const campaignId=deleteTarget.id;
+  return run(async()=>{
+   const deleted=await deleteJourney(campaignId);
+   setJourneys(previous=>previous.filter(c=>c.id!==deleted.id));
+   if(active===deleted.id){
+    setActive('');setDraft(null);setPreviewSheet(null);setEditSheet(null);
+    setLinks([]);setDmLinks([]);setMessages([]);setResources([]);
+   }
+   setDeleteTarget(null);setDeleteName('');
+   await load();
+  },'Campanha excluída. Suas fichas originais foram preservadas.');
+ };
  const setBoard=patch=>setDraft(x=>({...x,board:{...cleanBoard(x.board),...patch}}));
  const addInitiative=()=>{const name=initiativeName.trim();if(!name)return;setBoard({initiative:[...(draft.board.initiative||[]),{id:Date.now().toString(36),name,score:Number(initiativeScore)||0}].sort((a,b)=>b.score-a.score)});setInitiativeName('');setInitiativeScore('')};
  const post=()=>run(async()=>{
@@ -153,29 +174,36 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat,o
   payload.id=original.id;payload.system=original.system;payload.type=original.type;
   await saveJourneySheet(editSheet.sheet_id,payload);setEditSheet(null);await refresh();
  },'Ficha atualizada na nuvem. O jogador deve sincronizar antes de continuar editando.');
- const primaryTabs=isDm?[['fichas','Personagens'],['npcs','NPCs/Ameaças'],['combate','Combates'],['escudo','Escudo do Mestre']]
-  :[['fichas','Personagens'],['jogadores','Jogadores'],['combate','Combates'],['biblioteca','Biblioteca']];
- const extraTabs=[['jogadores','Jogadores'],['biblioteca','Biblioteca'],['investigacao','Investigação'],
-  ['relatorios','Relatórios'],['anotacoes','Anotações'],['chat','Chat'],
-  ['tabelas','Dados e tabelas'],['resumo','Configurações da campanha'],
-  ...(isDm?[['mapamental','Mapa mental do mestre']]:[])].filter(([key])=>!primaryTabs.some(([k])=>k===key));
+ const allTabs=[
+  ['fichas','Personagens'],...(isDm?[['npcs','NPCs/Ameaças']]:[]),
+  ['jogadores','Jogadores'],['combate','Combates'],['biblioteca','Biblioteca'],
+  ['investigacao','Investigação'],['relatorios','Relatórios'],['anotacoes','Anotações'],
+  ['chat','Chat'],['tabelas','Dados e tabelas'],
+  ...(isDm?[['escudo','Escudo do Mestre'],['mapamental','Mapa mental']]:[]),
+  ['resumo','Configurações']
+ ];
  if(!account)return <p className="pjlite-jornadas-empty">Entre na Conta Lite para acessar Jornadas.</p>;
  return <div className="pjlite-jornadas">
   {!current&&<div className="pjlite-jornadas-header"><div><small>SUAS MESAS • JORNADAS PJLITE</small><h3>🧭 Campanhas</h3><p>Abra a campanha, organize os personagens, combates, livros e investigações. Tudo vinculado ao seu grupo.</p></div><button type="button" className="secondary" onClick={()=>run(load,'Campanhas atualizadas.')}>↻ Atualizar</button></div>}
   {status&&<div className="pjlite-jornadas-status" role="status">{status}</div>}
   {!current?<><details id="jornadas-create-form" className="pjlite-jornadas-box jornadas-new-campaign"><summary>＋ Nova campanha</summary>{dmGroups.length===0?<div><p>Crie um grupo de mestre para habilitar campanhas compartilhadas.</p><button type="button" className="pjlite-jornadas-primary" onClick={onRequestGroups}>♟ Criar grupo →</button></div>:<div className="pjlite-jornadas-fields"><select aria-label="Grupo com mestre" value={groupId} onChange={e=>setGroupId(e.target.value)}><option value="">Selecione o grupo DM...</option>{dmGroups.map(g=><option value={g.id} key={g.id}>{g.name}</option>)}</select><input aria-label="Nome da campanha" maxLength={120} placeholder="Nome da campanha" value={campaignName} onChange={e=>setCampaignName(e.target.value)}/><select aria-label="Sistema da campanha" value={system} onChange={e=>setSystem(e.target.value)}><option value="Livre">Sistema livre</option>{Object.entries(systemLabel).map(([k,v])=><option value={k} key={k}>{v}</option>)}</select><button type="button" disabled={busy} className="pjlite-jornadas-primary" onClick={newCampaign}>+ Criar Jornada</button></div>}</details>
-   <div className="pjlite-jornadas-cards">{journeys.map(c=><button className="pjlite-jornadas-card jornadas-campaign-card" key={c.id} type="button" onClick={()=>setActive(c.id)}><div className="jornadas-campaign-cover" style={validHttp(c.board?.coverUrl)?{backgroundImage:'linear-gradient(0deg,rgba(18,44,33,.65),transparent 68%),url("'+c.board.coverUrl.replace(/"/g,'%22')+'")'}:{}}>{!validHttp(c.board?.coverUrl)&&<span className="jornadas-campaign-cover__icon">✦</span>}<span className="jornadas-campaign-role">{c.owner_id===account.id?'🛡 Mestre':'👤 Jogador'}</span></div><div className="jornadas-campaign-details"><strong>{c.name}</strong><small>{systemLabel[c.system]||c.system} · {groups.find(g=>g.id===c.group_id)?.name||'Grupo'}</small><small>👥 {groups.find(g=>g.id===c.group_id)?.members?.length||1} {(groups.find(g=>g.id===c.group_id)?.members?.length||1)===1?'participante':'participantes'}</small><span>Entrar na campanha →</span></div></button>)}{journeys.length===0&&<p className="pjlite-jornadas-empty">Ainda não há campanhas nos seus grupos.</p>}</div>
+   <div className="pjlite-jornadas-cards">{journeys.map(c=><div className="jornadas-campaign-tile" key={c.id}><button className="pjlite-jornadas-card jornadas-campaign-card" type="button" onClick={()=>setActive(c.id)}><div className="jornadas-campaign-cover" style={validHttp(c.board?.coverUrl)?{backgroundImage:'linear-gradient(0deg,rgba(18,44,33,.65),transparent 68%),url("'+c.board.coverUrl.replace(/"/g,'%22')+'")'}:{}}>{!validHttp(c.board?.coverUrl)&&<span className="jornadas-campaign-cover__icon">✦</span>}<span className="jornadas-campaign-role">{c.owner_id===account.id?'🛡 Mestre':'👤 Jogador'}</span></div><div className="jornadas-campaign-details"><strong>{c.name}</strong><small>{systemLabel[c.system]||c.system} · {groups.find(g=>g.id===c.group_id)?.name||'Grupo'}</small><small>👥 {groups.find(g=>g.id===c.group_id)?.members?.length||1} {(groups.find(g=>g.id===c.group_id)?.members?.length||1)===1?'participante':'participantes'}</small><span>Entrar na campanha →</span></div></button>
+    {c.owner_id===account.id&&groups.some(g=>g.id===c.group_id&&g.isOwner&&g.is_dm)&&
+     <button type="button" className="jornadas-campaign-delete-shortcut" aria-label={'Excluir campanha '+c.name}
+       title="Excluir campanha" disabled={busy} onClick={()=>requestDelete(c)}>🗑 Excluir</button>}
+    </div>)}{journeys.length===0&&<p className="pjlite-jornadas-empty">Ainda não há campanhas nos seus grupos.</p>}</div>
   </>:draft&&<div className="pjlite-jornadas-room">
    <div className="pjlite-jornadas-room-head"><button type="button" className="secondary" onClick={()=>{setActive('');setEditSheet(null)}}>← Campanhas</button><div><strong>{current.name}</strong><small>{group?.name} · {systemLabel[current.system]||current.system} · {isDm?'Mestre':'Jogador'} · 👥 {members.length||1} {members.length===1?'participante':'participantes'}</small></div>{isDm&&group?.invite_code&&<button type="button" className="secondary" title="Copiar convite para jogadores" onClick={async()=>{try{if(!navigator.clipboard?.writeText)throw new Error('clipboard');await navigator.clipboard.writeText(group.invite_code);notify('Código do grupo copiado. Compartilhe com os jogadores.')}catch{notify('Convite do grupo: '+group.invite_code)}}}>✉ Copiar convite</button>}<button type="button" className="secondary" title="Atualizar membros e fichas" onClick={refreshRoom}>↻</button></div>
-   <nav className="pjlite-jornadas-tabs pjlite-jornadas-tabs--compact" aria-label="Seções da campanha">
-    {primaryTabs.map(([key,title])=><button key={key} type="button" aria-pressed={tab===key} onClick={()=>{setTab(key);setEditSheet(null)}}>{title}</button>)}
-    <select aria-label="Mais recursos da campanha" className={'jornadas-more-select '+(extraTabs.some(([key])=>key===tab)?'is-active':'')}
-      value={extraTabs.some(([key])=>key===tab)?tab:''}
-      onChange={e=>{if(e.target.value){setTab(e.target.value);setEditSheet(null)}}}>
-      <option value="">☰ Mais recursos</option>{extraTabs.map(([key,title])=><option value={key} key={key}>{title}</option>)}
-    </select>
+   <nav className="pjlite-jornadas-tabs pjlite-jornadas-tabs--compact jornadas-tools-two-rows" aria-label="Seções da campanha">
+    {allTabs.map(([key,title])=><button key={key} type="button" aria-pressed={tab===key}
+      onClick={()=>{setTab(key);setEditSheet(null)}}>{title}</button>)}
    </nav>
-   {tab==='resumo'&&<section className="pjlite-jornadas-box"><h4>📜 A campanha</h4><label>Nome<input value={draft.name||''} disabled={!isDm} onChange={e=>setDraft(x=>({...x,name:e.target.value}))}/></label><label>Imagem de capa (URL HTTPS)<input type="url" value={draft.board?.coverUrl||''} disabled={!isDm} onChange={e=>setBoard({coverUrl:e.target.value})} placeholder="https://.../imagem.jpg"/></label><label>Sinopse<textarea rows={3} value={draft.description||''} disabled={!isDm} onChange={e=>setDraft(x=>({...x,description:e.target.value}))}/></label><label>Anotações gerais — visíveis a todos<textarea rows={7} value={draft.notes||''} disabled={!isDm} onChange={e=>setDraft(x=>({...x,notes:e.target.value}))}/></label>{isDm&&<button className="pjlite-jornadas-primary" disabled={busy} onClick={save}>Salvar anotações</button>}<aside><b>Regras rápidas do sistema</b><p>{levels[draft.system]||'Consulte o livro básico do sistema para regras de combate, testes e condições.'}</p><small>Este resumo é um lembrete, não substitui o livro.</small></aside></section>}
+   {tab==='resumo'&&<section className="pjlite-jornadas-box"><h4>📜 A campanha</h4><label>Nome<input value={draft.name||''} disabled={!isDm} onChange={e=>setDraft(x=>({...x,name:e.target.value}))}/></label><label>Imagem de capa (URL HTTPS)<input type="url" value={draft.board?.coverUrl||''} disabled={!isDm} onChange={e=>setBoard({coverUrl:e.target.value})} placeholder="https://.../imagem.jpg"/></label><label>Sinopse<textarea rows={3} value={draft.description||''} disabled={!isDm} onChange={e=>setDraft(x=>({...x,description:e.target.value}))}/></label><label>Anotações gerais — visíveis a todos<textarea rows={7} value={draft.notes||''} disabled={!isDm} onChange={e=>setDraft(x=>({...x,notes:e.target.value}))}/></label>{isDm&&<button className="pjlite-jornadas-primary" disabled={busy} onClick={save}>Salvar anotações</button>}
+     {isDm&&<div className="jornadas-campaign-danger-zone">
+       <strong>Excluir campanha</strong>
+       <p>Exclui os dados desta campanha, incluindo chat, registros, materiais e vínculos. As fichas originais dos jogadores, as ameaças e o grupo permanecem salvos na Conta Lite.</p>
+       <button type="button" disabled={busy} onClick={()=>requestDelete(current)}>🗑 Excluir esta campanha</button>
+     </div>}<aside><b>Regras rápidas do sistema</b><p>{levels[draft.system]||'Consulte o livro básico do sistema para regras de combate, testes e condições.'}</p><small>Este resumo é um lembrete, não substitui o livro.</small></aside></section>}
    {tab==='biblioteca'&&<CampaignLibrary campaignId={current.id} isDm={isDm} notify={notify}/>}
    {tab==='mapamental'&&isDm&&<CampaignMindmap campaignId={current.id} isDm={isDm}/>}
    {tab==='investigacao'&&<CampaignRecords mode="investigacao" draft={draft} setDraft={setDraft} isDm={isDm} onSave={save} busy={busy}/>}
@@ -242,6 +270,23 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat,o
        <div className="pjlite-jornadas-fields"><button type="button" onClick={()=>setEditSheet(null)}>Fechar</button><button type="button" className="pjlite-jornadas-primary" disabled={busy||editSheet.owner_id!==account.id} onClick={applySheetEdit}>Salvar ficha</button></div>
      </div>}
    </section>}
+   {deleteTarget&&<div className="jornadas-delete-overlay" onMouseDown={e=>{if(e.target===e.currentTarget)cancelDelete()}}>
+    <section className="jornadas-delete-dialog" role="dialog" aria-modal="true" aria-labelledby="jornadas-delete-title"
+      onKeyDown={event=>{if(event.key==='Escape')cancelDelete()}}>
+      <h3 id="jornadas-delete-title">🗑 Excluir campanha definitivamente?</h3>
+      <p>Você está prestes a excluir <strong>{deleteTarget.name}</strong>. Os membros perderão acesso à campanha e às suas mensagens, anotações, relatórios, materiais compartilhados e vínculos.</p>
+      <p><strong>As fichas originais dos jogadores e suas ameaças NÃO serão apagadas.</strong> O grupo também continuará existindo.</p>
+      <label htmlFor="jornadas-delete-name">Digite o nome exato da campanha para confirmar:</label>
+      <input id="jornadas-delete-name" autoFocus type="text" autoComplete="off" maxLength={120}
+        value={deleteName} disabled={busy} onChange={event=>setDeleteName(event.target.value)}
+        placeholder={deleteTarget.name}/>
+      <div className="jornadas-delete-dialog__actions">
+       <button type="button" onClick={cancelDelete} disabled={busy}>Cancelar</button>
+       <button type="button" className="jornadas-delete-confirm" disabled={busy||deleteName!==deleteTarget.name}
+        onClick={confirmDelete}>{busy?'Excluindo...':'Excluir definitivamente'}</button>
+      </div>
+    </section>
+   </div>}
    {previewSheet&&<SheetQuickView row={previewSheet} ownerLabel={memberName(previewSheet.owner_id)} onClose={()=>setPreviewSheet(null)}
       canEdit={previewSheet.owner_id===account.id||(isDm&&previewSheet.dm_can_edit)}
       canUnlink={previewSheet.owner_id===account.id&&!dmLinks.some(row=>row.sheet_id===previewSheet.sheet_id)}
