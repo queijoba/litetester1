@@ -22,9 +22,7 @@ assert.ok(panel.includes("await deleteJourney(campaignId)"),'Exclusão real pela
 assert.ok(panel.includes("setJourneys(previous=>previous.filter(c=>c.id!==deleted.id))"),'Remover campanha da lista');
 assert.ok(panel.includes("if(active===deleted.id)"),'Sair da sala após apagar');
 assert.ok(panel.includes('jornadas-campaign-delete-shortcut'),'Ação na lista de campanhas');
-const roomTernaryEnd=panel.lastIndexOf('  </div>}\n');
-const confirmationIndex=panel.lastIndexOf('{deleteTarget&&<div className="jornadas-delete-overlay"');
-assert.ok(roomTernaryEnd>0&&confirmationIndex>roomTernaryEnd,
+assert.ok(panel.includes('  </div>}\n   {deleteTarget&&<div className="jornadas-delete-overlay"'),
  'Modal de exclusão deve ficar FORA da condição da sala: também precisa abrir pela lista');
 
 assert.ok(panel.includes('jornadas-campaign-danger-zone'),'Ação nas configurações da campanha');
