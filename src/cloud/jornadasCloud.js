@@ -42,6 +42,22 @@ export async function createJourney(groupId,name,system='Livre'){
  if(!clean)throw new Error('Informe um nome para a campanha.');
  return check(await client().from('campaigns').insert({group_id:groupId,owner_id:actor.id,name:clean,system:String(system||'Livre').slice(0,70)}).select().single());
 }
+/**
+ * Exclui somente a campanha do mestre autenticado. As referências de campanha
+ * (vínculos, chat, materiais e escudo) usam ON DELETE CASCADE no PostgreSQL;
+ * as fichas originais em public.sheets e os grupos não são excluídos.
+ */
+export async function deleteJourney(campaignId){
+ const actor=await user();
+ if(!campaignId)throw new Error('Escolha a campanha que deseja excluir.');
+ const {data:removed,error}=await client().from('campaigns')
+  .delete().eq('id',campaignId).eq('owner_id',actor.id)
+  .select('id,name');
+ if(error)throw error;
+ if(!removed?.length)throw new Error('Não foi possível excluir: você não é o mestre responsável ou a campanha não existe mais.');
+ if(removed.length!==1)throw new Error('A exclusão retornou um resultado inesperado. Atualize a lista de campanhas.');
+ return removed[0];
+}
 export async function saveJourney(journey,patch){
  await user();
  const valid={};
