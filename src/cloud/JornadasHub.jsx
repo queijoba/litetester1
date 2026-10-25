@@ -93,7 +93,7 @@ export default function JornadasHub(){
  },[]);
  React.useEffect(()=>{
   document.body.classList.add('jornadas-standalone');
-  document.title='Jornadas — PJ Lite 1.1.0v Alpha';
+  document.title='Campanhas — PJ Lite 1.1.0v Alpha';
   return()=>{document.body.classList.remove('jornadas-standalone');document.title='PJ Lite'};
  },[]);
  React.useEffect(()=>{
@@ -151,8 +151,8 @@ export default function JornadasHub(){
    </nav>
   </header>
   <div className="jornadas-site__layout">
-   <aside className="jornadas-site__side" aria-label="Áreas de Jornadas">
-    <div className="jornadas-site__side-title">SUA JORNADA</div>
+   <aside className="jornadas-site__side" aria-label="Áreas de Campanhas">
+    <div className="jornadas-site__side-title">SUAS CAMPANHAS</div>
     <button className={tab==='campaigns'?'is-active':''} onClick={()=>navigate('campaigns')}>🧭 Campanhas</button>
     <button className={tab==='groups'?'is-active':''} onClick={()=>navigate('groups')}>♟ Grupos e convites</button>
     <button className={tab==='chat'?'is-active':''} onClick={()=>navigate('chat')}>💬 Chat</button>
