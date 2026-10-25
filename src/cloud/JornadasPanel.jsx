@@ -244,7 +244,7 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat,o
    </section>}
    {previewSheet&&<SheetQuickView row={previewSheet} ownerLabel={memberName(previewSheet.owner_id)} onClose={()=>setPreviewSheet(null)}
       canEdit={previewSheet.owner_id===account.id||(isDm&&previewSheet.dm_can_edit)}
-      canUnlink={previewSheet.owner_id===account.id&&!dmLinks.some(row=>row.sheet_id===previewSheet.sheet_id)}
+      canUnlink={previewSheet.owner_id===account.id}
       onUnlink={()=>unlinkOwnSheet(previewSheet)}
       onEdit={()=>openNativeEditor(previewSheet)}/>}
 
