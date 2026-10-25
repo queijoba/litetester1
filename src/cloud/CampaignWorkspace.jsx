@@ -141,7 +141,7 @@ export function CampaignShield({draft,links=[],dmLinks=[],isDm,onTab,onOpenSheet
  const dmRows=Array.isArray(dmLinks)?dmLinks:[];
  const sheetRows=[...playerRows.map(r=>({...r,isNpc:false})),...dmRows.map(r=>({...r,isNpc:true}))];
  const characters=sheetRows.map(row=>{
-  const sheet=row?.sheets||{},status=sheet?.payload?.status||{};
+  const sheet=row?.sheets||{},payload=sheet?.payload&&typeof sheet.payload==='object'?sheet.payload:{},status=payload.status&&typeof payload.status==='object'?payload.status:{};
   const pv=status?.pv;
   const pvText=pv&&typeof pv==='object'
    ?String(pv.atual??pv.current??'—')+' / '+String(pv.max??'—')
