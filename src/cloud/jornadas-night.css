@@ -104,3 +104,158 @@
 .jornadas-night .pjlite-cloud-achievement-switch{background:#2d2832!important;border-color:#675277!important;color:#e5d8ec!important}
 .jornadas-night .pjlite-cloud-achievement-switch input{accent-color:#ad5ada!important}
 .jornadas-night .journey-sheet-modal{color:#f4eafa}
+
+
+/* Campanhas: todas as ferramentas visíveis em duas linhas no desktop,
+ * sem a caixa "Mais recursos" e sem rolagem horizontal. */
+.jornadas-clean .pjlite-jornadas-tabs.pjlite-jornadas-tabs--compact.jornadas-tools-two-rows{
+ display:grid!important;
+ grid-template-columns:repeat(7,minmax(0,1fr))!important;
+ align-items:stretch!important;
+ gap:2px 6px!important;
+ overflow:visible!important;
+ padding:3px 3px 6px!important;
+ margin:2px 0 9px!important;
+ border:0!important;border-bottom:1px solid #cbdccf!important;
+ border-radius:0!important;
+ background:transparent!important;
+ box-shadow:none!important;
+}
+.jornadas-clean .pjlite-jornadas-tabs.pjlite-jornadas-tabs--compact.jornadas-tools-two-rows>button{
+ display:flex!important;
+ align-items:center;justify-content:center;
+ width:100%;min-width:0;min-height:38px!important;
+ padding:7px 4px!important;
+ font-size:11px!important;line-height:1.25!important;
+ text-align:center;white-space:normal!important;overflow-wrap:anywhere;
+ background:transparent!important;
+ border:0!important;border-bottom:2px solid transparent!important;
+ border-radius:0!important;
+ box-shadow:none!important;
+ color:#537263!important;
+ font-weight:800!important;
+ cursor:pointer;
+}
+.jornadas-clean .pjlite-jornadas-tabs.pjlite-jornadas-tabs--compact.jornadas-tools-two-rows>button:hover{
+ background:#e6efe6!important;color:#235d48!important;
+}
+.jornadas-clean .pjlite-jornadas-tabs.pjlite-jornadas-tabs--compact.jornadas-tools-two-rows>button[aria-pressed="true"]{
+ background:transparent!important;color:#225e4a!important;
+ border-bottom-color:var(--campaign-accent,#2a7456)!important;
+ box-shadow:none!important;
+}
+.jornadas-clean.jornadas-night .pjlite-jornadas-tabs.pjlite-jornadas-tabs--compact.jornadas-tools-two-rows{
+ border-bottom-color:#4c3c52!important;
+}
+.jornadas-clean.jornadas-night .pjlite-jornadas-tabs.pjlite-jornadas-tabs--compact.jornadas-tools-two-rows>button{
+ color:#bdb3c6!important;
+}
+.jornadas-clean.jornadas-night .pjlite-jornadas-tabs.pjlite-jornadas-tabs--compact.jornadas-tools-two-rows>button:hover{
+ background:#32253c!important;color:#f3e7fc!important;
+}
+.jornadas-clean.jornadas-night .pjlite-jornadas-tabs.pjlite-jornadas-tabs--compact.jornadas-tools-two-rows>button[aria-pressed="true"]{
+ color:#efcaff!important;background:transparent!important;
+ border-bottom-color:#bf69e7!important;box-shadow:none!important;
+}
+@media(max-width:900px){
+ .jornadas-clean .pjlite-jornadas-tabs.pjlite-jornadas-tabs--compact.jornadas-tools-two-rows{
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+ }
+}
+@media(max-width:640px){
+ .jornadas-clean .pjlite-jornadas-tabs.pjlite-jornadas-tabs--compact.jornadas-tools-two-rows{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ }
+}
+@media(max-width:390px){
+ .jornadas-clean .pjlite-jornadas-tabs.pjlite-jornadas-tabs--compact.jornadas-tools-two-rows{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ }
+}
+/* Excluir fica acessível sem entrar na campanha, mas não interfere no clique do card. */
+.jornadas-clean .jornadas-campaign-tile{
+ position:relative;display:flex;flex-direction:column;min-width:0;
+}
+.jornadas-clean .jornadas-campaign-tile>.jornadas-campaign-card{
+ width:100%;flex:1;min-width:0;padding-bottom:13px;
+}
+.jornadas-clean .jornadas-campaign-delete-shortcut{
+ position:absolute;z-index:2;right:8px;top:8px;
+ padding:7px 8px!important;font-size:10px!important;font-weight:850!important;
+ color:#b74e49!important;background:#fff9f4ed!important;
+ border:1px solid #e7c9c1!important;border-radius:7px!important;
+ white-space:nowrap;cursor:pointer;
+}
+.jornadas-clean .jornadas-campaign-delete-shortcut:hover{
+ background:#f6e2dc!important;color:#8d2d2d!important;
+}
+.jornadas-clean .jornadas-campaign-danger-zone{
+ margin-top:15px;padding:13px;
+ display:grid;gap:8px;
+ border:1px solid #e6c4be;background:#fdf7f4;border-radius:9px;
+ color:#86504b;font-size:12px;
+}
+.jornadas-clean .jornadas-campaign-danger-zone>p{margin:0;line-height:1.55;color:#87665f}
+.jornadas-clean .jornadas-campaign-danger-zone>button{
+ justify-self:start;max-width:100%;font-weight:850;
+ color:#a23c3c!important;background:#fff8f7!important;
+ border:1px solid #d79f96!important;border-radius:7px;
+ padding:10px 12px!important;
+}
+.jornadas-delete-overlay{
+ position:fixed;inset:0;z-index:12000;
+ display:flex;align-items:center;justify-content:center;
+ background:rgba(10,16,17,.76);padding:16px;
+}
+.jornadas-delete-dialog{
+ width:min(490px,100%);max-height:90dvh;overflow:auto;
+ display:grid;gap:12px;padding:22px;
+ border:1px solid #c9b3ad;border-radius:13px;
+ background:#faf9f6;box-shadow:0 17px 55px #0006;
+ color:#413c3a;box-sizing:border-box;
+}
+.jornadas-delete-dialog h3{font:700 22px Georgia,serif;margin:0;color:#8c3534}
+.jornadas-delete-dialog p{margin:0;font-size:12px;line-height:1.55;color:#514b4a}
+.jornadas-delete-dialog label{font-size:12px;font-weight:850}
+.jornadas-delete-dialog input{
+ width:100%;min-width:0;min-height:40px;
+ background:#fff!important;color:#302e2e!important;
+ border:1px solid #bcb6b2!important;
+ border-radius:7px;padding:10px!important;
+ box-sizing:border-box;
+}
+.jornadas-delete-dialog__actions{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap}
+.jornadas-delete-dialog__actions>button{
+ border:1px solid #bfb4ac;border-radius:7px;padding:10px 12px;
+ font-weight:850;font-size:12px;
+ background:#f5f4f1;color:#3e4a41;
+}
+.jornadas-delete-dialog__actions>.jornadas-delete-confirm{
+ background:#ad3939!important;color:#fff!important;border-color:#ad3939!important;
+}
+.jornadas-delete-dialog__actions>.jornadas-delete-confirm:disabled{opacity:.4!important;cursor:not-allowed}
+.jornadas-delete-dialog__actions>button:focus-visible{
+ outline:3px solid #8b9ec2;outline-offset:3px;
+}
+.jornadas-night .jornadas-campaign-delete-shortcut{
+ background:#281e2cee!important;border-color:#8a535e!important;color:#ffbabb!important;
+}
+.jornadas-night .jornadas-campaign-danger-zone{
+ border-color:#6e3b46!important;background:#2b232a!important;color:#f4d2d5!important;
+}
+.jornadas-night .jornadas-campaign-danger-zone>p{color:#ccbabd!important}
+.jornadas-night .jornadas-campaign-danger-zone>button{
+ background:#4b2733!important;color:#ffb8bd!important;border-color:#99616a!important;
+}
+.jornadas-night .jornadas-delete-dialog{
+ background:#202126;color:#efebed;border-color:#775864;
+}
+.jornadas-night .jornadas-delete-dialog h3{color:#f5b1af}
+.jornadas-night .jornadas-delete-dialog p{color:#d0c9ce}
+.jornadas-night .jornadas-delete-dialog input{
+ background:#17191e!important;color:#f5eeee!important;border-color:#61565d!important;
+}
+@media(max-width:430px){
+ .jornadas-delete-dialog{padding:14px;gap:9px}
+ .jornadas-delete-dialog__actions button{flex:1 1 auto}
+}
