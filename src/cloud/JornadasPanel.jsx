@@ -270,6 +270,13 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat,o
        <div className="pjlite-jornadas-fields"><button type="button" onClick={()=>setEditSheet(null)}>Fechar</button><button type="button" className="pjlite-jornadas-primary" disabled={busy||editSheet.owner_id!==account.id} onClick={applySheetEdit}>Salvar ficha</button></div>
      </div>}
    </section>}
+   {previewSheet&&<SheetQuickView row={previewSheet} ownerLabel={memberName(previewSheet.owner_id)} onClose={()=>setPreviewSheet(null)}
+      canEdit={previewSheet.owner_id===account.id||(isDm&&previewSheet.dm_can_edit)}
+      canUnlink={previewSheet.owner_id===account.id&&!dmLinks.some(row=>row.sheet_id===previewSheet.sheet_id)}
+      onUnlink={()=>unlinkOwnSheet(previewSheet)}
+      onEdit={()=>openNativeEditor(previewSheet)}/>}
+
+  </div>}
    {deleteTarget&&<div className="jornadas-delete-overlay" onMouseDown={e=>{if(e.target===e.currentTarget)cancelDelete()}}>
     <section className="jornadas-delete-dialog" role="dialog" aria-modal="true" aria-labelledby="jornadas-delete-title"
       onKeyDown={event=>{if(event.key==='Escape')cancelDelete()}}>
@@ -287,12 +294,5 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat,o
       </div>
     </section>
    </div>}
-   {previewSheet&&<SheetQuickView row={previewSheet} ownerLabel={memberName(previewSheet.owner_id)} onClose={()=>setPreviewSheet(null)}
-      canEdit={previewSheet.owner_id===account.id||(isDm&&previewSheet.dm_can_edit)}
-      canUnlink={previewSheet.owner_id===account.id&&!dmLinks.some(row=>row.sheet_id===previewSheet.sheet_id)}
-      onUnlink={()=>unlinkOwnSheet(previewSheet)}
-      onEdit={()=>openNativeEditor(previewSheet)}/>}
-
-  </div>}
  </div>;
 }
