@@ -100,3 +100,11 @@
 @media(max-width:920px){.jornadas-site__sidebar-home,.jornadas-site__sidebar-chat{white-space:nowrap;margin:0;font-size:11px;padding:11px}}
 @media(max-width:710px){.jornadas-site__quicksteps{grid-template-columns:1fr}.jornadas-site__quicksteps>div{padding:10px 12px}.jornadas-site__topbar nav a.jornadas-site__home-link{font-size:11px;padding:8px}}
 @media(max-width:475px){.jornadas-site__topbar nav>a:not(.jornadas-site__home-link){display:none}}
+
+/* Campanhas: barra de ferramentas em várias linhas, sem rolagem lateral obrigatória. */
+.jornadas-site .pjlite-jornadas-tabs{display:flex!important;flex-wrap:wrap!important;overflow-x:visible!important;white-space:normal!important;gap:4px!important;padding:6px!important}
+.jornadas-site .pjlite-jornadas-tabs>button{flex:0 1 auto!important;min-width:0!important;white-space:normal!important;padding:7px 9px!important;font-size:11px!important;line-height:1.2!important}
+.jornadas-site .pjlite-jornadas-resources{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr))!important;gap:8px!important;overflow-x:visible!important}
+.jornadas-site .pjlite-jornadas-resources article{min-width:0!important;max-width:100%!important}
+.jornadas-site .pjlite-jornadas-resources article a{min-width:0!important;overflow-wrap:anywhere!important}
+@media(max-width:680px){.jornadas-site .pjlite-jornadas-tabs>button{font-size:10px!important;padding:6px 7px!important}}
