@@ -1,3 +1,4 @@
+import {TRESDET_EXPLANATIONS,TRESDET_SKILL_ENTRIES,TRESDET_TECH_USAGE} from './tresdetVictoryExplanations.js';
 // Índice editorial de consulta: nomes e referências dos livros disponibilizados no Drive.
 // Som das Seis: regras em CC BY-SA 4.0; resumos novos do PJLite, sem transcrição integral.
 // 3DeT Victory: referência por nome, seção e página; consulte o livro para os efeitos.
@@ -1491,5 +1492,9 @@ export const TRESDET_LIBRARY=[
     "categoria": "Lendária",
     "custo": "20 XP"
   }
-];
-export const SYSTEM_LIBRARIES={somdas6:{title:"O Som das Seis",entries:SOM6_LIBRARY,tabs:[["habilidade","Habilidades"],["antecedente","Antecedentes"],["tormento","Tormentos"]],source:"O Som das Seis — Livro Básico"},'3det':{title:"3DeT Victory",entries:TRESDET_LIBRARY,tabs:[["vantagem","Vantagens"],["desvantagem","Desvantagens"],["arquetipo","Arquétipos"],["tecnica","Técnicas"]],source:"3DeT Victory — Livro Básico"}};
+].map(entry=>({
+ ...entry,
+ desc:TRESDET_EXPLANATIONS[entry.nome]||entry.desc,
+ ...(entry.tipo==='tecnica'?(TRESDET_TECH_USAGE[entry.nome]||{}):{}),
+})).concat(TRESDET_SKILL_ENTRIES);
+export const SYSTEM_LIBRARIES={somdas6:{title:"O Som das Seis",entries:SOM6_LIBRARY,tabs:[["habilidade","Habilidades"],["antecedente","Antecedentes"],["tormento","Tormentos"]],source:"O Som das Seis — Livro Básico"},'3det':{title:"3DeT Victory",entries:TRESDET_LIBRARY,tabs:[["vantagem","Vantagens"],["desvantagem","Desvantagens"],["pericia","Perícias"],["arquetipo","Arquétipos"],["tecnica","Técnicas"]],source:"3DeT Victory — Livro Básico"}};
