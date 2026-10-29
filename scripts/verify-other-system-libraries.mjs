@@ -6,10 +6,10 @@ import {initial3DetPcData,normalize3DetPcData} from '../src/systems/3det/data.js
 
 const counts=(items)=>items.reduce((a,x)=>(a[x.tipo]=(a[x.tipo]||0)+1,a),{});
 assert.deepEqual(counts(SOM6_LIBRARY),{habilidade:24,antecedente:8,tormento:6});
-assert.deepEqual(counts(TRESDET_LIBRARY),{vantagem:48,desvantagem:23,arquetipo:24,tecnica:32});
+assert.deepEqual(counts(TRESDET_LIBRARY),{vantagem:48,desvantagem:23,arquetipo:24,tecnica:32,pericia:12});
 assert.equal(new Set([...SOM6_LIBRARY,...TRESDET_LIBRARY].map(x=>x.id)).size,SOM6_LIBRARY.length+TRESDET_LIBRARY.length);
 assert.equal(SYSTEM_LIBRARIES.somdas6.entries.length,38);
-assert.equal(SYSTEM_LIBRARIES['3det'].entries.length,127);
+assert.equal(SYSTEM_LIBRARIES['3det'].entries.length,139);
 for(const entry of [...SOM6_LIBRARY,...TRESDET_LIBRARY])assert.ok(entry.nome&&entry.fonte&&entry.pagina&&entry.desc,'Referência sem fonte: '+entry.id);
 assert.ok(SOM6_LIBRARY.some(x=>x.nome==='BORN TO BE WILD'&&x.tipo==='habilidade'));
 assert.ok(TRESDET_LIBRARY.some(x=>x.nome==='Ataque Especial'&&x.tipo==='vantagem'));
@@ -60,4 +60,4 @@ assert.ok(app.includes("setOtherLibraryOpen(true)")&&app.includes('applyOtherSys
 assert.ok(modal.includes('createPortal')&&modal.includes('aria-modal="true"')&&modal.includes('lite-other-lib-west'));
 assert.ok(css.includes('@media(max-width:660px)')&&css.includes('--lib-accent:#e5b54c'));
 assert.ok(!app.includes("setDragonbaneLibraryOpen"),'Dragonbane não pode ser modificado');
-console.log('✓ Bibliotecas Som das Seis e 3DeT: 165 referências, campos corretos e histórico preservado.');
+console.log('✓ Bibliotecas Som das Seis e 3DeT: 177 referências, campos corretos e histórico preservado.');

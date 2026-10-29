@@ -30,6 +30,15 @@ export function applyOtherSystemLibrarySelection(current,entry,kind){
    return {data,changed:true,message:'Habilidade '+entry.nome+' adicionada'+page+'. '+warning};
   }
  }else{
+  if(kind==='pericia'){
+   const key=entry.key;
+   if(!key||!Object.prototype.hasOwnProperty.call(data.pericias||{},key))
+    throw Error('Esta perícia não possui campo correspondente na ficha 3DeT.');
+   if(data.pericias[key])
+    return {data:current,changed:false,message:'A perícia '+entry.nome+' já está selecionada.'};
+   data.pericias={...(data.pericias||{}),[key]:true};
+   return {data,changed:true,message:'Perícia '+entry.nome+' selecionada. Confira o custo de pontos na ficha.'};
+  }
   if(kind==='arquetipo'){
    if(normal(data.bio?.arquetipo)===normal(entry.nome))return {data:current,changed:false,message:'Este arquétipo já está selecionado.'};
    data.bio={...(data.bio||{}),arquetipo:entry.nome};

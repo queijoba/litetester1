@@ -1,0 +1,42 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {SYSTEM_LIBRARIES} from '../src/components/otherSystemLibraryCatalog.js';
+import {TRESDET_EXPLANATIONS,TRESDET_SKILL_ENTRIES,TRESDET_TECH_USAGE} from '../src/components/tresdetVictoryExplanations.js';
+import {applyOtherSystemLibrarySelection} from '../src/components/otherSystemLibraryActions.js';
+import {initial3DetPcData} from '../src/systems/3det/data.js';
+const entries=SYSTEM_LIBRARIES['3det'].entries;
+assert.equal(Object.keys(TRESDET_EXPLANATIONS).length,127,'All 127 entries should have unique explanations');
+assert.equal(TRESDET_SKILL_ENTRIES.length,12,'All original skills present');
+assert.equal(entries.length,139,'Old references plus 12 skills');
+for(const [kind,count] of Object.entries({vantagem:48,desvantagem:23,arquetipo:24,tecnica:32,pericia:12}))
+ assert.equal(entries.filter(x=>x.tipo===kind).length,count,'Missing '+kind);
+for(const entry of entries){
+ assert.ok(entry.desc.length>34,'Missing useful explanation: '+entry.nome);
+ assert.ok(!/Consulte efeitos, modificadores|do Livro Básico\. Consulte|descrição da técnica/i.test(entry.desc),'Placeholder for '+entry.nome);
+ assert.ok(entry.pagina&&entry.fonte,'Missing source '+entry.nome);
+ assert.ok(entry.custo||entry.valor,'Missing point/XP cost '+entry.nome);
+}
+assert.equal(Object.keys(TRESDET_TECH_USAGE).length,32);
+for(const entry of entries.filter(x=>x.tipo==='tecnica')){
+ assert.ok(entry.requisitos&&entry.alcance&&entry.uso,'Missing technical data '+entry.nome);
+ assert.ok(entry.custo.endsWith('XP'),'Learning cost must stay in XP '+entry.nome);
+}
+const example=structuredClone(initial3DetPcData);
+const perk=entries.find(x=>x.nome==='Aceleração');
+const skill=entries.find(x=>x.nome==='Percepção');
+const tech=entries.find(x=>x.nome==='Raio Místico');
+const a=applyOtherSystemLibrarySelection(example,perk,'vantagem');
+assert.ok(a.changed&&a.data.vantagens[0].desc.includes('movimentos extras'));
+assert.equal(a.data.pontos,example.pontos,'Do not auto-charge points for advantage');
+const b=applyOtherSystemLibrarySelection(a.data,skill,'pericia');
+assert.ok(b.changed&&b.data.pericias.percepcao);
+assert.equal(b.data.pontos,example.pontos,'Do not auto-charge skill points');
+assert.equal(applyOtherSystemLibrarySelection(b.data,skill,'pericia').changed,false,'Prevent duplicate skills');
+const c=applyOtherSystemLibrarySelection(b.data,tech,'tecnica');
+assert.ok(c.changed&&c.data.tecnicas[0].desc.includes('energia arcana'));
+assert.equal(c.data.pontos,example.pontos,'Do not auto-charge XP');
+const ui=readFileSync('src/components/OtherSystemLibraryModal.jsx','utf8');
+assert.ok(ui.includes('O que significa na ficha?'),'User should understand any selected entry');
+assert.ok(ui.includes('Gasto para usar')&&ui.includes('Para aprender'),'Explain difference between PM and XP');
+assert.ok(ui.includes('Selecionar perícia na ficha'),'Skill action must be explicit');
+console.log('✓ 3DeT Victory: 127 efeitos explicados, 12 perícias, uso técnico em PM e 139 entradas selecionáveis.');
