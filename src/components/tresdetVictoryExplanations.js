@@ -130,3 +130,289 @@ const ITEMS={
   "Megalon Superior": "Transforma o tamanho do alvo em escala gigantesca, elevando sua categoria de poder."
 };
 export const TRESDET_EXPLANATIONS=Object.freeze(ITEMS);
+
+export const TRESDET_SKILL_ENTRIES=[
+  {
+    "id": "3det-pericia-animais",
+    "tipo": "pericia",
+    "key": "animais",
+    "nome": "Animais",
+    "desc": "Lidar com, treinar, acalmar e reconhecer o comportamento de criaturas e animais.",
+    "pagina": "40–41",
+    "fonte": "3DeT Victory — Livro Básico",
+    "custo": "1 pt"
+  },
+  {
+    "id": "3det-pericia-arte",
+    "tipo": "pericia",
+    "key": "arte",
+    "nome": "Arte",
+    "desc": "Criar, interpretar e avaliar obras e apresentações artísticas, música, dança ou atuação.",
+    "pagina": "40–41",
+    "fonte": "3DeT Victory — Livro Básico",
+    "custo": "1 pt"
+  },
+  {
+    "id": "3det-pericia-esporte",
+    "tipo": "pericia",
+    "key": "esporte",
+    "nome": "Esporte",
+    "desc": "Praticar atividades atléticas e manobras ligadas à preparação esportiva.",
+    "pagina": "40–41",
+    "fonte": "3DeT Victory — Livro Básico",
+    "custo": "1 pt"
+  },
+  {
+    "id": "3det-pericia-influencia",
+    "tipo": "pericia",
+    "key": "influencia",
+    "nome": "Influência",
+    "desc": "Persuadir, negociar, liderar ou lidar com relações sociais e reputação.",
+    "pagina": "40–41",
+    "fonte": "3DeT Victory — Livro Básico",
+    "custo": "1 pt"
+  },
+  {
+    "id": "3det-pericia-luta",
+    "tipo": "pericia",
+    "key": "luta",
+    "nome": "Luta",
+    "desc": "Combater corporalmente, atacar, defender e empregar treinamento marcial.",
+    "pagina": "40–41",
+    "fonte": "3DeT Victory — Livro Básico",
+    "custo": "1 pt"
+  },
+  {
+    "id": "3det-pericia-manha",
+    "tipo": "pericia",
+    "key": "manha",
+    "nome": "Manha",
+    "desc": "Agir furtivamente, enganar, obter informações e lidar com subterfúgios.",
+    "pagina": "40–41",
+    "fonte": "3DeT Victory — Livro Básico",
+    "custo": "1 pt"
+  },
+  {
+    "id": "3det-pericia-maquinas",
+    "tipo": "pericia",
+    "key": "maquinas",
+    "nome": "Máquinas",
+    "desc": "Operar, consertar e compreender equipamentos, veículos e dispositivos.",
+    "pagina": "40–41",
+    "fonte": "3DeT Victory — Livro Básico",
+    "custo": "1 pt"
+  },
+  {
+    "id": "3det-pericia-medicina",
+    "tipo": "pericia",
+    "key": "medicina",
+    "nome": "Medicina",
+    "desc": "Prestar socorro, diagnosticar problemas físicos e lidar com tratamentos.",
+    "pagina": "40–41",
+    "fonte": "3DeT Victory — Livro Básico",
+    "custo": "1 pt"
+  },
+  {
+    "id": "3det-pericia-mistica",
+    "tipo": "pericia",
+    "key": "mistica",
+    "nome": "Mística",
+    "desc": "Conhecer e aplicar saberes sobre magia, rituais e fenômenos sobrenaturais.",
+    "pagina": "40–41",
+    "fonte": "3DeT Victory — Livro Básico",
+    "custo": "1 pt"
+  },
+  {
+    "id": "3det-pericia-percepcao",
+    "tipo": "pericia",
+    "key": "percepcao",
+    "nome": "Percepção",
+    "desc": "Notar detalhes, rastros, perigos e mudanças sutis no ambiente.",
+    "pagina": "40–41",
+    "fonte": "3DeT Victory — Livro Básico",
+    "custo": "1 pt"
+  },
+  {
+    "id": "3det-pericia-saber",
+    "tipo": "pericia",
+    "key": "saber",
+    "nome": "Saber",
+    "desc": "Reunir e aplicar conhecimentos gerais, pesquisa e estudo.",
+    "pagina": "40–41",
+    "fonte": "3DeT Victory — Livro Básico",
+    "custo": "1 pt"
+  },
+  {
+    "id": "3det-pericia-sobrevivencia",
+    "tipo": "pericia",
+    "key": "sobrevivencia",
+    "nome": "Sobrevivência",
+    "desc": "Orientar-se, rastrear, encontrar recursos e enfrentar ambientes hostis.",
+    "pagina": "40–41",
+    "fonte": "3DeT Victory — Livro Básico",
+    "custo": "1 pt"
+  }
+];
+
+export const TRESDET_TECH_USAGE={
+  "Ás Indomável": {
+    "requisitos": "Esporte ou Máquinas",
+    "alcance": "Pessoal",
+    "uso": "0 a 2PM"
+  },
+  "Barreira Mística": {
+    "requisitos": "Magia, Mística",
+    "alcance": "Pessoal",
+    "uso": "1 a 2PM por uso"
+  },
+  "Cancioneiro Popular": {
+    "requisitos": "Arte",
+    "alcance": "Perto",
+    "uso": "2PM"
+  },
+  "Grimório Debilitante": {
+    "requisitos": "Magia",
+    "alcance": "Perto",
+    "uso": "3PM por uso"
+  },
+  "Grimório Irritante": {
+    "requisitos": "Magia",
+    "alcance": "Perto",
+    "uso": "0 a 1PM ou mais"
+  },
+  "Pequenos Desejos": {
+    "requisitos": "Mística",
+    "alcance": "Perto",
+    "uso": "0 a 1PM por uso"
+  },
+  "Praga": {
+    "requisitos": "Mística",
+    "alcance": "Perto",
+    "uso": "2PM"
+  },
+  "Raio Místico": {
+    "requisitos": "Magia, Mística",
+    "alcance": "Perto ou Longe",
+    "uso": "1 a 2PM por uso"
+  },
+  "Absorver Mana": {
+    "requisitos": "Mística",
+    "alcance": "Pessoal",
+    "uso": "0PM"
+  },
+  "Área de Batalha": {
+    "requisitos": "Poder ou Habilidade 2, Mística",
+    "alcance": "Perto",
+    "uso": "2PM para ativar; 1PM/rodada para manter"
+  },
+  "Bola de Fogo": {
+    "requisitos": "Habilidade 2, Magia",
+    "alcance": "Longe",
+    "uso": "3PM + bônus de Magia"
+  },
+  "Combo": {
+    "requisitos": "Habilidade 1, Golpe",
+    "alcance": "Variável",
+    "uso": "0PM"
+  },
+  "Desprezo": {
+    "requisitos": "Poder 2 e Arte ou Influência",
+    "alcance": "Perto",
+    "uso": "2PM; depois 1PM por uso"
+  },
+  "Disparo de Energia": {
+    "requisitos": "Luta ou Magia",
+    "alcance": "Longe",
+    "uso": "3PM"
+  },
+  "Consertar": {
+    "requisitos": "Máquinas",
+    "alcance": "Perto",
+    "uso": "2 a 10PM"
+  },
+  "Gambiarra": {
+    "requisitos": "Saber, Maestria (Saber)",
+    "alcance": "Pessoal",
+    "uso": "2PM"
+  },
+  "Golpe Púrpura": {
+    "requisitos": "Poder 3, Luta",
+    "alcance": "Perto",
+    "uso": "3PM"
+  },
+  "Inspirar": {
+    "requisitos": "Poder 2 e Arte, Influência ou Devoto",
+    "alcance": "Perto",
+    "uso": "3 ou 6PM"
+  },
+  "Invocar Elemental": {
+    "requisitos": "Habilidade 2, Magia",
+    "alcance": "Perto",
+    "uso": "3PM"
+  },
+  "Megalon": {
+    "requisitos": "Habilidade 3, Magia",
+    "alcance": "Perto",
+    "uso": "10PM"
+  },
+  "Mikron": {
+    "requisitos": "Habilidade 3, Magia",
+    "alcance": "Perto",
+    "uso": "10PM"
+  },
+  "Poeira Glacial": {
+    "requisitos": "Habilidade 2, Magia",
+    "alcance": "Longe",
+    "uso": "3PM + bônus de Magia"
+  },
+  "Queimar o Cosmo": {
+    "requisitos": "Resistência 2, Luta",
+    "alcance": "Pessoal",
+    "uso": "5 a 25PM"
+  },
+  "Raio da Fúria": {
+    "requisitos": "Habilidade 3, Magia",
+    "alcance": "Longe",
+    "uso": "10PM"
+  },
+  "Rajada de Golpes": {
+    "requisitos": "Habilidade 2, Luta",
+    "alcance": "Perto",
+    "uso": "3PM"
+  },
+  "Relâmpago": {
+    "requisitos": "Habilidade 2, Magia",
+    "alcance": "Longe",
+    "uso": "3PM + bônus de Magia"
+  },
+  "Sabedoria dos Ermos": {
+    "requisitos": "Arena, Sobrevivência",
+    "alcance": "Pessoal",
+    "uso": "1 ou 3PM"
+  },
+  "Setas Infalíveis de Petrovna": {
+    "requisitos": "Habilidade 1, Magia",
+    "alcance": "Longe",
+    "uso": "1PM por seta"
+  },
+  "Abrir Chakra": {
+    "requisitos": "Atributo 4, Luta",
+    "alcance": "Pessoal",
+    "uso": "15PM"
+  },
+  "Bomba Vital": {
+    "requisitos": "Resistência 4, Luta",
+    "alcance": "Longe",
+    "uso": "Variável conforme energia acumulada"
+  },
+  "Dim Mak": {
+    "requisitos": "Habilidade 5, Luta",
+    "alcance": "Perto",
+    "uso": "5PM"
+  },
+  "Megalon Superior": {
+    "requisitos": "Habilidade 6, Megalon",
+    "alcance": "Perto",
+    "uso": "25 ou 50PM"
+  }
+};
