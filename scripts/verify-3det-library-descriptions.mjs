@@ -48,7 +48,7 @@ const dv=applyOtherSystemLibrarySelection(ar.data,disadvantage,'desvantagem');
 assert.ok(dv.changed&&dv.data.desvantagens.some(x=>x.nome===disadvantage.nome),'Desvantagem adicionada à ficha');
 assert.equal(applyOtherSystemLibrarySelection(dv.data,disadvantage,'desvantagem').changed,false,'Evitar duplicação');
 assert.equal(applyOtherSystemLibrarySelection(dv.data,archetype,'arquetipo').changed,false,'Mesmo arquétipo não duplica');
-assert.equal(dv.data.vantagens.length,1,'Vantagem existente preservada');
+assert.ok(dv.data.vantagens.some(x=>x.nome==='Aceleração'&&!x.origemArquetipo),'Vantagem manual existente preservada');
 assert.equal(dv.data.tecnicas.length,1,'Técnica existente preservada');
 assert.ok(ui.includes('const current=rows.find(x=>x.id===selected)||null'), 'Não adicionar primeira opção sem escolha explícita');
 assert.ok(ui.includes("if(applied?.changed===false)"),'Biblioteca não fecha quando a ficha rejeitar a opção');
@@ -57,6 +57,45 @@ const home=readFileSync('src/PJLiteApp.jsx','utf8');
 assert.ok(home.includes('return result;'),'A callback de biblioteca retorna sucesso real');
 assert.ok(home.includes('setTresDetLibraryFocus(previous=>('),'Após escolher, abrir aba correspondente da ficha');
 assert.ok(home.includes('tresDetLibraryFocus,')&&home.includes('<TresDeTCharacterEditor scope={systemEditorScope} />'),'Editor recebe qual aba destacar');
+const archetypes=entries.filter(x=>x.tipo==='arquetipo');
+assert.equal(archetypes.length,24,'Todos os arquétipos do catálogo');
+for(const origin of archetypes){
+ assert.ok(origin.vantagensArquetipo?.length&&origin.desvantagensArquetipo?.length,
+  'Arquétipo precisa mostrar benefícios e limitações: '+origin.nome);
+ assert.ok(/^\\d+$/.test(origin.pagina),'Página individual no Livro Básico: '+origin.nome);
+ const chosen=applyOtherSystemLibrarySelection(structuredClone(initial3DetPcData),origin,'arquetipo');
+ assert.ok(chosen.changed&&chosen.data.bio.arquetipo===origin.nome,'Selecionar arquétipo '+origin.nome);
+ for(const [field,source] of [['vantagens',origin.vantagensArquetipo],['desvantagens',origin.desvantagensArquetipo]]){
+  for(const option of source)assert.ok(chosen.data[field].some(item=>
+   item.pacoteItem===option.nome&&item.origemArquetipo===origin.nome&&item.desc===option.desc
+  ),'Pacote não registrado: '+origin.nome+' / '+option.nome);
+ }
+ assert.equal(chosen.data.pontos,initial3DetPcData.pontos,'Arquétipo não cobra custos automaticamente');
+ assert.equal(applyOtherSystemLibrarySelection(chosen.data,origin,'arquetipo').changed,false,
+  'Arquétipo repetido não duplica pacote');
+}
+const fresh=archetypes.find(x=>x.nome==='Aberrante');
+const second=archetypes.find(x=>x.nome==='Anão');
+const oldSave={...structuredClone(initial3DetPcData),bio:{...initial3DetPcData.bio,arquetipo:fresh.nome}};
+const patched=applyOtherSystemLibrarySelection(oldSave,fresh,'arquetipo');
+assert.ok(patched.changed&&patched.data.vantagens.some(x=>x.origemArquetipo===fresh.nome),
+ 'Ficha antiga com arquétipo deve receber pacote ausente');
+const manual=structuredClone(patched.data);
+manual.vantagens.push({nome:'Minha habilidade exclusiva',desc:'Adicionada manualmente',custo:'1pt'});
+manual.desvantagens.push({nome:'Minha fraqueza pessoal',desc:'Anotação manual',valor:'-1pt'});
+const changed=applyOtherSystemLibrarySelection(manual,second,'arquetipo');
+assert.ok(changed.changed&&changed.data.bio.arquetipo===second.nome);
+assert.ok(changed.data.vantagens.some(x=>x.nome==='Minha habilidade exclusiva'),'Preservar vantagem manual');
+assert.ok(changed.data.desvantagens.some(x=>x.nome==='Minha fraqueza pessoal'),'Preservar desvantagem manual');
+assert.ok(!changed.data.vantagens.some(x=>x.origemArquetipo===fresh.nome),'Excluir apenas benefícios do pacote antigo');
+assert.ok(!changed.data.desvantagens.some(x=>x.origemArquetipo===fresh.nome),'Excluir apenas fraquezas do pacote antigo');
+assert.ok(changed.data.vantagens.some(x=>x.origemArquetipo===second.nome),'Adicionar o novo pacote');
+assert.ok(ui.includes('Benefícios e vantagens do arquétipo')&&ui.includes('Desvantagens e limitações'),
+ 'Explicar vantagens e desvantagens antes de aplicar arquétipo');
+assert.ok(ui.includes("current[index===0?'vantagensArquetipo':'desvantagensArquetipo']"),
+ 'Arquétipo já escolhido pode receber pacote ausente na ficha antiga');
+assert.ok(home.includes("'tecnica','arquetipo'].includes(kind)"),'Abrir vantagens após aplicar arquétipo');
+
 const editor=readFileSync('src/systems/3det/components/CharacterEditor.jsx','utf8');
 assert.ok(editor.includes('setTab(tresDetLibraryFocus.tab)'),'Editor seleciona aba de Vantagens & Técnicas ou Ficha');
 assert.ok(ui.includes('Selecione uma opção na lista'),'Biblioteca explica fluxo antes de alterar dados');
