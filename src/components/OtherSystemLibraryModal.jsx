@@ -71,6 +71,12 @@ export default function OtherSystemLibraryModal({open=false,system,data,onChoose
     {feedback&&<p className="lite-other-lib-feedback" role="alert">{feedback}</p>}
     <button type="button" className="lite-other-lib-add" disabled={!!alreadyAdded} onClick={pick}>{alreadyAdded?'✓ Já está na ficha':tab==='arquetipo'?'Aplicar arquétipo e seu pacote':tab==='tormento'?'Selecionar na ficha':tab==='antecedente'?'Marcar 1 ponto na ficha':tab==='pericia'?'Selecionar perícia na ficha':'+ Adicionar à ficha'}</button></>:<div className="lite-other-lib-empty"><strong>Como usar a biblioteca</strong><p>1. Selecione uma opção na lista. 2. Leia o efeito, custo e página. 3. Clique em Adicionar à ficha. O PJLite mostrará o campo preenchido no editor do personagem.</p>{feedback&&<p role="alert">{feedback}</p>}</div>}</div>
    </div>
+   {current&&<div className="lite-other-lib-mobile-action" role="group" aria-label="Ação da referência selecionada">
+     {feedback&&<p role="alert" className="lite-other-lib-mobile-feedback">{feedback}</p>}
+     <button type="button" className="lite-other-lib-add" disabled={!!alreadyAdded} onClick={pick}>
+      {alreadyAdded?'✓ Já está na ficha':tab==='arquetipo'?'✓ Aplicar arquétipo e seu pacote':tab==='tormento'?'Selecionar na ficha':tab==='antecedente'?'Marcar 1 ponto na ficha':tab==='pericia'?'Selecionar perícia na ficha':'+ Adicionar à ficha'}
+     </button>
+   </div>}
    <footer>Som das Seis: regras CC BY-SA 4.0 (Ramon Mineiro). 3DeT Victory: obra dos respectivos titulares. O PJLite é um projeto independente.</footer>
   </section></div>,document.body);
 }
