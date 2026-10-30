@@ -67,3 +67,16 @@
 .lite-other-lib-feedback{color:#943725!important;background:#fff0eb;border:1px solid #e6b3a8;border-radius:7px;padding:10px;font-weight:750}
 .lite-other-lib-add:disabled{cursor:default!important;opacity:.65!important;filter:none!important}
 .lite-other-lib-results>button[aria-pressed="true"]{outline:2px solid #c38b22;outline-offset:-2px}
+
+/* Arquétipos 3DeT: poderes e limitações mostrados ANTES da escolha. */
+.lite-other-lib-archetype{display:grid;gap:10px;margin:12px 0}
+.lite-other-lib-archetype section{display:grid;gap:7px;padding:11px;border:1px solid #cad5cf;border-radius:8px;background:#f5f9f5}
+.lite-other-lib-archetype h4{margin:0 0 3px;color:#285c45;font:bold 12px/1.4 system-ui,sans-serif}
+.lite-other-lib-archetype section>div{padding:8px 10px;border:1px solid #dae4de;border-radius:6px;background:white}
+.lite-other-lib-archetype section>div strong{color:#254d3a;font-size:11px}
+.lite-other-lib-archetype section>div p{margin:4px 0 0;color:#4a554b;font-size:11px;line-height:1.5}
+.lite-other-lib-archetype .lite-other-lib-archetype__weaknesses{background:#fff7f1;border-color:#e7cbbf}
+.lite-other-lib-archetype__weaknesses h4,.lite-other-lib-archetype__weaknesses div strong{color:#974f3e!important}
+.lite-other-lib-archetype__weaknesses>div{border-color:#efdad2!important}
+.lite-other-lib-archetype__note{background:#fff0e8;color:#855239;padding:9px;border-radius:6px;font-size:11px;line-height:1.5;margin:0}
+.lite-other-lib-archetype .lite-other-lib-note{font-size:11px;line-height:1.6;border-left:3px solid #ba922e;padding:10px;margin:0;background:#fffbea;color:#50452d}
