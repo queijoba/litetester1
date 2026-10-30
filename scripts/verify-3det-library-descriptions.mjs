@@ -56,9 +56,9 @@ assert.ok(ui.includes('role="status"')&&ui.includes('role="alert"'), 'Confirmar 
 const home=readFileSync('src/PJLiteApp.jsx','utf8');
 assert.ok(home.includes('return result;'),'A callback de biblioteca retorna sucesso real');
 assert.ok(home.includes('setTresDetLibraryFocus(previous=>('),'Após escolher, abrir aba correspondente da ficha');
-assert.ok(home.includes('<TresDeTCharacterEditor scope={systemEditorScope} libraryFocus={tresDetLibraryFocus} />'),'Editor recebe qual aba destacar');
+assert.ok(home.includes('tresDetLibraryFocus,')&&home.includes('<TresDeTCharacterEditor scope={systemEditorScope} />'),'Editor recebe qual aba destacar');
 const editor=readFileSync('src/systems/3det/components/CharacterEditor.jsx','utf8');
-assert.ok(editor.includes('setTab(libraryFocus.tab)'),'Editor seleciona aba de Vantagens & Técnicas ou Ficha');
+assert.ok(editor.includes('setTab(tresDetLibraryFocus.tab)'),'Editor seleciona aba de Vantagens & Técnicas ou Ficha');
 assert.ok(ui.includes('Selecione uma opção na lista'),'Biblioteca explica fluxo antes de alterar dados');
 
 console.log('✓ 3DeT Victory: 127 efeitos explicados, 12 perícias, uso técnico em PM e 139 entradas selecionáveis.');
