@@ -99,7 +99,7 @@ const ListEditor = ({ title, icon, hint, items, onChange, kind = 'vantagem' }) =
 };
 
 export default function TresDeTCharacterEditor({ scope }) {
-  const { data, updateField, optimizeImageFile, showToast } = scope;
+  const { data, updateField, optimizeImageFile, showToast, tresDetLibraryFocus } = scope;
   const [tab, setTab] = useState('ficha');
   const [newCustomSkill, setNewCustomSkill] = useState('');
   const [editingCustomSkills, setEditingCustomSkills] = useState(false);
@@ -111,6 +111,14 @@ export default function TresDeTCharacterEditor({ scope }) {
       setEditingCustomSkills(false);
     }
   }, [data?.id]);
+
+  // A biblioteca preenche a ficha e indica imediatamente em qual aba ficou a
+  // Vantagem, Desvantagem, Técnica, Perícia ou Arquétipo escolhido.
+  useEffect(() => {
+    if (data?.system === '3det' && data?.type === 'pc' && tresDetLibraryFocus?.tab) {
+      setTab(tresDetLibraryFocus.tab);
+    }
+  }, [tresDetLibraryFocus?.sequence]);
 
   if (!data || data.system !== '3det' || data.type !== 'pc') return null;
 

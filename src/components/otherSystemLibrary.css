@@ -58,3 +58,12 @@
 .lite-other-lib-use dd{font-size:12px;font-weight:750;line-height:1.35;margin:0;color:#2e2b26;overflow-wrap:anywhere}
 .lite-other-lib-detail>.lite-other-lib-note{font-size:11px;line-height:1.5;color:#664c22;background:#fff7e1;padding:9px;border-radius:5px}
 @media(max-width:460px){.lite-other-lib-use dl{grid-template-columns:1fr}}
+
+/* 3DeT: a seleção tem três passos e deve evidenciar sucesso/erro. */
+.lite-other-lib-empty{border:1px dashed #bdb19e;background:#fffcf4;padding:20px;border-radius:9px;color:#443d32}
+.lite-other-lib-empty strong{font:800 16px Georgia,serif;color:#5b472b}
+.lite-other-lib-empty p{font-size:12px;line-height:1.65}
+.lite-other-lib-added{color:#236343!important;background:#eaf7ec;border:1px solid #a9d9b7;border-radius:7px;padding:10px;font-weight:800}
+.lite-other-lib-feedback{color:#943725!important;background:#fff0eb;border:1px solid #e6b3a8;border-radius:7px;padding:10px;font-weight:750}
+.lite-other-lib-add:disabled{cursor:default!important;opacity:.65!important;filter:none!important}
+.lite-other-lib-results>button[aria-pressed="true"]{outline:2px solid #c38b22;outline-offset:-2px}

@@ -39,4 +39,26 @@ const ui=readFileSync('src/components/OtherSystemLibraryModal.jsx','utf8');
 assert.ok(ui.includes('O que significa na ficha?'),'User should understand any selected entry');
 assert.ok(ui.includes('Gasto para usar')&&ui.includes('Para aprender'),'Explain difference between PM and XP');
 assert.ok(ui.includes('Selecionar perícia na ficha'),'Skill action must be explicit');
+
+const archetype=entries.find(x=>x.tipo==='arquetipo'&&x.nome==='Alien')||entries.find(x=>x.tipo==='arquetipo');
+const disadvantage=entries.find(x=>x.tipo==='desvantagem');
+const ar=applyOtherSystemLibrarySelection(c.data,archetype,'arquetipo');
+assert.ok(ar.changed&&ar.data.bio.arquetipo===archetype.nome,'Arquétipo selecionado entra no campo da ficha');
+const dv=applyOtherSystemLibrarySelection(ar.data,disadvantage,'desvantagem');
+assert.ok(dv.changed&&dv.data.desvantagens.some(x=>x.nome===disadvantage.nome),'Desvantagem adicionada à ficha');
+assert.equal(applyOtherSystemLibrarySelection(dv.data,disadvantage,'desvantagem').changed,false,'Evitar duplicação');
+assert.equal(applyOtherSystemLibrarySelection(dv.data,archetype,'arquetipo').changed,false,'Mesmo arquétipo não duplica');
+assert.equal(dv.data.vantagens.length,1,'Vantagem existente preservada');
+assert.equal(dv.data.tecnicas.length,1,'Técnica existente preservada');
+assert.ok(ui.includes('const current=rows.find(x=>x.id===selected)||null'), 'Não adicionar primeira opção sem escolha explícita');
+assert.ok(ui.includes("if(applied?.changed===false)"),'Biblioteca não fecha quando a ficha rejeitar a opção');
+assert.ok(ui.includes('role="status"')&&ui.includes('role="alert"'), 'Confirmar itens adicionados e falhas');
+const home=readFileSync('src/PJLiteApp.jsx','utf8');
+assert.ok(home.includes('return result;'),'A callback de biblioteca retorna sucesso real');
+assert.ok(home.includes('setTresDetLibraryFocus(previous=>('),'Após escolher, abrir aba correspondente da ficha');
+assert.ok(home.includes('tresDetLibraryFocus,')&&home.includes('<TresDeTCharacterEditor scope={systemEditorScope} />'),'Editor recebe qual aba destacar');
+const editor=readFileSync('src/systems/3det/components/CharacterEditor.jsx','utf8');
+assert.ok(editor.includes('setTab(tresDetLibraryFocus.tab)'),'Editor seleciona aba de Vantagens & Técnicas ou Ficha');
+assert.ok(ui.includes('Selecione uma opção na lista'),'Biblioteca explica fluxo antes de alterar dados');
+
 console.log('✓ 3DeT Victory: 127 efeitos explicados, 12 perícias, uso técnico em PM e 139 entradas selecionáveis.');
