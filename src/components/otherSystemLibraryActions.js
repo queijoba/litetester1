@@ -40,9 +40,37 @@ export function applyOtherSystemLibrarySelection(current,entry,kind){
    return {data,changed:true,message:'Perícia '+entry.nome+' selecionada. Confira o custo de pontos na ficha.'};
   }
   if(kind==='arquetipo'){
-   if(normal(data.bio?.arquetipo)===normal(entry.nome))return {data:current,changed:false,message:'Este arquétipo já está selecionado.'};
+   const oldName=data.bio?.arquetipo||'';
+   const benefits=Array.isArray(entry.vantagensArquetipo)?entry.vantagensArquetipo:[];
+   const weaknesses=Array.isArray(entry.desvantagensArquetipo)?entry.desvantagensArquetipo:[];
+   if(!benefits.length&&!weaknesses.length)throw Error('Não há pacote de vantagens e desvantagens para este arquétipo. Selecione uma opção do livro básico.');
+   const same=normal(oldName)===normal(entry.nome);
+   // Os registros vindos do pacote são identificados para que a substituição
+   // elimine apenas o que foi gerado pelo arquétipo anterior. Tudo que o
+   // jogador adicionou manualmente continua na ficha.
+   let inserted=0;
+   for(const [key,items,valueField] of [
+    ['vantagens',benefits,'custo'],['desvantagens',weaknesses,'valor']
+   ]){
+    const previous=Array.isArray(data[key])?data[key]:[];
+    const preserved=same?previous:previous.filter(x=>!x?.origemArquetipo);
+    const next=[...preserved];
+    for(const item of items){
+     if(next.some(x=>normal(x?.pacoteItem||x?.nome)===normal(item.nome)))continue;
+     next.push({
+      nome:item.nome,desc:item.desc,
+      [valueField]:'Incluído no arquétipo',
+      fonte:entry.fonte,pagina:entry.pagina,referenciaId:entry.id,
+      origemArquetipo:entry.nome,pacoteItem:item.nome,
+      escolhaPendente:item.nome.includes('escolha pendente')
+     });
+     inserted++;
+    }
+    data[key]=next;
+   }
+   if(same&&!inserted)return {data:current,changed:false,message:'O pacote deste arquétipo já está completo na ficha.'};
    data.bio={...(data.bio||{}),arquetipo:entry.nome};
-   return {data,changed:true,message:'Arquétipo '+entry.nome+' selecionado. Confira requisitos e gastos de pontos; vantagens não são concedidas automaticamente.'};
+   return {data,changed:true,message:'Arquétipo '+entry.nome+' registrado com '+benefits.length+' benefício(s) e '+weaknesses.length+' limitação(ões). '+(benefits.concat(weaknesses).some(x=>x.nome.includes('escolha pendente'))?'Revise as opções que exigem uma escolha na aba Vantagens & Técnicas. ':'')+'Custos e pontos não foram descontados automaticamente.'};
   }
   const field={vantagem:'vantagens',desvantagem:'desvantagens',tecnica:'tecnicas'}[kind];
   if(!field)throw Error('Categoria incompatível com 3DeT.');
