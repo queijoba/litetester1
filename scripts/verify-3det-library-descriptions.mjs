@@ -100,4 +100,23 @@ const editor=readFileSync('src/systems/3det/components/CharacterEditor.jsx','utf
 assert.ok(editor.includes('setTab(tresDetLibraryFocus.tab)'),'Editor seleciona aba de Vantagens & Técnicas ou Ficha');
 assert.ok(ui.includes('Selecione uma opção na lista'),'Biblioteca explica fluxo antes de alterar dados');
 
+
+// UX MOBILE: o 3DeT tem arquétipos longos; o botão de aplicar não pode ficar
+// abaixo do rodapé invisível e a descrição deve rolar sem arrastar a página.
+const css=readFileSync('src/components/otherSystemLibrary.css','utf8');
+assert.ok(ui.includes('className="lite-other-lib-mobile-action"'), 'Ação da ficha deve ficar fora da área de rolagem');
+assert.ok(ui.indexOf('className="lite-other-lib-mobile-action"')>ui.indexOf('className="lite-other-lib-detail"'), 'Dock após conteúdo rolável');
+assert.ok(ui.includes("disabled={!!alreadyAdded} onClick={pick}"),'Dock deve chamar o mesmo método da ficha');
+assert.ok(ui.includes('aria-label="Ação da referência selecionada"'), 'Ação fixa acessível');
+const mobile=css.slice(css.lastIndexOf('/* CORREÇÃO MOBILE:'));
+assert.ok(mobile.includes('@media(max-width:660px)'), 'Estilos mobile específicos');
+assert.ok(mobile.includes('height:calc(100dvh - 12px)'), 'Altura do modal deve acompanhar viewport dinâmica');
+assert.ok(mobile.includes('.lite-other-lib-content{'), 'Corpo do modal deve ter rolagem limitada');
+assert.ok(mobile.includes('height:0;')&&mobile.includes('min-height:0;'), 'Evitar content flex crescer além da viewport');
+assert.ok(mobile.includes('overflow-y:auto;')&&mobile.includes('touch-action:pan-y;'), 'Detalhes e resultados devem responder à rolagem de toque');
+assert.ok(mobile.includes('.lite-other-lib-mobile-action{')&&mobile.includes('flex:0 0 auto;'), 'Dock sempre visível dentro do modal');
+assert.ok(mobile.includes('.lite-other-lib-detail .lite-other-lib-add{display:none}'), 'No celular não duplicar ação dentro do conteúdo escondido');
+assert.ok(mobile.includes('env(safe-area-inset-bottom)'), 'Respeitar barra inferior/área segura do celular');
+assert.ok(mobile.includes('.lite-other-lib-content.has-choice .lite-other-lib-results{display:none}'), 'Voltar para resultados sem barras sobrepostas');
+
 console.log('✓ 3DeT Victory: 127 efeitos explicados, 12 perícias, uso técnico em PM e 139 entradas selecionáveis.');
