@@ -62,7 +62,7 @@ assert.equal(archetypes.length,24,'Todos os arquétipos do catálogo');
 for(const origin of archetypes){
  assert.ok(origin.vantagensArquetipo?.length&&origin.desvantagensArquetipo?.length,
   'Arquétipo precisa mostrar benefícios e limitações: '+origin.nome);
- assert.ok(/^\\d+$/.test(origin.pagina),'Página individual no Livro Básico: '+origin.nome);
+ assert.ok(/^\d+$/.test(origin.pagina),'Página individual no Livro Básico: '+origin.nome);
  const chosen=applyOtherSystemLibrarySelection(structuredClone(initial3DetPcData),origin,'arquetipo');
  assert.ok(chosen.changed&&chosen.data.bio.arquetipo===origin.nome,'Selecionar arquétipo '+origin.nome);
  for(const [field,source] of [['vantagens',origin.vantagensArquetipo],['desvantagens',origin.desvantagensArquetipo]]){
