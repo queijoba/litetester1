@@ -3208,7 +3208,7 @@ const { useState, useEffect, useRef } = React;
                         // Após adicionar, mostrar onde está o registro na ficha real.
                         if(data.system==='3det'){
                             setTresDetLibraryFocus(previous=>({
-                                tab:['vantagem','desvantagem','tecnica'].includes(kind)?'habilidades':'ficha',
+                                tab:['vantagem','desvantagem','tecnica','arquetipo'].includes(kind)?'habilidades':'ficha',
                                 sequence:(previous?.sequence||0)+1
                             }));
                         }
