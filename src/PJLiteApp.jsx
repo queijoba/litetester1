@@ -1278,6 +1278,7 @@ const { useState, useEffect, useRef } = React;
             const [fabulaLibraryOpen,setFabulaLibraryOpen] = useState(false);
             const [threatCardOpen,setThreatCardOpen] = useState(false);
             const [otherLibraryOpen,setOtherLibraryOpen] = useState(false);
+            const [tresDetLibraryFocus,setTresDetLibraryFocus] = useState(null);
             const [deleteConfirmId, setDeleteConfirmId] = useState(null);
             const [toastMsg, setToastMsg] = useState('');
             
@@ -3202,9 +3203,23 @@ const { useState, useEffect, useRef } = React;
             const addFromOtherLibrary=(entry,kind)=>{
                 try{
                     const result=applyOtherSystemLibrarySelection(data,entry,kind);
-                    if(result.changed)setData(result.data);
+                    if(result.changed){
+                        setData(result.data);
+                        // Após adicionar, mostrar onde está o registro na ficha real.
+                        if(data.system==='3det'){
+                            setTresDetLibraryFocus(previous=>({
+                                tab:['vantagem','desvantagem','tecnica'].includes(kind)?'habilidades':'ficha',
+                                sequence:(previous?.sequence||0)+1
+                            }));
+                        }
+                    }
                     showToast(result.message);
-                }catch(error){showToast(error.message||'Não foi possível usar esta referência.');}
+                    return result;
+                }catch(error){
+                    const message=error.message||'Não foi possível usar esta referência.';
+                    showToast(message);
+                    return {changed:false,message};
+                }
             };
 
             const addFromFabulaLibrary=(entry,kind)=>{
@@ -3672,7 +3687,7 @@ const { useState, useEffect, useRef } = React;
                     {/* D&D mantém o editor + statblock clássico como referência visual. */}
                     <DndThreatEditor scope={systemEditorScope} />
 
-                    <TresDeTCharacterEditor scope={systemEditorScope} />
+                    <TresDeTCharacterEditor scope={systemEditorScope} libraryFocus={tresDetLibraryFocus} />
                     <RotaZeroCharacterEditor scope={systemEditorScope} />
 
                     {/* Ameaças: formulário editável e card sempre sincronizado, sem PDF. */}
