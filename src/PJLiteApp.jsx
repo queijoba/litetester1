@@ -3427,6 +3427,7 @@ const { useState, useEffect, useRef } = React;
                 isFabula,
                 isFabulaExtraUnlocked,
                 is3Det,
+                tresDetLibraryFocus,
                 isSom6,
                 JSZip,
                 loadCharacter,
@@ -3687,7 +3688,7 @@ const { useState, useEffect, useRef } = React;
                     {/* D&D mantém o editor + statblock clássico como referência visual. */}
                     <DndThreatEditor scope={systemEditorScope} />
 
-                    <TresDeTCharacterEditor scope={systemEditorScope} libraryFocus={tresDetLibraryFocus} />
+                    <TresDeTCharacterEditor scope={systemEditorScope} />
                     <RotaZeroCharacterEditor scope={systemEditorScope} />
 
                     {/* Ameaças: formulário editável e card sempre sincronizado, sem PDF. */}
