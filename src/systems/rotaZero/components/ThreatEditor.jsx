@@ -1,6 +1,6 @@
 import React,{useEffect,useState} from 'react';
 import {ROTA_ZERO_THREAT_CATEGORIES,ROTA_ZERO_THREAT_ROLES} from '../threatData.js';
-import {ROTA_ZERO_SKILLS} from '../data.js';
+import {RZ_SKILLS} from '../data.js';
 
 const entry=(data,key,empty={})=>Array.isArray(data?.[key])?data[key]:[];
 const Box=({title,help,children})=><section className="rz-threat-box">
@@ -47,7 +47,7 @@ export default function RotaZeroThreatEditor({scope}){
     </div>
    </Box>
    <Box title="Atributos"><div className="rz-threat-stats">{[['pulso','Pulso'],['firmeza','Firmeza'],['tecnica','Técnica']].map(([id,label])=><NumberField key={id} label={label} value={attrs[id]} max={10} onChange={v=>change('atributos.'+id,v)}/>)}</div></Box>
-   <Box title="Perícias" help="Marque apenas as perícias que esta ameaça possui."><div className="rz-threat-skills">{ROTA_ZERO_SKILLS.map(([id,label])=><label key={id}><input type="checkbox" checked={!!data.pericias?.[id]} onChange={e=>change('pericias.'+id,e.target.checked)}/>{label}</label>)}</div></Box>
+   <Box title="Perícias" help="Marque apenas as perícias que esta ameaça possui."><div className="rz-threat-skills">{RZ_SKILLS.map(([id,label])=><label key={id}><input type="checkbox" checked={!!data.pericias?.[id]} onChange={e=>change('pericias.'+id,e.target.checked)}/>{label}</label>)}</div></Box>
   </>}
   {tab==='combate'&&<>
    <Box title="Defesa e recursos"><div className="rz-threat-stats"><NumberField label="Defesa" value={data.defesa} onChange={v=>change('defesa',v)}/><NumberField label="Proteção" value={data.armadura} onChange={v=>change('armadura',v)}/><NumberField label="Pressão" value={data.pressao} onChange={v=>change('pressao',v)}/></div></Box>
