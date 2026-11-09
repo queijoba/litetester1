@@ -4,12 +4,11 @@ import {
  uploadJourneyMedia,setJourneyResourceVisibility,getDmMindmap,saveDmMindmap
 } from './jornadasCloud.js';
 import './campaign-workspace.css';
+import {isGoogleDriveResourceUrl} from './driveResourceLinks.js';
 
 const categories=[['livro','📚 Livros'],['mapa','🗺️ Mapas'],['documento','📜 Documentos'],['regras','📖 Regras'],['pista','🔎 Pistas'],['relatorio','📝 Relatórios'],['outro','📎 Outros']];
 const secureUrl=u=>{try{return new URL(u).protocol==='https:'}catch{return false}};
-const driveLink=u=>{try{const x=new URL(String(u||''));return x.protocol==='https:'&&
-  ['drive.google.com','docs.google.com'].includes(x.hostname.toLowerCase())&&
-  (x.pathname!=='/'||x.searchParams.has('id'));}catch{return false}};
+const driveLink=isGoogleDriveResourceUrl;
 const externalPdf=r=>r.kind==='pdf'||driveLink(r.displayUrl);
 const bookIcon=r=>r.kind==='pdf'?'📕':r.kind==='image'?'🖼️':r.kind==='map'?'🗺️':r.kind==='youtube'?'🎵':'📄';
 const asBoard=draft=>draft?.board&&typeof draft.board==='object'?draft.board:{};
