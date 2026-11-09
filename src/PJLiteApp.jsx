@@ -1296,6 +1296,7 @@ const { useState, useEffect, useRef } = React;
             const [showSom6ModelModal, setShowSom6ModelModal] = useState(false);
             const [show3DetModelModal, setShow3DetModelModal] = useState(false);
             const [showRotaZeroModelModal, setShowRotaZeroModelModal] = useState(false);
+            const [showRotaZeroThreatModal,setShowRotaZeroThreatModal]=useState(false);
             const [dndPcTab, setDndPcTab] = useState('caracteristicas');
             const [fabulaTab, setFabulaTab] = useState('perfil');
             const [som6Tab, setSom6Tab] = useState('perfil');
@@ -2553,6 +2554,12 @@ const { useState, useEffect, useRef } = React;
                                                 </div>
                                             </div>
                                         )}
+                                        {createTarget !== 'pc' && (
+                                         <div onClick={() => {setShowSystemModal(false);setShowRotaZeroThreatModal(true)}} className="bg-[#ecebe4] border-2 border-[#7a857d] hover:border-[#34473b] rounded p-3 cursor-pointer hover:shadow-md flex items-center gap-3 min-h-[82px]">
+                                          <div className="w-12 h-12 bg-[#18201c] text-[#c7d2c9] rounded flex items-center justify-center font-black text-lg shadow-inner">RZ</div>
+                                          <div><h3 className="font-bold text-[#18201c] text-lg">Rota Zero</h3><p className="text-xs text-[#647069]">Ameaças, anomalias e NPCs • card PNG</p></div>
+                                         </div>
+                                        )}
 
                                         <div onClick={() => { setShowSystemModal(false); setShowSom6ModelModal(true); }} className="bg-white border-2 border-gray-300 hover:border-red-900 rounded p-3 cursor-pointer hover:shadow-md transition-all flex items-center gap-3 group min-h-[82px]">
                                             <div className="w-12 h-12 bg-red-900 group-hover:bg-red-950 text-amber-50 rounded flex items-center justify-center font-bold font-title text-xl shadow-inner transition-colors">S6</div>
@@ -2566,6 +2573,22 @@ const { useState, useEffect, useRef } = React;
                             </div>, document.body
                         )}
 
+
+                        {showRotaZeroThreatModal && ReactDOM.createPortal(
+                         <div className="fixed inset-0 bg-black/70 z-[120] flex items-center justify-center p-4">
+                          <div className="bg-[#e9e8e1] border-2 border-[#6b7e70] rounded-lg w-full max-w-xl max-h-[92dvh] overflow-hidden flex flex-col">
+                           <header className="bg-[#111615] text-white p-4 flex items-center justify-between">
+                            <div><small className="text-[#a2bbaa] tracking-widest">RZ // REGISTRO DE AMEAÇA</small><h2 className="font-mono font-black text-lg">Nova ameaça ou NPC</h2></div>
+                            <button type="button" onClick={()=>{setShowRotaZeroThreatModal(false);setCreateTarget(null)}} aria-label="Fechar criação de ameaça">✕</button>
+                           </header>
+                           <div className="overflow-y-auto p-4 space-y-3">
+                            <button type="button" onClick={()=>{setShowRotaZeroThreatModal(false);loadTemplate(initialRotaZeroThreatData)}} className="w-full text-left rounded border-2 border-[#7f9585] bg-white p-4 hover:border-[#34473b]"><strong>+ Ficha de ameaça em branco</strong><p className="text-xs mt-1">Criaturas, anomalias, máquinas, NPCs e perseguidores. Todos os campos editáveis.</p></button>
+                            <h3 className="font-black text-sm text-[#263129]">Exemplos originais (não oficiais)</h3>
+                            {MODELOS_ROTA_ZERO_AMEACAS.map((modelo,i)=><button key={i} type="button" onClick={()=>{setShowRotaZeroThreatModal(false);loadTemplate(modelo)}} className="w-full text-left border border-[#a7aaa5] rounded bg-white p-3 hover:border-[#34473b]"><strong>{modelo.nome}</strong><p className="text-xs mt-1">{modelo.descricao}</p></button>)}
+                           </div>
+                          </div>
+                         </div>,document.body
+                        )}
 
                         {showRotaZeroModelModal && ReactDOM.createPortal(
                             <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[110] p-4">
@@ -3603,7 +3626,7 @@ const { useState, useEffect, useRef } = React;
                                 <SVGIcons.ArrowLeft /> <span className="hidden sm:inline">Voltar</span>
                             </button>
                             <span className="font-title font-bold text-lg md:text-xl tracking-wider uppercase">
-                                {isDnd ? (data.type === 'pc' ? 'D&D 5.5e / 2024 - Personagem' : 'D&D 5.5e / 2024 - Bestiário') : isFabula ? (data.type === 'pc' ? 'FABULA ULTIMA • PERSONAGEM • INTEGRADO' : 'FABULA ULTIMA • AMEAÇA / PNJ • INTEGRADO') : isSom6 ? (data.type === 'pc' ? 'O SOM DAS SEIS • PERSONAGEM • INTEGRADO' : 'O SOM DAS SEIS • PDJ • INTEGRADO') : is3Det ? '3DeT VICTORY • PERSONAGEM • PRÉVIA' : isRotaZero ? 'ROTA ZERO • FUNCIONÁRIO' : (data.type === 'pc' ? 'DRAGONBANE' : data.type === 'pnj' ? 'PNJ (DB)' : 'AMEAÇA (DB)')}
+                                {isDnd ? (data.type === 'pc' ? 'D&D 5.5e / 2024 - Personagem' : 'D&D 5.5e / 2024 - Bestiário') : isFabula ? (data.type === 'pc' ? 'FABULA ULTIMA • PERSONAGEM • INTEGRADO' : 'FABULA ULTIMA • AMEAÇA / PNJ • INTEGRADO') : isSom6 ? (data.type === 'pc' ? 'O SOM DAS SEIS • PERSONAGEM • INTEGRADO' : 'O SOM DAS SEIS • PDJ • INTEGRADO') : is3Det ? '3DeT VICTORY • PERSONAGEM • PRÉVIA' : isRotaZero ? (data.type==='pc'?'ROTA ZERO • FUNCIONÁRIO':'ROTA ZERO • AMEAÇA / NPC') : (data.type === 'pc' ? 'DRAGONBANE' : data.type === 'pnj' ? 'PNJ (DB)' : 'AMEAÇA (DB)')}
                             </span>
                         </div>
                         <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end items-center">
@@ -3715,11 +3738,12 @@ const { useState, useEffect, useRef } = React;
                     <RotaZeroCharacterEditor scope={systemEditorScope} />
 
                     {/* Ameaças: formulário editável e card sempre sincronizado, sem PDF. */}
-                    {data.type !== 'pc' && ['fabula','somdas6','3det','ordemParanormal','skyfall'].includes(data.system) && (
+                    {data.type !== 'pc' && ['fabula','somdas6','3det','ordemParanormal','skyfall','rotaZero'].includes(data.system) && (
                         <ThreatCardWorkspace data={data} onOpen={()=>setThreatCardOpen(true)}>
                             <Som6ThreatEditor scope={systemEditorScope} />
                             <FabulaThreatEditor scope={systemEditorScope} />
                             <TresDeTThreatEditor scope={systemEditorScope} />
+                            <RotaZeroThreatEditor scope={systemEditorScope} />
                             <OrdemThreatEditor scope={systemEditorScope} />
                             <SkyfallThreatEditor scope={systemEditorScope} />
                         </ThreatCardWorkspace>
