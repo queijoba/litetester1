@@ -33,6 +33,6 @@ export default function GmShieldReference({system}){
    </details>)}
   </div>
   <p className="gm-rules-panel__notice">Os lembretes são resumos originais para a mesa. Para consultar regras integrais, use o PDF e verifique suas permissões no Drive.</p>
-  </>
+  </>}
  </section>;
 }
