@@ -52,15 +52,30 @@ export default function JornadasHub(){
  const [achievementsOn,setAchievementsOn]=React.useState(true);
  const setJornadasTheme=next=>{
   if(!allowedHomeThemes.has(next))return;
-  setTheme(next);try{localStorage.setItem(THEME_KEY,next)}catch{}
+  setTheme(next);
+  try{localStorage.setItem(THEME_KEY,next)}catch{}
+  window.dispatchEvent(new CustomEvent('pjlite:theme-changed',{detail:{theme:next}}));
  };
+ // A Home e a aba Campanhas compartilham a MESMA chave de tema.
+ // Recarrega quando outra aba altera a opção ou a aba volta ao primeiro plano.
+ React.useEffect(()=>{
+  const sync=()=>{
+   try{const next=localStorage.getItem(THEME_KEY)||'default';if(allowedHomeThemes.has(next))setTheme(next)}catch{}
+  };
+  const onStorage=event=>{if(!event.key||event.key===THEME_KEY||event.key==='dragonbane_custom_bg')sync()};
+  window.addEventListener('storage',onStorage);
+  window.addEventListener('focus',sync);
+  window.addEventListener('pjlite:theme-changed',sync);
+  return()=>{window.removeEventListener('storage',onStorage);window.removeEventListener('focus',sync);window.removeEventListener('pjlite:theme-changed',sync)};
+ },[]);
  const rotaZeroThemeUnlocked=()=>{try{return localStorage.getItem('pjlite_rz_theme_unlocked_v1')==='1'}catch{return false}};
  const toggleAchievements=enabled=>{setAchievementsOn(enabled);try{if(account?.id)localStorage.setItem('pjlite_achievements_on_v1_'+account.id,enabled?'1':'0')}catch{}window.dispatchEvent(new CustomEvent('pjlite:achievements-visibility',{detail:{enabled}}));};
  const [background,setBackground]=React.useState(()=>{try{return localStorage.getItem(BG_KEY)||''}catch{return ''}});
  const [bgInput,setBgInput]=React.useState('');
  const [shade,setShade]=React.useState(()=>{try{return Number(localStorage.getItem(SHADE_KEY)||'0.22')}catch{return .22}});
  const homeBackground=(()=>{try{return localStorage.getItem('dragonbane_custom_bg')||''}catch{return ''}})();
- const effectiveBackground=background||(theme==='custom'?homeBackground:'');
+ const effectiveBackground=theme==='custom'?(homeBackground||background):background;
+ const customAccent=(()=>{try{const raw=localStorage.getItem('pjlite_custom_accent_color')||'#416779';return /^#[0-9a-fA-F]{6}$/.test(raw)?raw:'#416779'}catch{return '#416779'}})();
  const backgroundStyle=effectiveBackground&&safeImage(effectiveBackground)
   ?{backgroundImage:'linear-gradient(rgba(23,38,29,'+shade+'),rgba(23,38,29,'+shade+')),url("'+effectiveBackground.replace(/"/g,'%22')+'")',
     backgroundPosition:'center',backgroundSize:'cover',backgroundAttachment:'fixed'}:{};
@@ -132,7 +147,7 @@ export default function JornadasHub(){
   run(async()=>{await joinGroupByCode(invite);setInvite('');await refresh();navigate('campaigns')},'Você entrou no grupo. As campanhas compartilhadas aparecem abaixo.')};
  const rotate=group=>run(async()=>{await rotateGroupCode(group.id);await refresh()},'Novo código de convite criado.');
  const activeContent=tab==='campaigns'?'Minhas campanhas':tab==='groups'?'Grupos e convites':tab==='chat'?'Conversas':'Conta Lite';
- return <main className={'jornadas-site jornadas-clean '+(theme==='dark'?'jornadas-night':'jornadas-classic')+' jornadas-home-theme-'+theme} style={backgroundStyle}>
+ return <main className={'jornadas-site jornadas-clean '+(theme==='dark'?'jornadas-night':'jornadas-classic')+' jornadas-home-theme-'+theme} style={{...backgroundStyle,'--j-custom-accent':customAccent}}>
   <header className="jornadas-site__topbar">
    <a className="jornadas-site__brand" href="/" title="Voltar para o PJLite"><span className="jornadas-site__brandmark">◆</span><span><strong>PJ LITE</strong><small>CAMPANHAS</small></span></a>
    <nav aria-label="Atalhos principais">
