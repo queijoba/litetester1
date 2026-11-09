@@ -4,9 +4,12 @@ import {
  uploadJourneyMedia,setJourneyResourceVisibility,getDmMindmap,saveDmMindmap
 } from './jornadasCloud.js';
 import './campaign-workspace.css';
+import {isGoogleDriveResourceUrl} from './driveResourceLinks.js';
 
 const categories=[['livro','📚 Livros'],['mapa','🗺️ Mapas'],['documento','📜 Documentos'],['regras','📖 Regras'],['pista','🔎 Pistas'],['relatorio','📝 Relatórios'],['outro','📎 Outros']];
 const secureUrl=u=>{try{return new URL(u).protocol==='https:'}catch{return false}};
+const driveLink=isGoogleDriveResourceUrl;
+const externalPdf=r=>r.kind==='pdf'||driveLink(r.displayUrl);
 const bookIcon=r=>r.kind==='pdf'?'📕':r.kind==='image'?'🖼️':r.kind==='map'?'🗺️':r.kind==='youtube'?'🎵':'📄';
 const asBoard=draft=>draft?.board&&typeof draft.board==='object'?draft.board:{};
 const labelOf=s=>s?.name||s?.payload?.bio?.nome||s?.payload?.nome||'Ficha sem nome';
@@ -20,8 +23,11 @@ export function CampaignLibrary({campaignId,isDm,notify}){
  React.useEffect(()=>{refresh()},[refresh]);
  const submit=async e=>{e.preventDefault();if(busy)return;setBusy(true);setError('');
   try{
-   let media=file?await uploadJourneyMedia(campaignId,file):url.trim();
-   const type=file?(file.type==='application/pdf'?'pdf':file.type.startsWith('image/')?'image':'video'):kind;
+   // PDF por link: evita erro de upload e de iframe que o Google Drive bloqueia.
+   if(kind==='pdf'&&!driveLink(url.trim()))
+    throw new Error('Para compartilhar um PDF, cole o link HTTPS do arquivo ou pasta no Google Drive.');
+   const media=kind==='pdf'?url.trim():(file?await uploadJourneyMedia(campaignId,file):url.trim());
+   const type=kind==='pdf'?'pdf':file?(file.type.startsWith('image/')?'image':'video'):kind;
    await addJourneyResource(campaignId,title.trim()||file?.name||'',type,media,{visible_to_players:visible,category,description});
    setTitle('');setDescription('');setUrl('');setFile(null);setVisible(true);
    await refresh();notify?.('Material incluído na biblioteca.');
@@ -32,26 +38,35 @@ export function CampaignLibrary({campaignId,isDm,notify}){
   try{await removeJourneyResource(item.id);await refresh()}catch(e){setError(e?.message||'Erro ao remover material.')}finally{setBusy(false)}};
  const filtered=files.filter(x=>filter==='todos'||x.category===filter);
  return <section className="campaign-workspace">
-  <header className="campaign-workspace__heading"><div><h3>📚 Biblioteca da campanha</h3><p>Livros, PDFs, mapas e documentos. Os jogadores só recebem acesso aos materiais liberados pelo mestre.</p></div><span>{files.length} materiais</span></header>
+  <header className="campaign-workspace__heading"><div><h3>📚 Biblioteca da campanha</h3><p>Compartilhe livros e PDFs por links do Google Drive. Mapas, imagens e outros recursos também podem ser incluídos. Somente itens liberados pelo mestre aparecem para os jogadores.</p></div><span>{files.length} materiais</span></header>
   {isDm&&<form className="campaign-workspace__box campaign-library-form" onSubmit={submit}>
    <strong>＋ Adicionar à biblioteca</strong>
-   <div className="campaign-workspace__fields"><label>Nome do material<input maxLength={160} value={title} onChange={e=>setTitle(e.target.value)} placeholder="Ex.: Livro básico, mapa da cidade..." required={!file}/></label><label>Categoria<select value={category} onChange={e=>setCategory(e.target.value)}>{categories.map(([id,l])=><option key={id} value={id}>{l}</option>)}</select></label><label>Formato<select value={kind} onChange={e=>setKind(e.target.value)}><option value="pdf">Livro / PDF</option><option value="map">Mapa</option><option value="image">Imagem</option><option value="link">Link</option><option value="youtube">Música / YouTube</option><option value="video">Vídeo</option><option value="table">Tabela</option></select></label></div>
+   <div className="campaign-workspace__fields"><label>Nome do material<input maxLength={160} value={title} onChange={e=>setTitle(e.target.value)} placeholder="Ex.: Livro básico, mapa da cidade..." required={!file}/></label><label>Categoria<select value={category} onChange={e=>setCategory(e.target.value)}>{categories.map(([id,l])=><option key={id} value={id}>{l}</option>)}</select></label><label>Formato<select value={kind} onChange={e=>{setKind(e.target.value);if(e.target.value==='pdf')setFile(null)}}><option value="pdf">📕 Livro / PDF (Google Drive)</option><option value="map">Mapa</option><option value="image">Imagem</option><option value="link">Link</option><option value="youtube">Música / YouTube</option><option value="video">Vídeo</option><option value="table">Tabela</option></select></label></div>
    <label>Descrição curta<input maxLength={650} value={description} onChange={e=>setDescription(e.target.value)} placeholder="O que os jogadores encontrarão nesse arquivo?"/></label>
-   <div className="campaign-workspace__fields"><label>Arquivo (até 25 MB)<input type="file" accept="application/pdf,image/png,image/jpeg,image/webp,image/gif,video/mp4,video/webm" onChange={e=>setFile(e.target.files?.[0]||null)}/></label><label>Ou link HTTPS<input type="url" disabled={!!file} value={url} onChange={e=>setUrl(e.target.value)} placeholder="https://..."/></label></div>
+   <div className="campaign-workspace__fields">
+    {kind!=='pdf'&&<label>Arquivo opcional (imagem ou vídeo, até 25 MB)<input type="file" accept="image/png,image/jpeg,image/webp,image/gif,video/mp4,video/webm" onChange={e=>setFile(e.target.files?.[0]||null)}/></label>}
+    <label>{kind==='pdf'?'🔗 Link do PDF no Google Drive':'Ou link HTTPS'}<input type="url" disabled={kind!=='pdf'&&!!file} value={url} onChange={e=>setUrl(e.target.value)} placeholder={kind==='pdf'?'https://drive.google.com/file/d/.../view':'https://...'}/></label>
+   </div>
+   {kind==='pdf'&&<p className="campaign-workspace__drive-tip">📁 No Google Drive, copie o link de compartilhamento do PDF. Os jogadores precisarão de permissão no Drive para abri-lo. Ocultar o item na campanha não altera as permissões originais do Drive.</p>}
    <label className="campaign-workspace__check"><input type="checkbox" checked={visible} onChange={e=>setVisible(e.target.checked)}/> Disponível para os jogadores agora</label>
-   <button type="submit" className="campaign-workspace__primary" disabled={busy||(!file&&!url.trim())}>{busy?'Salvando…':'Adicionar material →'}</button>
+   <button type="submit" className="campaign-workspace__primary" disabled={busy||(kind==='pdf'?!url.trim():(!file&&!url.trim()))}>{busy?'Salvando…':kind==='pdf'?'📁 Compartilhar link do Drive':'Adicionar material →'}</button>
   </form>}
   <div className="campaign-workspace__filter">{[['todos','Tudo'],...categories].map(([id,label])=><button key={id} type="button" className={filter===id?'active':''} onClick={()=>setFilter(id)}>{label}</button>)}<button type="button" onClick={refresh}>↻ Atualizar</button></div>
   {error&&<p className="campaign-workspace__error" role="alert">{error}</p>}
   <div className="campaign-library-grid">{filtered.map(item=><article key={item.id} className="campaign-library-card">
    <div className="campaign-library-cover">{item.kind==='image'&&secureUrl(item.displayUrl)?<img src={item.displayUrl} alt="" loading="lazy"/>:<span>{bookIcon(item)}</span>}<small>{categories.find(x=>x[0]===item.category)?.[1]||item.kind}</small></div>
    <div className="campaign-library-card__info"><strong>{item.title}</strong>{item.description&&<p>{item.description}</p>}{isDm&&<small>{item.visible_to_players?'👁 Compartilhado com jogadores':'🔒 Somente mestre'}</small>}</div>
-   <div className="campaign-library-card__actions"><button type="button" onClick={()=>setReader(item)}>📖 Abrir</button>{isDm&&<><button type="button" onClick={()=>flip(item)} disabled={busy}>{item.visible_to_players?'🔒 Ocultar':'👁 Liberar'}</button><button type="button" onClick={()=>remove(item)} disabled={busy} title="Remover">×</button></>}</div>
+   <div className="campaign-library-card__actions">
+    {externalPdf(item)?secureUrl(item.displayUrl)?
+      <a href={item.displayUrl} target="_blank" rel="noopener noreferrer" className="campaign-library-card__external">{driveLink(item.displayUrl)?'📁 Abrir no Drive ↗':'📄 Abrir PDF ↗'}</a>:
+      <span className="campaign-library-card__unavailable">⚠ Link indisponível</span>:
+      <button type="button" onClick={()=>setReader(item)}>📖 Abrir</button>}
+    {isDm&&<><button type="button" onClick={()=>flip(item)} disabled={busy}>{item.visible_to_players?'🔒 Ocultar':'👁 Liberar'}</button><button type="button" onClick={()=>remove(item)} disabled={busy} title="Remover">×</button></>}</div>
   </article>)}</div>
   {filtered.length===0&&<div className="campaign-workspace__empty">{isDm?'Nenhum arquivo nessa categoria. Adicione o primeiro acima.':'O mestre ainda não liberou materiais nessa categoria.'}</div>}
   {reader&&<div className="campaign-reader" role="dialog" aria-modal="true" aria-label={'Leitura: '+reader.title}>
    <div className="campaign-reader__head"><div><strong>📖 {reader.title}</strong><small>{reader.description}</small></div><button type="button" onClick={()=>setReader(null)} aria-label="Fechar leitor">×</button></div>
-   {secureUrl(reader.displayUrl)?reader.kind==='pdf'||reader.displayUrl.toLowerCase().includes('.pdf')?<iframe src={reader.displayUrl+'#view=FitH'} title={reader.title} loading="lazy"/>:['image','map'].includes(reader.kind)?<img src={reader.displayUrl} alt={reader.title}/>:<div className="campaign-reader__external"><p>Este material abre no site ou aplicativo de origem.</p><a href={reader.displayUrl} target="_blank" rel="noopener noreferrer">Abrir material ↗</a></div>:<p>Não foi possível criar o link de acesso. Atualize a biblioteca e tente novamente.</p>}
+   {secureUrl(reader.displayUrl)?['image','map'].includes(reader.kind)?<img src={reader.displayUrl} alt={reader.title}/>:<div className="campaign-reader__external"><p>Este material será aberto no site ou aplicativo de origem.</p><a href={reader.displayUrl} target="_blank" rel="noopener noreferrer">Abrir material ↗</a></div>:<p>Não foi possível criar o link de acesso. Atualize a biblioteca e tente novamente.</p>}
    {secureUrl(reader.displayUrl)&&<a href={reader.displayUrl} target="_blank" rel="noopener noreferrer">Abrir em nova aba / baixar ↗</a>}
   </div>}
  </section>;

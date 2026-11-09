@@ -30,7 +30,7 @@ assert.ok(account.includes("achievementsOn?'◆':'🐱'"),'Conquistas OFF deve r
 assert.ok(!account.includes('OFF • somente símbolo'),'Não usar o selo anterior no modo OFF');
 assert.ok(account.includes('pjlite_achievements_on_v1_')&&account.includes('pjlite-achievement-corner'));
 assert.ok(account.includes('getMyAchievements()'),'Conquistas devem vir da conta, não somente do navegador');
-assert.ok(account.includes('Acessar conteúdo →'),'Recompensa continua acessível sem expor seu nome');
+assert.ok(account.includes('Recompensa — Rota Zero')&&account.includes('Abrir Rota Zero no Drive'),'A recompensa desbloqueada deve identificar Rota Zero e abrir o Drive');
 assert.ok(account.includes('visibleAchievement(tag)'),'Conquistas do grupo usam rótulo genérico');
 assert.ok(!account.includes('RZ-88 • EVENTO')&&!account.includes('◆ RZ-88 — Colaborador Rota Zero'),'O perfil não deve revelar nomes secretos');
 assert.ok(app.includes('pjlite:open-arg-material')&&app.includes("setGuideTab('rotazero')"));
@@ -93,7 +93,8 @@ const newSchema=readFileSync('supabase/migrations/20261023_jornadas_mindmap_libr
 assert.ok(panel.includes('<CampaignLibrary')&&panel.includes('<CampaignMindmap')&&panel.includes('<CampaignRecords')&&panel.includes('<CampaignNotes')&&panel.includes('<CampaignShield'),'Ferramentas novas devem estar ligadas à sala');
 assert.ok(hub.includes('jornadas-background-options')&&hub.includes('dragonbane_custom_bg'),'Tema com fundo igual à Home');
 assert.ok(workspace.includes('saveDmMindmap')&&workspace.includes('getDmMindmap'),'Mapa mental DM deve ser persistido');
-assert.ok(workspace.includes('Abrir em nova aba / baixar')&&workspace.includes('iframe'),'Biblioteca deve permitir leitura de PDFs');
+assert.ok(workspace.includes('Abrir em nova aba / baixar')&&workspace.includes('campaign-library-card__external'),'Biblioteca deve permitir abrir links de PDFs externamente');
+assert.ok(!workspace.includes('<iframe'),'Não tentar carregar Drive em iframe, que pode bloquear visualização');
 assert.ok(newSchema.includes('campaign_dm_mindmaps enable row level security'),'Mural DM deve ter RLS');
 assert.ok(newSchema.includes('visible_to_players'),'Material deve ser protegido no banco');
 assert.ok(api.includes('setJourneyResourceVisibility')&&api.includes('saveDmMindmap'),'Permissões e mapa devem possuir API real');
