@@ -57,7 +57,8 @@ export function CharacterMiniSheet({row,ownerLabel,onView}){
    <div className="journey-mini-sheet__resources">
     {sheet.hp&&<CharacterResourceBar label="VIDA" tone="life" resource={sheet.hp}/>}
     {sheet.resource&&<CharacterResourceBar label={sheet.resource.label.toUpperCase()} tone="power" resource={sheet.resource}/>}
-    {!sheet.hp&&!sheet.resource&&<small className="journey-mini-sheet__no-data">Sem recursos padronizados nesta ficha.</small>}
+    {(sheet.extraResources||[]).map(resource=><CharacterResourceBar key={resource.label} label={resource.label.toUpperCase()} tone="power" resource={resource}/>)}
+    {!sheet.hp&&!sheet.resource&&!(sheet.extraResources||[]).length&&<small className="journey-mini-sheet__no-data">Sem recursos padronizados nesta ficha.</small>}
    </div>
    {sheet.combat.length>0&&<div className="journey-mini-sheet__combat">
     {sheet.combat.map(stat=><div key={stat.label}><span>{stat.label}</span><strong>{stat.value}</strong></div>)}
@@ -92,7 +93,8 @@ export function SheetQuickView({row,ownerLabel,onClose,onEdit,onUnlink,canEdit=f
     <div className="journey-sheet-vitals">
      {sheet.hp&&<div><span>❤️ Pontos de Vida</span><strong>{sheet.hp.current} / {sheet.hp.max}</strong></div>}
      {sheet.resource&&<div><span>✦ {sheet.resource.label}</span><strong>{sheet.resource.current} / {sheet.resource.max}</strong></div>}
-     {!sheet.hp&&!sheet.resource&&<p>Esta ficha não possui indicadores padronizados de recursos.</p>}
+     {(sheet.extraResources||[]).map(resource=><div key={resource.label}><span>◆ {resource.label}</span><strong>{resource.current} / {resource.max}</strong></div>)}
+     {!sheet.hp&&!sheet.resource&&!(sheet.extraResources||[]).length&&<p>Esta ficha não possui indicadores padronizados de recursos.</p>}
     </div>
     {sheet.attributes.length>0&&<div className="journey-sheet-attributes">{sheet.attributes.map(a=><div key={a.label}><span>{a.label}</span><strong>{a.value}</strong></div>)}</div>}
     {sheet.conditions.length>0&&<p className="journey-sheet-conditions"><strong>Condições:</strong> {sheet.conditions.join(' · ')}</p>}

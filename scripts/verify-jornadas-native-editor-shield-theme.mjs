@@ -57,6 +57,6 @@ assert.ok(hub.includes("const THEME_KEY='dragonbane_theme_prefs'"));
 for(const label of ['Padrão','Clássico DB','Dungeons & Dragons','Fábula Última','O Som das Seis','Modo Escuro','Personalizado']){
  assert.ok(hub.includes(label),'Tema faltando '+label);
 }
-assert.ok(hub.includes("theme==='custom'?homeBackground"));
+assert.ok(hub.includes("theme==='custom'?(homeBackground||background)")&&hub.includes("pjlite:theme-changed"),'Tema customizado compartilha fundo da Home e acompanha alterações');
 assert.ok(editor.includes('🗂 Campanha'));
 console.log('✓ Editor visual cloud seguro, desvincular pelo dono, Escudo robusto, barra compacta e temas da Home.');

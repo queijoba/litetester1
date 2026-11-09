@@ -63,6 +63,7 @@ const { useState, useEffect, useRef } = React;
         const SCHEMA_VERSION = 6;
 
         const UPDATE_LOG = [
+            { versao: '1.1.3v Alpha', descricao: 'Escudo do Mestre com regras rápidas por sistema e acesso aos PDFs correspondentes no Drive; minifichas de Campanhas corrigidas; cards de ameaças PNG sem cortes e modos térmicos 58/80 mm; ficha Rota Zero aberta a todos sem liberar a conquista secreta; temas sincronizados entre Home e Campanhas, guia e interface revisados.' },
             { versao: '1.1.0v Alpha', descricao: 'Jornadas se tornou uma área independente da Home, com retorno visível, criação de campanha e orientação para iniciantes. O chat privado das campanhas ganhou uma aba própria na Conta Lite. A barra clássica de novidades foi preservada, e o Log de Atualizações continua em Sobre o Projeto. Conquistas ON/OFF permanece disponível na Conta Lite.' },
             { versao: '0.9.5v Alpha • Jornadas (prévia)', descricao: 'A Conta Lite organiza grupos com DM, campanhas em Jornadas, fichas vinculadas com permissão opcional de edição pelo mestre, iniciativa, combate, chat por mensagens e links HTTPS de mídia, mapas e PDFs autorizados. Conquistas ON/OFF agora permite mostrar apenas o emblema do evento no canto da tela. Guias revisados com bibliotecas e cards de ameaças em PNG.' },
             { versao: '0.8.0v Alpha', descricao: '3DeT Victory entra na prévia do PJ Lite com ficha digital modular, retrato opcional, P/H/R, PA/PM/PV, perícias, FA/FD, vantagens, desvantagens, técnicas, inventário por raridade, Kit opcional, Ficha Chat e integração com saves/importação.' },
@@ -2259,12 +2260,12 @@ const { useState, useEffect, useRef } = React;
                                 <div className={`px-4 ${newsCollapsed ? 'py-2' : 'py-3'} flex items-center justify-between gap-3`}>
                                     <div className="min-w-0">
                                         <div className="font-title font-bold text-[#922610] flex items-center gap-2">
-                                            <span>✨ 1.1.0v Alpha — novas jornadas e conquistas</span>
+                                            <span>✨ 1.1.3v Alpha — Escudos, cards térmicos e Campanhas</span>
                                             {newsCollapsed && <span className="hidden sm:inline text-[10px] font-body font-bold uppercase tracking-widest text-[#922610]/70">minimizado</span>}
                                         </div>
                                         {!newsCollapsed && (
                                             <div className="mt-1 space-y-2">
-                                                <div className="text-xs text-gray-700 space-y-1.5"><p>A <strong>1.1.0v Alpha</strong> organiza fichas e campanhas com navegação mais intuitiva, mantendo a aparência clássica do PJ Lite.</p><p><strong>Jornadas:</strong> espaço independente para campanhas, mestres, iniciativa, fichas e materiais, com botão visível para retornar à Home. <strong>Conta Lite:</strong> nova aba de Chat para conversar com os grupos e compartilhar mídia.</p><p><strong>Conquistas:</strong> ajuste opcional da exibição das conquistas no canto da tela. Confira o histórico em <strong>Sobre o Projeto &amp; Atualizações</strong>.</p></div>
+                                                <div className="text-xs text-gray-700 space-y-1.5"><p>A <strong>1.1.3v Alpha</strong> facilita o trabalho do Mestre: <strong>escudos por sistema</strong>, consulta dos PDFs originais pelo Drive, melhorias nas fichas compartilhadas e temas iguais aos da Home.</p><p><strong>Cards de ameaças:</strong> PNG com margem completa e opção <strong>Térmica 80 mm ou 58 mm</strong>, em tira vertical. <strong>Rota Zero:</strong> a ficha de funcionário agora está liberada para todos; as conquistas continuam restritas aos seus donos.</p><p><strong>Biblioteca:</strong> PDFs de campanha são compartilhados pelo Drive. Veja as explicações completas em <strong>Guias e Tutoriais</strong> e no Log de Atualizações.</p></div>
                                                 <a href="https://t.me/boost/Baianoviado" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-xs font-bold text-sky-700 hover:text-sky-900 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-full px-3 py-1.5 shadow-sm transition-colors">
                                                     <span>✈</span> Acompanhe anúncios e próximas novidades no Telegram ↗
                                                 </a>
@@ -2272,7 +2273,7 @@ const { useState, useEffect, useRef } = React;
                                         )}
                                     </div>
                                     <div className="flex items-center gap-2 shrink-0">
-                                        {!newsCollapsed && <span className="hidden md:inline bg-[#922610] text-white px-3 py-1 rounded text-[10px] font-bold uppercase tracking-widest">1.1.0v • alpha</span>}
+                                        {!newsCollapsed && <span className="hidden md:inline bg-[#922610] text-white px-3 py-1 rounded text-[10px] font-bold uppercase tracking-widest">1.1.3v • alpha</span>}
                                         <button onClick={() => setNewsCollapsed(v => !v)} className="bg-white/80 hover:bg-white text-[#922610] border border-[#c46b58] rounded px-2.5 py-1 text-xs font-bold shadow-sm" title={newsCollapsed ? 'Expandir novidades' : 'Minimizar novidades'} aria-label={newsCollapsed ? 'Expandir novidades' : 'Minimizar novidades'}>
                                             {newsCollapsed ? '＋' : '−'}
                                         </button>
@@ -2311,7 +2312,7 @@ const { useState, useEffect, useRef } = React;
                                 {showFilters && (
                                     <div style={getWindowStyle()} className="mt-2 max-w-2xl bg-white border border-gray-200 rounded-lg shadow-sm p-3 grid grid-cols-1 sm:grid-cols-3 gap-2">
                                         <select value={systemFilter} onChange={e=>setSystemFilter(e.target.value)} className="border rounded px-2 py-2 text-xs bg-white">
-                                            <option value="all">Todos os sistemas</option><option value="dragonbane">Dragonbane</option><option value="dnd5e">D&D 5.5e</option><option value="fabula">Fabula Ultima</option><option value="somdas6">O Som das Seis</option><option value="3det">3DeT Victory</option>{rotaZeroUnlocked && <option value="rotaZero">Rota Zero</option>}
+                                            <option value="all">Todos os sistemas</option><option value="dragonbane">Dragonbane</option><option value="dnd5e">D&D 5.5e</option><option value="fabula">Fabula Ultima</option><option value="somdas6">O Som das Seis</option><option value="3det">3DeT Victory</option><option value="rotaZero">Rota Zero</option>
                                         </select>
                                         <select value={sortMode} onChange={e=>setSortMode(e.target.value)} className="border rounded px-2 py-2 text-xs bg-white">
                                             <option value="recent">Mais recentes</option><option value="name">Nome A–Z</option><option value="system">Por sistema</option>
@@ -2533,7 +2534,7 @@ const { useState, useEffect, useRef } = React;
                                             </div>
                                         )}
 
-                                        {rotaZeroUnlocked && createTarget === 'pc' && (
+                                        {createTarget === 'pc' && (
                                             <div onClick={() => { setShowSystemModal(false); setShowRotaZeroModelModal(true); }} className="bg-[#ecebe4] border-2 border-[#7a857d] hover:border-[#34473b] rounded p-3 cursor-pointer hover:shadow-md transition-all flex items-center gap-3 group min-h-[82px]">
                                                 <div className="w-12 h-12 bg-[#18201c] text-[#c7d2c9] rounded flex items-center justify-center font-black text-lg shadow-inner">RZ</div>
                                                 <div className="flex-1">
@@ -2906,7 +2907,7 @@ const { useState, useEffect, useRef } = React;
                             <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] p-4 transition-opacity">
                                 <div className="bg-white rounded-sm shadow-2xl w-full max-w-4xl border-2 border-gray-800 overflow-hidden animate-fade-in-up flex flex-col">
                                     <div className="bg-gray-800 text-white p-3 flex justify-between items-center shrink-0">
-                                        <div><h2 className="font-title font-bold text-lg uppercase">Guias e Tutoriais</h2><div className="text-[9px] text-gray-300 font-bold uppercase tracking-widest">PJ Lite 1.1.0v Alpha</div></div>
+                                        <div><h2 className="font-title font-bold text-lg uppercase">Guias e Tutoriais</h2><div className="text-[9px] text-gray-300 font-bold uppercase tracking-widest">PJ Lite 1.1.3v Alpha</div></div>
                                         <button onClick={() => setShowGuideModal(false)} className="text-gray-400 hover:text-white text-2xl font-bold px-2">&times;</button>
                                     </div>
                                     <div className="flex bg-gray-200 border-b border-gray-300 shrink-0 overflow-x-auto">
@@ -2918,7 +2919,7 @@ const { useState, useEffect, useRef } = React;
                                         <button onClick={() => setGuideTab('dnd5e')} className={`flex-1 py-2.5 px-4 text-xs font-bold uppercase text-center border-b-4 transition-colors whitespace-nowrap ${guideTab === 'dnd5e' ? 'border-orange-600 text-orange-900 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-300'}`}>D&D 5.5e</button>
                                         <button onClick={() => setGuideTab('fabula')} className={`flex-1 py-2.5 px-4 text-xs font-bold uppercase text-center border-b-4 transition-colors whitespace-nowrap ${guideTab === 'fabula' ? 'border-teal-600 text-teal-900 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-300'}`}>Fabula Ultima</button>
                                         <button onClick={() => setGuideTab('som6')} className={`flex-1 py-2.5 px-4 text-xs font-bold uppercase text-center border-b-4 transition-colors whitespace-nowrap ${guideTab === 'som6' ? 'border-red-900 text-red-950 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-300'}`}>Som das Seis</button>
-                                        {rotaZeroUnlocked && <button onClick={() => setGuideTab('rotazero')} className={`flex-1 py-2.5 px-4 text-xs font-bold uppercase text-center border-b-4 transition-colors whitespace-nowrap ${guideTab === 'rotazero' ? 'border-emerald-950 text-emerald-950 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-300'}`}>Rota Zero</button>}
+                                        {<button onClick={() => setGuideTab('rotazero')} className={`flex-1 py-2.5 px-4 text-xs font-bold uppercase text-center border-b-4 transition-colors whitespace-nowrap ${guideTab === 'rotazero' ? 'border-emerald-950 text-emerald-950 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-300'}`}>Rota Zero</button>}
                                     </div>
                                     <div className="p-6 bg-gray-50 text-sm text-gray-700 overflow-y-auto max-h-[70vh] scrollbar-thin">
                                         {guideTab === 'inicio' && (
@@ -2959,6 +2960,13 @@ const { useState, useEffect, useRef } = React;
 
                                         {guideTab === 'jornadas' && (
                                             <div className="space-y-4">
+                                                <div className="rounded-lg bg-emerald-50 border border-emerald-300 p-4 text-xs space-y-2">
+                                                    <h3 className="font-bold text-emerald-900">🛡 Novidades do Mestre • 1.1.3v Alpha</h3>
+                                                    <p><strong>Escudo do Mestre:</strong> crie uma campanha e abra a aba Escudo. O sistema da mesa seleciona o conjunto de regras rápidas; o seletor permite trocar temporariamente a referência. O botão <strong>Abrir PDF no Drive</strong> leva ao escudo correspondente. Quando não há PDF do sistema, aparece um resumo de apoio identificado.</p>
+                                                    <p><strong>Personagens e ameaças:</strong> sincronize a ficha na Conta Lite e vincule-a à campanha. Clique em sua miniatura para consultar atributos, recursos, habilidades e equipamento. O mestre só edita fichas de jogador se o dono conceder permissão; NPCs e ameaças ficam na aba exclusiva do mestre.</p>
+                                                    <p><strong>PDFs da campanha:</strong> em Biblioteca, selecione Livro/PDF, cole o link do Google Drive e marque se os jogadores podem vê-lo. O acesso também depende das permissões do Drive. O PJLite não realiza upload de PDFs pelo formulário de Biblioteca.</p>
+                                                    <p><strong>Temas:</strong> o mesmo seletor da Home está disponível em Campanhas. Use fundo personalizado na Home para aplicar a mesma identidade às duas áreas; mantenha o navegador atualizado.</p>
+                                                </div>
                                                 <div className="border border-teal-300 bg-teal-50 rounded-xl p-4"><h3 className="font-title font-black text-teal-900">🧭 Jornadas — grupos com DM</h3><p className="text-xs mt-2">Abra <strong>Jornadas</strong> pelo botão da página inicial do PJ Lite. A área de campanhas tem página própria com Conta Lite, Chat e Grupos. Entre na sua conta, crie um grupo de mestre ou participe de um grupo com código de convite. Depois crie ou abra as campanhas compartilhadas com seus jogadores.</p></div>
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
                                                   <div className="bg-white rounded-lg border p-4"><strong>⚔ Combates e iniciativa</strong><p>O mestre organiza a ordem de iniciativa, a rodada e anotações da cena. Os jogadores consultam as atualizações da campanha.</p></div>
@@ -3011,6 +3019,11 @@ const { useState, useEffect, useRef } = React;
 
                                         {guideTab === 'ameacas_db' && (
                                             <div className="space-y-5">
+                                                <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-xs space-y-2">
+                                                    <h3 className="font-bold text-amber-950">🖨 Cards de ameaças em PNG • 1.1.3v Alpha</h3>
+                                                    <p>Abra uma ameaça, clique em <strong>Ampliar card</strong>, escolha <strong>Card normal</strong>, <strong>Térmica 80 mm (576 px)</strong> ou <strong>Térmica 58 mm (384 px)</strong> e clique em <strong>Baixar PNG</strong>. A imagem é capturada fora da janela de prévia para não cortar nomes, estatísticas ou ataques.</p>
+                                                    <p>Para impressoras térmicas, o PNG tem fundo branco, letras escuras e formato vertical contínuo. Imprima com largura real correspondente ao rolo, sem margens adicionais; o driver da impressora pode variar. Se a criatura tiver texto demais, divida a ficha para conservar a legibilidade.</p>
+                                                </div>
                                                 <div className="bg-gray-900 text-white rounded p-4">
                                                     <h3 className="font-title font-bold text-base mb-1">Guia de Ameaças, PNJs e Bestiário</h3>
                                                     <p className="text-xs text-gray-200">Esta aba reúne as ameaças e personagens do Mestre dos sistemas disponíveis. Dragonbane usa PNJs e monstros; D&D 5.5e usa blocos de estatísticas; Fabula Ultima usa Ameaças/PNJs; O Som das Seis usa PDJs. Escolha primeiro o sistema e depois preencha apenas o que realmente será consultado em mesa.</p>
@@ -3097,10 +3110,10 @@ const { useState, useEffect, useRef } = React;
                                             </div>
                                         )}
 
-                                        {guideTab === 'rotazero' && rotaZeroUnlocked && (
+                                        {guideTab === 'rotazero' && (
                                             <div className="space-y-5">
                                                 <div className="bg-[#101713] text-[#d9e6dc] border border-[#52675a] rounded p-4">
-                                                    <div className="text-[10px] font-bold uppercase tracking-[.14em] text-[#91a397] mb-1">RZ-88 // guia de contratação</div>
+                                                    <div className="text-[10px] font-bold uppercase tracking-[.14em] text-[#91a397] mb-1">ROTA ZERO // guia de contratação</div>
                                                     <h3 className="font-title font-bold text-lg mb-2">🚚 Rota Zero — criando sua ficha</h3>
                                                     <p className="text-xs text-[#b8c6bd]">Esta aba é uma recompensa do ARG. Ela aparece quando a Conta Lite recebe a conquista <strong>RZ-88</strong>. Ao concluir o currículo da Rota Zero, o PJ Lite já cria uma ficha inicial usando os dados fornecidos; você pode abrir essa ficha e continuar a contratação normalmente.</p>
                                                 </div>

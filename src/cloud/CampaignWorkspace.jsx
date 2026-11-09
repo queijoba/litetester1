@@ -5,6 +5,8 @@ import {
 } from './jornadasCloud.js';
 import './campaign-workspace.css';
 import {isGoogleDriveResourceUrl} from './driveResourceLinks.js';
+import GmShieldReference from './GmShieldReference.jsx';
+import {getJourneySheetSummary} from './journeySheetSummary.js';
 
 const categories=[['livro','📚 Livros'],['mapa','🗺️ Mapas'],['documento','📜 Documentos'],['regras','📖 Regras'],['pista','🔎 Pistas'],['relatorio','📝 Relatórios'],['outro','📎 Outros']];
 const secureUrl=u=>{try{return new URL(u).protocol==='https:'}catch{return false}};
@@ -156,13 +158,13 @@ export function CampaignShield({draft,links=[],dmLinks=[],isDm,onTab,onOpenSheet
  const dmRows=Array.isArray(dmLinks)?dmLinks:[];
  const sheetRows=[...playerRows.map(r=>({...r,isNpc:false})),...dmRows.map(r=>({...r,isNpc:true}))];
  const characters=sheetRows.map(row=>{
-  const sheet=row?.sheets||{},status=sheet?.payload?.status||{};
-  const pv=status?.pv;
-  const pvText=pv&&typeof pv==='object'
-   ?String(pv.atual??pv.current??'—')+' / '+String(pv.max??'—')
-   :String(status.pvAtual??sheet.payload?.pvAtual??pv??'—');
-  return {...row,name:labelOf(sheet),system:sheet.system||sheet.payload?.system||'Ficha',
-   life:pvText,defense:status?.defesa??sheet.payload?.defesa??sheet.payload?.ca??'—'};
+  // Reutiliza o mesmo adaptador da minificha (Rota Zero usa recursos;
+  // 3DeT e Dragonbane usam estruturas de status diferentes).
+  const summary=getJourneySheetSummary(row);
+  const defense=summary.combat.find(item=>item.label==='DEF'||item.label==='CA');
+  return {...row,name:summary.name,system:summary.system||'Ficha',
+   life:summary.hp?summary.hp.current+' / '+summary.hp.max:'—',
+   defense:defense?.value||'—',resource:summary.resource};
  });
  const roll=()=>{
   const n=Math.max(2,Math.min(100,Number(dice.slice(1))||20));
@@ -183,10 +185,11 @@ export function CampaignShield({draft,links=[],dmLinks=[],isDm,onTab,onOpenSheet
     {['d4','d6','d8','d10','d12','d20','d100'].map(x=><option key={x} value={x}>{x}</option>)}
    </select><button type="button" onClick={roll}>Rolar</button>{result&&<strong role="status">{result}</strong>}</div>
   </div>
+  <GmShieldReference system={draft?.system}/>
   <div className="campaign-shield-characters">{characters.map(row=><button key={row.sheet_id} type="button"
    className="campaign-shield-character" onClick={()=>onOpenSheet?.(row)}>
    <strong>{row.isNpc?'☠':'👤'} {row.name}</strong><small>{row.system}</small>
-   <span>PV {row.life} · DEF {String(row.defense)}</span><em>Abrir ficha →</em>
+   <span>PV {row.life} · DEF {String(row.defense)}{row.resource?' · '+row.resource.label+' '+row.resource.current:''}</span><em>Abrir ficha →</em>
   </button>)}{!characters.length&&<div className="campaign-workspace__empty">
    Vincule personagens na aba Personagens ou adicione NPCs na área do Mestre.
   </div>}</div>

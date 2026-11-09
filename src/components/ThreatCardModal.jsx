@@ -24,6 +24,7 @@ export default function ThreatCardModal({open=false,data,onClose}){
  const display=useMemo(()=>data?buildThreatCardData(data):null,[data]);
  const cardRef=useRef(null);
  const [exporting,setExporting]=useState(false);
+ const [pngFormat,setPngFormat]=useState('regular');
  const [imageError,setImageError]=useState('');
  useEffect(()=>{if(open)setImageError('');},[open]);
  if(!open||!data||typeof document==='undefined')return null;
@@ -32,27 +33,52 @@ export default function ThreatCardModal({open=false,data,onClose}){
   if(!node||exporting)return;
   setImageError('');
   setExporting(true);
+  // Uma área de captura fora do modal garante a largura completa do cartão:
+  // o scroll da prévia (especialmente no celular) não pode cortar a imagem.
+  const isThermal=pngFormat!=='regular';
+  const width=pngFormat==='thermal58'?384:pngFormat==='thermal80'?576:560;
+  const exportHost=document.createElement('div');
+  exportHost.className='pj-threat-card-modal pj-threat-export-host';
+  exportHost.setAttribute('aria-hidden','true');
+  const exportNode=node.cloneNode(true);
+  exportNode.classList.toggle('is-thermal',isThermal);
+  exportNode.style.width=width+'px';
+  exportNode.style.maxWidth='none';
+  exportNode.style.margin='0';
+  exportHost.appendChild(exportNode);
+  document.body.appendChild(exportHost);
   try{
-   // Reduz a resolução em cards muito longos para evitar o limite de canvas no celular.
-   const box=node.getBoundingClientRect();
-   const width=Math.max(1,Math.ceil(node.scrollWidth||box.width));
-   const height=Math.max(1,Math.ceil(node.scrollHeight||box.height));
-   const pixelRatio=Math.min(2,8192/Math.max(width,height),Math.sqrt(20000000/(width*height)));
-   const blob=await toBlob(node,{cacheBust:true,pixelRatio:Math.max(.75,pixelRatio)});
+   if(document.fonts?.ready)await document.fonts.ready;
+   await Promise.all(Array.from(exportNode.querySelectorAll('img')).map(img=>{
+    if(img.complete)return Promise.resolve();
+    return new Promise(resolve=>{img.onload=resolve;img.onerror=resolve;});
+   }));
+   const height=Math.ceil(exportNode.scrollHeight);
+   if(height<1)throw new Error('O card não possui altura de exportação.');
+   const desiredRatio=isThermal?1:2;
+   const ratio=Math.min(desiredRatio,8192/height,8192/width,Math.sqrt(19000000/(width*height)));
+   if(ratio<0.45)throw new Error('Card longo demais para uma imagem única. Reduza as notas ou divida em duas fichas.');
+   // width e height explícitos são essenciais ao html-to-image; assim textos
+   // que ultrapassariam o modal não são truncados no PNG exportado.
+   const blob=await toBlob(exportNode,{
+    cacheBust:true,backgroundColor:'#ffffff',width,height,
+    pixelRatio:ratio,canvasWidth:Math.ceil(width*ratio),canvasHeight:Math.ceil(height*ratio)
+   });
    if(!blob)throw new Error('Não foi possível criar o arquivo de imagem.');
    const filename=(display.name||'Ameaca').normalize('NFD').replace(/\p{M}/gu,'').replace(/[^a-zA-Z0-9_-]+/g,'_').replace(/^_+|_+$/g,'').slice(0,70)||'Ameaca';
    const url=URL.createObjectURL(blob);
    const a=document.createElement('a');
    a.href=url;
-   a.download='Card_Ameaca_'+filename+'.png';
+   a.download='Card_Ameaca_'+filename+(isThermal?'_termica_'+(pngFormat==='thermal58'?'58mm':'80mm'):'')+'.png';
    document.body.appendChild(a);
    a.click();
    a.remove();
-   setTimeout(()=>URL.revokeObjectURL(url),1000);
+   setTimeout(()=>URL.revokeObjectURL(url),2000);
   }catch(error){
    console.error('Falha ao exportar card em PNG:',error);
-   setImageError('Não foi possível baixar a imagem. Caso use retrato de uma URL externa, tente outro retrato ou faça uma captura de tela.');
+   setImageError(error?.message||'Não foi possível gerar o PNG. Verifique se o retrato está disponível.');
   }finally{
+   exportHost.remove();
    setExporting(false);
   }
  };
@@ -64,9 +90,17 @@ export default function ThreatCardModal({open=false,data,onClose}){
  };
  return createPortal(<div className="pj-threat-card-modal" onMouseDown={e=>{if(e.target===e.currentTarget)onClose();}}>
   <section className="pj-threat-card-panel" role="dialog" aria-modal="true" aria-label="Card de apresentação da ameaça">
-   <nav className="pj-threat-card-toolbar no-print"><div><strong>🃏 Card da ameaça</strong><small>Imagem pronta para enviar à sua mesa • sem PDF</small></div><div><button type="button" onClick={copy}>Copiar texto</button><button type="button" className="pj-threat-card-png-btn" onClick={downloadPng} disabled={exporting} aria-label="Baixar imagem PNG do card">{exporting?'Gerando PNG…':'↓ Baixar PNG'}</button><button type="button" onClick={onClose} aria-label="Fechar card">✕</button></div></nav>
+   <nav className="pj-threat-card-toolbar no-print"><div><strong>🃏 Card da ameaça</strong><small>PNG completo para a mesa ou para impressão em tira térmica</small></div><div>
+    <label className="pj-threat-card-print-mode">Tamanho do PNG
+     <select value={pngFormat} onChange={event=>setPngFormat(event.target.value)} disabled={exporting} aria-label="Formato do card para impressão">
+      <option value="regular">Card normal</option>
+      <option value="thermal80">Térmica 80 mm • 576 px</option>
+      <option value="thermal58">Térmica 58 mm • 384 px</option>
+     </select>
+    </label>
+    <button type="button" onClick={copy}>Copiar texto</button><button type="button" className="pj-threat-card-png-btn" onClick={downloadPng} disabled={exporting} aria-label="Baixar imagem PNG do card">{exporting?'Gerando PNG…':'↓ Baixar PNG'}</button><button type="button" onClick={onClose} aria-label="Fechar card">✕</button></div></nav>
    {imageError&&<div className="pj-threat-card-alert" role="alert">{imageError}</div>}
-   <div className="pj-threat-card-scroll"><div ref={cardRef} className="pj-threat-card-capture"><ThreatStatCard data={data}/></div></div>
+   <div className="pj-threat-card-scroll"><div ref={cardRef} className={'pj-threat-card-capture '+(pngFormat==='regular'?'':'is-thermal')}><ThreatStatCard data={data}/></div></div>
   </section>
  </div>,document.body);
 }

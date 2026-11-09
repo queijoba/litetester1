@@ -113,3 +113,26 @@
   .campaign-workspace__fields{grid-template-columns:1fr}
   .campaign-library-card__actions .campaign-library-card__external{width:100%;overflow-wrap:anywhere}
 }
+
+/* PJLite 1.1.3: escudos de mesa com consulta por sistema. */
+.gm-rules-panel{min-width:0}
+.gm-rules-panel__head{display:flex;justify-content:space-between;align-items:start;gap:16px;flex-wrap:wrap}
+.gm-rules-panel__head h4{font:bold 17px Georgia,serif;margin:0 0 5px;color:#245d50}
+.gm-rules-panel__head p{margin:0;font-size:11px;color:#5d7169;line-height:1.55}
+.gm-rules-panel__head label{min-width:180px;max-width:100%;flex:0 1 245px}
+.gm-rules-panel__head select{min-height:42px;background:#fff}
+.gm-rules-panel__source{display:flex;flex-wrap:wrap;align-items:center;gap:10px;background:#eff7f1;padding:10px;border-radius:9px;border:1px solid #d0e2d5}
+.gm-rules-panel__source span{font-weight:850;flex:1 1 160px}
+.gm-rules-panel__source a{color:#256152!important;background:white;border:1px solid #8fb8a4;border-radius:7px;text-decoration:none!important;padding:10px;font-weight:850;min-height:40px;display:inline-flex;align-items:center}
+.gm-rules-panel__source small{font-size:11px;color:#786045}
+.gm-rules-panel__groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:12px;align-items:start}
+.gm-rules-panel__groups details{border:1px solid #d2dfd5;border-radius:9px;background:#fbfdfa;min-width:0;overflow:hidden}
+.gm-rules-panel__groups summary{cursor:pointer;padding:12px 13px;font-weight:900;color:#285d4c;background:#eef6f0;font-size:13px}
+.gm-rules-panel__groups dl{margin:0;padding:9px;display:grid;gap:8px}
+.gm-rules-panel__groups dl>div{padding:9px 11px;border:1px solid #e1eae2;border-radius:7px;background:white}
+.gm-rules-panel__groups dt{font-weight:900;font-size:12px;color:#245d50}
+.gm-rules-panel__groups dd{margin:4px 0 0;font-size:11px;color:#465b50;line-height:1.6;overflow-wrap:anywhere}
+.gm-rules-panel__notice{font-size:10px;color:#637d6d;margin:0;line-height:1.6}
+.campaign-shield-character{min-width:0;overflow-wrap:anywhere;text-align:left}
+.campaign-shield-character span,.campaign-shield-character small{overflow-wrap:anywhere}
+@media(max-width:640px){.gm-rules-panel__head label{flex:1 1 100%;max-width:none}.gm-rules-panel__groups{grid-template-columns:1fr}.gm-rules-panel__source a{flex:1 1 100%;justify-content:center}.campaign-shield-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
