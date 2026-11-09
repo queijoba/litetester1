@@ -25,7 +25,7 @@ export default function GmShieldReference({system}){
     <small>Não foi localizado PDF de escudo específico deste sistema no acervo consultado.</small>}
   </div>
   <div className="gm-rules-panel__groups">
-   {entry.groups.map(group=><details key={group.title} open={entry.groups.length===1?true:undefined}>
+   {entry.groups.map((group,index)=><details key={chosen+'-'+group.title} open={index===0}>
     <summary>{group.title}</summary>
     <dl>{group.items.map(([label,description])=><div key={label}>
      <dt>{label}</dt><dd>{description}</dd>
