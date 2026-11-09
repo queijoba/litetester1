@@ -93,7 +93,7 @@ export default function JornadasHub(){
  },[]);
  React.useEffect(()=>{
   document.body.classList.add('jornadas-standalone');
-  document.title='Jornadas — PJ Lite 1.1.0v Alpha';
+  document.title='Jornadas — PJ Lite 1.1.3v Alpha';
   return()=>{document.body.classList.remove('jornadas-standalone');document.title='PJ Lite'};
  },[]);
  React.useEffect(()=>{
@@ -226,6 +226,6 @@ export default function JornadasHub(){
     <span className="pjlite-achievement-emblem" aria-hidden="true">{achievementsOn?'◆':'🐱'}</span>
     {achievementsOn&&<span className="pjlite-achievement-corner-text"><strong>CONQUISTAS</strong><small>{achievements.length} desbloqueada{achievements.length===1?'':'s'}</small></span>}
   </button>}
-  <footer className="jornadas-site__footer">PJ Lite 1.1.0v Alpha · Campanhas vinculadas à Conta Lite · <a href="/">Voltar à Home</a></footer>
+  <footer className="jornadas-site__footer">PJ Lite 1.1.3v Alpha · Campanhas vinculadas à Conta Lite · <a href="/">Voltar à Home</a></footer>
  </main>;
 }
