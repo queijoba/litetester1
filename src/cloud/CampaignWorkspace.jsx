@@ -5,6 +5,7 @@ import {
 } from './jornadasCloud.js';
 import './campaign-workspace.css';
 import {isGoogleDriveResourceUrl} from './driveResourceLinks.js';
+import GmShieldReference from './GmShieldReference.jsx';
 
 const categories=[['livro','📚 Livros'],['mapa','🗺️ Mapas'],['documento','📜 Documentos'],['regras','📖 Regras'],['pista','🔎 Pistas'],['relatorio','📝 Relatórios'],['outro','📎 Outros']];
 const secureUrl=u=>{try{return new URL(u).protocol==='https:'}catch{return false}};
@@ -183,6 +184,7 @@ export function CampaignShield({draft,links=[],dmLinks=[],isDm,onTab,onOpenSheet
     {['d4','d6','d8','d10','d12','d20','d100'].map(x=><option key={x} value={x}>{x}</option>)}
    </select><button type="button" onClick={roll}>Rolar</button>{result&&<strong role="status">{result}</strong>}</div>
   </div>
+  <GmShieldReference system={draft?.system}/>
   <div className="campaign-shield-characters">{characters.map(row=><button key={row.sheet_id} type="button"
    className="campaign-shield-character" onClick={()=>onOpenSheet?.(row)}>
    <strong>{row.isNpc?'☠':'👤'} {row.name}</strong><small>{row.system}</small>
