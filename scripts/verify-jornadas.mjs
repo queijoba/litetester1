@@ -93,7 +93,8 @@ const newSchema=readFileSync('supabase/migrations/20261023_jornadas_mindmap_libr
 assert.ok(panel.includes('<CampaignLibrary')&&panel.includes('<CampaignMindmap')&&panel.includes('<CampaignRecords')&&panel.includes('<CampaignNotes')&&panel.includes('<CampaignShield'),'Ferramentas novas devem estar ligadas à sala');
 assert.ok(hub.includes('jornadas-background-options')&&hub.includes('dragonbane_custom_bg'),'Tema com fundo igual à Home');
 assert.ok(workspace.includes('saveDmMindmap')&&workspace.includes('getDmMindmap'),'Mapa mental DM deve ser persistido');
-assert.ok(workspace.includes('Abrir em nova aba / baixar')&&workspace.includes('iframe'),'Biblioteca deve permitir leitura de PDFs');
+assert.ok(workspace.includes('Abrir em nova aba / baixar')&&workspace.includes('campaign-library-card__external'),'Biblioteca deve permitir abrir links de PDFs externamente');
+assert.ok(!workspace.includes('<iframe'),'Não tentar carregar Drive em iframe, que pode bloquear visualização');
 assert.ok(newSchema.includes('campaign_dm_mindmaps enable row level security'),'Mural DM deve ter RLS');
 assert.ok(newSchema.includes('visible_to_players'),'Material deve ser protegido no banco');
 assert.ok(api.includes('setJourneyResourceVisibility')&&api.includes('saveDmMindmap'),'Permissões e mapa devem possuir API real');
