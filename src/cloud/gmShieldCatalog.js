@@ -1,3 +1,4 @@
+import {GM_SHIELD_ADDITIONAL_GROUPS} from './gmShieldExtraRules.js';
 // Resumos ORIGINAIS para consulta durante a sessão. Os PDFs de origem são
 // abertos no Drive (não são copiados para o acervo público do PJLite).
 // Só o Mestre deve visualizar este painel; a origem pode ter permissões próprias.
@@ -122,4 +123,17 @@ export const GM_SHIELDS={
    ]}
   ]}
 };
-export const getGmShield=(system)=>GM_SHIELDS[system==='fabulaUltima'?'fabula':system==='t20'?'tormenta20':system]||null;
+// Completa os lembretes sem replicar os PDFs licenciados.
+for(const [key,groups] of Object.entries(GM_SHIELD_ADDITIONAL_GROUPS)){
+ if(GM_SHIELDS[key])GM_SHIELDS[key].groups=[...GM_SHIELDS[key].groups,...groups];
+}
+export const getGmShieldKey=(system)=>{
+ const name=String(system||'').trim();
+ const aliases={fabulaUltima:'fabula',t20:'tormenta20',tormenta:'tormenta20',
+  '3detVictory':'3det',dnd:'dnd5e',dnd55:'dnd5e',
+  ordem:'ordemParanormal',ordemparanormal:'ordemParanormal',
+  som6:'somdas6',rota_zero:'rotaZero',rotazero:'rotaZero'};
+ const key=aliases[name]||name;
+ return Object.prototype.hasOwnProperty.call(GM_SHIELDS,key)?key:null;
+};
+export const getGmShield=system=>GM_SHIELDS[getGmShieldKey(system)]||null;

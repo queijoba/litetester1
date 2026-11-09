@@ -5,6 +5,15 @@ const nice=(value,fallback='')=>{
  if(typeof value==='string'||typeof value==='number')return String(value);
  return fallback;
 };
+const firstFilled=(...candidates)=>{
+ for(const value of candidates){
+  if(value===undefined||value===null||value==='')continue;
+  if(Array.isArray(value)&&!value.length)continue;
+  if(typeof value==='object'&&!Array.isArray(value)&&!Object.keys(value).length)continue;
+  return value;
+ }
+ return [];
+};
 const statPair=(data,current,max)=> {
  const a=data?.[current],b=data?.[max];
  if(a===undefined&&b===undefined)return null;
@@ -75,14 +84,14 @@ export function getJourneySheetSummary(row){
  const attrs=order.filter(key=>data.atributos?.[key]!==undefined).map(key=>({
   label:ATTRIBUTE_NAMES[key]||key.toUpperCase(),value:valueForAttribute(data.atributos[key])
  })).filter(a=>a.value!==null);
- const skills=textList(data.periciasBase||data.pericias||data.perícias||data.antecedentes||[],12);
- const equipment=textList(data.equipamentos||data.inventario||data.equipamento||data.armas||[],10);
+ const skills=textList(firstFilled(data.periciasBase,data.pericias,data.perícias,data.antecedentes),12);
+ const equipment=textList(firstFilled(data.equipamentos,data.inventario,data.equipamento,data.armas),10);
  const traits=[
-  ...textList(data.habilidadesFeiticos||data.habilidades||data.caracteristicas||data.poderesHeroicos||[],9),
+  ...textList(firstFilled(data.habilidadesFeiticos,data.habilidades,data.caracteristicas,data.poderesHeroicos),9),
   ...textList(data.vantagens||[],6),
   ...textList(data.tecnicas||[],6),
   ...textList(data.poderes||[],6),
-  ...textList(data.feitiços||data.feiticos||[],5)
+  ...textList(firstFilled(data.feitiços,data.feiticos),5)
  ].slice(0,18);
  const conditions=Object.entries(data.atributos||{}).filter(([,v])=>v&&typeof v==='object'&&v.condicao).map(([k])=>ATTRIBUTE_NAMES[k]||k.toUpperCase());
  const otherConditions=Object.entries(data.condicoes||{}).filter(([,v])=>v===true).map(([k])=>k);

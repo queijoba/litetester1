@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {GM_SHIELDS,getGmShield} from '../src/cloud/gmShieldCatalog.js';
+import {GM_SHIELDS,getGmShield,getGmShieldKey} from '../src/cloud/gmShieldCatalog.js';
 import {getJourneySheetSummary} from '../src/cloud/journeySheetSummary.js';
 const text=p=>readFileSync(p,'utf8');
 const home=text('src/PJLiteApp.jsx'),hub=text('src/cloud/JornadasHub.jsx');
@@ -21,9 +21,27 @@ for(const system of ['dragonbane','dnd5e','tormenta20','ordemParanormal','fabula
 }
 assert.equal(getGmShield('t20'),GM_SHIELDS.tormenta20);
 assert.equal(getGmShield('fabulaUltima'),GM_SHIELDS.fabula);
+assert.equal(getGmShieldKey('t20'),'tormenta20','T20 deve selecionar opção real no menu');
+assert.equal(getGmShieldKey('fabulaUltima'),'fabula','Fábula deve selecionar opção real no menu');
+assert.equal(getGmShieldKey('rotazero'),'rotaZero','Alias Rota Zero');
+assert.equal(getGmShieldKey('unknown-system'),null,'Sistemas desconhecidos não devem receber regras Dragonbane');
+for(const system of ['dragonbane','dnd5e','tormenta20','ordemParanormal','fabula','3det','rotaZero']){
+ const entry=getGmShield(system);
+ assert.ok(entry.groups.length>=4,'Consulta ampliada deve ter 4+ grupos: '+system);
+ assert.ok(entry.groups.flatMap(g=>g.items).length>=10,'Regras rápidas suficientes no escudo: '+system);
+ assert.ok(entry.groups.every(g=>g.items.every(([name,summary])=>name&&summary&&summary.length>18)),
+  'Todos os lembretes têm título e descrição: '+system);
+}
+assert.ok(GM_SHIELDS.rotaZero.groups.flatMap(g=>g.items).some(([k])=>k==='Pressão'),
+ 'O escudo Rota Zero inclui Pressão/Pânico do PDF');
+
 assert.equal(GM_SHIELDS.skyfall.url,null);
 assert.equal(GM_SHIELDS.somdas6.url,null);
 assert.ok(component.includes("target=\"_blank\" rel=\"noopener noreferrer\""),'Referências só em nova guia');
+assert.ok(component.includes("getGmShieldKey(system)")&&component.includes('!entry?'),
+ 'O seletor de regras deve usar chave canônica e exibir aviso neutro quando não reconhecer o sistema');
+assert.ok(component.includes('open={index===0}'),'Abrir primeiro painel de consulta ao iniciar');
+
 assert.ok(shield.includes('<GmShieldReference system={draft?.system}/>'),'Escudo usa o sistema da campanha');
 assert.ok(shield.includes('getJourneySheetSummary(row)'),'Visão do mestre usa adaptador por sistema');
 const rota=getJourneySheetSummary({sheets:{name:'Funcionário',system:'rotaZero',sheet_type:'pc',payload:{
@@ -50,6 +68,16 @@ assert.equal(three.resource.label,'PM');
 assert.equal(three.extraResources[0].label,'PA');
 assert.ok(three.skills.includes('esporte'));
 assert.ok(three.traits.includes('Ataque especial'));
+const fallback=getJourneySheetSummary({sheets:{name:'Ficha multi-sistema',system:'rotaZero',payload:{
+ system:'rotaZero',bio:{nome:'Teste'},atributos:{pulso:1,firmeza:1,tecnica:1},
+ periciasBase:[],pericias:{navegacao:true},
+ equipamentos:[],inventario:['Lanterna'],
+ habilidadesFeiticos:[],habilidades:[{nome:'Reparo de emergência'}]
+}}});
+assert.ok(fallback.skills.includes('navegacao'),'Perícia em campo secundário não pode sumir por existir array vazio');
+assert.ok(fallback.equipment.includes('Lanterna'),'Inventário não pode sumir por equipamentos vazio');
+assert.ok(fallback.traits.includes('Reparo de emergência'),'Habilidades não devem ser ocultas por campo vazio');
+
 assert.ok(modal.includes("pngFormat==='thermal58'?384:pngFormat==='thermal80'?576:560"),'Larguras térmicas');
 assert.ok(modal.includes("const exportNode=node.cloneNode(true)"),'Exportar clone reformatado, não janela com scroll');
 assert.ok(modal.includes("document.body.appendChild(exportHost)"),'Captura fora da janela original');
