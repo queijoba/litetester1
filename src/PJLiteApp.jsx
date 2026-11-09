@@ -25,6 +25,9 @@ import Som6ThreatEditor from './systems/somDasSeis/components/ThreatEditor.jsx';
 import TresDeTCharacterEditor from './systems/3det/components/CharacterEditor.jsx';
 import TresDeTThreatEditor from './systems/3det/components/ThreatEditor.jsx';
 import RotaZeroCharacterEditor from './systems/rotaZero/components/CharacterEditor.jsx';
+import RotaZeroThreatEditor from './systems/rotaZero/components/ThreatEditor.jsx';
+import {initialRotaZeroThreatData,normalizeRotaZeroThreatData,MODELOS_ROTA_ZERO_AMEACAS} from './systems/rotaZero/threatData.js';
+import {markSheetDeleted,unmarkSheetDeleted} from './cloud/cloudSheetDeletions.js';
 import { initialRotaZeroPcData, normalizeRotaZeroPcData } from './systems/rotaZero/data.js';
 import { MODELOS_ROTA_ZERO_PC } from './systems/rotaZero/models.js';
 import { generateRotaZeroChatText } from './systems/rotaZero/chat.js';
@@ -1333,6 +1336,7 @@ const { useState, useEffect, useRef } = React;
                     imported=normalizeSom6PdjData(imported);
                     imported=normalize3DetPcData(imported);
                     imported=normalize3DetThreatData(imported);
+                    imported=normalizeRotaZeroThreatData(imported);
                     if(imported.system==='rotaZero'&&imported.type==='pc')imported=normalizeRotaZeroPcData(imported);
                     cloudLastSavedRef.current=JSON.stringify(imported);
                     cloudLatestSnapshotRef.current=cloudLastSavedRef.current;
@@ -1599,6 +1603,7 @@ const { useState, useEffect, useRef } = React;
                     savingData = normalizeSom6PdjData(savingData);
                     savingData = normalize3DetPcData(savingData);
                     savingData = normalize3DetThreatData(savingData);
+                    savingData = normalizeRotaZeroThreatData(savingData);
                     const now = new Date().toISOString();
                     savingData.dataVersion = SCHEMA_VERSION;
                     savingData.meta.createdAt = savingData.meta.createdAt || now;
@@ -1614,6 +1619,7 @@ const { useState, useEffect, useRef } = React;
                         const previous = index >= 0 ? chars[index] : null;
                         if (index >= 0) chars[index] = savingData; else chars.push(savingData);
                         localStorage.setItem(STORAGE_KEY, JSON.stringify(chars));
+                        unmarkSheetDeleted(savingData.id); // salvar novamente é restauração explícita
                         if (previous) pushHistorySnapshot(previous, savingData);
                         setSavedChars(chars);
                         if (!silent) showToast(savingData.system === 'fabula' ? 'Personagem Fabula salvo!' : savingData.system === 'somdas6' ? 'Personagem de O Som das Seis salvo!' : savingData.system === '3det' ? 'Personagem 3DeT Victory salvo!' : savingData.system === 'rotaZero' ? 'Funcionário Rota Zero salvo!' : 'Personagem salvo!');
@@ -1623,6 +1629,7 @@ const { useState, useEffect, useRef } = React;
                         const previous = index >= 0 ? threats[index] : null;
                         if (index >= 0) threats[index] = savingData; else threats.push(savingData);
                         localStorage.setItem(THREAT_STORAGE_KEY, JSON.stringify(threats));
+                        unmarkSheetDeleted(savingData.id); // restaurado voluntariamente
                         if (previous) pushHistorySnapshot(previous, savingData);
                         setSavedThreats(threats);
                         if (!silent) showToast(savingData.system === 'dnd5e' ? 'Estatística Salva!' : savingData.system === 'fabula' ? 'Ameaça / PNJ Fabula salvo!' : type === 'pnj' ? 'PNJ salvo!' : 'Ameaça salva!');
@@ -1851,6 +1858,7 @@ const { useState, useEffect, useRef } = React;
                     let normalized = normalizeMetaItem(threat);
                     normalized = normalizeFabulaThreatData(normalized);
                     normalized = normalizeSom6PdjData(normalized);
+                    normalized = normalizeRotaZeroThreatData(normalized);
                     setData(normalized);
                     setSom6Tab('perfil');
                     setView('editor');
@@ -1912,19 +1920,21 @@ const { useState, useEffect, useRef } = React;
             };
 
             const deleteCharacter = (id) => {
+                markSheetDeleted(id);
                 const chars = savedChars.filter(c => c.id !== id);
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(chars));
                 setSavedChars(chars);
                 setDeleteConfirmId(null);
-                showToast("Personagem apagado.");
+                showToast("Personagem removido. A Conta Lite excluirá a cópia da nuvem na próxima sincronização.");
             };
             
             const deleteThreat = (id) => {
+                markSheetDeleted(id);
                 const threats = savedThreats.filter(t => t.id !== id);
                 localStorage.setItem(THREAT_STORAGE_KEY, JSON.stringify(threats));
                 setSavedThreats(threats);
                 setDeleteConfirmId(null);
-                showToast("Ficha apagada.");
+                showToast("Ameaça removida. A Conta Lite excluirá a cópia da nuvem na próxima sincronização.");
             };
 
             const updateField = (path, value) => {
