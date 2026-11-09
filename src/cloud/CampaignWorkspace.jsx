@@ -150,53 +150,13 @@ export class CampaignSectionBoundary extends React.Component {
   return this.props.children;
  }
 }
-export function CampaignShield({draft,links=[],dmLinks=[],isDm,onTab,onOpenSheet}){
- const [dice,setDice]=React.useState('d20'),[result,setResult]=React.useState('');
+export function CampaignShield({draft,isDm}){
  if(!isDm)return null;
- const board=asBoard(draft),round=Number(board.round)||1;
- const playerRows=Array.isArray(links)?links:[];
- const dmRows=Array.isArray(dmLinks)?dmLinks:[];
- const sheetRows=[...playerRows.map(r=>({...r,isNpc:false})),...dmRows.map(r=>({...r,isNpc:true}))];
- const characters=sheetRows.map(row=>{
-  // Reutiliza o mesmo adaptador da minificha (Rota Zero usa recursos;
-  // 3DeT e Dragonbane usam estruturas de status diferentes).
-  const summary=getJourneySheetSummary(row);
-  const defense=summary.combat.find(item=>item.label==='DEF'||item.label==='CA');
-  return {...row,name:summary.name,system:summary.system||'Ficha',
-   life:summary.hp?summary.hp.current+' / '+summary.hp.max:'—',
-   defense:defense?.value||'—',resource:summary.resource};
- });
- const roll=()=>{
-  const n=Math.max(2,Math.min(100,Number(dice.slice(1))||20));
-  setResult('🎲 '+dice+': '+(Math.floor(Math.random()*n)+1));
- };
  return <section className="campaign-workspace campaign-shield-safe">
-  <header className="campaign-workspace__heading"><div><h3>🛡 Escudo do Mestre</h3>
-    <p>Personagens e ameaças acessíveis em um clique, dados e atalhos da sessão.</p></div>
-    <span className="campaign-workspace__private">🔒 Somente mestre</span>
+  <header className="campaign-workspace__heading">
+   <div><h3>🛡 Escudo do Mestre</h3><p>Consulte as regras rápidas e o PDF do sistema da campanha, sem atalhos duplicados.</p></div>
+   <span className="campaign-workspace__private">🔒 Somente mestre</span>
   </header>
-  <div className="campaign-shield-stats">
-    <article><span>Rodada</span><strong>{round}</strong><button type="button" onClick={()=>onTab('combate')}>Combate →</button></article>
-    <article><span>Personagens</span><strong>{playerRows.length}</strong><button type="button" onClick={()=>onTab('fichas')}>Ver fichas →</button></article>
-    <article><span>NPCs e ameaças</span><strong>{dmRows.length}</strong><button type="button" onClick={()=>onTab('npcs')}>Gerenciar →</button></article>
-  </div>
-  <div className="campaign-workspace__box"><h4>🎲 Rolagem rápida</h4>
-   <div className="campaign-workspace__actions"><select aria-label="Dado" value={dice} onChange={e=>setDice(e.target.value)}>
-    {['d4','d6','d8','d10','d12','d20','d100'].map(x=><option key={x} value={x}>{x}</option>)}
-   </select><button type="button" onClick={roll}>Rolar</button>{result&&<strong role="status">{result}</strong>}</div>
-  </div>
   <GmShieldReference system={draft?.system}/>
-  <div className="campaign-shield-characters">{characters.map(row=><button key={row.sheet_id} type="button"
-   className="campaign-shield-character" onClick={()=>onOpenSheet?.(row)}>
-   <strong>{row.isNpc?'☠':'👤'} {row.name}</strong><small>{row.system}</small>
-   <span>PV {row.life} · DEF {String(row.defense)}{row.resource?' · '+row.resource.label+' '+row.resource.current:''}</span><em>Abrir ficha →</em>
-  </button>)}{!characters.length&&<div className="campaign-workspace__empty">
-   Vincule personagens na aba Personagens ou adicione NPCs na área do Mestre.
-  </div>}</div>
-  <div className="campaign-workspace__actions">
-   <button type="button" onClick={()=>onTab('mapamental')}>🧠 Mapa mental</button>
-   <button type="button" onClick={()=>onTab('biblioteca')}>📚 Biblioteca</button>
-   <button type="button" onClick={()=>onTab('anotacoes')}>🗒 Anotações</button>
-  </div>
  </section>;
 }
