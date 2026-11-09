@@ -11,6 +11,7 @@ import {
   pushSheets,
   pullSheets,
   mirrorSheets,
+  deleteRemoteSheets,
   listGroups,
   createGroup,
   joinGroupByCode,
@@ -25,6 +26,7 @@ import {
 import AdminCloudPanel from './AdminCloudPanel.jsx';
 import AccountChatPanel from './AccountChatPanel.jsx';
 import './account-achievements.css';
+import {rememberCloudOwner,getPendingSheetDeletions,clearPendingSheetDeletions,withoutPendingDeletions} from './cloudSheetDeletions.js';
 import {setGroupMaster} from './jornadasCloud.js';
 
 const STORAGE_KEY = 'dragonbane_saved_characters';
@@ -137,15 +139,33 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
     }
   }, [session?.user?.id]);
 
+  const flushDeletions = React.useCallback(async()=>{
+    const ownerId=session?.user?.id;
+    if(!ownerId)return 0;
+    const pending=getPendingSheetDeletions(ownerId);
+    if(!pending.length)return 0;
+    const count=await deleteRemoteSheets(pending);
+    clearPendingSheetDeletions(ownerId,pending);
+    return count;
+  },[session?.user?.id]);
+
+  const readCurrentLocal=()=>{
+    const safe=(key,fallback)=>{try{const data=JSON.parse(localStorage.getItem(key)||'null');return Array.isArray(data)?data:fallback}catch{return fallback}};
+    return [safe(STORAGE_KEY,savedChars),safe(THREAT_STORAGE_KEY,savedThreats)];
+  };
+
   const pullAndMerge = React.useCallback(async (silent = false) => {
     if (!session?.user) return;
     setStatus('syncing');
     try {
+      rememberCloudOwner(session.user.id);
+      await flushDeletions();
       const rows = await pullSheets();
       const remoteChars = rows.filter(row => row.sheet_type === 'pc');
       const remoteThreats = rows.filter(row => row.sheet_type !== 'pc');
-      const chars = mergeById(savedChars, remoteChars);
-      const threats = mergeById(savedThreats, remoteThreats);
+      const [localChars,localThreats]=readCurrentLocal();
+      const chars=withoutPendingDeletions(mergeById(localChars, remoteChars),session.user.id);
+      const threats=withoutPendingDeletions(mergeById(localThreats, remoteThreats),session.user.id);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(chars));
       localStorage.setItem(THREAT_STORAGE_KEY, JSON.stringify(threats));
       setSavedChars(chars);
@@ -160,21 +180,26 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
       setStatus('error');
       if (!silent) showToast('Não foi possível baixar as fichas da nuvem.');
     }
-  }, [session?.user?.id, savedChars, savedThreats, setSavedChars, setSavedThreats, showToast]);
+  }, [session?.user?.id, savedChars, savedThreats, setSavedChars, setSavedThreats, showToast, flushDeletions]);
 
   const syncNow = React.useCallback(async (silent = false, exact = false) => {
     if (!session?.user) return;
     setStatus('syncing');
     try {
+      rememberCloudOwner(session.user.id);
+      const queuedDeletedCount=await flushDeletions();
+      const [localChars,localThreats]=readCurrentLocal();
       let rows = [];
-      let deletedCount = 0;
+      let deletedCount = queuedDeletedCount;
 
       if (exact) {
-        const result = await mirrorSheets(savedChars, savedThreats);
+        const result = await mirrorSheets(
+          withoutPendingDeletions(localChars,session.user.id),
+          withoutPendingDeletions(localThreats,session.user.id));
         rows = result?.rows || [];
-        deletedCount = Number(result?.deletedCount || 0);
+        deletedCount += Number(result?.deletedCount || 0);
       } else {
-        await pushSheets(savedChars, savedThreats);
+        await pushSheets(localChars, localThreats);
         rows = await pullSheets();
       }
 
@@ -184,7 +209,7 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
       setStatus('synced');
 
       if (!silent) {
-        if (exact && deletedCount > 0) {
+        if (deletedCount > 0) {
           showToast('☁️ Sincronizado. ' + deletedCount + (deletedCount === 1 ? ' ficha apagada também foi removida da nuvem.' : ' fichas apagadas também foram removidas da nuvem.'));
         } else {
           showToast(exact ? '☁️ Sincronizado. A nuvem agora reflete as fichas deste dispositivo.' : '☁️ Conta Lite sincronizada com o Supabase.');
@@ -195,7 +220,7 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
       setStatus('error');
       if (!silent) showToast('Não foi possível sincronizar a Conta Lite.');
     }
-  }, [session?.user?.id, savedChars, savedThreats, showToast]);
+  }, [session?.user?.id, savedChars, savedThreats, showToast, flushDeletions]);
 
   React.useEffect(() => {
     try {
@@ -240,9 +265,13 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
         if (active) setProfile(nextProfile);
         await refreshSocial();
         if (!initializedRef.current) {
-          initializedRef.current = true;
+          // Na primeira entrada, baixa e aplica as exclusões antes de fazer upload.
+          // A rotina lê o localStorage atual, sem usar o snapshot antigo do render.
           await pullAndMerge(true);
-          await syncNow(true);
+          if(active) {
+            initializedRef.current = true;
+            await syncNow(true);
+          }
         }
       } catch (error) {
         console.error('Conta Lite: inicialização', error);
@@ -452,7 +481,7 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
               <span className={'pjlite-cloud-state pjlite-cloud-state--'+status}>{status==='syncing'?'Sincronizando…':status==='pending'?'Alterações pendentes':status==='error'?'Erro':'☁ Sincronizado'}</span>
             </div>
             <div className="pjlite-cloud-settings__stats"><div><span>Neste dispositivo</span><strong>{savedChars.length+savedThreats.length}</strong><small>fichas</small></div><div><span>Nuvem real</span><strong>{remoteCount}</strong><small>fichas</small></div><div><span>Última sincronização</span><strong>{lastSync?new Date(lastSync).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'—'}</strong><small>{lastSync?new Date(lastSync).toLocaleDateString('pt-BR'):'Ainda não'}</small></div></div>
-            <div className="pjlite-cloud-settings__group"><h3>Sincronização</h3><p><strong>Sincronizar agora</strong> faz a nuvem refletir as fichas deste dispositivo, inclusive removendo da nuvem as fichas que você apagou aqui. <strong>Mesclar da nuvem</strong> faz o contrário: traz para este dispositivo todas as fichas salvas na sua Conta Lite, sem apagar nenhuma.</p><div className="pjlite-cloud-actions"><button type="button" onClick={()=>{if(window.confirm('Sincronizar agora fará a nuvem ficar igual às fichas deste dispositivo. Fichas que existirem apenas na nuvem serão removidas. Continuar?'))syncNow(false,true)}}>☁ Sincronizar agora</button><button type="button" onClick={()=>pullAndMerge(false)}>↧ Mesclar da nuvem</button></div></div>
+            <div className="pjlite-cloud-settings__group"><h3>Sincronização</h3><p><strong>Excluir na Home</strong> registra uma remoção pendente: quando houver conexão, a Conta Lite a aplica também na nuvem, sem recriar a ficha ao mesclar. <strong>Sincronizar agora</strong> faz a nuvem refletir exatamente as fichas deste dispositivo e pode remover outras fichas antigas da nuvem mediante confirmação. <strong>Mesclar da nuvem</strong> reúne suas fichas restantes sem restaurar exclusões pendentes. Se a exclusão tiver falhado, uma nova sincronização tenta novamente.</p><div className="pjlite-cloud-actions"><button type="button" onClick={()=>{if(window.confirm('Sincronizar agora fará a nuvem ficar igual às fichas deste dispositivo. Fichas que existirem apenas na nuvem serão removidas. Continuar?'))syncNow(false,true)}}>☁ Sincronizar agora</button><button type="button" onClick={()=>pullAndMerge(false)}>↧ Mesclar da nuvem</button></div></div>
             <div className="pjlite-cloud-settings__group"><h3>🏆 Conquistas</h3><p>Em ON, suas conquistas aparecem na tela. Em OFF, o selo é substituído apenas pelo gatinho 🐱 no mesmo canto, sem nomes ou notificações. A conquista continua na sua conta.</p><label className="pjlite-cloud-achievement-switch"><input type="checkbox" checked={achievementsOn} onChange={e=>toggleAchievements(e.target.checked)}/> <strong>{achievementsOn?'ON • visual completo':'OFF • somente gatinho 🐱'}</strong></label>{achievementsOn&&<div className="pjlite-cloud-achievement-list">{achievements.map(tag=><span key={tag.achievement_id} className={tag.category==='EVENTO'?'is-event':''}>◆ {visibleAchievement(tag)}</span>)}</div>}</div>
             <div className="pjlite-cloud-settings__group pjlite-cloud-settings__group--quiet"><h3>Conversas dos grupos</h3><p>O chat das campanhas também fica na aba <strong>💬 Chat</strong> da Conta Lite. Cada grupo tem sua própria conversa privada.</p><button type="button" onClick={()=>setTab('chat')}>💬 Abrir Chat</button></div>
             <div className="pjlite-cloud-settings__group pjlite-cloud-settings__group--quiet"><h3>Conta</h3><div className="pjlite-cloud-actions"><button type="button" className="secondary" onClick={handleLogout}>Sair da Conta Lite</button></div></div>

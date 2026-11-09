@@ -35,14 +35,14 @@ assert.ok(modal.includes('Desvincular da campanha'));
 const unlink=cloud.slice(cloud.indexOf('export async function unlinkMySheet'),cloud.indexOf('export async function getJourneyEditableSheet'));
 assert.ok(unlink.includes(".eq('owner_id',actor.id)"));
 assert.ok(!unlink.includes(".from('sheets')"));
-// Escudo robusto: sem hooks condicionais, personagem e NPCs e fallback local de render.
+// Escudo enxuto: apenas as referências por sistema, sem widgets duplicados.
 assert.ok(workspace.includes('export class CampaignSectionBoundary'));
 assert.ok(workspace.includes('componentDidCatch(error,info)'));
 const shield=workspace.slice(workspace.indexOf('export function CampaignShield'));
-assert.ok(shield.indexOf('React.useState')<shield.indexOf('if(!isDm)return null'));
-assert.ok(shield.includes("const playerRows=Array.isArray(links)?links:[]"));
-assert.ok(shield.includes("const dmRows=Array.isArray(dmLinks)?dmLinks:[]"));
-assert.ok(shield.includes("onOpenSheet?.(row)"));
+assert.ok(shield.includes('if(!isDm)return null'));
+assert.ok(shield.includes('<GmShieldReference system={draft?.system}/>'));
+assert.ok(!shield.includes('Rolagem rápida')&&!shield.includes('campaign-shield-stats'),
+ 'O escudo não deve duplicar rolagens/contador da campanha');
 assert.ok(panel.includes('<CampaignSectionBoundary'));
 assert.ok(panel.includes('dmLinks={dmLinks}'));
 // Navegação aberta em duas linhas: sem dropdown de recursos.

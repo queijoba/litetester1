@@ -43,7 +43,8 @@ assert.ok(component.includes("getGmShieldKey(system)")&&component.includes('!ent
 assert.ok(component.includes('open={index===0}'),'Abrir primeiro painel de consulta ao iniciar');
 
 assert.ok(shield.includes('<GmShieldReference system={draft?.system}/>'),'Escudo usa o sistema da campanha');
-assert.ok(shield.includes('getJourneySheetSummary(row)'),'Visão do mestre usa adaptador por sistema');
+assert.ok(shield.includes('<GmShieldReference system={draft?.system}/>'),'Escudo enxuto mantém regras do sistema; fichas estão nas abas próprias');
+assert.ok(!shield.slice(shield.indexOf('export function CampaignShield')).includes('Rolagem rápida'),'Rolagem não duplicada no escudo');
 const rota=getJourneySheetSummary({sheets:{name:'Funcionário',system:'rotaZero',sheet_type:'pc',payload:{
  system:'rotaZero',type:'pc',bio:{nome:'CABLE'},atributos:{pulso:1,tecnica:2,firmeza:2},
  recursos:{adrenalina:{atual:2,max:2},foco:{atual:5,max:10},vitalidade:{atual:7,max:10}},

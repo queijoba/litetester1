@@ -25,6 +25,7 @@ const requireClient = () => {
 const cleanSheetName = item => String(item?.bio?.nome || item?.nome || item?.name || 'Ficha sem nome').trim() || 'Ficha sem nome';
 const cleanSheetSystem = item => String(item?.system || 'RPG');
 const cleanSheetType = item => String(item?.type || 'pc');
+import {getPendingSheetDeletions} from './cloudSheetDeletions.js';
 const cleanLocalId = item => String(item?.id || '').trim();
 
 export async function getSession() {
@@ -105,10 +106,11 @@ export async function pushSheets(characters = [], threats = []) {
   if (userError) throw userError;
   if (!user) throw new Error('not_authenticated');
 
+  const pending=new Set(getPendingSheetDeletions(user.id));
   const all = [
-    ...characters.map(item => ({ item, type: 'pc' })),
-    ...threats.map(item => ({ item, type: item?.type || 'threat' })),
-  ].filter(entry => cleanLocalId(entry.item));
+    ...(Array.isArray(characters)?characters:[]).map(item => ({ item, type: 'pc' })),
+    ...(Array.isArray(threats)?threats:[]).map(item => ({ item, type: item?.type || 'threat' })),
+  ].filter(entry => cleanLocalId(entry.item)&&!pending.has(cleanLocalId(entry.item)));
 
   if (!all.length) return [];
 
@@ -140,17 +142,46 @@ export async function pushSheets(characters = [], threats = []) {
 
 export async function pullSheets() {
   const client = requireClient();
+  const {data:{user},error:userError}=await client.auth.getUser();
+  if(userError)throw userError;
+  if(!user)throw new Error('not_authenticated');
   const { data, error } = await client
     .from('sheets')
+    // Não incorporar fichas compartilhadas de outras pessoas como se fossem
+    // propriedade da Conta Lite; elas pertencem às próprias campanhas.
     .select('local_id,sheet_type,system,name,payload,client_updated_at,updated_at')
+    .eq('owner_id',user.id)
     .order('updated_at', { ascending: false });
   if (error) throw error;
-  return (data || []).map(row => ({ ...row, payload: row.payload || {} }));
+  const pending=new Set(getPendingSheetDeletions(user.id));
+  return (data || []).filter(row=>!pending.has(String(row.local_id||'')))
+    .map(row => ({ ...row, payload: row.payload || {} }));
+}
+
+export async function deleteRemoteSheets(localIds=[]) {
+  const ids=[...new Set(localIds.map(x=>String(x||'').trim()).filter(Boolean))];
+  if(!ids.length)return 0;
+  const client=requireClient();
+  const {data:{user},error:userError}=await client.auth.getUser();
+  if(userError)throw userError;
+  if(!user)throw new Error('not_authenticated');
+  // A política RLS de sheets_owner_all e a condição explícita de proprietário
+  // garantem que a exclusão não atinja fichas compartilhadas por outra pessoa.
+  const {error}=await client.from('sheets').delete()
+    .eq('owner_id',user.id).in('local_id',ids);
+  if(error)throw error;
+  const {data:remaining,error:checkError}=await client.from('sheets')
+    .select('local_id').eq('owner_id',user.id).in('local_id',ids);
+  if(checkError)throw checkError;
+  if(remaining?.length)throw new Error('cloud_delete_unconfirmed');
+  return ids.length;
 }
 
 export async function mirrorSheets(characters = [], threats = []) {
   const client = requireClient();
-
+  const {data:{user},error:userError}=await client.auth.getUser();
+  if(userError)throw userError;
+  if(!user)throw new Error('not_authenticated');
   await pushSheets(characters, threats);
 
   const localIds = new Set([
@@ -160,7 +191,7 @@ export async function mirrorSheets(characters = [], threats = []) {
 
   const { data: remoteBefore, error: remoteError } = await client
     .from('sheets')
-    .select('local_id');
+    .select('local_id').eq('owner_id',user.id);
   if (remoteError) throw remoteError;
 
   const staleIds = (remoteBefore || [])
@@ -171,6 +202,7 @@ export async function mirrorSheets(characters = [], threats = []) {
     const { error: deleteError } = await client
       .from('sheets')
       .delete()
+      .eq('owner_id',user.id)
       .in('local_id', staleIds);
     if (deleteError) throw deleteError;
   }
@@ -180,9 +212,7 @@ export async function mirrorSheets(characters = [], threats = []) {
 }
 
 export async function deleteRemoteSheet(localId) {
-  const client = requireClient();
-  const { error } = await client.from('sheets').delete().eq('local_id', String(localId));
-  if (error) throw error;
+  return deleteRemoteSheets([localId]);
 }
 
 export async function listGroups() {

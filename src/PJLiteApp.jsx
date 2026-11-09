@@ -25,6 +25,9 @@ import Som6ThreatEditor from './systems/somDasSeis/components/ThreatEditor.jsx';
 import TresDeTCharacterEditor from './systems/3det/components/CharacterEditor.jsx';
 import TresDeTThreatEditor from './systems/3det/components/ThreatEditor.jsx';
 import RotaZeroCharacterEditor from './systems/rotaZero/components/CharacterEditor.jsx';
+import RotaZeroThreatEditor from './systems/rotaZero/components/ThreatEditor.jsx';
+import {initialRotaZeroThreatData,normalizeRotaZeroThreatData,MODELOS_ROTA_ZERO_AMEACAS} from './systems/rotaZero/threatData.js';
+import {markSheetDeleted,unmarkSheetDeleted} from './cloud/cloudSheetDeletions.js';
 import { initialRotaZeroPcData, normalizeRotaZeroPcData } from './systems/rotaZero/data.js';
 import { MODELOS_ROTA_ZERO_PC } from './systems/rotaZero/models.js';
 import { generateRotaZeroChatText } from './systems/rotaZero/chat.js';
@@ -63,7 +66,7 @@ const { useState, useEffect, useRef } = React;
         const SCHEMA_VERSION = 6;
 
         const UPDATE_LOG = [
-            { versao: '1.1.3v Alpha', descricao: 'Escudo do Mestre com referências ampliadas por sistema, acesso aos PDFs no Drive e correção de nomes alternativos de sistema; minifichas de Campanhas corrigidas, mesmo quando campos opcionais estão vazios; cards de ameaças PNG sem cortes e modos térmicos 58/80 mm; ficha Rota Zero aberta a todos sem liberar a conquista secreta; temas sincronizados entre Home e Campanhas, guia e interface revisados.' },
+            { versao: '1.1.3v Alpha', descricao: 'Escudo do Mestre com referências ampliadas por sistema, acesso aos PDFs no Drive e correção de nomes alternativos de sistema; minifichas de Campanhas corrigidas, mesmo quando campos opcionais estão vazios; cards de ameaças PNG sem cortes e modos térmicos 58/80 mm; ficha Rota Zero aberta a todos sem liberar a conquista secreta; temas sincronizados entre Home e Campanhas, guia e interface revisados; ajuste posterior: Escudo sem contadores/rolagem duplicados, ameaças de Rota Zero com editor e cards PNG, correção de exclusões persistentes na Conta Lite.' },
             { versao: '1.1.0v Alpha', descricao: 'Jornadas se tornou uma área independente da Home, com retorno visível, criação de campanha e orientação para iniciantes. O chat privado das campanhas ganhou uma aba própria na Conta Lite. A barra clássica de novidades foi preservada, e o Log de Atualizações continua em Sobre o Projeto. Conquistas ON/OFF permanece disponível na Conta Lite.' },
             { versao: '0.9.5v Alpha • Jornadas (prévia)', descricao: 'A Conta Lite organiza grupos com DM, campanhas em Jornadas, fichas vinculadas com permissão opcional de edição pelo mestre, iniciativa, combate, chat por mensagens e links HTTPS de mídia, mapas e PDFs autorizados. Conquistas ON/OFF agora permite mostrar apenas o emblema do evento no canto da tela. Guias revisados com bibliotecas e cards de ameaças em PNG.' },
             { versao: '0.8.0v Alpha', descricao: '3DeT Victory entra na prévia do PJ Lite com ficha digital modular, retrato opcional, P/H/R, PA/PM/PV, perícias, FA/FD, vantagens, desvantagens, técnicas, inventário por raridade, Kit opcional, Ficha Chat e integração com saves/importação.' },
@@ -1293,6 +1296,7 @@ const { useState, useEffect, useRef } = React;
             const [showSom6ModelModal, setShowSom6ModelModal] = useState(false);
             const [show3DetModelModal, setShow3DetModelModal] = useState(false);
             const [showRotaZeroModelModal, setShowRotaZeroModelModal] = useState(false);
+            const [showRotaZeroThreatModal,setShowRotaZeroThreatModal]=useState(false);
             const [dndPcTab, setDndPcTab] = useState('caracteristicas');
             const [fabulaTab, setFabulaTab] = useState('perfil');
             const [som6Tab, setSom6Tab] = useState('perfil');
@@ -1333,6 +1337,7 @@ const { useState, useEffect, useRef } = React;
                     imported=normalizeSom6PdjData(imported);
                     imported=normalize3DetPcData(imported);
                     imported=normalize3DetThreatData(imported);
+                    imported=normalizeRotaZeroThreatData(imported);
                     if(imported.system==='rotaZero'&&imported.type==='pc')imported=normalizeRotaZeroPcData(imported);
                     cloudLastSavedRef.current=JSON.stringify(imported);
                     cloudLatestSnapshotRef.current=cloudLastSavedRef.current;
@@ -1599,6 +1604,7 @@ const { useState, useEffect, useRef } = React;
                     savingData = normalizeSom6PdjData(savingData);
                     savingData = normalize3DetPcData(savingData);
                     savingData = normalize3DetThreatData(savingData);
+                    savingData = normalizeRotaZeroThreatData(savingData);
                     const now = new Date().toISOString();
                     savingData.dataVersion = SCHEMA_VERSION;
                     savingData.meta.createdAt = savingData.meta.createdAt || now;
@@ -1614,6 +1620,7 @@ const { useState, useEffect, useRef } = React;
                         const previous = index >= 0 ? chars[index] : null;
                         if (index >= 0) chars[index] = savingData; else chars.push(savingData);
                         localStorage.setItem(STORAGE_KEY, JSON.stringify(chars));
+                        unmarkSheetDeleted(savingData.id); // salvar novamente é restauração explícita
                         if (previous) pushHistorySnapshot(previous, savingData);
                         setSavedChars(chars);
                         if (!silent) showToast(savingData.system === 'fabula' ? 'Personagem Fabula salvo!' : savingData.system === 'somdas6' ? 'Personagem de O Som das Seis salvo!' : savingData.system === '3det' ? 'Personagem 3DeT Victory salvo!' : savingData.system === 'rotaZero' ? 'Funcionário Rota Zero salvo!' : 'Personagem salvo!');
@@ -1623,6 +1630,7 @@ const { useState, useEffect, useRef } = React;
                         const previous = index >= 0 ? threats[index] : null;
                         if (index >= 0) threats[index] = savingData; else threats.push(savingData);
                         localStorage.setItem(THREAT_STORAGE_KEY, JSON.stringify(threats));
+                        unmarkSheetDeleted(savingData.id); // restaurado voluntariamente
                         if (previous) pushHistorySnapshot(previous, savingData);
                         setSavedThreats(threats);
                         if (!silent) showToast(savingData.system === 'dnd5e' ? 'Estatística Salva!' : savingData.system === 'fabula' ? 'Ameaça / PNJ Fabula salvo!' : type === 'pnj' ? 'PNJ salvo!' : 'Ameaça salva!');
@@ -1851,6 +1859,7 @@ const { useState, useEffect, useRef } = React;
                     let normalized = normalizeMetaItem(threat);
                     normalized = normalizeFabulaThreatData(normalized);
                     normalized = normalizeSom6PdjData(normalized);
+                    normalized = normalizeRotaZeroThreatData(normalized);
                     setData(normalized);
                     setSom6Tab('perfil');
                     setView('editor');
@@ -1912,19 +1921,21 @@ const { useState, useEffect, useRef } = React;
             };
 
             const deleteCharacter = (id) => {
+                markSheetDeleted(id);
                 const chars = savedChars.filter(c => c.id !== id);
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(chars));
                 setSavedChars(chars);
                 setDeleteConfirmId(null);
-                showToast("Personagem apagado.");
+                showToast("Personagem removido. A Conta Lite excluirá a cópia da nuvem na próxima sincronização.");
             };
             
             const deleteThreat = (id) => {
+                markSheetDeleted(id);
                 const threats = savedThreats.filter(t => t.id !== id);
                 localStorage.setItem(THREAT_STORAGE_KEY, JSON.stringify(threats));
                 setSavedThreats(threats);
                 setDeleteConfirmId(null);
-                showToast("Ficha apagada.");
+                showToast("Ameaça removida. A Conta Lite excluirá a cópia da nuvem na próxima sincronização.");
             };
 
             const updateField = (path, value) => {
@@ -2265,7 +2276,7 @@ const { useState, useEffect, useRef } = React;
                                         </div>
                                         {!newsCollapsed && (
                                             <div className="mt-1 space-y-2">
-                                                <div className="text-xs text-gray-700 space-y-1.5"><p>A <strong>1.1.3v Alpha</strong> facilita o trabalho do Mestre: <strong>escudos por sistema</strong>, consulta dos PDFs originais pelo Drive, melhorias nas fichas compartilhadas e temas iguais aos da Home.</p><p><strong>Cards de ameaças:</strong> PNG com margem completa e opção <strong>Térmica 80 mm ou 58 mm</strong>, em tira vertical. <strong>Rota Zero:</strong> a ficha de funcionário agora está liberada para todos; as conquistas continuam restritas aos seus donos.</p><p><strong>Biblioteca:</strong> PDFs de campanha são compartilhados pelo Drive. Veja as explicações completas em <strong>Guias e Tutoriais</strong> e no Log de Atualizações.</p></div>
+                                                <div className="text-xs text-gray-700 space-y-1.5"><p>A <strong>1.1.3v Alpha</strong> facilita o trabalho do Mestre: <strong>escudos por sistema</strong>, consulta dos PDFs originais pelo Drive, melhorias nas fichas compartilhadas e temas iguais aos da Home.</p><p><strong>Cards de ameaças:</strong> PNG com margem completa e opção <strong>Térmica 80 mm ou 58 mm</strong>, em tira vertical. <strong>Rota Zero:</strong> fichas de funcionários e de ameaças/PNJs com card em PNG; as conquistas continuam restritas aos seus donos. <strong>Conta Lite:</strong> ao apagar uma ficha, a exclusão permanece pendente até ser aplicada na nuvem; mesclar não deve restaurá-la.</p><p><strong>Biblioteca:</strong> PDFs de campanha são compartilhados pelo Drive. Veja as explicações completas em <strong>Guias e Tutoriais</strong> e no Log de Atualizações.</p></div>
                                                 <a href="https://t.me/boost/Baianoviado" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-xs font-bold text-sky-700 hover:text-sky-900 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-full px-3 py-1.5 shadow-sm transition-colors">
                                                     <span>✈</span> Acompanhe anúncios e próximas novidades no Telegram ↗
                                                 </a>
@@ -2543,6 +2554,12 @@ const { useState, useEffect, useRef } = React;
                                                 </div>
                                             </div>
                                         )}
+                                        {createTarget !== 'pc' && (
+                                         <div onClick={() => {setShowSystemModal(false);setShowRotaZeroThreatModal(true)}} className="bg-[#ecebe4] border-2 border-[#7a857d] hover:border-[#34473b] rounded p-3 cursor-pointer hover:shadow-md flex items-center gap-3 min-h-[82px]">
+                                          <div className="w-12 h-12 bg-[#18201c] text-[#c7d2c9] rounded flex items-center justify-center font-black text-lg shadow-inner">RZ</div>
+                                          <div><h3 className="font-bold text-[#18201c] text-lg">Rota Zero</h3><p className="text-xs text-[#647069]">Ameaças, anomalias e NPCs • card PNG</p></div>
+                                         </div>
+                                        )}
 
                                         <div onClick={() => { setShowSystemModal(false); setShowSom6ModelModal(true); }} className="bg-white border-2 border-gray-300 hover:border-red-900 rounded p-3 cursor-pointer hover:shadow-md transition-all flex items-center gap-3 group min-h-[82px]">
                                             <div className="w-12 h-12 bg-red-900 group-hover:bg-red-950 text-amber-50 rounded flex items-center justify-center font-bold font-title text-xl shadow-inner transition-colors">S6</div>
@@ -2556,6 +2573,22 @@ const { useState, useEffect, useRef } = React;
                             </div>, document.body
                         )}
 
+
+                        {showRotaZeroThreatModal && ReactDOM.createPortal(
+                         <div className="fixed inset-0 bg-black/70 z-[120] flex items-center justify-center p-4">
+                          <div className="bg-[#e9e8e1] border-2 border-[#6b7e70] rounded-lg w-full max-w-xl max-h-[92dvh] overflow-hidden flex flex-col">
+                           <header className="bg-[#111615] text-white p-4 flex items-center justify-between">
+                            <div><small className="text-[#a2bbaa] tracking-widest">RZ // REGISTRO DE AMEAÇA</small><h2 className="font-mono font-black text-lg">Nova ameaça ou NPC</h2></div>
+                            <button type="button" onClick={()=>{setShowRotaZeroThreatModal(false);setCreateTarget(null)}} aria-label="Fechar criação de ameaça">✕</button>
+                           </header>
+                           <div className="overflow-y-auto p-4 space-y-3">
+                            <button type="button" onClick={()=>{setShowRotaZeroThreatModal(false);loadTemplate(initialRotaZeroThreatData)}} className="w-full text-left rounded border-2 border-[#7f9585] bg-white p-4 hover:border-[#34473b]"><strong>+ Ficha de ameaça em branco</strong><p className="text-xs mt-1">Criaturas, anomalias, máquinas, NPCs e perseguidores. Todos os campos editáveis.</p></button>
+                            <h3 className="font-black text-sm text-[#263129]">Exemplos originais (não oficiais)</h3>
+                            {MODELOS_ROTA_ZERO_AMEACAS.map((modelo,i)=><button key={i} type="button" onClick={()=>{setShowRotaZeroThreatModal(false);loadTemplate(modelo)}} className="w-full text-left border border-[#a7aaa5] rounded bg-white p-3 hover:border-[#34473b]"><strong>{modelo.nome}</strong><p className="text-xs mt-1">{modelo.descricao}</p></button>)}
+                           </div>
+                          </div>
+                         </div>,document.body
+                        )}
 
                         {showRotaZeroModelModal && ReactDOM.createPortal(
                             <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[110] p-4">
@@ -2962,8 +2995,10 @@ const { useState, useEffect, useRef } = React;
                                             <div className="space-y-4">
                                                 <div className="rounded-lg bg-emerald-50 border border-emerald-300 p-4 text-xs space-y-2">
                                                     <h3 className="font-bold text-emerald-900">🛡 Novidades do Mestre • 1.1.3v Alpha</h3>
-                                                    <p><strong>Escudo do Mestre:</strong> crie uma campanha e abra a aba Escudo. O sistema da mesa seleciona as referências do próprio RPG, inclusive quando ele usa um nome alternativo (como T20 ou Fábula Última). Abra as seções para consultar testes, condições, recuperação, combate e exploração; a primeira fica aberta para acesso rápido. O botão <strong>Abrir PDF no Drive</strong> leva ao escudo correspondente. Sem PDF disponível, a tela identifica o resumo de apoio, sem misturar regras de outro RPG. Quando não há PDF do sistema, aparece um resumo de apoio identificado.</p>
+                                                    <p><strong>Escudo do Mestre:</strong> crie uma campanha e abra a aba Escudo. O sistema da mesa seleciona as referências do próprio RPG, inclusive quando ele usa um nome alternativo (como T20 ou Fábula Última). Abra as seções para consultar testes, condições, recuperação, combate e exploração; a primeira fica aberta para acesso rápido. O botão <strong>Abrir PDF no Drive</strong> leva ao escudo correspondente. O Escudo foi simplificado: sem quadros de rodada, personagens e dados, que ficam nas próprias abas da campanha. Sem PDF disponível, a tela identifica o resumo de apoio, sem misturar regras de outro RPG. Quando não há PDF do sistema, aparece um resumo de apoio identificado.</p>
                                                     <p><strong>Personagens e ameaças:</strong> sincronize a ficha na Conta Lite e vincule-a à campanha. Clique em sua miniatura para consultar atributos, recursos, habilidades e equipamento. Campos opcionais vazios não devem esconder os dados preenchidos em outra parte da ficha. O mestre só edita fichas de jogador se o dono conceder permissão; NPCs e ameaças ficam na aba exclusiva do mestre.</p>
+                                                    <p><strong>Ameaças de Rota Zero:</strong> abra <strong>Criar Ameaça/PNJ → Rota Zero</strong>, selecione uma ficha em branco ou exemplo original e edite identidade, atributos, recursos, ataques, fraquezas e notas privadas. Salve, abra o card e baixe PNG normal ou térmico. O card não inclui notas privadas do mestre.</p>
+                                                    <p><strong>Exclusões na Conta Lite:</strong> ao apagar uma ficha na Home, ela é marcada para exclusão também na sua nuvem. A sincronização automática tenta aplicar a remoção; caso esteja sem internet, entre em <strong>Conta Lite → Sincronização</strong> para repetir. <strong>Mesclar da nuvem</strong> não recria exclusões pendentes; <strong>Sincronizar agora</strong> substitui o conjunto remoto e exige confirmação porque remove fichas que existam somente na nuvem. Fichas vinculadas em campanhas podem ser desvinculadas quando a ficha de origem é excluída.</p>
                                                     <p><strong>PDFs da campanha:</strong> em Biblioteca, selecione Livro/PDF, cole o link do Google Drive e marque se os jogadores podem vê-lo. O acesso também depende das permissões do Drive. O PJLite não realiza upload de PDFs pelo formulário de Biblioteca.</p>
                                                     <p><strong>Temas:</strong> o mesmo seletor da Home está disponível em Campanhas. Use fundo personalizado na Home para aplicar a mesma identidade às duas áreas; mantenha o navegador atualizado.</p>
                                                 </div>
@@ -3593,7 +3628,7 @@ const { useState, useEffect, useRef } = React;
                                 <SVGIcons.ArrowLeft /> <span className="hidden sm:inline">Voltar</span>
                             </button>
                             <span className="font-title font-bold text-lg md:text-xl tracking-wider uppercase">
-                                {isDnd ? (data.type === 'pc' ? 'D&D 5.5e / 2024 - Personagem' : 'D&D 5.5e / 2024 - Bestiário') : isFabula ? (data.type === 'pc' ? 'FABULA ULTIMA • PERSONAGEM • INTEGRADO' : 'FABULA ULTIMA • AMEAÇA / PNJ • INTEGRADO') : isSom6 ? (data.type === 'pc' ? 'O SOM DAS SEIS • PERSONAGEM • INTEGRADO' : 'O SOM DAS SEIS • PDJ • INTEGRADO') : is3Det ? '3DeT VICTORY • PERSONAGEM • PRÉVIA' : isRotaZero ? 'ROTA ZERO • FUNCIONÁRIO' : (data.type === 'pc' ? 'DRAGONBANE' : data.type === 'pnj' ? 'PNJ (DB)' : 'AMEAÇA (DB)')}
+                                {isDnd ? (data.type === 'pc' ? 'D&D 5.5e / 2024 - Personagem' : 'D&D 5.5e / 2024 - Bestiário') : isFabula ? (data.type === 'pc' ? 'FABULA ULTIMA • PERSONAGEM • INTEGRADO' : 'FABULA ULTIMA • AMEAÇA / PNJ • INTEGRADO') : isSom6 ? (data.type === 'pc' ? 'O SOM DAS SEIS • PERSONAGEM • INTEGRADO' : 'O SOM DAS SEIS • PDJ • INTEGRADO') : is3Det ? '3DeT VICTORY • PERSONAGEM • PRÉVIA' : isRotaZero ? (data.type==='pc'?'ROTA ZERO • FUNCIONÁRIO':'ROTA ZERO • AMEAÇA / NPC') : data.system==='skyfall' ? (data.type==='pc'?'SKYFALL RPG • PERSONAGEM':'SKYFALL RPG • AMEAÇA') : ['ordem','ordemParanormal'].includes(data.system) ? (data.type==='pc'?'ORDEM PARANORMAL • AGENTE':'ORDEM PARANORMAL • AMEAÇA') : (data.type === 'pc' ? 'DRAGONBANE' : data.type === 'pnj' ? 'PNJ (DB)' : 'AMEAÇA (DB)')}
                             </span>
                         </div>
                         <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end items-center">
@@ -3705,11 +3740,12 @@ const { useState, useEffect, useRef } = React;
                     <RotaZeroCharacterEditor scope={systemEditorScope} />
 
                     {/* Ameaças: formulário editável e card sempre sincronizado, sem PDF. */}
-                    {data.type !== 'pc' && ['fabula','somdas6','3det','ordemParanormal','skyfall'].includes(data.system) && (
+                    {data.type !== 'pc' && ['fabula','somdas6','3det','ordemParanormal','skyfall','rotaZero'].includes(data.system) && (
                         <ThreatCardWorkspace data={data} onOpen={()=>setThreatCardOpen(true)}>
                             <Som6ThreatEditor scope={systemEditorScope} />
                             <FabulaThreatEditor scope={systemEditorScope} />
                             <TresDeTThreatEditor scope={systemEditorScope} />
+                            <RotaZeroThreatEditor scope={systemEditorScope} />
                             <OrdemThreatEditor scope={systemEditorScope} />
                             <SkyfallThreatEditor scope={systemEditorScope} />
                         </ThreatCardWorkspace>

@@ -81,7 +81,20 @@ if (s.includes(`normalized = normalize3DetThreatData(normalized);\n             
                     setData(normalized);`, 'load character');
 }
 
-rep(`normalized = normalizeSom6PdjData(normalized);\n                    setData(normalized);`, `normalized = normalizeSom6PdjData(normalized);\n                    normalized = normalize3DetThreatData(normalized);\n                    normalized = normalizeSkyfallThreatData(normalized);\n                    normalized = normalizeOrdemThreatData(normalized);\n                    setData(normalized);`, 'load threat');
+// Se o novo editor Rota Zero já introduziu sua normalização,
+// acrescente os adaptadores legados SEM remover a etapa RZ.
+const hasRzThreatNormalizer=s.includes(`normalized = normalizeSom6PdjData(normalized);\n                    normalized = normalizeRotaZeroThreatData(normalized);\n                    setData(normalized);`);
+if(hasRzThreatNormalizer){
+ s=s.replace(`normalized = normalizeSom6PdjData(normalized);\n                    normalized = normalizeRotaZeroThreatData(normalized);\n                    setData(normalized);`,
+ `normalized = normalizeSom6PdjData(normalized);
+                    normalized = normalize3DetThreatData(normalized);
+                    normalized = normalizeSkyfallThreatData(normalized);
+                    normalized = normalizeOrdemThreatData(normalized);
+                    normalized = normalizeRotaZeroThreatData(normalized);
+                    setData(normalized);`);
+}else{
+ rep(`normalized = normalizeSom6PdjData(normalized);\n                    setData(normalized);`, `normalized = normalizeSom6PdjData(normalized);\n                    normalized = normalize3DetThreatData(normalized);\n                    normalized = normalizeSkyfallThreatData(normalized);\n                    normalized = normalizeOrdemThreatData(normalized);\n                    setData(normalized);`, 'load threat');
+}
 
 rep(`if (sys === '3det') return item.type === 'pc' ? generate3DetChatText(item) : generate3DetThreatChatText(item);`, `if (sys === '3det') return item.type === 'pc' ? generate3DetChatText(item) : generate3DetThreatChatText(item);\n                if (sys === 'skyfall') return item.type === 'pc' ? generateSkyfallChatText(item) : generateSkyfallThreatChatText(item);\n                if (sys === 'ordem') return item.type === 'pc' ? generateOrdemChatText(item) : generateOrdemThreatChatText(item);`, 'chat routing');
 
