@@ -30,7 +30,7 @@ assert.ok(account.includes("achievementsOn?'◆':'🐱'"),'Conquistas OFF deve r
 assert.ok(!account.includes('OFF • somente símbolo'),'Não usar o selo anterior no modo OFF');
 assert.ok(account.includes('pjlite_achievements_on_v1_')&&account.includes('pjlite-achievement-corner'));
 assert.ok(account.includes('getMyAchievements()'),'Conquistas devem vir da conta, não somente do navegador');
-assert.ok(account.includes('Acessar conteúdo →'),'Recompensa continua acessível sem expor seu nome');
+assert.ok(account.includes('Recompensa — Rota Zero')&&account.includes('Abrir Rota Zero no Drive'),'A recompensa desbloqueada deve identificar Rota Zero e abrir o Drive');
 assert.ok(account.includes('visibleAchievement(tag)'),'Conquistas do grupo usam rótulo genérico');
 assert.ok(!account.includes('RZ-88 • EVENTO')&&!account.includes('◆ RZ-88 — Colaborador Rota Zero'),'O perfil não deve revelar nomes secretos');
 assert.ok(app.includes('pjlite:open-arg-material')&&app.includes("setGuideTab('rotazero')"));
