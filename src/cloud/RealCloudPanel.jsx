@@ -11,6 +11,7 @@ import {
   pushSheets,
   pullSheets,
   mirrorSheets,
+  deleteRemoteSheets,
   listGroups,
   createGroup,
   joinGroupByCode,
@@ -25,6 +26,7 @@ import {
 import AdminCloudPanel from './AdminCloudPanel.jsx';
 import AccountChatPanel from './AccountChatPanel.jsx';
 import './account-achievements.css';
+import {rememberCloudOwner,getPendingSheetDeletions,clearPendingSheetDeletions,withoutPendingDeletions} from './cloudSheetDeletions.js';
 import {setGroupMaster} from './jornadasCloud.js';
 
 const STORAGE_KEY = 'dragonbane_saved_characters';
@@ -137,15 +139,33 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
     }
   }, [session?.user?.id]);
 
+  const flushDeletions = React.useCallback(async()=>{
+    const ownerId=session?.user?.id;
+    if(!ownerId)return 0;
+    const pending=getPendingSheetDeletions(ownerId);
+    if(!pending.length)return 0;
+    const count=await deleteRemoteSheets(pending);
+    clearPendingSheetDeletions(ownerId,pending);
+    return count;
+  },[session?.user?.id]);
+
+  const readCurrentLocal=()=>{
+    const safe=(key,fallback)=>{try{const data=JSON.parse(localStorage.getItem(key)||'null');return Array.isArray(data)?data:fallback}catch{return fallback}};
+    return [safe(STORAGE_KEY,savedChars),safe(THREAT_STORAGE_KEY,savedThreats)];
+  };
+
   const pullAndMerge = React.useCallback(async (silent = false) => {
     if (!session?.user) return;
     setStatus('syncing');
     try {
+      rememberCloudOwner(session.user.id);
+      await flushDeletions();
       const rows = await pullSheets();
       const remoteChars = rows.filter(row => row.sheet_type === 'pc');
       const remoteThreats = rows.filter(row => row.sheet_type !== 'pc');
-      const chars = mergeById(savedChars, remoteChars);
-      const threats = mergeById(savedThreats, remoteThreats);
+      const [localChars,localThreats]=readCurrentLocal();
+      const chars=withoutPendingDeletions(mergeById(localChars, remoteChars),session.user.id);
+      const threats=withoutPendingDeletions(mergeById(localThreats, remoteThreats),session.user.id);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(chars));
       localStorage.setItem(THREAT_STORAGE_KEY, JSON.stringify(threats));
       setSavedChars(chars);
@@ -160,21 +180,26 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
       setStatus('error');
       if (!silent) showToast('Não foi possível baixar as fichas da nuvem.');
     }
-  }, [session?.user?.id, savedChars, savedThreats, setSavedChars, setSavedThreats, showToast]);
+  }, [session?.user?.id, savedChars, savedThreats, setSavedChars, setSavedThreats, showToast, flushDeletions]);
 
   const syncNow = React.useCallback(async (silent = false, exact = false) => {
     if (!session?.user) return;
     setStatus('syncing');
     try {
+      rememberCloudOwner(session.user.id);
+      const queuedDeletedCount=await flushDeletions();
+      const [localChars,localThreats]=readCurrentLocal();
       let rows = [];
-      let deletedCount = 0;
+      let deletedCount = queuedDeletedCount;
 
       if (exact) {
-        const result = await mirrorSheets(savedChars, savedThreats);
+        const result = await mirrorSheets(
+          withoutPendingDeletions(localChars,session.user.id),
+          withoutPendingDeletions(localThreats,session.user.id));
         rows = result?.rows || [];
-        deletedCount = Number(result?.deletedCount || 0);
+        deletedCount += Number(result?.deletedCount || 0);
       } else {
-        await pushSheets(savedChars, savedThreats);
+        await pushSheets(localChars, localThreats);
         rows = await pullSheets();
       }
 
@@ -184,7 +209,7 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
       setStatus('synced');
 
       if (!silent) {
-        if (exact && deletedCount > 0) {
+        if (deletedCount > 0) {
           showToast('☁️ Sincronizado. ' + deletedCount + (deletedCount === 1 ? ' ficha apagada também foi removida da nuvem.' : ' fichas apagadas também foram removidas da nuvem.'));
         } else {
           showToast(exact ? '☁️ Sincronizado. A nuvem agora reflete as fichas deste dispositivo.' : '☁️ Conta Lite sincronizada com o Supabase.');
@@ -195,7 +220,7 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
       setStatus('error');
       if (!silent) showToast('Não foi possível sincronizar a Conta Lite.');
     }
-  }, [session?.user?.id, savedChars, savedThreats, showToast]);
+  }, [session?.user?.id, savedChars, savedThreats, showToast, flushDeletions]);
 
   React.useEffect(() => {
     try {
@@ -240,9 +265,13 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
         if (active) setProfile(nextProfile);
         await refreshSocial();
         if (!initializedRef.current) {
-          initializedRef.current = true;
+          // Na primeira entrada, baixa e aplica as exclusões antes de fazer upload.
+          // A rotina lê o localStorage atual, sem usar o snapshot antigo do render.
           await pullAndMerge(true);
-          await syncNow(true);
+          if(active) {
+            initializedRef.current = true;
+            await syncNow(true);
+          }
         }
       } catch (error) {
         console.error('Conta Lite: inicialização', error);
