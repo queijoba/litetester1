@@ -68,3 +68,48 @@
 @media(max-width:920px){.campaign-mindmap-layout{grid-template-columns:1fr}.campaign-mindmap-board{min-height:400px}.campaign-mindmap-editor{grid-template-columns:repeat(2,minmax(0,1fr))}.campaign-mindmap-editor h4{grid-column:1/-1}}
 @media(max-width:570px){.campaign-library-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.campaign-library-cover{height:112px}.campaign-library-card__info{padding:9px}.campaign-mindmap-editor{display:grid;grid-template-columns:1fr}.campaign-shield-stats{grid-template-columns:1fr 1fr}.campaign-workspace__box{padding:12px}}
 @media(max-width:390px){.campaign-library-grid{grid-template-columns:1fr}.campaign-shield-stats{grid-template-columns:1fr}}
+
+/* Biblioteca por link: PDF abre no Drive, sem iframe nem upload de PDF. */
+.campaign-workspace__drive-tip{
+  margin:0;
+  padding:10px 12px;
+  background:#f0f7f3;
+  border-left:3px solid #3c816b;
+  border-radius:5px;
+  color:#446c5e;
+  font-size:11px;
+  line-height:1.6;
+}
+.campaign-library-card__actions .campaign-library-card__external{
+  flex:1 1 auto;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  text-align:center;
+  text-decoration:none;
+  border:1px solid #b7d1bc;
+  color:#245d50;
+  background:#edf5ed;
+  border-radius:8px;
+  padding:9px;
+  font-size:11px;
+  font-weight:850;
+  min-height:37px;
+}
+.campaign-library-card__actions .campaign-library-card__external:hover{
+  background:#daeedd;
+}
+.campaign-library-card__actions .campaign-library-card__external:focus-visible{
+  outline:3px solid #488768;
+  outline-offset:2px;
+}
+.campaign-library-card__unavailable{
+  font-size:11px;
+  color:#a34c3a;
+  padding:8px;
+}
+@media(max-width:570px){
+  .campaign-workspace__fields{grid-template-columns:1fr}
+  .campaign-library-card__actions .campaign-library-card__external{width:100%;overflow-wrap:anywhere}
+}
