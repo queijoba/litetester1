@@ -76,6 +76,23 @@ export function buildThreatCardData(data){
   common.attributes=['for','con','des','sab','int','car'].map(k=>stat(k.toUpperCase(),a[k]));
   common.details=[['Resistências',data?.resistencias],['Vulnerabilidades',data?.vulnerabilidades]].filter(x=>x[1]);
   common.sections=[['Ataques',data?.ataques],['Habilidades',data?.habilidades],['Reações',data?.reacoes]];
+ }else if(sys==='rotaZero'){
+  const r=data?.recursos||{};
+  const pair=x=>val(x?.atual)+' / '+val(x?.max);
+  common.subtitle=[data?.categoria,data?.papel,data?.codigo].filter(Boolean).join(' • ');
+  common.badge='RZ // '+val(data?.papel,'AMEAÇA');
+  common.stats=[
+   stat('VIT',pair(r.vitalidade)),stat('FOC',pair(r.foco)),stat('ADR',pair(r.adrenalina)),
+   stat('Defesa',data?.defesa),stat('Proteção',data?.armadura),stat('Pressão',data?.pressao),stat('Calor',data?.calor)
+  ];
+  common.attributes=[stat('Pulso',a.pulso),stat('Firmeza',a.firmeza),stat('Técnica',a.tecnica)];
+  common.details=[
+   ['Perícias',Object.keys(data?.pericias||{}).filter(k=>!!data.pericias[k]).join(' • ')],
+   ['Pânico',data?.panico]
+  ].filter(x=>x[1]!==undefined&&x[1]!==null&&x[1]!=='');
+  common.sections=[['Ataques',data?.ataques],['Habilidades',data?.habilidades],['Fraquezas',data?.fraquezas],['Ações',data?.acoes]];
+  common.summary=data?.descricao||'';
+  common.extra=''; // As notas privadas do Mestre não são exportadas.
  }else if(sys==='3det'){
   common.subtitle=[data?.categoria,data?.papel,data?.conceito].filter(Boolean).join(' • ');
   common.badge=val(data?.escala)+' • '+val(data?.pontos)+' pts';
