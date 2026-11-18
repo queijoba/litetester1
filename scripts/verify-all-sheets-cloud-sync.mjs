@@ -52,7 +52,7 @@ assert.ok(panel.includes('syncQueueRef.current.then(job,job)'),'Operações em s
 assert.ok(panel.includes('window.addEventListener(\'focus\',refresh)'), 'Sincronizar ao voltar ao navegador');
 assert.ok(panel.includes('document.addEventListener(\'visibilitychange\',refresh)'),'Sincronizar ao voltar à aba');
 assert.ok(panel.includes('window.setInterval(refresh,60000)'), 'Consultar atualizações entre dispositivos');
-assert.ok(panel.includes('const latestChars')&&panel.includes('readCurrentLocal()'),'Não sobrescrever edições feitas durante chamada de rede');
+assert.ok(panel.includes('const [latestChars,latestThreats]=readCurrentLocal()'),'Não sobrescrever edições feitas durante chamada de rede');
 assert.ok(panel.includes('filterSheetsByIds(nowChars,blocked)'),'Não restaurar exclusões ao enviar nuvem');
 assert.ok(panel.includes('mergeSheetsByRevision'),'Todos os sistemas usam a mesma regra de revisão');
 assert.ok(panel.includes('if(exact){'),'Excluir cloud-only somente com confirmação');
