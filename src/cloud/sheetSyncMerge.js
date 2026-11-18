@@ -4,9 +4,8 @@
 export const sheetId=value=>String(value?.id??value?.local_id??value?.payload?.id??'').trim();
 const toMs=value=>{const time=Date.parse(value||'');return Number.isFinite(time)?time:0};
 export const localSheetStamp=item=>toMs(item?.meta?.updatedAt||item?.updatedAt||item?.meta?.createdAt||item?.createdAt);
-export const cloudSheetStamp=row=>Math.max(
- toMs(row?.client_updated_at),localSheetStamp(row?.payload),toMs(row?.updated_at)
-);
+export const cloudSheetStamp=row=>
+ toMs(row?.client_updated_at)||localSheetStamp(row?.payload)||toMs(row?.updated_at);
 export function mergeSheetsByRevision(local=[],rows=[],deletedIds=[]){
  const excluded=new Set([...deletedIds].map(String));
  const map=new Map();
