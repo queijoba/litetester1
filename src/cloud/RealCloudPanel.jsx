@@ -31,6 +31,7 @@ import {setGroupMaster} from './jornadasCloud.js';
 import {
  reconcileSheetCollections,getKnownRemoteSheetIds,saveKnownRemoteSheetIds,
  backupRemotelyDeletedSheets,getRemovedSheetBackups
+  ,getSheetTime
 } from './sheetSyncReconcile.js';
 
 const STORAGE_KEY = 'dragonbane_saved_characters';
@@ -166,7 +167,7 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
         const first=reconcileSheetCollections(localChars,localThreats,before,previouslySeen,getPendingSheetDeletions(ownerId));
         // Preserve a recoverable JSON copy before hiding data removed on
         // another device. If the browser is full, leave local records intact.
-        backupRemotelyDeletedSheets(ownerId,first.removedLocal);
+        backupRemotelyDeletedSheets(ownerId,[...first.removedLocal,...first.overwrittenLocal]);
         let exactDeleted=0;
         if(exact){
           const result=await mirrorSheets(first.characters,first.threats);
@@ -179,13 +180,13 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
         const confirmed=await pullSheets();
         const [latestChars,latestThreats]=readCurrentLocal();
         const final=reconcileSheetCollections(latestChars,latestThreats,confirmed,previouslySeen,getPendingSheetDeletions(ownerId));
-        backupRemotelyDeletedSheets(ownerId,final.removedLocal);
+        backupRemotelyDeletedSheets(ownerId,[...final.removedLocal,...final.overwrittenLocal]);
 
         // Only report success when each non-deleted sheet sent in this pass
         // exists in the remote response.
-        const remoteIds=new Set(confirmed.map(row=>String(row.local_id||'')));
+        const remoteIds=new Map(confirmed.map(row=>[String(row.local_id||''),row]));
         const missing=[...first.characters,...first.threats]
-          .filter(item=>item?.id&&!remoteIds.has(String(item.id))&&!getPendingSheetDeletions(ownerId).includes(String(item.id)));
+          .filter(item=>item?.id&&!getPendingSheetDeletions(ownerId).includes(String(item.id))&&(!remoteIds.has(String(item.id))||getSheetTime(remoteIds.get(String(item.id)))<getSheetTime(item)));
         if(missing.length)throw new Error('Não foi possível confirmar o envio de '+missing.length+' ficha(s).');
 
         // If login changes in the meantime, never put the previous account's
@@ -226,7 +227,7 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
   const exportRemoteDeletionBackups=()=>{
     if(!session?.user?.id)return;
     const backups=getRemovedSheetBackups(session.user.id);
-    if(!backups.length){showToast('Não há fichas arquivadas por exclusões em outros dispositivos.');return;}
+    if(!backups.length){showToast('Não há cópias de segurança de versões substituídas ou excluídas.');return;}
     const blob=new Blob([JSON.stringify({format:'pjlite-remote-deletion-backup-v1',items:backups},null,2)],{type:'application/json'});
     const url=URL.createObjectURL(blob);
     const link=document.createElement('a');link.href=url;link.download='pjlite-fichas-removidas-backup.json';link.click();
@@ -526,7 +527,7 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
               <span className={'pjlite-cloud-state pjlite-cloud-state--'+status}>{status==='syncing'?'Sincronizando…':status==='pending'?'Alterações pendentes':status==='error'?'Erro':'☁ Sincronizado'}</span>
             </div>
             <div className="pjlite-cloud-settings__stats"><div><span>Neste dispositivo</span><strong>{savedChars.length+savedThreats.length}</strong><small>fichas</small></div><div><span>Nuvem real</span><strong>{remoteCount}</strong><small>fichas</small></div><div><span>Última sincronização</span><strong>{lastSync?new Date(lastSync).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'—'}</strong><small>{lastSync?new Date(lastSync).toLocaleDateString('pt-BR'):'Ainda não'}</small></div></div>
-            <div className="pjlite-cloud-settings__group"><h3>Sincronização</h3><p><strong>Excluir na Home</strong> registra uma remoção pendente: quando houver conexão, a Conta Lite a aplica também na nuvem, sem recriar a ficha ao mesclar. <strong>Sincronizar agora</strong> faz a nuvem refletir exatamente as fichas deste dispositivo e pode remover outras fichas antigas da nuvem mediante confirmação. <strong>Mesclar da nuvem</strong> reúne suas fichas restantes sem restaurar exclusões pendentes. Se a exclusão tiver falhado, uma nova sincronização tenta novamente.</p>{status==='error'&&<p role="alert" className="pjlite-cloud-sync-error">⚠ Sincronização não confirmada. {syncError}</p>}<div className="pjlite-cloud-actions"><button type="button" onClick={()=>syncNow(false)}>↻ Atualizar nos dois sentidos</button><button type="button" onClick={()=>{if(window.confirm('Substituir o conjunto de fichas da nuvem pelas fichas deste dispositivo? As que existirem só na nuvem serão removidas.'))syncNow(false,true)}}>☁ Espelhar este dispositivo</button><button type="button" onClick={()=>pullAndMerge(false)}>↧ Mesclar e atualizar</button><button type="button" onClick={exportRemoteDeletionBackups}>↓ Backup de exclusões remotas</button></div></div>
+            <div className="pjlite-cloud-settings__group"><h3>Sincronização</h3><p><strong>Excluir na Home</strong> registra uma remoção pendente: quando houver conexão, a Conta Lite a aplica também na nuvem, sem recriar a ficha ao mesclar. <strong>Sincronizar agora</strong> faz a nuvem refletir exatamente as fichas deste dispositivo e pode remover outras fichas antigas da nuvem mediante confirmação. <strong>Mesclar da nuvem</strong> reúne suas fichas restantes sem restaurar exclusões pendentes. Se a exclusão tiver falhado, uma nova sincronização tenta novamente.</p>{status==='error'&&<p role="alert" className="pjlite-cloud-sync-error">⚠ Sincronização não confirmada. {syncError}</p>}<div className="pjlite-cloud-actions"><button type="button" onClick={()=>syncNow(false)}>↻ Atualizar nos dois sentidos</button><button type="button" onClick={()=>{if(window.confirm('Substituir o conjunto de fichas da nuvem pelas fichas deste dispositivo? As que existirem só na nuvem serão removidas.'))syncNow(false,true)}}>☁ Espelhar este dispositivo</button><button type="button" onClick={()=>pullAndMerge(false)}>↧ Mesclar e atualizar</button><button type="button" onClick={exportRemoteDeletionBackups}>↓ Backup de versões substituídas/excluídas</button></div></div>
             <div className="pjlite-cloud-settings__group"><h3>🏆 Conquistas</h3><p>Em ON, suas conquistas aparecem na tela. Em OFF, o selo é substituído apenas pelo gatinho 🐱 no mesmo canto, sem nomes ou notificações. A conquista continua na sua conta.</p><label className="pjlite-cloud-achievement-switch"><input type="checkbox" checked={achievementsOn} onChange={e=>toggleAchievements(e.target.checked)}/> <strong>{achievementsOn?'ON • visual completo':'OFF • somente gatinho 🐱'}</strong></label>{achievementsOn&&<div className="pjlite-cloud-achievement-list">{achievements.map(tag=><span key={tag.achievement_id} className={tag.category==='EVENTO'?'is-event':''}>◆ {visibleAchievement(tag)}</span>)}</div>}</div>
             <div className="pjlite-cloud-settings__group pjlite-cloud-settings__group--quiet"><h3>Conversas dos grupos</h3><p>O chat das campanhas também fica na aba <strong>💬 Chat</strong> da Conta Lite. Cada grupo tem sua própria conversa privada.</p><button type="button" onClick={()=>setTab('chat')}>💬 Abrir Chat</button></div>
             <div className="pjlite-cloud-settings__group pjlite-cloud-settings__group--quiet"><h3>Conta</h3><div className="pjlite-cloud-actions"><button type="button" className="secondary" onClick={handleLogout}>Sair da Conta Lite</button></div></div>
