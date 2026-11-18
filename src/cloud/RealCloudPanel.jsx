@@ -28,28 +28,14 @@ import AccountChatPanel from './AccountChatPanel.jsx';
 import './account-achievements.css';
 import {rememberCloudOwner,getPendingSheetDeletions,clearPendingSheetDeletions,withoutPendingDeletions} from './cloudSheetDeletions.js';
 import {setGroupMaster} from './jornadasCloud.js';
+import {
+ reconcileSheetCollections,getKnownRemoteSheetIds,saveKnownRemoteSheetIds,
+ backupRemotelyDeletedSheets,getRemovedSheetBackups
+} from './sheetSyncReconcile.js';
 
 const STORAGE_KEY = 'dragonbane_saved_characters';
 const THREAT_STORAGE_KEY = 'dragonbane_saved_threats';
 const ROTA_ZERO_DRIVE_URL='https://drive.google.com/drive/folders/1MVLTsPPATBGd910JWD5j1zYd3A779ytu?usp=drive_link';
-
-const stamp = item => {
-  const raw = item?.meta?.updatedAt || item?.updatedAt || item?.meta?.createdAt || '';
-  const value = Date.parse(raw);
-  return Number.isFinite(value) ? value : 0;
-};
-
-const mergeById = (local = [], remoteRows = []) => {
-  const map = new Map();
-  for (const item of Array.isArray(local) ? local : []) if (item?.id) map.set(item.id, item);
-  for (const row of Array.isArray(remoteRows) ? remoteRows : []) {
-    const item = row?.payload;
-    if (!item?.id) continue;
-    const current = map.get(item.id);
-    if (!current || stamp(item) >= stamp(current)) map.set(item.id, item);
-  }
-  return Array.from(map.values());
-};
 
 const sheetName = item => String(item?.bio?.nome || item?.nome || item?.name || 'Ficha sem nome').trim() || 'Ficha sem nome';
 const systemName = item => String(item?.system || 'RPG').replace('dnd5e', 'D&D 5.5e').replace('fabulaUltima', 'Fabula Ultima').replace('3det', '3DeT Victory');
@@ -94,6 +80,9 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
   const [shareDraft, setShareDraft] = React.useState({ sheetId: '', email: '', groupId: '' });
   const timerRef = React.useRef(null);
   const initializedRef = React.useRef(false);
+  const authUserIdRef = React.useRef('');
+  const syncQueueRef = React.useRef(Promise.resolve());
+  const [syncError,setSyncError] = React.useState('');
 
   const account = session?.user ? {
     id: session.user.id,
@@ -154,73 +143,95 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
     return [safe(STORAGE_KEY,savedChars),safe(THREAT_STORAGE_KEY,savedThreats)];
   };
 
-  const pullAndMerge = React.useCallback(async (silent = false) => {
-    if (!session?.user) return;
-    setStatus('syncing');
-    try {
-      rememberCloudOwner(session.user.id);
-      await flushDeletions();
-      const rows = await pullSheets();
-      const remoteChars = rows.filter(row => row.sheet_type === 'pc');
-      const remoteThreats = rows.filter(row => row.sheet_type !== 'pc');
-      const [localChars,localThreats]=readCurrentLocal();
-      const chars=withoutPendingDeletions(mergeById(localChars, remoteChars),session.user.id);
-      const threats=withoutPendingDeletions(mergeById(localThreats, remoteThreats),session.user.id);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(chars));
-      localStorage.setItem(THREAT_STORAGE_KEY, JSON.stringify(threats));
-      setSavedChars(chars);
-      setSavedThreats(threats);
-      setRemoteCount(rows.length);
-      const now = new Date().toISOString();
-      setLastSync(now);
-      setStatus('synced');
-      if (!silent) showToast('☁️ Fichas da nuvem foram mescladas neste dispositivo.');
-    } catch (error) {
-      console.error('Conta Lite: falha ao baixar fichas', error);
-      setStatus('error');
-      if (!silent) showToast('Não foi possível baixar as fichas da nuvem.');
-    }
-  }, [session?.user?.id, savedChars, savedThreats, setSavedChars, setSavedThreats, showToast, flushDeletions]);
+  const queued=React.useCallback(operation=>{
+    // Serialize automatic, focus, login and manual synchronization.
+    // Requests from two tabs/devices cannot be serialized here, but remote
+    // timestamps prevent stale payloads from overwriting newer versions.
+    const run=syncQueueRef.current.then(operation,operation);
+    syncQueueRef.current=run.catch(()=>{});
+    return run;
+  },[]);
 
-  const syncNow = React.useCallback(async (silent = false, exact = false) => {
-    if (!session?.user) return;
-    setStatus('syncing');
-    try {
-      rememberCloudOwner(session.user.id);
-      const queuedDeletedCount=await flushDeletions();
-      const [localChars,localThreats]=readCurrentLocal();
-      let rows = [];
-      let deletedCount = queuedDeletedCount;
-
-      if (exact) {
-        const result = await mirrorSheets(
-          withoutPendingDeletions(localChars,session.user.id),
-          withoutPendingDeletions(localThreats,session.user.id));
-        rows = result?.rows || [];
-        deletedCount += Number(result?.deletedCount || 0);
-      } else {
-        await pushSheets(localChars, localThreats);
-        rows = await pullSheets();
-      }
-
-      setRemoteCount(rows.length);
-      const now = new Date().toISOString();
-      setLastSync(now);
-      setStatus('synced');
-
-      if (!silent) {
-        if (deletedCount > 0) {
-          showToast('☁️ Sincronizado. ' + deletedCount + (deletedCount === 1 ? ' ficha apagada também foi removida da nuvem.' : ' fichas apagadas também foram removidas da nuvem.'));
-        } else {
-          showToast(exact ? '☁️ Sincronizado. A nuvem agora reflete as fichas deste dispositivo.' : '☁️ Conta Lite sincronizada com o Supabase.');
+  const synchronize=React.useCallback(async({silent=false,exact=false}={})=>{
+    const ownerId=session?.user?.id;
+    if(!ownerId)return;
+    return queued(async()=>{
+      setStatus('syncing');setSyncError('');
+      try{
+        rememberCloudOwner(ownerId);
+        const removedQueued=await flushDeletions();
+        const previouslySeen=getKnownRemoteSheetIds(ownerId);
+        const [localChars,localThreats]=readCurrentLocal();
+        const before=await pullSheets();
+        const first=reconcileSheetCollections(localChars,localThreats,before,previouslySeen,getPendingSheetDeletions(ownerId));
+        // Preserve a recoverable JSON copy before hiding data removed on
+        // another device. If the browser is full, leave local records intact.
+        backupRemotelyDeletedSheets(ownerId,first.removedLocal);
+        let exactDeleted=0;
+        if(exact){
+          const result=await mirrorSheets(first.characters,first.threats);
+          exactDeleted=Number(result?.deletedCount||0);
+        }else{
+          await pushSheets(first.characters,first.threats);
         }
+        // Pull AGAIN after uploading: skipped stale versions are replaced
+        // locally by the more recent version already stored in Supabase.
+        const confirmed=await pullSheets();
+        const [latestChars,latestThreats]=readCurrentLocal();
+        const final=reconcileSheetCollections(latestChars,latestThreats,confirmed,previouslySeen,getPendingSheetDeletions(ownerId));
+        backupRemotelyDeletedSheets(ownerId,final.removedLocal);
+
+        // Only report success when each non-deleted sheet sent in this pass
+        // exists in the remote response.
+        const remoteIds=new Set(confirmed.map(row=>String(row.local_id||'')));
+        const missing=[...first.characters,...first.threats]
+          .filter(item=>item?.id&&!remoteIds.has(String(item.id))&&!getPendingSheetDeletions(ownerId).includes(String(item.id)));
+        if(missing.length)throw new Error('Não foi possível confirmar o envio de '+missing.length+' ficha(s).');
+
+        // If login changes in the meantime, never put the previous account's
+        // sheets into the Home of the new account.
+        if(authUserIdRef.current&&authUserIdRef.current!==ownerId)return;
+        saveKnownRemoteSheetIds(ownerId,confirmed.map(row=>String(row.local_id||'')));
+        const nextCharsJson=JSON.stringify(final.characters);
+        const nextThreatsJson=JSON.stringify(final.threats);
+        if(localStorage.getItem(STORAGE_KEY)!==nextCharsJson){
+          localStorage.setItem(STORAGE_KEY,nextCharsJson);
+          setSavedChars(final.characters);
+        }
+        if(localStorage.getItem(THREAT_STORAGE_KEY)!==nextThreatsJson){
+          localStorage.setItem(THREAT_STORAGE_KEY,nextThreatsJson);
+          setSavedThreats(final.threats);
+        }
+        setRemoteCount(confirmed.length);
+        setLastSync(new Date().toISOString());
+        setStatus('synced');
+        if(!silent){
+          const removed=removedQueued+exactDeleted;
+          if(removed)showToast('☁️ Sincronizado: '+removed+' ficha(s) excluída(s) da nuvem.');
+          else if(final.removedLocal.length)showToast('☁️ Sincronizado. Fichas excluídas em outro dispositivo foram arquivadas localmente.');
+          else showToast('☁️ Fichas verificadas e atualizadas entre Conta Lite e dispositivo.');
+        }
+      }catch(error){
+        console.error('Conta Lite: sincronização bidirecional',error);
+        setSyncError(String(error?.message||'Erro de comunicação.').slice(0,240));
+        setStatus('error');
+        if(!silent)showToast('Não foi possível confirmar a sincronização. Suas fichas locais foram preservadas.');
       }
-    } catch (error) {
-      console.error('Conta Lite: falha ao sincronizar', error);
-      setStatus('error');
-      if (!silent) showToast('Não foi possível sincronizar a Conta Lite.');
-    }
-  }, [session?.user?.id, savedChars, savedThreats, showToast, flushDeletions]);
+    });
+  },[session?.user?.id,flushDeletions,savedChars,savedThreats,setSavedChars,setSavedThreats,showToast,queued]);
+
+  const pullAndMerge=React.useCallback((silent=false)=>synchronize({silent}),[synchronize]);
+  const syncNow=React.useCallback((silent=false,exact=false)=>synchronize({silent,exact}),[synchronize]);
+
+  const exportRemoteDeletionBackups=()=>{
+    if(!session?.user?.id)return;
+    const backups=getRemovedSheetBackups(session.user.id);
+    if(!backups.length){showToast('Não há fichas arquivadas por exclusões em outros dispositivos.');return;}
+    const blob=new Blob([JSON.stringify({format:'pjlite-remote-deletion-backup-v1',items:backups},null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const link=document.createElement('a');link.href=url;link.download='pjlite-fichas-removidas-backup.json';link.click();
+    URL.revokeObjectURL(url);
+  };
 
   React.useEffect(() => {
     try {
@@ -241,11 +252,23 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
 
   React.useEffect(() => {
     let active = true;
-    getSession().then(next => { if (active) setSession(next); }).catch(error => console.error('Conta Lite: sessão', error));
+    getSession().then(next => {
+      if(!active)return;
+      const nextId=next?.user?.id||'';
+      if(authUserIdRef.current!==nextId){
+        initializedRef.current=false;authUserIdRef.current=nextId;
+      }
+      setSession(next);
+    }).catch(error => console.error('Conta Lite: sessão', error));
     const unsubscribe = onAuthStateChange(next => {
       if (!active) return;
+      const nextId=next?.user?.id||'';
+      // TOKEN_REFRESHED e USER_UPDATED não devem desligar o autosync.
+      if(authUserIdRef.current!==nextId){
+        initializedRef.current=false;
+        authUserIdRef.current=nextId;
+      }
       setSession(next);
-      initializedRef.current = false;
     });
     return () => { active = false; unsubscribe?.(); };
   }, []);
@@ -288,6 +311,28 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
     timerRef.current = setTimeout(() => syncNow(true), 1000);
     return () => { if (timerRef.current) clearTimeout(timerRef.current); };
   }, [savedChars, savedThreats, session?.user?.id]);
+
+  React.useEffect(()=>{
+    if(!session?.user?.id)return;
+    // Voltar à aba, recuperar a conexão ou permanecer com o app aberto
+    // atualiza fichas editadas em outro dispositivo ou por um mestre.
+    const refresh=()=>{
+      if(!initializedRef.current)return;
+      if(typeof document!=='undefined'&&document.visibilityState==='hidden')return;
+      syncNow(true);
+    };
+    const onVisible=()=>{if(document.visibilityState==='visible')refresh()};
+    window.addEventListener('focus',refresh);
+    window.addEventListener('online',refresh);
+    document.addEventListener('visibilitychange',onVisible);
+    const timer=window.setInterval(refresh,60000);
+    return()=>{
+      window.removeEventListener('focus',refresh);
+      window.removeEventListener('online',refresh);
+      document.removeEventListener('visibilitychange',onVisible);
+      window.clearInterval(timer);
+    };
+  },[session?.user?.id,syncNow]);
 
   const handleGoogle = async () => {
     try { await signInWithGoogle(); }
@@ -481,7 +526,7 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
               <span className={'pjlite-cloud-state pjlite-cloud-state--'+status}>{status==='syncing'?'Sincronizando…':status==='pending'?'Alterações pendentes':status==='error'?'Erro':'☁ Sincronizado'}</span>
             </div>
             <div className="pjlite-cloud-settings__stats"><div><span>Neste dispositivo</span><strong>{savedChars.length+savedThreats.length}</strong><small>fichas</small></div><div><span>Nuvem real</span><strong>{remoteCount}</strong><small>fichas</small></div><div><span>Última sincronização</span><strong>{lastSync?new Date(lastSync).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'—'}</strong><small>{lastSync?new Date(lastSync).toLocaleDateString('pt-BR'):'Ainda não'}</small></div></div>
-            <div className="pjlite-cloud-settings__group"><h3>Sincronização</h3><p><strong>Excluir na Home</strong> registra uma remoção pendente: quando houver conexão, a Conta Lite a aplica também na nuvem, sem recriar a ficha ao mesclar. <strong>Sincronizar agora</strong> faz a nuvem refletir exatamente as fichas deste dispositivo e pode remover outras fichas antigas da nuvem mediante confirmação. <strong>Mesclar da nuvem</strong> reúne suas fichas restantes sem restaurar exclusões pendentes. Se a exclusão tiver falhado, uma nova sincronização tenta novamente.</p><div className="pjlite-cloud-actions"><button type="button" onClick={()=>{if(window.confirm('Sincronizar agora fará a nuvem ficar igual às fichas deste dispositivo. Fichas que existirem apenas na nuvem serão removidas. Continuar?'))syncNow(false,true)}}>☁ Sincronizar agora</button><button type="button" onClick={()=>pullAndMerge(false)}>↧ Mesclar da nuvem</button></div></div>
+            <div className="pjlite-cloud-settings__group"><h3>Sincronização</h3><p><strong>Excluir na Home</strong> registra uma remoção pendente: quando houver conexão, a Conta Lite a aplica também na nuvem, sem recriar a ficha ao mesclar. <strong>Sincronizar agora</strong> faz a nuvem refletir exatamente as fichas deste dispositivo e pode remover outras fichas antigas da nuvem mediante confirmação. <strong>Mesclar da nuvem</strong> reúne suas fichas restantes sem restaurar exclusões pendentes. Se a exclusão tiver falhado, uma nova sincronização tenta novamente.</p>{status==='error'&&<p role="alert" className="pjlite-cloud-sync-error">⚠ Sincronização não confirmada. {syncError}</p>}<div className="pjlite-cloud-actions"><button type="button" onClick={()=>syncNow(false)}>↻ Atualizar nos dois sentidos</button><button type="button" onClick={()=>{if(window.confirm('Substituir o conjunto de fichas da nuvem pelas fichas deste dispositivo? As que existirem só na nuvem serão removidas.'))syncNow(false,true)}}>☁ Espelhar este dispositivo</button><button type="button" onClick={()=>pullAndMerge(false)}>↧ Mesclar e atualizar</button><button type="button" onClick={exportRemoteDeletionBackups}>↓ Backup de exclusões remotas</button></div></div>
             <div className="pjlite-cloud-settings__group"><h3>🏆 Conquistas</h3><p>Em ON, suas conquistas aparecem na tela. Em OFF, o selo é substituído apenas pelo gatinho 🐱 no mesmo canto, sem nomes ou notificações. A conquista continua na sua conta.</p><label className="pjlite-cloud-achievement-switch"><input type="checkbox" checked={achievementsOn} onChange={e=>toggleAchievements(e.target.checked)}/> <strong>{achievementsOn?'ON • visual completo':'OFF • somente gatinho 🐱'}</strong></label>{achievementsOn&&<div className="pjlite-cloud-achievement-list">{achievements.map(tag=><span key={tag.achievement_id} className={tag.category==='EVENTO'?'is-event':''}>◆ {visibleAchievement(tag)}</span>)}</div>}</div>
             <div className="pjlite-cloud-settings__group pjlite-cloud-settings__group--quiet"><h3>Conversas dos grupos</h3><p>O chat das campanhas também fica na aba <strong>💬 Chat</strong> da Conta Lite. Cada grupo tem sua própria conversa privada.</p><button type="button" onClick={()=>setTab('chat')}>💬 Abrir Chat</button></div>
             <div className="pjlite-cloud-settings__group pjlite-cloud-settings__group--quiet"><h3>Conta</h3><div className="pjlite-cloud-actions"><button type="button" className="secondary" onClick={handleLogout}>Sair da Conta Lite</button></div></div>
