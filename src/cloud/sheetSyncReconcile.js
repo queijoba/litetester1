@@ -34,8 +34,16 @@ export function reconcileSheetCollections(chars=[],threats=[],remoteRows=[],seen
  // foi excluída em outro dispositivo: não a recriar por upload antigo.
  const remotelyRemoved=new Set([...previouslySeen].filter(id=>!remoteIds.has(id)));
  const excluded=new Set([...remotelyRemoved,...pending]);
- const removedLocal=[...(Array.isArray(chars)?chars:[]),...(Array.isArray(threats)?threats:[])]
-    .filter(item=>item?.id&&remotelyRemoved.has(str(item.id)));
+ const allLocal=[...(Array.isArray(chars)?chars:[]),...(Array.isArray(threats)?threats:[])];
+ const removedLocal=allLocal.filter(item=>item?.id&&remotelyRemoved.has(str(item.id)));
+ const byId=new Map(rows.filter(row=>identifier(row)).map(row=>[identifier(row),row]));
+ const overwrittenLocal=allLocal.filter(item=>{
+  if(!item?.id||excluded.has(str(item.id)))return false;
+  const remote=byId.get(str(item.id));
+  if(!remote)return false;
+  if(getSheetTime(remote)<getSheetTime(item))return false;
+  return JSON.stringify(item)!==JSON.stringify(remote.payload);
+ });
  const keep=items=>(Array.isArray(items)?items:[]).filter(item=>!excluded.has(str(item?.id)));
  const remoteChars=rows.filter(row=>row?.sheet_type==='pc'&&!excluded.has(identifier(row)));
  const remoteThreats=rows.filter(row=>row?.sheet_type!=='pc'&&!excluded.has(identifier(row)));
@@ -43,6 +51,7 @@ export function reconcileSheetCollections(chars=[],threats=[],remoteRows=[],seen
   characters:mergeSheetVersions(keep(chars),remoteChars),
   threats:mergeSheetVersions(keep(threats),remoteThreats),
   removedLocal,
+  overwrittenLocal,
   remotelyRemovedIds:[...remotelyRemoved],
   remoteIds:[...remoteIds]
  };
