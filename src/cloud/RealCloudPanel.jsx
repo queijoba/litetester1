@@ -210,6 +210,7 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
         setLastSync(now);
         lastNetworkRef.current=Date.now();
         setStatus('synced');
+        initializedRef.current=true;
         if(!silent){
           if(deletedCount)showToast('☁️ '+deletedCount+' exclusão(ões) confirmada(s) na nuvem.');
           else showToast(exact?'☁️ Nuvem atualizada conforme suas fichas deste dispositivo.':'☁️ Todas as fichas verificadas e sincronizadas.');
@@ -299,7 +300,7 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
   React.useEffect(()=>{
     if(!session?.user)return;
     const refresh=()=>{
-      if(!initializedRef.current||document.visibilityState==='hidden')return;
+      if(document.visibilityState==='hidden')return;
       if(Date.now()-lastNetworkRef.current<15000)return;
       void syncNow(true,false);
     };
