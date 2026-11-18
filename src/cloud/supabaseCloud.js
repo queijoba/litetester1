@@ -26,6 +26,7 @@ const cleanSheetName = item => String(item?.bio?.nome || item?.nome || item?.nam
 const cleanSheetSystem = item => String(item?.system || 'RPG');
 const cleanSheetType = item => String(item?.type || 'pc');
 import {getPendingSheetDeletions} from './cloudSheetDeletions.js';
+import {sheetId} from './sheetSyncMerge.js';
 const cleanLocalId = item => String(item?.id || '').trim();
 
 export async function getSession() {
@@ -100,13 +101,32 @@ export async function getMyAchievements() {
   return data || [];
 }
 
+// A exclusão fica em uma tabela central, acessível em todos os aparelhos.
+// Também protege de aplicativos antigos que não conhecem o diário local.
+export async function fetchDeletedSheetIds(){
+ const client=requireClient();
+ const {data:{user},error:userError}=await client.auth.getUser();
+ if(userError)throw userError;
+ if(!user)throw new Error('not_authenticated');
+ const ids=new Set();
+ for(let from=0;;from+=500){
+  const {data,error}=await client.from('sheet_deletions')
+   .select('local_id').eq('owner_id',user.id)
+   .order('local_id',{ascending:true}).range(from,from+499);
+  if(error)throw error;
+  for(const row of data||[])ids.add(String(row.local_id));
+  if(!data||data.length<500)break;
+ }
+ return ids;
+}
+
 export async function pushSheets(characters = [], threats = []) {
   const client = requireClient();
   const { data: { user }, error: userError } = await client.auth.getUser();
   if (userError) throw userError;
   if (!user) throw new Error('not_authenticated');
 
-  const pending=new Set(getPendingSheetDeletions(user.id));
+  const pending=new Set([...getPendingSheetDeletions(user.id),...await fetchDeletedSheetIds()]);
   const all = [
     ...(Array.isArray(characters)?characters:[]).map(item => ({ item, type: 'pc' })),
     ...(Array.isArray(threats)?threats:[]).map(item => ({ item, type: item?.type || 'threat' })),
@@ -130,7 +150,7 @@ export async function pushSheets(characters = [], threats = []) {
     .in('local_id',rows.map(r=>r.local_id));
   if(readError)throw readError;
   const cloudTimes=new Map((currentRows||[]).map(r=>[r.local_id,Date.parse(r.client_updated_at)||0]));
-  const fresh=rows.filter(r=>!cloudTimes.has(r.local_id)||(Date.parse(r.client_updated_at)||0)>=cloudTimes.get(r.local_id));
+  const fresh=rows.filter(r=>!cloudTimes.has(r.local_id)||(Date.parse(r.client_updated_at)||0)>cloudTimes.get(r.local_id));
   if(!fresh.length)return [];
   const { data, error } = await client
     .from('sheets')
@@ -141,40 +161,46 @@ export async function pushSheets(characters = [], threats = []) {
 }
 
 export async function pullSheets() {
-  const client = requireClient();
-  const {data:{user},error:userError}=await client.auth.getUser();
-  if(userError)throw userError;
-  if(!user)throw new Error('not_authenticated');
-  const { data, error } = await client
-    .from('sheets')
-    // Não incorporar fichas compartilhadas de outras pessoas como se fossem
-    // propriedade da Conta Lite; elas pertencem às próprias campanhas.
-    .select('local_id,sheet_type,system,name,payload,client_updated_at,updated_at')
-    .eq('owner_id',user.id)
-    .order('updated_at', { ascending: false });
-  if (error) throw error;
-  const pending=new Set(getPendingSheetDeletions(user.id));
-  return (data || []).filter(row=>!pending.has(String(row.local_id||'')))
-    .map(row => ({ ...row, payload: row.payload || {} }));
+ const client=requireClient();
+ const {data:{user},error:userError}=await client.auth.getUser();
+ if(userError)throw userError;
+ if(!user)throw new Error('not_authenticated');
+ const deleted=new Set([...getPendingSheetDeletions(user.id),...await fetchDeletedSheetIds()]);
+ const rows=[];
+ for(let from=0;;from+=500){
+  const {data,error}=await client.from('sheets')
+   .select('local_id,sheet_type,system,name,payload,client_updated_at,updated_at')
+   .eq('owner_id',user.id).order('local_id',{ascending:true})
+   .range(from,from+499);
+  if(error)throw error;
+  rows.push(...(data||[]));
+  if(!data||data.length<500)break;
+ }
+ return rows.filter(row=>!deleted.has(String(row.local_id||'')))
+  .map(row=>({...row,payload:row.payload||{}}));
 }
 
-export async function deleteRemoteSheets(localIds=[]) {
-  const ids=[...new Set(localIds.map(x=>String(x||'').trim()).filter(Boolean))];
-  if(!ids.length)return 0;
-  const client=requireClient();
-  const {data:{user},error:userError}=await client.auth.getUser();
-  if(userError)throw userError;
-  if(!user)throw new Error('not_authenticated');
-  // A política RLS de sheets_owner_all e a condição explícita de proprietário
-  // garantem que a exclusão não atinja fichas compartilhadas por outra pessoa.
-  const {error}=await client.from('sheets').delete()
-    .eq('owner_id',user.id).in('local_id',ids);
-  if(error)throw error;
-  const {data:remaining,error:checkError}=await client.from('sheets')
-    .select('local_id').eq('owner_id',user.id).in('local_id',ids);
-  if(checkError)throw checkError;
-  if(remaining?.length)throw new Error('cloud_delete_unconfirmed');
-  return ids.length;
+export async function deleteRemoteSheets(localIds=[]){
+ const ids=[...new Set(localIds.map(x=>String(x||'').trim()).filter(Boolean))];
+ if(!ids.length)return 0;
+ const client=requireClient();
+ const {data:{user},error:userError}=await client.auth.getUser();
+ if(userError)throw userError;
+ if(!user)throw new Error('not_authenticated');
+ // Registrar a exclusão PRIMEIRO: outro aparelho não poderá recriar a ficha.
+ const {error:journalError}=await client.from('sheet_deletions').upsert(
+  ids.map(local_id=>({owner_id:user.id,local_id})),
+  {onConflict:'owner_id,local_id'}
+ );
+ if(journalError)throw journalError;
+ const {error}=await client.from('sheets').delete()
+  .eq('owner_id',user.id).in('local_id',ids);
+ if(error)throw error;
+ const {data:remaining,error:checkError}=await client.from('sheets')
+  .select('local_id').eq('owner_id',user.id).in('local_id',ids);
+ if(checkError)throw checkError;
+ if(remaining?.length)throw new Error('cloud_delete_unconfirmed');
+ return ids.length;
 }
 
 export async function mirrorSheets(characters = [], threats = []) {
@@ -182,12 +208,13 @@ export async function mirrorSheets(characters = [], threats = []) {
   const {data:{user},error:userError}=await client.auth.getUser();
   if(userError)throw userError;
   if(!user)throw new Error('not_authenticated');
+  const deleted=await fetchDeletedSheetIds();
   await pushSheets(characters, threats);
 
   const localIds = new Set([
     ...(Array.isArray(characters) ? characters : []),
     ...(Array.isArray(threats) ? threats : []),
-  ].map(cleanLocalId).filter(Boolean));
+  ].map(cleanLocalId).filter(id=>id&&!deleted.has(id)));
 
   const { data: remoteBefore, error: remoteError } = await client
     .from('sheets')
@@ -199,12 +226,7 @@ export async function mirrorSheets(characters = [], threats = []) {
     .filter(id => id && !localIds.has(id));
 
   if (staleIds.length) {
-    const { error: deleteError } = await client
-      .from('sheets')
-      .delete()
-      .eq('owner_id',user.id)
-      .in('local_id', staleIds);
-    if (deleteError) throw deleteError;
+    await deleteRemoteSheets(staleIds);
   }
 
   const rows = await pullSheets();
