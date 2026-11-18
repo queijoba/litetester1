@@ -65,5 +65,5 @@ const pull=store.slice(store.indexOf('export async function pullSheets'),store.i
 assert.ok(pull.includes(".eq('owner_id',user.id)"),'Importar da nuvem apenas fichas próprias, nunca compartilhadas de outros usuários');
 assert.ok(account.includes('await flushDeletions();'),'Excluir da nuvem antes de sincronizar');
 assert.ok(account.includes('readCurrentLocal()'),'Capturar as fichas locais atualizadas para evitar render obsoleto');
-assert.ok(account.includes('withoutPendingDeletions(mergeById'),'Não restaurar exclusões no merge');
+assert.ok(account.includes('mergeSheetsByRevision(nowChars')&&account.includes('const blocked=['),'Não restaurar exclusões na reconciliação bidirecional');
 console.log('✓ Rota Zero ameaça, card PNG, escudo compacto e exclusões persistentes sem restauração de fichas.');

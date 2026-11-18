@@ -12,6 +12,7 @@ import {
   pullSheets,
   mirrorSheets,
   deleteRemoteSheets,
+  fetchDeletedSheetIds,
   listGroups,
   createGroup,
   joinGroupByCode,
@@ -26,30 +27,13 @@ import {
 import AdminCloudPanel from './AdminCloudPanel.jsx';
 import AccountChatPanel from './AccountChatPanel.jsx';
 import './account-achievements.css';
-import {rememberCloudOwner,getPendingSheetDeletions,clearPendingSheetDeletions,withoutPendingDeletions} from './cloudSheetDeletions.js';
+import {rememberCloudOwner,getPendingSheetDeletions,clearPendingSheetDeletions,withoutPendingDeletions,getLastCloudOwner} from './cloudSheetDeletions.js';
+import {mergeSheetsByRevision,filterSheetsByIds,sameSheetList} from './sheetSyncMerge.js';
 import {setGroupMaster} from './jornadasCloud.js';
 
 const STORAGE_KEY = 'dragonbane_saved_characters';
 const THREAT_STORAGE_KEY = 'dragonbane_saved_threats';
 const ROTA_ZERO_DRIVE_URL='https://drive.google.com/drive/folders/1MVLTsPPATBGd910JWD5j1zYd3A779ytu?usp=drive_link';
-
-const stamp = item => {
-  const raw = item?.meta?.updatedAt || item?.updatedAt || item?.meta?.createdAt || '';
-  const value = Date.parse(raw);
-  return Number.isFinite(value) ? value : 0;
-};
-
-const mergeById = (local = [], remoteRows = []) => {
-  const map = new Map();
-  for (const item of Array.isArray(local) ? local : []) if (item?.id) map.set(item.id, item);
-  for (const row of Array.isArray(remoteRows) ? remoteRows : []) {
-    const item = row?.payload;
-    if (!item?.id) continue;
-    const current = map.get(item.id);
-    if (!current || stamp(item) >= stamp(current)) map.set(item.id, item);
-  }
-  return Array.from(map.values());
-};
 
 const sheetName = item => String(item?.bio?.nome || item?.nome || item?.name || 'Ficha sem nome').trim() || 'Ficha sem nome';
 const systemName = item => String(item?.system || 'RPG').replace('dnd5e', 'D&D 5.5e').replace('fabulaUltima', 'Fabula Ultima').replace('3det', '3DeT Victory');
@@ -94,6 +78,14 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
   const [shareDraft, setShareDraft] = React.useState({ sheetId: '', email: '', groupId: '' });
   const timerRef = React.useRef(null);
   const initializedRef = React.useRef(false);
+  const currentOwnerRef = React.useRef(null);
+  const syncQueueRef=React.useRef(Promise.resolve());
+  const lastNetworkRef=React.useRef(0);
+  const runSerialized=React.useCallback(job=>{
+    const next=syncQueueRef.current.then(job,job);
+    syncQueueRef.current=next.catch(()=>{});
+    return next;
+  },[]);
 
   const account = session?.user ? {
     id: session.user.id,
@@ -154,73 +146,88 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
     return [safe(STORAGE_KEY,savedChars),safe(THREAT_STORAGE_KEY,savedThreats)];
   };
 
-  const pullAndMerge = React.useCallback(async (silent = false) => {
-    if (!session?.user) return;
-    setStatus('syncing');
-    try {
-      rememberCloudOwner(session.user.id);
-      await flushDeletions();
-      const rows = await pullSheets();
-      const remoteChars = rows.filter(row => row.sheet_type === 'pc');
-      const remoteThreats = rows.filter(row => row.sheet_type !== 'pc');
-      const [localChars,localThreats]=readCurrentLocal();
-      const chars=withoutPendingDeletions(mergeById(localChars, remoteChars),session.user.id);
-      const threats=withoutPendingDeletions(mergeById(localThreats, remoteThreats),session.user.id);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(chars));
-      localStorage.setItem(THREAT_STORAGE_KEY, JSON.stringify(threats));
-      setSavedChars(chars);
-      setSavedThreats(threats);
-      setRemoteCount(rows.length);
-      const now = new Date().toISOString();
-      setLastSync(now);
-      setStatus('synced');
-      if (!silent) showToast('☁️ Fichas da nuvem foram mescladas neste dispositivo.');
-    } catch (error) {
-      console.error('Conta Lite: falha ao baixar fichas', error);
-      setStatus('error');
-      if (!silent) showToast('Não foi possível baixar as fichas da nuvem.');
-    }
-  }, [session?.user?.id, savedChars, savedThreats, setSavedChars, setSavedThreats, showToast, flushDeletions]);
-
-  const syncNow = React.useCallback(async (silent = false, exact = false) => {
-    if (!session?.user) return;
-    setStatus('syncing');
-    try {
-      rememberCloudOwner(session.user.id);
-      const queuedDeletedCount=await flushDeletions();
-      const [localChars,localThreats]=readCurrentLocal();
-      let rows = [];
-      let deletedCount = queuedDeletedCount;
-
-      if (exact) {
-        const result = await mirrorSheets(
-          withoutPendingDeletions(localChars,session.user.id),
-          withoutPendingDeletions(localThreats,session.user.id));
-        rows = result?.rows || [];
-        deletedCount += Number(result?.deletedCount || 0);
-      } else {
-        await pushSheets(localChars, localThreats);
-        rows = await pullSheets();
-      }
-
-      setRemoteCount(rows.length);
-      const now = new Date().toISOString();
-      setLastSync(now);
-      setStatus('synced');
-
-      if (!silent) {
-        if (deletedCount > 0) {
-          showToast('☁️ Sincronizado. ' + deletedCount + (deletedCount === 1 ? ' ficha apagada também foi removida da nuvem.' : ' fichas apagadas também foram removidas da nuvem.'));
-        } else {
-          showToast(exact ? '☁️ Sincronizado. A nuvem agora reflete as fichas deste dispositivo.' : '☁️ Conta Lite sincronizada com o Supabase.');
+  const syncNow=React.useCallback(async(silent=false,exact=false)=>{
+    const ownerId=session?.user?.id;
+    if(!ownerId)return false;
+    return runSerialized(async()=>{
+      if(currentOwnerRef.current!==ownerId)return false;
+      setStatus('syncing');
+      try{
+        // Não enviar automaticamente fichas locais de outra conta à nuvem.
+        const lastOwner=getLastCloudOwner();
+        if(lastOwner&&lastOwner!==ownerId)throw new Error('cloud_owner_mismatch');
+        rememberCloudOwner(ownerId);
+        const queuedDeletedCount=await flushDeletions();
+        const remoteDeleted=await fetchDeletedSheetIds();
+        const blocked=[...remoteDeleted,...getPendingSheetDeletions(ownerId)];
+        let rows=[];
+        let deletedCount=queuedDeletedCount;
+        if(exact){
+          // Só o comando com confirmação explícita pode excluir fichas que
+          // existam somente na nuvem; nunca usar mirror no login automático.
+          const [nowChars,nowThreats]=readCurrentLocal();
+          const result=await mirrorSheets(
+            filterSheetsByIds(nowChars,blocked),
+            filterSheetsByIds(nowThreats,blocked));
+          rows=result?.rows||[];
+          deletedCount+=Number(result?.deletedCount||0);
+        }else{
+          // Reconciliar em ambas as direções a cada salvamento e ao recuperar foco.
+          const before=await pullSheets();
+          if(currentOwnerRef.current!==ownerId)return false;
+          const [nowChars,nowThreats]=readCurrentLocal();
+          const mergedChars=mergeSheetsByRevision(nowChars,before.filter(r=>r.sheet_type==='pc'),blocked);
+          const mergedThreats=mergeSheetsByRevision(nowThreats,before.filter(r=>r.sheet_type!=='pc'),blocked);
+          // Atualizar state somente quando algo realmente mudou.
+          if(!sameSheetList(nowChars,mergedChars)){
+            localStorage.setItem(STORAGE_KEY,JSON.stringify(mergedChars));
+            setSavedChars(mergedChars);
+          }
+          if(!sameSheetList(nowThreats,mergedThreats)){
+            localStorage.setItem(THREAT_STORAGE_KEY,JSON.stringify(mergedThreats));
+            setSavedThreats(mergedThreats);
+          }
+          await pushSheets(mergedChars,mergedThreats);
+          rows=await pullSheets();
+          // Uma edição pode ser salva DURANTE a chamada de rede. Reler dados
+          // atuais antes de gravar o resultado, evitando perda dessa edição.
+          if(currentOwnerRef.current!==ownerId)return false;
+          const [latestChars,latestThreats]=readCurrentLocal();
+          const finalChars=mergeSheetsByRevision(latestChars,rows.filter(r=>r.sheet_type==='pc'),blocked);
+          const finalThreats=mergeSheetsByRevision(latestThreats,rows.filter(r=>r.sheet_type!=='pc'),blocked);
+          if(!sameSheetList(latestChars,finalChars)){
+            localStorage.setItem(STORAGE_KEY,JSON.stringify(finalChars));
+            setSavedChars(finalChars);
+          }
+          if(!sameSheetList(latestThreats,finalThreats)){
+            localStorage.setItem(THREAT_STORAGE_KEY,JSON.stringify(finalThreats));
+            setSavedThreats(finalThreats);
+          }
         }
+        if(currentOwnerRef.current!==ownerId)return false;
+        setRemoteCount(rows.length);
+        const now=new Date().toISOString();
+        setLastSync(now);
+        lastNetworkRef.current=Date.now();
+        setStatus('synced');
+        initializedRef.current=true;
+        if(!silent){
+          if(deletedCount)showToast('☁️ '+deletedCount+' exclusão(ões) confirmada(s) na nuvem.');
+          else showToast(exact?'☁️ Nuvem atualizada conforme suas fichas deste dispositivo.':'☁️ Todas as fichas verificadas e sincronizadas.');
+        }
+        return true;
+      }catch(error){
+        console.error('Conta Lite: falha ao reconciliar fichas',error);
+        if(currentOwnerRef.current===ownerId)setStatus('error');
+        if(!silent)showToast(error?.message==='cloud_owner_mismatch'
+          ?'Outra Conta Lite foi usada neste dispositivo. Faça backup antes de trocar de conta para não misturar fichas.'
+          :'Falha ao sincronizar fichas; as alterações locais foram preservadas. Tente novamente.');
+        return false;
       }
-    } catch (error) {
-      console.error('Conta Lite: falha ao sincronizar', error);
-      setStatus('error');
-      if (!silent) showToast('Não foi possível sincronizar a Conta Lite.');
-    }
-  }, [session?.user?.id, savedChars, savedThreats, showToast, flushDeletions]);
+    });
+  },[session?.user?.id,savedChars,savedThreats,showToast,flushDeletions,runSerialized,setSavedChars,setSavedThreats]);
+
+  const pullAndMerge=React.useCallback(async(silent=false)=>syncNow(silent,false),[syncNow]);
 
   React.useEffect(() => {
     try {
@@ -241,12 +248,16 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
 
   React.useEffect(() => {
     let active = true;
-    getSession().then(next => { if (active) setSession(next); }).catch(error => console.error('Conta Lite: sessão', error));
-    const unsubscribe = onAuthStateChange(next => {
-      if (!active) return;
+    const updateSession=next=>{
+      if(!active)return;
+      const nextId=next?.user?.id||null;
+      // TOKEN_REFRESHED não é troca de conta. Não desligar a sincronização.
+      if(currentOwnerRef.current!==nextId)initializedRef.current=false;
+      currentOwnerRef.current=nextId;
       setSession(next);
-      initializedRef.current = false;
-    });
+    };
+    getSession().then(updateSession).catch(error => console.error('Conta Lite: sessão', error));
+    const unsubscribe = onAuthStateChange(updateSession);
     return () => { active = false; unsubscribe?.(); };
   }, []);
 
@@ -265,13 +276,10 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
         if (active) setProfile(nextProfile);
         await refreshSocial();
         if (!initializedRef.current) {
-          // Na primeira entrada, baixa e aplica as exclusões antes de fazer upload.
-          // A rotina lê o localStorage atual, sem usar o snapshot antigo do render.
-          await pullAndMerge(true);
-          if(active) {
-            initializedRef.current = true;
-            await syncNow(true);
-          }
+          // Uma única reconciliação não destrutiva no login. Não assumir
+          // sucesso quando houve erro de rede ou permissão.
+          const worked=await syncNow(true,false);
+          if(active&&worked)initializedRef.current=true;
         }
       } catch (error) {
         console.error('Conta Lite: inicialização', error);
@@ -285,9 +293,26 @@ export default function RealCloudPanel({ savedChars, savedThreats, setSavedChars
     if (!session?.user || !initializedRef.current) return;
     setStatus('pending');
     if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => syncNow(true), 1000);
+    timerRef.current = setTimeout(() => syncNow(true,false), 1200);
     return () => { if (timerRef.current) clearTimeout(timerRef.current); };
   }, [savedChars, savedThreats, session?.user?.id]);
+
+  React.useEffect(()=>{
+    if(!session?.user)return;
+    const refresh=()=>{
+      if(document.visibilityState==='hidden')return;
+      if(Date.now()-lastNetworkRef.current<15000)return;
+      void syncNow(true,false);
+    };
+    window.addEventListener('focus',refresh);
+    document.addEventListener('visibilitychange',refresh);
+    const interval=window.setInterval(refresh,60000);
+    return ()=>{
+      window.removeEventListener('focus',refresh);
+      document.removeEventListener('visibilitychange',refresh);
+      window.clearInterval(interval);
+    };
+  },[session?.user?.id,syncNow]);
 
   const handleGoogle = async () => {
     try { await signInWithGoogle(); }
