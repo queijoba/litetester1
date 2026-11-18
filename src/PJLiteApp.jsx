@@ -1667,7 +1667,7 @@ const { useState, useEffect, useRef } = React;
             const toggleFavorite = (id, isThreat = false) => {
                 const list = (isThreat ? getSavedThreats() : getSavedCharacters()).map(x => {
                     if (x.id !== id) return x;
-                    return { ...x, meta: { ...(x.meta || {}), favorite: !x.meta?.favorite } };
+                    return { ...x, meta: { ...(x.meta || {}), favorite: !x.meta?.favorite, updatedAt: new Date().toISOString() } };
                 });
                 localStorage.setItem(isThreat ? THREAT_STORAGE_KEY : STORAGE_KEY, JSON.stringify(list));
                 if (isThreat) setSavedThreats(list); else setSavedChars(list);
