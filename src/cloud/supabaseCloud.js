@@ -145,17 +145,29 @@ export async function pullSheets() {
   const {data:{user},error:userError}=await client.auth.getUser();
   if(userError)throw userError;
   if(!user)throw new Error('not_authenticated');
-  const { data, error } = await client
-    .from('sheets')
-    // Não incorporar fichas compartilhadas de outras pessoas como se fossem
-    // propriedade da Conta Lite; elas pertencem às próprias campanhas.
-    .select('local_id,sheet_type,system,name,payload,client_updated_at,updated_at')
-    .eq('owner_id',user.id)
-    .order('updated_at', { ascending: false });
-  if (error) throw error;
+  // Paginar evita perder fichas quando uma conta ultrapassar a quantidade
+  // padrão retornada pelo PostgREST. Uma lista parcial NÃO pode ser interpretada
+  // como exclusão remota de fichas ausentes.
+  const rows=[];
+  const pageSize=300;
+  for(let page=0;page<100;page++){
+    const offset=page*pageSize;
+    const {data,error}=await client
+      .from('sheets')
+      // Fichas compartilhadas de outras pessoas pertencem às campanhas.
+      .select('local_id,sheet_type,system,name,payload,client_updated_at,updated_at')
+      .eq('owner_id',user.id)
+      .order('updated_at',{ascending:false})
+      .order('local_id',{ascending:true})
+      .range(offset,offset+pageSize-1);
+    if(error)throw error;
+    rows.push(...(data||[]));
+    if((data||[]).length<pageSize)break;
+    if(page===99)throw new Error('Limite de fichas sincronizáveis excedido. Nenhum dado local foi apagado.');
+  }
   const pending=new Set(getPendingSheetDeletions(user.id));
-  return (data || []).filter(row=>!pending.has(String(row.local_id||'')))
-    .map(row => ({ ...row, payload: row.payload || {} }));
+  return rows.filter(row=>!pending.has(String(row.local_id||'')))
+    .map(row=>({...row,payload:row.payload||{}}));
 }
 
 export async function deleteRemoteSheets(localIds=[]) {
