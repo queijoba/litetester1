@@ -11,6 +11,7 @@ const mergeMessages=(current,incoming,campaignId)=>{
 export default function AccountChatPanel({account,showToast}){
  const [rooms,setRooms]=React.useState([]);
  const [roomId,setRoomId]=React.useState('');
+ const activeRoomRef=React.useRef('');activeRoomRef.current=roomId;
  const [messages,setMessages]=React.useState([]);
  const [draft,setDraft]=React.useState('');
  const [kind,setKind]=React.useState('text');
@@ -32,7 +33,7 @@ export default function AccountChatPanel({account,showToast}){
  React.useEffect(()=>{refreshRooms()},[refreshRooms]);
  const refreshMessages=React.useCallback(async()=>{
    if(!roomId){setMessages([]);return}
-   try{const latest=await listJourneyMessages(roomId);setMessages(previous=>mergeMessages(previous,latest,roomId));if(!loadedOlder.current)setHasOlder(latest.length>=100);setError('')}
+   try{const latest=await listJourneyMessages(roomId);if(activeRoomRef.current!==roomId)return;setMessages(previous=>mergeMessages(previous,latest,roomId));if(!loadedOlder.current)setHasOlder(latest.length>=100);setError('')}
    catch(e){setError(e?.message||'Não foi possível receber mensagens.')}
  },[roomId]);
  React.useEffect(()=>{
@@ -48,6 +49,7 @@ export default function AccountChatPanel({account,showToast}){
   setLoading(true);setError('');
   try{
    const older=await listJourneyMessages(roomId,{before:messages[0],limit:100});
+   if(activeRoomRef.current!==roomId)return;
    loadedOlder.current=true;
    setMessages(previous=>mergeMessages(previous,older,roomId));
    setHasOlder(older.length===100);
