@@ -263,6 +263,12 @@ export default function DragonbaneEditor({ scope }) {
   const dragonbaneAbilityCount=dragonbaneAbilityList(data,'inata').length+
    dragonbaneAbilityList(data,'heroica').length+dragonbaneAbilityList(data,'outro').length;
   const dragonbaneSpellCount=dragonbaneAbilityList(data,'magia').length+dragonbaneAbilityList(data,'truque').length;
+  const updateDragonbanePortrait=async e=>{
+   const file=e.target.files?.[0]; e.target.value='';
+   if(!file)return;
+   try { updateField('bio.imagem',await optimizeImageFile(file,720,0.82)); }
+   catch(err){console.error(err);showToast('Não foi possível usar esta imagem.');}
+  };
 
   return (
     <>
@@ -310,7 +316,7 @@ export default function DragonbaneEditor({ scope }) {
                                                       <div className={`absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3 transition-opacity ${showUrlInput ? 'opacity-100' : 'opacity-0 lg:group-hover:opacity-100 active:opacity-100'}`}>
                                                           {!showUrlInput ? (
                                                               <React.Fragment>
-                                                                  <label className="cursor-pointer bg-white text-black px-4 py-2 rounded text-sm font-bold hover:bg-gray-200 w-28 text-center shadow-lg">Upload<input type="file" accept="image/*" className="hidden" onChange={async (e) => { const file = e.target.files[0]; e.target.value=''; if (!file) return; try { updateField('bio.imagem', await optimizeImageFile(file, 720, 0.82)); } catch(err) { console.error(err); showToast('Não foi possível usar esta imagem.'); } }} /></label>
+                                                                  <label className="cursor-pointer bg-white text-black px-4 py-2 rounded text-sm font-bold hover:bg-gray-200 w-28 text-center shadow-lg">Upload<input type="file" accept="image/*" className="hidden" onChange={updateDragonbanePortrait} /></label>
                                                                   <button onClick={() => setShowUrlInput(true)} className="bg-white text-black px-4 py-2 rounded text-sm font-bold hover:bg-gray-200 w-28 text-center shadow-lg">Usar URL</button>
                                                                   {data.bio?.imagem && ( <button onClick={() => updateField('bio.imagem', '')} className="bg-red-600 text-white px-4 py-2 rounded text-sm font-bold hover:bg-red-700 w-28 text-center mt-2 shadow-lg">Remover</button> )}
                                                               </React.Fragment>
@@ -325,6 +331,9 @@ export default function DragonbaneEditor({ scope }) {
                                                           )}
                                                       </div>
                                                   </div>
+                                                  <label className="db-rework-portrait-upload cursor-pointer">Alterar retrato
+                                                    <input type="file" accept="image/*" className="sr-only" onChange={updateDragonbanePortrait}/>
+                                                  </label>
                                               </div>
                                               
                                               <div className="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
