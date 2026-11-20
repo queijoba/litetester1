@@ -19,6 +19,7 @@ export default function AccountChatPanel({account,showToast}){
  const [loading,setLoading]=React.useState(false);
  const [error,setError]=React.useState('');
  const [hasOlder,setHasOlder]=React.useState(false);
+ const loadedOlder=React.useRef(false);
  const room=rooms.find(r=>r.id===roomId);
  const bottomRef=React.useRef(null);
  const refreshRooms=React.useCallback(async()=>{
@@ -31,11 +32,11 @@ export default function AccountChatPanel({account,showToast}){
  React.useEffect(()=>{refreshRooms()},[refreshRooms]);
  const refreshMessages=React.useCallback(async()=>{
    if(!roomId){setMessages([]);return}
-   try{const latest=await listJourneyMessages(roomId);setMessages(previous=>mergeMessages(previous,latest,roomId));if(!messages.length)setHasOlder(latest.length>=100);setError('')}
+   try{const latest=await listJourneyMessages(roomId);setMessages(previous=>mergeMessages(previous,latest,roomId));if(!loadedOlder.current)setHasOlder(latest.length>=100);setError('')}
    catch(e){setError(e?.message||'Não foi possível receber mensagens.')}
  },[roomId]);
  React.useEffect(()=>{
-  setMessages([]);setHasOlder(false);
+  loadedOlder.current=false;setMessages([]);setHasOlder(false);
   refreshMessages();
   if(!roomId)return;
   const interval=setInterval(refreshMessages,12000);
@@ -47,6 +48,7 @@ export default function AccountChatPanel({account,showToast}){
   setLoading(true);setError('');
   try{
    const older=await listJourneyMessages(roomId,{before:messages[0],limit:100});
+   loadedOlder.current=true;
    setMessages(previous=>mergeMessages(previous,older,roomId));
    setHasOlder(older.length===100);
   }catch(e){setError(e?.message||'Falha ao carregar mensagens antigas.')}
