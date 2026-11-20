@@ -30,6 +30,8 @@ import {initialRotaZeroThreatData,normalizeRotaZeroThreatData,MODELOS_ROTA_ZERO_
 import {MODELOS_ROTA_ZERO_BESTIARIO,MODELOS_ROTA_ZERO_NPCS} from './systems/rotaZero/bestiaryCatalog.js';
 import {MODELOS_3DET_LIVRO,GRUPOS_3DET_LIVRO} from './systems/3det/bookThreatCatalog.js';
 import ThreatCatalog from './components/ThreatCatalog.jsx';
+import {MODELOS_SOM6_LIVRO_PDJ,MODELOS_SOM6_LIVRO_ANIMAIS} from './systems/somDasSeis/bestiaryCatalog.js';
+import {MODELOS_DRAGONBANE_BESTIARIO,GRUPOS_DRAGONBANE_BESTIARIO} from './systems/dragonbane/bestiaryCatalog.js';
 import {markSheetDeleted,unmarkSheetDeleted} from './cloud/cloudSheetDeletions.js';
 import { initialRotaZeroPcData, normalizeRotaZeroPcData } from './systems/rotaZero/data.js';
 import { MODELOS_ROTA_ZERO_PC } from './systems/rotaZero/models.js';
@@ -69,7 +71,7 @@ const { useState, useEffect, useRef } = React;
         const SCHEMA_VERSION = 6;
 
         const UPDATE_LOG = [
-            { versao: '1.1.3v Alpha', descricao: 'Escudo do Mestre com referências ampliadas por sistema, acesso aos PDFs no Drive e correção de nomes alternativos de sistema; minifichas de Campanhas corrigidas, mesmo quando campos opcionais estão vazios; cards de ameaças PNG sem cortes e modos térmicos 58/80 mm; ficha Rota Zero aberta a todos sem liberar a conquista secreta; temas sincronizados entre Home e Campanhas, guia e interface revisados; ajuste posterior: Escudo sem contadores/rolagem duplicados, ameaças de Rota Zero com editor e cards PNG, correção de exclusões persistentes na Conta Lite; revisão da sincronização bidirecional de todas as fichas, comparando versões, retomando após renovação de sessão e protegendo exclusões entre dispositivos. Novo catálogo de ameaças: mini-bestiário e NPCs do Rota Zero v0.5, fichas de referência do Manual 3DeT Victory e filtros pesquisáveis, sem ativar Tormenta20.' },
+            { versao: '1.1.3v Alpha', descricao: 'Escudo do Mestre com referências ampliadas por sistema, acesso aos PDFs no Drive e correção de nomes alternativos de sistema; minifichas de Campanhas corrigidas, mesmo quando campos opcionais estão vazios; cards de ameaças PNG sem cortes e modos térmicos 58/80 mm; ficha Rota Zero aberta a todos sem liberar a conquista secreta; temas sincronizados entre Home e Campanhas, guia e interface revisados; ajuste posterior: Escudo sem contadores/rolagem duplicados, ameaças de Rota Zero com editor e cards PNG, correção de exclusões persistentes na Conta Lite; revisão da sincronização bidirecional de todas as fichas, comparando versões, retomando após renovação de sessão e protegendo exclusões entre dispositivos. Novo catálogo de ameaças: mini-bestiário e NPCs do Rota Zero v0.5, fichas de referência do Manual 3DeT Victory e filtros pesquisáveis, sem ativar Tormenta20. Som das Seis: oito PDJs e doze animais do livro; Dragonbane: 63 criaturas do Bestiário com PNJs e tabelas D6, selecionáveis nos catálogos.' },
             { versao: '1.1.0v Alpha', descricao: 'Jornadas se tornou uma área independente da Home, com retorno visível, criação de campanha e orientação para iniciantes. O chat privado das campanhas ganhou uma aba própria na Conta Lite. A barra clássica de novidades foi preservada, e o Log de Atualizações continua em Sobre o Projeto. Conquistas ON/OFF permanece disponível na Conta Lite.' },
             { versao: '0.9.5v Alpha • Jornadas (prévia)', descricao: 'A Conta Lite organiza grupos com DM, campanhas em Jornadas, fichas vinculadas com permissão opcional de edição pelo mestre, iniciativa, combate, chat por mensagens e links HTTPS de mídia, mapas e PDFs autorizados. Conquistas ON/OFF agora permite mostrar apenas o emblema do evento no canto da tela. Guias revisados com bibliotecas e cards de ameaças em PNG.' },
             { versao: '0.8.0v Alpha', descricao: '3DeT Victory entra na prévia do PJ Lite com ficha digital modular, retrato opcional, P/H/R, PA/PM/PV, perícias, FA/FD, vantagens, desvantagens, técnicas, inventário por raridade, Kit opcional, Ficha Chat e integração com saves/importação.' },
@@ -2677,7 +2679,11 @@ const { useState, useEffect, useRef } = React;
                                             <div><h3 className="font-title font-bold text-red-950 border-b-2 border-red-200 pb-1 mb-3">Exemplo preenchido</h3>{MODELOS_SOM6_PC.map((m,i)=><div key={i} onClick={()=>loadTemplate(m)} className="bg-white border-2 border-amber-200 hover:border-red-900 rounded p-3 cursor-pointer"><div className="font-bold text-red-950">{m.bio.nome}</div><div className="text-xs text-gray-500">{m.bio.apelido} • {m.tormento.tipo}</div></div>)}</div>
                                         </> : <>
                                             <div><h3 className="font-title font-bold text-red-950 border-b-2 border-red-200 pb-1 mb-3">PDJ em Branco</h3><div onClick={()=>loadTemplate(initialSom6PdjData)} className="bg-white border-2 border-stone-300 hover:border-red-900 rounded p-4 cursor-pointer flex items-center gap-4"><div className="w-12 h-12 bg-red-950 text-amber-50 rounded flex items-center justify-center text-xl">☠</div><div><h3 className="font-bold text-sm">Novo PDJ</h3><p className="text-xs text-gray-500">Use NP 1–6 e registre só o que importa.</p></div></div></div>
-                                            <div><h3 className="font-title font-bold text-red-950 border-b-2 border-red-200 pb-1 mb-3">Modelos rápidos</h3><div className="grid sm:grid-cols-2 gap-3">{MODELOS_SOM6_PDJ.map((m,i)=><div key={i} onClick={()=>loadTemplate(m)} className="bg-white border-2 border-amber-200 hover:border-red-900 rounded p-3 cursor-pointer"><div className="font-bold text-red-950">{m.nome}</div><div className="text-xs text-gray-500">NP {m.np} • PV {m.status.pvMax} • {m.status.acoes} ações</div></div>)}</div></div>
+                                            <ThreatCatalog system="somdas6" groups={[
+                                             {title:'PDJs • O Som das Seis',items:MODELOS_SOM6_LIVRO_PDJ},
+                                             {title:'Animais selvagens • O Som das Seis',items:MODELOS_SOM6_LIVRO_ANIMAIS},
+                                             {title:'Modelos rápidos anteriores',items:MODELOS_SOM6_PDJ}
+                                            ]} onSelect={loadTemplate}/>
                                         </>}
                                         <div className="text-[10px] text-stone-600 border-t border-stone-300 pt-3">Regras de <strong>O Som das Seis</strong> por Ramon Mineiro. A adaptação de regras desta ficha segue a licença CC BY-SA 4.0 indicada no livro. <a href="https://www.rpgplanet.com.br/o-som-das-seis" target="_blank" rel="noopener noreferrer" className="underline font-semibold">Material original ↗</a>.</div>
                                     </div>
@@ -2774,17 +2780,11 @@ const { useState, useEffect, useRef } = React;
                                             </div>
                                         </div>
                                         <div>
-                                            <h3 className="font-title font-bold text-gray-700 border-b-2 border-gray-300 pb-1 mb-3">Modelos Rápidos (Dragonbane)</h3>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                                {MODELOS_AMEACAS_GENERICOS.map((modelo, idx) => (
-                                                    <div key={idx} onClick={() => loadTemplate(modelo)} className={`border rounded p-3 cursor-pointer hover:shadow-md transition-all flex justify-between items-center bg-white ${modelo.type === 'pnj' ? 'border-blue-200' : 'border-red-200'}`}>
-                                                        <div className="flex flex-col">
-                                                            <span className={`text-[10px] font-bold uppercase ${modelo.type === 'pnj' ? 'text-blue-800' : 'text-red-800'}`}>{modelo.type === 'pnj' ? 'PNJ' : 'Monstro'}</span>
-                                                            <span className="font-bold text-sm text-gray-900">{modelo.nome}</span>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
+                                            <p className="text-xs text-zinc-600">Livro de referência e 63 criaturas do Bestiário, incluindo modelos de PNJ e monstros com seis ataques. Selecione um modelo para editar os campos.</p>
+                                            <ThreatCatalog system="dragonbane" groups={[
+                                              {title:'Modelos rápidos anteriores',items:MODELOS_AMEACAS_GENERICOS},
+                                              ...GRUPOS_DRAGONBANE_BESTIARIO.map(grupo=>({title:'Bestiário Dragonbane • '+grupo,items:MODELOS_DRAGONBANE_BESTIARIO.filter(x=>x.grupo===grupo)}))
+                                            ]} onSelect={loadTemplate}/>
                                         </div>
                                     </div>
                                 </div>
