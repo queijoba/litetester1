@@ -106,6 +106,8 @@ assert.ok(preview.includes('dragonbaneAbilityList')&&preview.includes('DRAGONBAN
 assert.ok(preview.includes("createDragonbaneAbility('inata'")&&preview.includes('dragonbaneInnateSuggestions'),'Habilidades inatas opcionais mantidas');
 assert.ok(preview.includes("addToArray('habilidadesFeiticos'")&&preview.includes("updateArrayField('habilidadesFeiticos'")&&preview.includes("removeFromArray('habilidadesFeiticos'"),'Reusar a lista salva original');
 assert.ok(preview.includes('renameDragonbaneAbility'),'Não perder classificação de habilidades antigas quando seu nome muda');
+assert.ok(preview.includes('item.desc!==undefined?item.desc:(item.descricao'), 'Descrições antigas não devem desaparecer');
+assert.ok(preview.includes("includes('\\n')?3:1"), 'Nomes antigos com múltiplas linhas permanecem visíveis');
 assert.ok(preview.includes('preparada')&&preview.includes('grau')&&preview.includes('fonte'),'Manter as propriedades de feitiços');
 assert.ok(preview.includes('pdfCount>24')&&preview.includes('24 cartões'),'Alertar que o PDF editável só tem 24 cartões');
 assert.ok(editor.includes('db-rework-portrait-upload')&&editor.includes('updateDragonbanePortrait'),'Retrato deve ser acessível em dispositivos sem hover');
