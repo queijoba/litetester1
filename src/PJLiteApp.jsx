@@ -27,6 +27,9 @@ import TresDeTThreatEditor from './systems/3det/components/ThreatEditor.jsx';
 import RotaZeroCharacterEditor from './systems/rotaZero/components/CharacterEditor.jsx';
 import RotaZeroThreatEditor from './systems/rotaZero/components/ThreatEditor.jsx';
 import {initialRotaZeroThreatData,normalizeRotaZeroThreatData,MODELOS_ROTA_ZERO_AMEACAS} from './systems/rotaZero/threatData.js';
+import {MODELOS_ROTA_ZERO_BESTIARIO,MODELOS_ROTA_ZERO_NPCS} from './systems/rotaZero/bestiaryCatalog.js';
+import {MODELOS_3DET_LIVRO,GRUPOS_3DET_LIVRO} from './systems/3det/bookThreatCatalog.js';
+import ThreatCatalog from './components/ThreatCatalog.jsx';
 import {markSheetDeleted,unmarkSheetDeleted} from './cloud/cloudSheetDeletions.js';
 import { initialRotaZeroPcData, normalizeRotaZeroPcData } from './systems/rotaZero/data.js';
 import { MODELOS_ROTA_ZERO_PC } from './systems/rotaZero/models.js';
@@ -2583,8 +2586,11 @@ const { useState, useEffect, useRef } = React;
                            </header>
                            <div className="overflow-y-auto p-4 space-y-3">
                             <button type="button" onClick={()=>{setShowRotaZeroThreatModal(false);loadTemplate(initialRotaZeroThreatData)}} className="w-full text-left rounded border-2 border-[#7f9585] bg-white p-4 hover:border-[#34473b]"><strong>+ Ficha de ameaça em branco</strong><p className="text-xs mt-1">Criaturas, anomalias, máquinas, NPCs e perseguidores. Todos os campos editáveis.</p></button>
-                            <h3 className="font-black text-sm text-[#263129]">Exemplos originais (não oficiais)</h3>
-                            {MODELOS_ROTA_ZERO_AMEACAS.map((modelo,i)=><button key={i} type="button" onClick={()=>{setShowRotaZeroThreatModal(false);loadTemplate(modelo)}} className="w-full text-left border border-[#a7aaa5] rounded bg-white p-3 hover:border-[#34473b]"><strong>{modelo.nome}</strong><p className="text-xs mt-1">{modelo.descricao}</p></button>)}
+                            <ThreatCatalog system="rotaZero" groups={[
+                             {title:'Mini-bestiário • Rota Zero v0.5',items:MODELOS_ROTA_ZERO_BESTIARIO},
+                             {title:'NPCs • Rota Zero v0.5',items:MODELOS_ROTA_ZERO_NPCS},
+                             {title:'Exemplos livres do PJLite',items:MODELOS_ROTA_ZERO_AMEACAS}
+                            ]} onSelect={modelo=>{setShowRotaZeroThreatModal(false);loadTemplate(modelo)}}/>
                            </div>
                           </div>
                          </div>,document.body
@@ -2644,8 +2650,11 @@ const { useState, useEffect, useRef } = React;
                                                 <div className="w-14 h-14 bg-zinc-950 text-amber-400 rounded flex items-center justify-center text-2xl shadow-inner shrink-0">👾</div>
                                                 <div><h3 className="font-bold text-sm text-zinc-950">Nova Ameaça / NPC</h3><p className="text-xs text-zinc-500 mt-1">Ficha em branco e compacta para aliados, inimigos, monstros, rivais e chefes.</p></div>
                                             </div>
-                                            <div><div className="border-b-2 border-amber-200 pb-1 mb-3"><h3 className="font-title font-black text-zinc-900">NPCs rápidos • Compêndio</h3><p className="text-[10px] text-zinc-500 mt-1">Perfis leves inspirados nas faixas do Compêndio de NPCs do Manual Básico.</p></div><div className="grid sm:grid-cols-2 gap-3">{MODELOS_3DET_NPCS.map((modelo, idx) => <div key={idx} onClick={() => loadTemplate(modelo)} className="bg-white border-2 border-zinc-200 hover:border-amber-500 rounded p-3 cursor-pointer hover:shadow-md"><div className="flex justify-between gap-2"><div><div className="font-black text-zinc-950">{modelo.nome}</div><div className="text-[10px] text-zinc-500">{modelo.papel} • {modelo.categoria}</div></div><span className="text-[9px] font-black rounded bg-zinc-950 text-amber-300 px-2 py-1 h-fit">{modelo.pontos} pts</span></div><p className="mt-2 text-[10px] text-zinc-600 line-clamp-2">{modelo.conceito}</p></div>)}</div></div>
-                                            <div><div className="border-b-2 border-amber-200 pb-1 mb-3"><h3 className="font-title font-black text-zinc-900">Criaturas prontas para mesa</h3><p className="text-[10px] text-zinc-500 mt-1">Exemplos originais construídos com as mesmas peças de regra do Victory; ajuste livremente para sua campanha.</p></div><div className="grid sm:grid-cols-2 gap-3">{MODELOS_3DET_CRIATURAS.map((modelo, idx) => <div key={idx} onClick={() => loadTemplate(modelo)} className="bg-white border-2 border-amber-200 hover:border-amber-500 rounded p-3 cursor-pointer hover:shadow-md"><div className="flex justify-between gap-2"><div><div className="font-black text-zinc-950">{modelo.nome}</div><div className="text-[10px] text-zinc-500">{modelo.papel} • {modelo.escala}</div></div><span className="text-[9px] font-black rounded bg-amber-100 text-amber-900 px-2 py-1 h-fit">{modelo.pontos} pts</span></div><p className="mt-2 text-[10px] text-zinc-600 line-clamp-2">{modelo.conceito}</p></div>)}</div></div>
+                                            <ThreatCatalog system="3det" groups={[
+                                             {title:'NPCs rápidos • modelos PJLite',items:MODELOS_3DET_NPCS},
+                                             {title:'Criaturas originais • modelos PJLite',items:MODELOS_3DET_CRIATURAS},
+                                             ...GRUPOS_3DET_LIVRO.map(grupo=>({title:'Manual 3DeT Victory • '+grupo,items:MODELOS_3DET_LIVRO.filter(x=>x.grupo===grupo)}))
+                                            ]} onSelect={loadTemplate}/>
                                             <div className="rounded border border-amber-300 bg-amber-50 p-3 text-[10px] leading-relaxed text-amber-950"><strong>Modo Mestre:</strong> a pontuação funciona como referência de poder; a ficha permite ajustar recursos e capacidades sem obrigar o NPC a seguir a criação de personagem ao pé da letra.</div>
                                         </>}
                                     </div>
