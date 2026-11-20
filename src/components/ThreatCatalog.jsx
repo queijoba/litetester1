@@ -10,7 +10,7 @@ export default function ThreatCatalog({groups,onSelect,system='3det'}){
  const count=all.length;
  const filtered=groups.map(group=>{
   const items=(group.items||[]).filter(item=>{
-   const isNpc=item.categoria==='NPC'||item.papel==='Aliado';
+   const isNpc=item.type==='pnj'||item.categoria==='NPC'||item.papel==='Aliado';
    if(type==='ameacas'&&isNpc)return false;
    if(type==='npcs'&&!isNpc)return false;
    return !query.trim()||fold([item.nome,item.descricao,item.conceito,item.grupo,item.papel,item.categoria,item.fonte,item.codigo,group.title].join(' ')).includes(fold(query.trim()));
