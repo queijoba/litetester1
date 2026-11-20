@@ -38,7 +38,7 @@ const RECORDS=[
   "grupo": "Notívagos",
   "tipo": "pnj",
   "movimento": "10",
-  "pv": 0,
+  "pv": 16,
   "pd": 12,
   "armadura": "Couro (1) PD: 12",
   "variantes": [
@@ -154,8 +154,8 @@ const RECORDS=[
   "pagina": 26,
   "grupo": "Ancestralidades raras",
   "tipo": "pnj",
-  "movimento": "10",
-  "pv": 0,
+  "movimento": "12",
+  "pv": 8,
   "pd": 9,
   "armadura": "Couro (1) PD: 9",
   "variantes": [
@@ -187,8 +187,8 @@ const RECORDS=[
   "pagina": 30,
   "grupo": "Ancestralidades raras",
   "tipo": "pnj",
-  "movimento": "10",
-  "pv": 0,
+  "movimento": "12",
+  "pv": 12,
   "pd": 14,
   "armadura": "— PD: 14"
  },
@@ -467,11 +467,20 @@ const RECORDS=[
   "nome": "Ameba Gigante",
   "pagina": 70,
   "grupo": "Feras",
-  "tipo": "pnj",
-  "movimento": "10",
-  "pv": 0,
-  "pd": 0,
-  "armadura": ""
+  "tipo": "monstro",
+  "movimento": "8",
+  "pv": "64",
+  "armadura": "—",
+  "ferocidade": 2,
+  "tamanho": "Grande",
+  "ataques": [
+   "Ataque de Tentáculos",
+   "Faces dos Mortos",
+   "Roubo",
+   "Bola de Lodo",
+   "Nuvem de Veneno",
+   "Absorção"
+  ]
  },
  {
   "nome": "Aranha Gigante",
@@ -889,11 +898,20 @@ const RECORDS=[
   "nome": "Vampiro",
   "pagina": 118,
   "grupo": "Mortos-vivos",
-  "tipo": "pnj",
-  "movimento": "10",
-  "pv": 0,
-  "pd": 0,
-  "armadura": ""
+  "tipo": "monstro",
+  "movimento": "16",
+  "pv": "32",
+  "armadura": "—",
+  "ferocidade": 2,
+  "tamanho": "Normal",
+  "ataques": [
+   "Maldição",
+   "Golpe Duplo",
+   "Enxame de Insetos",
+   "Arremesso Mortal",
+   "Estrangulamento",
+   "Coração Partido"
+  ]
  },
  {
   "nome": "Vulto",
