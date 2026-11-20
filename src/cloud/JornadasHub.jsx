@@ -177,7 +177,7 @@ export default function JornadasHub(){
    </aside>
    <div className="jornadas-site__content">
     <div className="jornadas-clean__pagehead">
-     <div><span className="jornadas-site__eyebrow">PJ LITE · 1.1.0v ALPHA</span><h1>{activeContent}</h1>
+     <div><span className="jornadas-site__eyebrow">PJ LITE · 1.1.3v ALPHA</span><h1>{activeContent}</h1>
       <p>{tab==='campaigns'?'Prepare sua aventura, abra sua mesa e convide jogadores com um código de grupo.':tab==='groups'?'Crie um grupo como mestre ou entre em um grupo usando o convite recebido.':tab==='chat'?'Mensagens das campanhas dos seus grupos em um só lugar.':'Seu perfil, conexão e atalhos de organização.'}</p>
      </div>
      <a href="/" className="jornadas-clean__back">← Voltar à Home</a>
