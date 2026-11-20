@@ -1940,3 +1940,10 @@ body { background-color: #e5e7eb; }
  padding:12px 15px;border:2px solid #b65c3f;border-radius:7px;
  background:#f7e0ce;color:#723b28;font-size:12px;line-height:1.5;
 }
+
+.db-sheet .db-rework-portrait-upload {
+ display:block;padding:5px 10px;margin-top:3px;background:#fff9e4;
+ color:#215c51;border:1px solid #29695e;border-radius:5px;
+ font-size:11px;font-weight:800;text-align:center;
+}
+.db-sheet .db-rework-portrait-upload:hover,.db-sheet .db-rework-portrait-upload:focus-within {background:#e1ede1;outline:2px solid #df5549;outline-offset:1px}
