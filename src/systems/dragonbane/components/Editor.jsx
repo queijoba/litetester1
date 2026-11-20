@@ -1,4 +1,6 @@
 import {DRAGONBANE_ATTRIBUTE_ORDER,dragonbaneAttributeValue,dragonbaneAttributeCondition} from '../attributes.js';
+import {dragonbaneAbilityList} from '../abilities.js';
+import DragonbaneAbilitiesPanel from './AbilitiesPanel.jsx';
 // Extraído automaticamente do antigo PJLiteApp monolítico.
 // Este arquivo agora é a fonte visual do editor deste sistema.
 export default function DragonbaneEditor({ scope }) {
@@ -256,6 +258,17 @@ export default function DragonbaneEditor({ scope }) {
     useState,
     view
   } = scope;
+  // A navegação pertence à interface; os dados permanecem no formato original da ficha.
+  const [dragonbanePage,setDragonbanePage]=useState('ficha');
+  const dragonbaneAbilityCount=dragonbaneAbilityList(data,'inata').length+
+   dragonbaneAbilityList(data,'heroica').length+dragonbaneAbilityList(data,'outro').length;
+  const dragonbaneSpellCount=dragonbaneAbilityList(data,'magia').length+dragonbaneAbilityList(data,'truque').length;
+  const updateDragonbanePortrait=async e=>{
+   const file=e.target.files?.[0]; e.target.value='';
+   if(!file)return;
+   try { updateField('bio.imagem',await optimizeImageFile(file,720,0.82)); }
+   catch(err){console.error(err);showToast('Não foi possível usar esta imagem.');}
+  };
 
   return (
     <>
@@ -263,7 +276,7 @@ export default function DragonbaneEditor({ scope }) {
                               data.type === 'pc' ? (
                                   <React.Fragment>
                                       {/* Mobile Tabs for PC */}
-                                      <div className="md:hidden flex bg-gray-200 border-b border-gray-300">
+                                      <div className={dragonbanePage==='ficha'?'md:hidden flex bg-gray-200 border-b border-gray-300':'hidden'}>
                                           {[ { id: 'status', label: 'Perfil & Status' }, { id: 'pericias', label: 'Perícias' }, { id: 'equipamento', label: 'Combate & Equip' } ].map(tab => (
                                               <button key={tab.id} onClick={() => setMobileTab(tab.id)} className={`flex-1 py-3 text-xs font-bold uppercase text-center border-b-4 transition-colors ${mobileTab === tab.id ? 'border-red-700 text-red-900 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-300'}`}>{tab.label}</button>
                                           ))}
@@ -278,7 +291,22 @@ export default function DragonbaneEditor({ scope }) {
                                               </div>
                                               <div className="db-brand-line"></div>
                                           </div>
-      
+                                          <nav className="db-rework-tabs" role="tablist" aria-label="Seções da ficha de Dragonbane">
+                                            {[
+                                              {id:'ficha',titulo:'01 • Ficha',detalhe:'Perfil, perícias e combate'},
+                                              {id:'habilidades',titulo:'02 • Habilidades',detalhe:'Ancestralidade e heroicas',quantidade:dragonbaneAbilityCount},
+                                              {id:'magias',titulo:'03 • Magias',detalhe:'Feitiços e truques',quantidade:dragonbaneSpellCount}
+                                            ].map(tab=><button key={tab.id} type="button" role="tab" aria-selected={dragonbanePage===tab.id}
+                                             onClick={()=>setDragonbanePage(tab.id)}
+                                             className={'db-rework-tab '+(dragonbanePage===tab.id?'db-rework-tab-active':'')}>
+                                             <strong>{tab.titulo}</strong>
+                                             <small>{tab.detalhe}</small>
+                                             {Number.isInteger(tab.quantidade)&&<span className="db-rework-tab-count">{tab.quantidade}</span>}
+                                            </button>)}
+                                          </nav>
+                                          <div className="db-rework-preview-note" role="note">Prévia visual no LiteTester • A ficha clássica foi preservada e reorganizada em três seções.</div>
+                                          <div role="tabpanel" aria-label="Ficha do personagem" className={dragonbanePage==='ficha'?'space-y-4':'hidden'}>
+
                                           {/* Biografia PC */}
                                           <div className={`db-bio flex flex-col md:flex-row gap-4 items-start ${mobileTab === 'status' ? 'block' : 'hidden md:flex'}`}>
                                               <div className="flex flex-col items-center gap-2 mx-auto md:mx-0 w-full md:w-auto">
@@ -288,7 +316,7 @@ export default function DragonbaneEditor({ scope }) {
                                                       <div className={`absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3 transition-opacity ${showUrlInput ? 'opacity-100' : 'opacity-0 lg:group-hover:opacity-100 active:opacity-100'}`}>
                                                           {!showUrlInput ? (
                                                               <React.Fragment>
-                                                                  <label className="cursor-pointer bg-white text-black px-4 py-2 rounded text-sm font-bold hover:bg-gray-200 w-28 text-center shadow-lg">Upload<input type="file" accept="image/*" className="hidden" onChange={async (e) => { const file = e.target.files[0]; e.target.value=''; if (!file) return; try { updateField('bio.imagem', await optimizeImageFile(file, 720, 0.82)); } catch(err) { console.error(err); showToast('Não foi possível usar esta imagem.'); } }} /></label>
+                                                                  <label className="cursor-pointer bg-white text-black px-4 py-2 rounded text-sm font-bold hover:bg-gray-200 w-28 text-center shadow-lg">Upload<input type="file" accept="image/*" className="hidden" onChange={updateDragonbanePortrait} /></label>
                                                                   <button onClick={() => setShowUrlInput(true)} className="bg-white text-black px-4 py-2 rounded text-sm font-bold hover:bg-gray-200 w-28 text-center shadow-lg">Usar URL</button>
                                                                   {data.bio?.imagem && ( <button onClick={() => updateField('bio.imagem', '')} className="bg-red-600 text-white px-4 py-2 rounded text-sm font-bold hover:bg-red-700 w-28 text-center mt-2 shadow-lg">Remover</button> )}
                                                               </React.Fragment>
@@ -303,6 +331,9 @@ export default function DragonbaneEditor({ scope }) {
                                                           )}
                                                       </div>
                                                   </div>
+                                                  <label className="db-rework-portrait-upload cursor-pointer">Alterar retrato
+                                                    <input type="file" accept="image/*" className="sr-only" onChange={updateDragonbanePortrait}/>
+                                                  </label>
                                               </div>
                                               
                                               <div className="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -400,73 +431,8 @@ export default function DragonbaneEditor({ scope }) {
                                                       <div className="flex justify-between items-center"><span className="text-[10px] font-bold uppercase text-gray-500">Falhas</span><div className="flex gap-2">{[0, 1, 2].map(i => <input key={`fal-${i}`} type="checkbox" checked={data.status?.testesMorte.falhas[i]} onChange={e => { const newArr = [...data.status.testesMorte.falhas]; newArr[i] = e.target.checked; updateField('status.testesMorte.falhas', newArr); }} className="w-4 h-4 cursor-pointer" />)}</div></div>
                                                   </div>
       
-                                                  {/* Desktop: Combate e Inventário ficam logo abaixo dos Testes de Morte */}
-                                                  <div className="hidden lg:block space-y-4 db-combat-desktop-slot">
-                                                  <div>
-                                                      <h2 style={getBarStyle()} className="db-section-title font-title font-bold text-base bg-dragon-dark text-white text-center py-1 mb-2">COMBATE</h2>
-                                                      <div className="space-y-3 mb-4">
-                                                          <div className="db-armor-card border p-2 space-y-1">
-                                                              <div className="flex gap-2 items-end">
-                                                                  <div className="flex-1"><label className="block text-[10px] font-bold text-gray-500 uppercase">Armadura</label><input type="text" value={data.defesa?.armadura.nome} onChange={e => updateField('defesa.armadura.nome', e.target.value)} className="w-full bg-transparent outline-none text-sm font-bold border-b border-gray-300" /></div>
-                                                                  <div className="w-14 shrink-0"><label className="block text-[10px] font-bold text-gray-500 uppercase text-center">Val.</label><input type="text" value={data.defesa?.armadura.valor} onChange={e => updateField('defesa.armadura.valor', e.target.value)} className="w-full bg-transparent outline-none text-sm text-center font-bold border-b border-gray-300" /></div>
-                                                              </div>
-                                                              <input type="text" value={data.defesa?.armadura.reves} onChange={e => updateField('defesa.armadura.reves', e.target.value)} className="w-full bg-transparent outline-none text-[11px] text-gray-600 italic border-b border-gray-200" placeholder="Revés..." />
-                                                          </div>
-      
-                                                          <div className="db-armor-card border p-2 space-y-1">
-                                                              <div className="flex gap-2 items-end">
-                                                                  <div className="flex-1"><label className="block text-[10px] font-bold text-gray-500 uppercase">Elmo</label><input type="text" value={data.defesa?.elmo.nome} onChange={e => updateField('defesa.elmo.nome', e.target.value)} className="w-full bg-transparent outline-none text-sm font-bold border-b border-gray-300" /></div>
-                                                                  <div className="w-12"><label className="block text-[10px] font-bold text-gray-500 uppercase text-center">Val.</label><input type="text" value={data.defesa?.elmo.valor} onChange={e => updateField('defesa.elmo.valor', e.target.value)} className="w-full bg-transparent outline-none text-sm text-center font-bold border-b border-gray-300" /></div>
-                                                              </div>
-                                                              <input type="text" value={data.defesa?.elmo.reves} onChange={e => updateField('defesa.elmo.reves', e.target.value)} className="w-full bg-transparent outline-none text-[11px] text-gray-600 italic border-b border-gray-200" placeholder="Revés..." />
-                                                          </div>
-                                                      </div>
-      
-                                                      <div className="mb-6">
-                                                          <div className="flex justify-between items-center bg-gray-200 py-1 px-3 mb-2 rounded-sm border border-gray-300">
-                                                              <h3 className="font-title font-bold text-sm text-gray-700">ARMAS</h3>
-                                                              <button onClick={() => addToArray('armas', { nome: '', empunhadura: '', alcance: '', dano: '', tracos: '' })} className="db-add-btn db-add-neutral"><SVGIcons.Plus/> Adic.</button>
-                                                          </div>
-                                                          <div className="space-y-3">
-                                                              {(data.armas || []).map((arma, index) => (
-                                                                  <div key={index} className="db-weapon-card border p-2 shadow-sm flex flex-col gap-2">
-                                                                      <div className="flex gap-2 items-end">
-                                                                          <div className="flex-1"><label className="block text-[9px] font-bold text-gray-500 uppercase">Arma / Escudo</label><input type="text" value={arma.nome} onChange={e => updateArrayField('armas', index, 'nome', e.target.value)} className="w-full border-b border-gray-400 outline-none text-sm font-bold bg-transparent"/></div>
-                                                                          <button onClick={() => removeFromArray('armas', index)} className="text-red-500 hover:text-red-700 mb-1"><SVGIcons.Trash/></button>
-                                                                      </div>
-                                                                      <div className="grid grid-cols-3 gap-2">
-                                                                          <div><label className="text-[9px] font-bold text-gray-500 uppercase">Empunh.</label><input type="text" value={arma.empunhadura} onChange={e => updateArrayField('armas', index, 'empunhadura', e.target.value)} className="w-full border-b border-gray-300 outline-none text-xs bg-transparent"/></div>
-                                                                          <div><label className="text-[9px] font-bold text-gray-500 uppercase">Alcance</label><input type="text" value={arma.alcance} onChange={e => updateArrayField('armas', index, 'alcance', e.target.value)} className="w-full border-b border-gray-300 outline-none text-xs bg-transparent"/></div>
-                                                                          <div><label className="text-[9px] font-bold text-gray-500 uppercase">Dano</label><input type="text" value={arma.dano} onChange={e => updateArrayField('armas', index, 'dano', e.target.value)} className="w-full border-b border-gray-300 outline-none text-xs bg-transparent font-bold"/></div>
-                                                                      </div>
-                                                                      <textarea rows="1" value={arma.tracos} onChange={e => updateArrayField('armas', index, 'tracos', e.target.value)} className="w-full border border-gray-200 rounded outline-none text-xs bg-white p-1 resize-y" placeholder="Traços..."></textarea>
-                                                                  </div>
-                                                              ))}
-                                                          </div>
-                                                      </div>
-      
-                                                      <h2 style={getBarStyle()} className="db-section-title font-title font-bold text-base bg-dragon-dark text-white text-center py-1 mb-3 mt-5">INVENTÁRIO</h2>
-                                                      
-                                                      <div className="grid grid-cols-3 gap-2 mb-3">
-                                                          <div className="db-money-gold border-2 rounded flex flex-col items-center justify-center p-2 shadow-sm"><label className="text-[10px] font-bold text-yellow-700 uppercase mb-1">Ouro</label><input type="number" value={data.moedas?.ouro} onChange={e => updateField('moedas.ouro', parseInt(e.target.value) || 0)} className="w-full bg-transparent text-center font-title font-bold text-xl outline-none text-yellow-900" /></div>
-                                                          <div className="db-money-silver border-2 rounded flex flex-col items-center justify-center p-2 shadow-sm"><label className="text-[10px] font-bold text-gray-500 uppercase mb-1">Prata</label><input type="number" value={data.moedas?.prata} onChange={e => updateField('moedas.prata', parseInt(e.target.value) || 0)} className="w-full bg-transparent text-center font-title font-bold text-xl outline-none text-gray-800" /></div>
-                                                          <div className="db-money-copper border-2 rounded flex flex-col items-center justify-center p-2 shadow-sm"><label className="text-[10px] font-bold text-orange-800 uppercase mb-1">Cobre</label><input type="number" value={data.moedas?.cobre} onChange={e => updateField('moedas.cobre', parseInt(e.target.value) || 0)} className="w-full bg-transparent text-center font-title font-bold text-xl outline-none text-orange-900" /></div>
-                                                      </div>
-      
-                                                      <label className="block text-xs font-bold text-gray-500 uppercase mb-1 mt-2">Equipamento</label>
-                                                      <textarea rows="6" value={data.inventario} onChange={e => updateField('inventario', e.target.value)} className="db-inventory-box w-full border-2 p-2 text-sm outline-none resize-y mb-3"></textarea>
-                                                      
-                                                      <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Itens Miúdos</label>
-                                                      <textarea rows="3" value={data.itensMiudos || ''} onChange={e => updateField('itensMiudos', e.target.value)} className="db-inventory-box w-full border-2 p-2 text-sm outline-none resize-y"></textarea>
-      
-                                                      <div className="mt-4 pb-10 md:pb-0">
-                                                          <label className="block text-xs font-bold text-gray-500 uppercase">Memento (Item Especial)</label>
-                                                          <input type="text" value={data.bio?.memento} onChange={e => updateField('bio.memento', e.target.value)} className="w-full border-b border-gray-400 outline-none bg-transparent text-sm italic" />
-                                                      </div>
-                                                  </div>
-                                                  </div>
                                               </div>
-      
+
                                               <div className={`db-column lg:col-span-5 xl:col-span-5 flex flex-col min-w-0 ${mobileTab === 'pericias' ? 'flex' : 'hidden md:flex'}`}>
                                                   <div className="flex justify-end mb-3">
                                                       <button onClick={() => updateField('status.armasPrimeiro', !data.status?.armasPrimeiro)} className="text-[10px] bg-gray-200 hover:bg-gray-300 text-gray-700 px-2 py-1 rounded flex items-center gap-1 shadow-sm font-bold uppercase transition-colors">
@@ -533,29 +499,17 @@ export default function DragonbaneEditor({ scope }) {
                                               </div>
       
                                               <div className={`db-column lg:col-span-3 xl:col-span-4 space-y-4 min-w-0 ${mobileTab === 'equipamento' ? 'block' : 'hidden md:block'}`}>
-                                                  <div>
-                                                      <div style={getBarStyle()} className="db-section-title flex justify-between items-center bg-dragon-dark text-white py-1 px-3 mb-2">
-                                                          <h2 className="font-title font-bold text-lg">HABILIDADES E MAGIAS</h2>
-                                                          <button onClick={() => addToArray('habilidadesFeiticos', { nome: '', fv_nvl: '' })} className="db-add-btn db-add-red"><SVGIcons.Plus/> Adic.</button>
-                                                      </div>
-                                                      <div className="db-ability-list">
-                                                          {(data.habilidadesFeiticos || []).map((hab, index) => (
-                                                              <div key={index} className="db-ability-card flex gap-2 items-start min-w-0">
-                                                                  <div className="flex-1">
-                                                                      {index === 0 && <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Habilidade / Magia</label>}
-                                                                      <textarea rows="2" value={hab.nome} onChange={e => updateArrayField('habilidadesFeiticos', index, 'nome', e.target.value)} className="w-full border border-gray-300 rounded bg-gray-50 outline-none text-sm p-1 resize-y"></textarea>
-                                                                  </div>
-                                                                  <div className="w-12">
-                                                                      {index === 0 && <label className="block text-[10px] font-bold text-gray-400 uppercase text-center mb-1">PD/Nv.</label>}
-                                                                      <input type="text" value={hab.fv_nvl} onChange={e => updateArrayField('habilidadesFeiticos', index, 'fv_nvl', e.target.value)} className="w-full border-b border-gray-400 outline-none bg-transparent text-center text-sm mt-1" />
-                                                                  </div>
-                                                                  <button onClick={() => removeFromArray('habilidadesFeiticos', index)} className="text-red-500 hover:text-red-700 mt-2"><SVGIcons.Trash/></button>
-                                                              </div>
-                                                          ))}
-                                                      </div>
+                                                  <div className="db-rework-shortcuts">
+                                                    <div className="db-rework-eyebrow">Recursos do aventureiro</div>
+                                                    <h2>Habilidades e Magias</h2>
+                                                    <p>Os poderes e feitiços têm seu próprio espaço, sem ocupar a área de combate.</p>
+                                                    <div className="db-rework-shortcut-actions">
+                                                      <button type="button" onClick={()=>setDragonbanePage('habilidades')}>Habilidades <b>{dragonbaneAbilityCount}</b></button>
+                                                      <button type="button" onClick={()=>setDragonbanePage('magias')}>Magias <b>{dragonbaneSpellCount}</b></button>
+                                                    </div>
                                                   </div>
-      
-      <div className="lg:hidden db-combat-mobile-slot">
+
+      <div className="db-combat-mobile-slot">
                                                   <div>
                                                       <h2 style={getBarStyle()} className="db-section-title font-title font-bold text-base bg-dragon-dark text-white text-center py-1 mb-2">COMBATE</h2>
                                                       <div className="space-y-3 mb-4">
@@ -621,6 +575,15 @@ export default function DragonbaneEditor({ scope }) {
                                                   </div>
                                               </div>
                                           </div>
+                                          </div>
+                                          {dragonbanePage==='habilidades'&&<div role="tabpanel" aria-label="Habilidades do personagem">
+                                            <DragonbaneAbilitiesPanel mode="habilidades" data={data} addToArray={addToArray}
+                                              updateArrayField={updateArrayField} removeFromArray={removeFromArray} setData={setData}/>
+                                          </div>}
+                                          {dragonbanePage==='magias'&&<div role="tabpanel" aria-label="Magias e truques">
+                                            <DragonbaneAbilitiesPanel mode="magias" data={data} addToArray={addToArray}
+                                              updateArrayField={updateArrayField} removeFromArray={removeFromArray} setData={setData}/>
+                                          </div>}
                                       </div>
                                   </React.Fragment>
                               ) : data.type === 'pnj' ? (

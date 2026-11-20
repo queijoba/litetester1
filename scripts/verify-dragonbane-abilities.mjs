@@ -94,20 +94,29 @@ assert.ok(panel.includes('Categoria'));
 assert.ok(panel.includes("entry.desc!==undefined?entry.desc"),'Preservar desc e descricao no editor');
 assert.ok(app.includes("h.desc !== undefined ? h.desc : h.descricao"),'Ficha Chat deve manter prioridade consistente de descrições');
 
-// Rollback visual solicitado em 22/10: conservar o editor clássico anterior às três abas.
-assert.ok(editor.includes('HABILIDADES E MAGIAS'), 'O editor clássico deve exibir uma única área de habilidades e magias');
-assert.ok(editor.includes("addToArray('habilidadesFeiticos'"), 'Adicionar recursos à lista antiga');
-assert.ok(editor.includes("updateArrayField('habilidadesFeiticos'"), 'Editar recursos antigos na própria ficha');
-assert.ok(editor.includes("removeFromArray('habilidadesFeiticos'"), 'Remover recursos manualmente');
-assert.ok(editor.includes('db-ability-list')&&editor.includes('db-ability-card'), 'Recuperar cartões clássicos');
-assert.ok(editor.includes('mobileTab === tab.id'), 'Recuperar navegação mobile clássica');
-assert.ok(editor.includes('db-paper db-sheet'), 'Preservar pergaminho e estrutura original');
-assert.ok(!editor.includes('db-primary-tabs')&&!editor.includes('dbPage'), 'Não mostrar a reorganização recente em três abas');
-assert.ok(!editor.includes('<DragonbaneAbilityPanels'), 'Não substituir os cartões originais por novos painéis');
+// Em 20/11 a reorganização experimental é apresentada primeiro no LiteTester.
+// Mantém o formato de dados e os recursos do editor clássico, sem migração destrutiva.
+const preview=readFileSync('src/systems/dragonbane/components/AbilitiesPanel.jsx','utf8');
+assert.ok(editor.includes('db-paper db-sheet')&&editor.includes('db-brand'), 'Preservar pergaminho, identidade e moldura originais');
+assert.ok(editor.includes("dragonbanePage==='ficha'")&&editor.includes("dragonbanePage==='habilidades'")&&editor.includes("dragonbanePage==='magias'"),'Três abas realmente navegáveis');
+assert.ok(editor.includes('Perfil, perícias e combate')&&editor.includes('Feitiços e truques'),'Rótulos de navegação claros');
+assert.ok(editor.includes('db-rework-shortcuts')&&editor.includes('db-combat-mobile-slot'), 'Combate e inventário devem continuar acessíveis');
+assert.ok(editor.includes('updateField(\'inventario\'')&&editor.includes('updateField(\'moedas.ouro\''), 'Inventário da ficha continua editável');
+assert.ok(preview.includes('dragonbaneAbilityList')&&preview.includes('DRAGONBANE_MAGIC_SCHOOLS'),'Habilidades e magias devem ser separadas pelo tipo');
+assert.ok(preview.includes("createDragonbaneAbility('inata'")&&preview.includes('dragonbaneInnateSuggestions'),'Habilidades inatas opcionais mantidas');
+assert.ok(preview.includes("addToArray('habilidadesFeiticos'")&&preview.includes("updateArrayField('habilidadesFeiticos'")&&preview.includes("removeFromArray('habilidadesFeiticos'"),'Reusar a lista salva original');
+assert.ok(preview.includes('renameDragonbaneAbility'),'Não perder classificação de habilidades antigas quando seu nome muda');
+assert.ok(preview.includes('item.desc!==undefined?item.desc:(item.descricao'), 'Descrições antigas não devem desaparecer');
+assert.ok(preview.includes("includes('\\n')?3:1"), 'Nomes antigos com múltiplas linhas permanecem visíveis');
+assert.ok(preview.includes('preparada')&&preview.includes('grau')&&preview.includes('fonte'),'Manter as propriedades de feitiços');
+assert.ok(preview.includes('pdfCount>24')&&preview.includes('24 cartões'),'Alertar que o PDF editável só tem 24 cartões');
+assert.ok(editor.includes('db-rework-portrait-upload')&&editor.includes('updateDragonbanePortrait'),'Retrato deve ser acessível em dispositivos sem hover');
+assert.ok(editor.includes('mobileTab === tab.id'),'Preservar navegação mobile por perfil, perícias e combate');
+assert.ok(!editor.includes('db-combat-desktop-slot'),'Não duplicar combate/inventário no DOM');
 assert.ok(app.includes('DRAGONBANE_ABILITY_KINDS.forEach'), 'Manter utilitários atuais usados em PDF e chat');
 assert.ok(css.includes('#2e786a')&&css.includes('#f5edd4'), 'Manter paleta e recursos de compatibilidade');
 
-console.log('✓ Dragonbane: editor clássico restaurado, cartões editáveis, chat e PDF legado preservados.');
+console.log('✓ Dragonbane: prévia em 3 abas, estética clássica, edição, chat e PDF legado preservados.');
 
 
 // Ordem oficial consultada no Livro de Regras v1.1 e na ficha editável PT-BR do Drive.
