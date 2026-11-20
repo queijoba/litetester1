@@ -1935,3 +1935,8 @@ body { background-color: #e5e7eb; }
  .db-sheet .db-rework-card-heading {row-gap:8px}
  .db-sheet .db-rework-ability-card {padding:10px}
 }
+
+.db-sheet .db-rework-pdf-warning {
+ padding:12px 15px;border:2px solid #b65c3f;border-radius:7px;
+ background:#f7e0ce;color:#723b28;font-size:12px;line-height:1.5;
+}
