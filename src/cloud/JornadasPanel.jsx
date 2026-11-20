@@ -36,6 +36,7 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat,o
  const [activeResource,setActiveResource]=React.useState('');
  const [hasOlderMessages,setHasOlderMessages]=React.useState(false);
  const [deleteTarget,setDeleteTarget]=React.useState(null),[deleteName,setDeleteName]=React.useState('');
+ const activeCampaignRef=React.useRef(active);activeCampaignRef.current=active;
  const current=journeys.find(c=>c.id===active);
  const group=groups.find(g=>g.id===current?.group_id);
  const members=Array.isArray(group?.members)?group.members:[];
@@ -59,6 +60,7 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat,o
    listJourneySheets(current.id),getMyCloudSheets(),
    isDm?listJourneyDmSheets(current.id):Promise.resolve([])
   ]);
+  if(activeCampaignRef.current!==current.id)return results;
   const setters=[null,setResources,setLinks,setMySheets,setDmLinks];
   results.forEach((result,index)=>{
    if(result.status==='fulfilled'){
@@ -86,11 +88,13 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat,o
   if(!current)return;
   const timer=setInterval(()=>{
    if(tab==='chat')listJourneyMessages(current.id).then(rows=>{
+    if(activeCampaignRef.current!==current.id)return;
     setMessages(prev=>mergeChatMessages(prev,rows,current.id));
    }).catch(()=>{});
    // Qualquer mudança da campanha deve chegar aos jogadores, não apenas combate.
    if(!isDm)listJourneys().then(rows=>{
     const latest=rows.find(c=>c.id===current.id);
+    if(activeCampaignRef.current!==current.id)return;
     if(latest){setDraft({...latest,board:cleanBoard(latest.board)});
      setJourneys(prev=>prev.map(entry=>entry.id===latest.id?latest:entry));}
    }).catch(()=>{});
@@ -134,6 +138,7 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat,o
  const loadOlderMessages=()=>run(async()=>{
   if(!current||!messages.length)return;
   const older=await listJourneyMessages(current.id,{before:messages[0],limit:100});
+  if(activeCampaignRef.current!==current.id)return;
   setMessages(prev=>mergeChatMessages(prev,older,current.id));
   setHasOlderMessages(older.length===100);
  },'Histórico anterior carregado.');
