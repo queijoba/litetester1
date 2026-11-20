@@ -23,6 +23,7 @@ export default function AccountChatPanel({account,showToast}){
  const loadedOlder=React.useRef(false);
  const room=rooms.find(r=>r.id===roomId);
  const bottomRef=React.useRef(null);
+ const suppressScrollOnHistory=React.useRef(false);
  const refreshRooms=React.useCallback(async()=>{
    try{
      const list=await listJourneys();setRooms(list||[]);
@@ -43,7 +44,7 @@ export default function AccountChatPanel({account,showToast}){
   const interval=setInterval(refreshMessages,12000);
   return()=>clearInterval(interval);
  },[refreshMessages,roomId]);
- React.useEffect(()=>{bottomRef.current?.scrollIntoView?.({behavior:'smooth',block:'nearest'})},[messages.length]);
+ React.useEffect(()=>{if(suppressScrollOnHistory.current){suppressScrollOnHistory.current=false;return;}bottomRef.current?.scrollIntoView?.({behavior:'smooth',block:'nearest'})},[messages.length]);
  const loadOlder=async()=>{
   if(!roomId||loading||!messages.length)return;
   setLoading(true);setError('');
@@ -51,6 +52,7 @@ export default function AccountChatPanel({account,showToast}){
    const older=await listJourneyMessages(roomId,{before:messages[0],limit:100});
    if(activeRoomRef.current!==roomId)return;
    loadedOlder.current=true;
+   if(older.length)suppressScrollOnHistory.current=true;
    setMessages(previous=>mergeMessages(previous,older,roomId));
    setHasOlder(older.length===100);
   }catch(e){setError(e?.message||'Falha ao carregar mensagens antigas.')}
