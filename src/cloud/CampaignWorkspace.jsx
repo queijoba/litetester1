@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {
  listJourneyResources,addJourneyResource,removeJourneyResource,
- uploadJourneyMedia,setJourneyResourceVisibility,getDmMindmap,saveDmMindmap
+ uploadJourneyMedia,setJourneyResourceVisibility,getDmMindmap,saveDmMindmap,getDmPrivateNotes,saveDmPrivateNotes
 } from './jornadasCloud.js';
 import './campaign-workspace.css';
 import {isGoogleDriveResourceUrl} from './driveResourceLinks.js';
@@ -21,8 +21,11 @@ export function CampaignLibrary({campaignId,isDm,notify}){
  const [title,setTitle]=React.useState(''),[kind,setKind]=React.useState('pdf'),[category,setCategory]=React.useState('livro'),[description,setDescription]=React.useState('');
  const [url,setUrl]=React.useState(''),[file,setFile]=React.useState(null),[visible,setVisible]=React.useState(true);
  const [filter,setFilter]=React.useState('todos'),[reader,setReader]=React.useState(null);
- const refresh=React.useCallback(async()=>{try{setFiles(await listJourneyResources(campaignId));setError('')}catch(e){setError(e?.message||'Não foi possível abrir a biblioteca.')}},[campaignId]);
- React.useEffect(()=>{refresh()},[refresh]);
+ const refresh=React.useCallback(async()=>{try{
+  const rows=await listJourneyResources(campaignId);
+  setFiles(rows);setReader(previous=>previous?(rows.find(row=>row.id===previous.id)||null):null);setError('');
+ }catch(e){setError(e?.message||'Não foi possível abrir a biblioteca.')}},[campaignId]);
+ React.useEffect(()=>{refresh();const timer=setInterval(refresh,15*60*1000);return()=>clearInterval(timer)},[refresh]);
  const submit=async e=>{e.preventDefault();if(busy)return;setBusy(true);setError('');
   try{
    // PDF por link: evita erro de upload e de iframe que o Google Drive bloqueia.
@@ -80,16 +83,27 @@ export function CampaignMindmap({campaignId,isDm}){
  const [nodes,setNodes]=React.useState([]),[links,setLinks]=React.useState([]),[selected,setSelected]=React.useState('');
  const [from,setFrom]=React.useState(''),[to,setTo]=React.useState('');
  const [busy,setBusy]=React.useState(false),[dirty,setDirty]=React.useState(false),[error,setError]=React.useState(''),[loaded,setLoaded]=React.useState(false);
- React.useEffect(()=>{if(!isDm)return;let active=true;
-  getDmMindmap(campaignId).then(data=>{if(active){setNodes(data.nodes||[]);setLinks(data.links||[]);setLoaded(true)}}).catch(e=>{if(active){setError(e?.message||'Não foi possível abrir o mapa mental.');setLoaded(true)}});return()=>{active=false};
- },[campaignId,isDm]);
+ const [revision,setRevision]=React.useState(null),[retry,setRetry]=React.useState(0);
+ React.useEffect(()=>{if(!isDm)return;let active=true;setLoaded(false);setError('');setDirty(false);
+  getDmMindmap(campaignId).then(data=>{if(active){setNodes(data.nodes||[]);setLinks(data.links||[]);setRevision(data.updated_at||null);setLoaded(true)}})
+   .catch(e=>{if(active){setError(e?.message||'Não foi possível abrir o mapa mental.');setLoaded(false)}});
+  return()=>{active=false};
+ },[campaignId,isDm,retry]);
  if(!isDm)return null;
+ if(!loaded)return <section className="campaign-workspace">
+  <h3>🧠 Mapa mental do mestre</h3>
+  <p role={error?'alert':'status'}>{error||'Carregando o mapa mental privado...'}</p>
+  {error&&<button type="button" onClick={()=>setRetry(value=>value+1)}>↻ Tentar novamente</button>}
+  <small>Nenhuma alteração pode ser salva enquanto a leitura não for concluída.</small>
+ </section>;
  const node=nodes.find(x=>x.id===selected);
  const change=(id,patch)=>{setNodes(prev=>prev.map(x=>x.id===id?{...x,...patch}:x));setDirty(true)};
  const add=()=>{const id=uuid();setNodes(prev=>[...prev,{id,title:'Novo elemento',type:'pista',note:'',x:20+(prev.length%4)*17,y:20+(Math.floor(prev.length/4)%4)*20}]);setSelected(id);setDirty(true)};
  const remove=()=>{setNodes(p=>p.filter(x=>x.id!==selected));setLinks(p=>p.filter(x=>x.from!==selected&&x.to!==selected));setSelected('');setDirty(true)};
  const connect=()=>{if(!from||!to||from===to||links.some(l=>l.from===from&&l.to===to))return;setLinks(p=>[...p,{id:uuid(),from,to}]);setDirty(true)};
- const save=async()=>{setBusy(true);setError('');try{const saved=await saveDmMindmap(campaignId,nodes,links);setNodes(saved.nodes);setLinks(saved.links);setDirty(false)}catch(e){setError(e?.message||'Falha ao salvar o mapa.')}finally{setBusy(false)}};
+ const save=async()=>{if(!loaded||busy)return;setBusy(true);setError('');
+  try{const saved=await saveDmMindmap(campaignId,nodes,links,revision);setNodes(saved.nodes);setLinks(saved.links);setRevision(saved.updated_at);setDirty(false)}
+  catch(e){setError(e?.message||'Falha ao salvar o mapa.')}finally{setBusy(false)}};
  const onDragEnd=(e,id)=>{const board=document.getElementById('dm-mindmap-board');if(!board)return;const b=board.getBoundingClientRect();change(id,{x:Math.max(2,Math.min(83,100*(e.clientX-b.left)/b.width-5)),y:Math.max(3,Math.min(82,100*(e.clientY-b.top)/b.height-5))})};
  return <section className="campaign-workspace">
   <header className="campaign-workspace__heading"><div><h3>🧠 Mapa mental do mestre</h3><p>Organize mistérios, NPCs, locais e pistas com conexões. Este mural fica armazenado separadamente e <strong>não é acessível pelos jogadores</strong>.</p></div><span className="campaign-workspace__private">🔒 Somente DM</span></header>
@@ -127,11 +141,37 @@ export function CampaignRecords({mode,draft,setDraft,isDm,onSave,busy}){
   {!rows.length&&<p className="campaign-workspace__empty">Nenhum registro ainda.</p>}
  </section>;
 }
-export function CampaignNotes({draft,setDraft,isDm,onSave,busy}){
+export function CampaignNotes({campaignId,draft,setDraft,isDm,onSave,busy}){
  const board=asBoard(draft),notes=board.sessionNotes||{general:draft.notes||'',future:'',past:''};
  const setNote=(k,v)=>setDraft(p=>({...p,notes:k==='general'?v:p.notes,board:{...asBoard(p),sessionNotes:{...notes,[k]:v}}}));
- return <section className="campaign-workspace"><header className="campaign-workspace__heading"><div><h3>🗒️ Anotações</h3><p>Resumo geral, próximas sessões e histórico compartilhado da campanha.</p></div></header>
-  <div className="campaign-workspace__box">{[['general','Geral','Anotações da história...'],['future','Sessões futuras','Preparativos e próximos objetivos...'],['past','Sessões anteriores','O que aconteceu nas sessões?']].map(([k,title,ph])=><label key={k}>{title}<textarea rows={5} placeholder={ph} disabled={!isDm} value={notes[k]||''} onChange={e=>setNote(k,e.target.value)}/></label>)}{isDm&&<button className="campaign-workspace__primary" onClick={onSave} disabled={busy}>💾 Salvar anotações</button>}</div>
+ const [secret,setSecret]=React.useState(''),[revision,setRevision]=React.useState(null);
+ const [privateReady,setPrivateReady]=React.useState(false),[privateBusy,setPrivateBusy]=React.useState(false),[privateError,setPrivateError]=React.useState(''),[privateNotice,setPrivateNotice]=React.useState('');
+ const [retry,setRetry]=React.useState(0);
+ React.useEffect(()=>{if(!isDm||!campaignId)return;let active=true;setPrivateReady(false);setPrivateError('');setPrivateNotice('');
+  getDmPrivateNotes(campaignId).then(data=>{if(active){setSecret(data.notes||'');setRevision(data.updated_at||null);setPrivateReady(true)}})
+   .catch(e=>{if(active){setPrivateError(e?.message||'Não foi possível carregar as notas privadas.');setPrivateReady(false)}});
+  return()=>{active=false};
+ },[campaignId,isDm,retry]);
+ const saveSecret=async()=>{if(!privateReady||privateBusy)return;setPrivateBusy(true);setPrivateError('');setPrivateNotice('');
+  try{const result=await saveDmPrivateNotes(campaignId,secret,revision);setRevision(result.updated_at);setPrivateNotice('Notas privadas salvas somente para o mestre.')}
+  catch(e){setPrivateError(e?.message||'Não foi possível salvar as notas privadas.')}
+  finally{setPrivateBusy(false)}
+ };
+ return <section className="campaign-workspace">
+  <header className="campaign-workspace__heading"><div><h3>🗒️ Anotações</h3><p>Separe informações compartilhadas de segredos e preparativos que só o mestre pode consultar.</p></div></header>
+  <div className="campaign-workspace__box"><h4>👥 Anotações compartilhadas com os jogadores</h4>
+   <p>Os três campos abaixo são visíveis para todos os participantes da campanha.</p>
+   {[['general','Geral','Anotações da história...'],['future','Sessões futuras (visível aos jogadores)','Planejamento compartilhado...'],['past','Sessões anteriores','O que aconteceu nas sessões?']].map(([k,title,ph])=><label key={k}>{title}<textarea rows={5} placeholder={ph} disabled={!isDm} value={notes[k]||''} onChange={e=>setNote(k,e.target.value)}/></label>)}
+   {isDm&&<button type="button" className="campaign-workspace__primary" onClick={onSave} disabled={busy}>💾 Salvar anotações compartilhadas</button>}
+  </div>
+  {isDm&&<div className="campaign-workspace__box">
+    <h4>🔒 Planejamento privado do mestre</h4><p>Guarde reviravoltas, armadilhas, NPCs secretos e preparativos. Jogadores não conseguem acessar este conteúdo.</p>
+    {!privateReady?<><p role={privateError?'alert':'status'}>{privateError||'Carregando notas privadas...'}</p>{privateError&&<button type="button" onClick={()=>setRetry(n=>n+1)}>↻ Tentar novamente</button>}</>:
+     <><label>Notas secretas<textarea rows={9} maxLength={50000} value={secret} disabled={privateBusy} onChange={e=>{setSecret(e.target.value);setPrivateNotice('')}} placeholder="O que somente o mestre deve saber..."/></label>
+     <button type="button" className="campaign-workspace__primary" onClick={saveSecret} disabled={privateBusy}>{privateBusy?'Salvando…':'💾 Salvar notas privadas'}</button></>}
+    {privateError&&privateReady&&<p role="alert" className="campaign-workspace__error">{privateError}</p>}
+    {privateNotice&&<p role="status">{privateNotice}</p>}
+  </div>}
  </section>;
 }
 // Mantém as outras abas utilizáveis caso um erro inesperado aconteça
