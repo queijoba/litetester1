@@ -74,6 +74,7 @@ function AbilityCard({item,index,kind,onChange,onRemove,onRename}){
 
 export default function DragonbaneAbilitiesPanel({mode,data,addToArray,updateArrayField,removeFromArray,setData}){
  const defs=SECTIONS[mode]||SECTIONS.habilidades;
+ const pdfCount=Array.isArray(data.habilidadesFeiticos)?data.habilidadesFeiticos.length:0;
  const suggestions=mode==='habilidades'
   ?dragonbaneInnateSuggestions(data.bio?.ancestralidade,data.habilidadesFeiticos):[];
  const add=kind=>addToArray('habilidadesFeiticos',createDragonbaneAbility(kind));
@@ -87,6 +88,9 @@ export default function DragonbaneAbilitiesPanel({mode,data,addToArray,updateArr
    </div>
    <span className="db-rework-chapter">{mode==='magias'?'CAP. 5':'CAP. 2–3'}</span>
   </div>
+  {pdfCount>24&&<div className="db-rework-pdf-warning" role="alert">
+   <strong>Atenção ao PDF editável:</strong> sua ficha tem {pdfCount} cartões, mas o modelo PDF permite 24. Os demais continuam salvos no PJLite; revise a exportação.
+  </div>}
   {suggestions.length>0&&<aside className="db-rework-suggestions" aria-label="Sugestões de habilidades inatas">
    <div><strong>Habilidades da ancestralidade</strong><p>Adicionar é opcional; nada será inserido automaticamente.</p></div>
    <div className="db-rework-suggestion-buttons">
@@ -110,6 +114,6 @@ export default function DragonbaneAbilitiesPanel({mode,data,addToArray,updateArr
      :<div className="db-rework-empty">Nenhum registro nesta categoria. Use <strong>+ Adicionar</strong> para criar o primeiro.</div>}
    </section>;
   })}
-  <p className="db-rework-footnote">Os dados usam a lista original da ficha de Dragonbane: suas fichas salvas, os cartões antigos e os PDFs continuam compatíveis. O conteúdo completo das regras deve ser consultado no livro.</p>
+  <p className="db-rework-footnote">Os dados usam a lista original da ficha de Dragonbane. Ao alterar o tipo, o cartão pode mudar de aba. O PDF editável comporta até 24 cartões; o conteúdo completo das regras deve ser consultado no livro.</p>
  </div>;
 }
