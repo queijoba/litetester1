@@ -111,7 +111,7 @@ assert(main.includes("./theme-polish.css"), 'main.jsx não carrega a revisão vi
 const app = await readFile('src/PJLiteApp.jsx', 'utf8');
 assert(app.includes("./systems/3det/models.js"), 'PJLiteApp não importa os modelos prontos do 3DeT.');
 assert(app.includes('MODELOS_3DET_PC.map'), 'modal de criação não exibe os modelos prontos do 3DeT.');
-assert(app.includes('MODELOS_3DET_NPCS.map') && app.includes('MODELOS_3DET_CRIATURAS.map'), 'modal de ameaças não exibe NPCs e criaturas prontas do 3DeT.');
+assert(app.includes('items:MODELOS_3DET_NPCS}') && app.includes('items:MODELOS_3DET_CRIATURAS}') && app.includes('<ThreatCatalog system="3det"'), 'modal de ameaças deve exibir modelos 3DeT por meio do catálogo filtrável.');
 assert(app.includes("createTarget === 'pc' ? 'Poder • Habilidade • Resistência • ficha compacta' : 'NPCs • criaturas • rivais • chefes'"), 'cartão 3DeT não diferencia personagem de ameaça.');
 assert(!/\{createTarget === 'pc' && \(\s*<div onClick=\{\(\) => \{ setShowSystemModal\(false\); setShow3DetModelModal\(true\); \}\}/.test(app), 'cartão 3DeT voltou a ficar escondido no fluxo de Ameaça/PNJ.');
 
