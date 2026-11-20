@@ -107,6 +107,8 @@ assert.ok(preview.includes("createDragonbaneAbility('inata'")&&preview.includes(
 assert.ok(preview.includes("addToArray('habilidadesFeiticos'")&&preview.includes("updateArrayField('habilidadesFeiticos'")&&preview.includes("removeFromArray('habilidadesFeiticos'"),'Reusar a lista salva original');
 assert.ok(preview.includes('renameDragonbaneAbility'),'Não perder classificação de habilidades antigas quando seu nome muda');
 assert.ok(preview.includes('preparada')&&preview.includes('grau')&&preview.includes('fonte'),'Manter as propriedades de feitiços');
+assert.ok(preview.includes('pdfCount>24')&&preview.includes('24 cartões'),'Alertar que o PDF editável só tem 24 cartões');
+assert.ok(editor.includes('db-rework-portrait-upload')&&editor.includes('updateDragonbanePortrait'),'Retrato deve ser acessível em dispositivos sem hover');
 assert.ok(editor.includes('mobileTab === tab.id'),'Preservar navegação mobile por perfil, perícias e combate');
 assert.ok(!editor.includes('db-combat-desktop-slot'),'Não duplicar combate/inventário no DOM');
 assert.ok(app.includes('DRAGONBANE_ABILITY_KINDS.forEach'), 'Manter utilitários atuais usados em PDF e chat');
