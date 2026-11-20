@@ -37,8 +37,8 @@ for (const token of [
   "./systems/3det/components/ThreatEditor.jsx",
   'normalize3DetThreatData',
   'generate3DetThreatChatText',
-  'MODELOS_3DET_NPCS.map',
-  'MODELOS_3DET_CRIATURAS.map',
+  'MODELOS_3DET_NPCS},'
+  'MODELOS_3DET_CRIATURAS},'
   '<TresDeTThreatEditor scope={systemEditorScope} />',
   "sys === '3det' ? '3DeT Victory • Ameaça'",
 ]) assert(app.includes(token), `integração ausente: ${token}`);
