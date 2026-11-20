@@ -53,5 +53,5 @@ for(const token of ['ThreatCatalog','MODELOS_ROTA_ZERO_BESTIARIO','MODELOS_ROTA_
  assert.ok(app.includes(token),'Integração não encontrada: '+token);
 }
 const ui=readFileSync('src/components/ThreatCatalog.jsx','utf8');
-assert.ok(ui.includes('Pesquisar modelos')&&ui.includes('ameaças'),'Pesquisa e filtros obrigatórios.');
+assert.ok(ui.includes('Pesquisar modelos')&&ui.includes('Ameaças'),'Pesquisa e filtros obrigatórios.');
 console.log('✓ Bestiários: Rota Zero (13 ameaças + 5 NPCs) e 3DeT (64 perfis) validados; 10 modelos antigos mantidos.');
