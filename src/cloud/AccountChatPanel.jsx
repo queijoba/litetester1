@@ -3,6 +3,11 @@ import {listJourneys,listJourneyMessages,sendJourneyMessage,uploadJourneyMedia} 
 import './account-chat.css';
 
 const cleanUrl=s=>{try{return new URL(s).protocol==='https:'}catch{return false}};
+const mergeMessages=(current,incoming,campaignId)=>{
+ const map=new Map();
+ for(const item of [...current,...incoming])if(item?.campaign_id===campaignId)map.set(item.id,item);
+ return [...map.values()].sort((a,b)=>a.created_at.localeCompare(b.created_at)||a.id.localeCompare(b.id));
+};
 export default function AccountChatPanel({account,showToast}){
  const [rooms,setRooms]=React.useState([]);
  const [roomId,setRoomId]=React.useState('');
@@ -13,6 +18,7 @@ export default function AccountChatPanel({account,showToast}){
  const [file,setFile]=React.useState(null);
  const [loading,setLoading]=React.useState(false);
  const [error,setError]=React.useState('');
+ const [hasOlder,setHasOlder]=React.useState(false);
  const room=rooms.find(r=>r.id===roomId);
  const bottomRef=React.useRef(null);
  const refreshRooms=React.useCallback(async()=>{
@@ -25,16 +31,27 @@ export default function AccountChatPanel({account,showToast}){
  React.useEffect(()=>{refreshRooms()},[refreshRooms]);
  const refreshMessages=React.useCallback(async()=>{
    if(!roomId){setMessages([]);return}
-   try{setMessages(await listJourneyMessages(roomId));setError('')}
+   try{const latest=await listJourneyMessages(roomId);setMessages(previous=>mergeMessages(previous,latest,roomId));if(!messages.length)setHasOlder(latest.length>=100);setError('')}
    catch(e){setError(e?.message||'Não foi possível receber mensagens.')}
  },[roomId]);
  React.useEffect(()=>{
+  setMessages([]);setHasOlder(false);
   refreshMessages();
   if(!roomId)return;
   const interval=setInterval(refreshMessages,12000);
   return()=>clearInterval(interval);
  },[refreshMessages,roomId]);
  React.useEffect(()=>{bottomRef.current?.scrollIntoView?.({behavior:'smooth',block:'nearest'})},[messages.length]);
+ const loadOlder=async()=>{
+  if(!roomId||loading||!messages.length)return;
+  setLoading(true);setError('');
+  try{
+   const older=await listJourneyMessages(roomId,{before:messages[0],limit:100});
+   setMessages(previous=>mergeMessages(previous,older,roomId));
+   setHasOlder(older.length===100);
+  }catch(e){setError(e?.message||'Falha ao carregar mensagens antigas.')}
+  finally{setLoading(false)}
+ };
  const send=async e=>{
   e.preventDefault();if(!roomId||loading)return;
   setLoading(true);setError('');
@@ -56,6 +73,7 @@ export default function AccountChatPanel({account,showToast}){
   {!rooms.length?<div className="pjlite-account-chat__empty"><strong>Nenhuma conversa disponível.</strong><p>Entre ou crie uma campanha em Jornadas. O chat será exibido aqui para os integrantes do grupo.</p><a href="/?jornadas=1">🧭 Abrir Jornadas →</a></div>:<>
     <div className="pjlite-account-chat__header"><strong>{room?.name||'Campanha'}</strong><small>Atualização automática a cada 12 segundos</small></div>
     <div className="pjlite-account-chat__messages" aria-live="polite">
+       {hasOlder&&<button type="button" disabled={loading} onClick={loadOlder}>↑ Carregar mensagens anteriores</button>}
       {!messages.length&&<div className="pjlite-account-chat__empty"><p>Nenhuma mensagem ainda. Comece a conversa com seu grupo.</p></div>}
       {messages.map(m=><article key={m.id} className={m.author_id===account?.id?'is-mine':''}><div className="pjlite-account-chat__meta"><strong>{m.author_id===account?.id?'Você':'Membro da campanha'}</strong><time>{m.created_at?new Date(m.created_at).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}):''}</time></div>{m.body&&<p>{m.body}</p>}{cleanUrl(m.displayUrl)&&<div className="pjlite-account-chat__media">{m.kind==='image'&&<img src={m.displayUrl} alt={m.body||'Imagem da campanha'} loading="lazy"/>}{m.kind==='video'&&m.url?.startsWith('storage:')&&<video src={m.displayUrl} controls preload="metadata"/>}<a href={m.displayUrl} target="_blank" rel="noopener noreferrer">{m.kind==='youtube'?'▶ Abrir música':m.kind==='image'?'🖼 Abrir imagem':m.kind==='video'?'🎬 Abrir vídeo':'📎 Abrir anexo ou link'}</a></div>}</article>)}
       <div ref={bottomRef}/>
