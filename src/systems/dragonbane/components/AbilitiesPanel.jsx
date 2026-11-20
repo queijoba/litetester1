@@ -34,7 +34,7 @@ function AbilityCard({item,index,kind,onChange,onRemove,onRename}){
   </div>
   <div className="db-rework-fields">
    <label className="db-rework-field db-rework-name">Nome
-    <textarea rows={1} value={item.nome||''} onChange={e=>onRename(index,e.target.value)} className={LINE+' resize-y font-bold'} placeholder={spell?'Nome do feitiço':'Nome da habilidade'}/>
+    <textarea rows={String(item.nome||'').includes('\n')?3:1} value={item.nome||''} onChange={e=>onRename(index,e.target.value)} className={LINE+' resize-y font-bold'} placeholder={spell?'Nome do feitiço':'Nome da habilidade'}/>
    </label>
    <label className="db-rework-field db-rework-cost">PD / Nível
     <input value={item.fv_nvl||''} onChange={e=>set('fv_nvl',e.target.value)} className={LINE} placeholder={kind==='truque'?'1 PD':'Ex.: 3 PD'}/>
@@ -59,7 +59,7 @@ function AbilityCard({item,index,kind,onChange,onRemove,onRename}){
    </>}
   </div>}
   <label className="db-rework-field">Efeito e observações
-   <textarea rows={2} value={item.desc||''} onChange={e=>set('desc',e.target.value)} className={LINE+' resize-y'} placeholder="Descreva o efeito, duração, custo ou condição..."/>
+   <textarea rows={2} value={item.desc!==undefined?item.desc:(item.descricao||'')} onChange={e=>set('desc',e.target.value)} className={LINE+' resize-y'} placeholder="Descreva o efeito, duração, custo ou condição..."/>
   </label>
   <div className="db-rework-citation-fields">
    <label className="db-rework-field">Fonte
