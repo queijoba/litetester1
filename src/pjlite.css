@@ -1799,3 +1799,139 @@ body { background-color: #e5e7eb; }
 .pjlite-journeys-home-link{display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:7px;background:#265d55;border:1px solid #357e71;color:#fff!important;text-decoration:none;font-weight:900;font-size:13px;box-shadow:0 2px 8px #1c463924;transition:background .18s}
 .pjlite-journeys-home-link:hover,.pjlite-journeys-home-link:focus{background:#32776b;color:#fff!important;outline:2px solid #a6c6be;outline-offset:2px}
 @media(max-width:580px){.pjlite-journeys-home-link{padding:9px 12px}}
+
+/* Dragonbane • revisão visual LiteTester: aba Ficha / Habilidades / Magias.
+   Conserva o papel, a tipografia, os detalhes rubros e o verde-selo antigos. */
+.db-sheet .db-rework-tabs {
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;
+ margin:12px 0 0;padding:9px;background:rgba(254,249,232,.68);
+ border:1px solid #b7a780;border-radius:12px 3px 12px 3px;
+ box-shadow:0 2px 6px rgba(48,40,25,.08);
+}
+.db-sheet .db-rework-tab {
+ display:flex;align-items:flex-start;justify-content:center;flex-direction:column;
+ min-height:65px;position:relative;gap:3px;padding:10px 12px;
+ text-align:left;color:#3b453c;cursor:pointer;
+ border:1px solid #bbab85;border-radius:7px 2px 7px 2px;
+ background:linear-gradient(180deg,#fffdf1,#eae1c8);
+ transition:background .15s,color .15s,box-shadow .15s;
+}
+.db-sheet .db-rework-tab:hover {border-color:#2d7667;box-shadow:0 1px 4px #23615540}
+.db-sheet .db-rework-tab:focus-visible,
+.db-sheet .db-rework-shortcuts button:focus-visible,
+.db-sheet .db-rework-add:focus-visible,
+.db-sheet .db-rework-delete:focus-visible {outline:3px solid #e4473f;outline-offset:2px}
+.db-sheet .db-rework-tab strong {font-family:Georgia,serif;font-size:16px;line-height:1.1}
+.db-sheet .db-rework-tab small {font-size:11px;font-weight:600;opacity:.8;line-height:1.15}
+.db-sheet .db-rework-tab-active {
+ background:linear-gradient(125deg,#286a5d,#184d46);color:#fff9e9;
+ border-color:#145044;box-shadow:inset 0 -4px 0 #df5549,0 2px 8px #234f4640;
+}
+.db-sheet .db-rework-tab-count {
+ position:absolute;right:8px;top:8px;min-width:21px;height:21px;
+ display:flex;align-items:center;justify-content:center;
+ font-size:10px;font-weight:900;background:#e6d7ad;color:#3d3a2a;border-radius:50%;
+}
+.db-sheet .db-rework-tab-active .db-rework-tab-count {background:#fff7db}
+.db-sheet .db-rework-preview-note {
+ text-align:right;font-size:10px;letter-spacing:.035em;
+ color:#6f624b;margin:5px 3px 15px;
+}
+.db-sheet .db-rework-shortcuts {
+ border:2px solid #2b6f63;border-radius:9px 2px 9px 2px;
+ background:linear-gradient(135deg,#f7efd8,#e3d9b7);
+ box-shadow:inset 0 0 0 1px #cbbd97;padding:14px;margin-bottom:14px;
+}
+.db-sheet .db-rework-shortcuts h2 {font:900 19px Georgia,serif;color:#245a50;margin:3px 0}
+.db-sheet .db-rework-shortcuts p {font-size:12px;line-height:1.45;color:#655b49}
+.db-sheet .db-rework-eyebrow {
+ color:#ab433b;font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+ font-weight:900;
+}
+.db-sheet .db-rework-shortcut-actions {display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.db-sheet .db-rework-shortcut-actions button {
+ flex:1;display:flex;align-items:center;justify-content:space-between;gap:8px;
+ padding:9px;border:1px solid #256155;border-radius:5px;background:#fffcf0;
+ font-size:12px;font-weight:800;color:#23564d;cursor:pointer;
+}
+.db-sheet .db-rework-shortcut-actions button:hover {background:#dfece3}
+.db-sheet .db-rework-shortcut-actions b {color:#fff;background:#2e6c60;border-radius:20px;padding:0 7px}
+.db-sheet .db-rework-page {padding:8px 0 22px;display:grid;gap:18px}
+.db-sheet .db-rework-page-title {
+ display:flex;align-items:center;justify-content:space-between;gap:20px;
+ border:2px solid #2b695d;border-radius:12px 3px 12px 3px;
+ background:linear-gradient(110deg,#f8f2df,#e1dbc6);
+ box-shadow:inset 0 0 0 2px #f6efd6;padding:18px;
+}
+.db-sheet .db-rework-page-title h2 {font:900 clamp(23px,3vw,33px) Georgia,serif;color:#285e52}
+.db-sheet .db-rework-page-title p:not(.db-rework-eyebrow) {margin-top:4px;font-size:13px;color:#584f41;max-width:600px}
+.db-sheet .db-rework-chapter {
+ display:flex;align-items:center;justify-content:center;min-width:70px;height:70px;
+ border-radius:50%;border:5px double #e5bfa1;background:#ad3e35;
+ color:#fff8e9;font:900 15px Georgia,serif;white-space:nowrap;
+}
+.db-sheet .db-rework-suggestions {
+ display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;
+ gap:12px;border:1px solid #ae9e75;background:#e9dfbf;padding:13px;border-radius:7px;
+}
+.db-sheet .db-rework-suggestions strong {font:900 14px Georgia,serif;color:#235b4f}
+.db-sheet .db-rework-suggestions p {font-size:11px;color:#5b5245}
+.db-sheet .db-rework-suggestion-buttons {display:flex;flex-wrap:wrap;gap:7px}
+.db-sheet .db-rework-suggestion {background:#fff8e4;border:1px solid #27685c;border-radius:5px;padding:7px 11px;color:#23564e;font-weight:800;font-size:12px}
+.db-sheet .db-rework-suggestion:hover {background:#d8e7da}
+.db-sheet .db-rework-section {border:1px solid #bcae8c;background:rgba(255,252,239,.55);border-radius:8px 2px 8px 2px;overflow:hidden}
+.db-sheet .db-rework-section-bar {
+ display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+ padding:12px 15px;background:linear-gradient(90deg,#285f54,#194b42);color:#fff8e7;
+ border-bottom:4px solid #a83b34;
+}
+.db-sheet .db-rework-section-bar h3 {font:900 18px Georgia,serif;display:flex;align-items:center;gap:9px}
+.db-sheet .db-rework-section-bar p {font-size:11px;opacity:.83;margin-top:3px}
+.db-sheet .db-rework-count {display:inline-grid;place-content:center;border-radius:50%;width:23px;height:23px;font:900 12px system-ui;background:#f3e5ba;color:#285d51}
+.db-sheet .db-rework-add {
+ padding:8px 13px;color:#25584e;background:#fff6d9;border:1px solid #d3b970;
+ font-weight:900;font-size:12px;border-radius:6px;white-space:nowrap;cursor:pointer;
+}
+.db-sheet .db-rework-add:hover {background:#fff}
+.db-sheet .db-rework-cards {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:12px}
+.db-sheet .db-rework-ability-card {
+ display:grid;align-content:start;gap:11px;min-width:0;
+ border:1px solid #bdae88;background:#fbf5df;padding:12px;border-radius:10px 2px 10px 2px;
+ box-shadow:0 2px 5px rgba(60,45,25,.08);
+}
+.db-sheet .db-rework-card-heading {display:flex;flex-wrap:wrap;align-items:center;gap:6px;border-bottom:1px dashed #baa881;padding-bottom:9px}
+.db-sheet .db-rework-kind {font:900 11px system-ui;text-transform:uppercase;letter-spacing:.07em;color:#ab433b;margin-right:auto}
+.db-sheet .db-rework-small-label {font-size:10px;color:#6c604c;font-weight:800}
+.db-sheet .db-rework-kind-select {
+ background:#fff9e5;border:1px solid #b6a783;color:#2c5149;padding:5px 4px;
+ font-size:11px;max-width:100px;border-radius:3px;
+}
+.db-sheet .db-rework-delete {padding:5px 8px;border:1px solid #d7a69e;border-radius:3px;background:#fbebe8;color:#9b3931;font-size:10px;font-weight:800}
+.db-sheet .db-rework-delete:hover {background:#f7d5d0}
+.db-sheet .db-rework-field {display:flex;flex-direction:column;gap:4px;color:#4a4d3f;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.035em;min-width:0}
+.db-sheet .db-rework-field input,.db-sheet .db-rework-field textarea,.db-sheet .db-rework-field select {font-weight:500;text-transform:none;letter-spacing:normal}
+.db-sheet .db-rework-fields {display:grid;grid-template-columns:minmax(0,1fr) 105px;gap:9px}
+.db-sheet .db-rework-magic-fields {display:grid;grid-template-columns:1fr 120px auto;gap:9px;align-items:end}
+.db-sheet .db-rework-checkbox {display:flex;align-items:center;gap:8px;min-height:37px;font-size:12px;font-weight:800;color:#285e52}
+.db-sheet .db-rework-citation-fields {display:grid;grid-template-columns:minmax(0,1fr) 90px;gap:9px}
+.db-sheet .db-rework-empty {padding:20px;color:#766952;font-size:13px}
+.db-sheet .db-rework-footnote {text-align:center;font-size:11px;color:#635745;line-height:1.5;margin:5px auto 0;max-width:720px}
+@media(max-width:890px){
+ .db-sheet .db-rework-cards {grid-template-columns:1fr}
+}
+@media(max-width:610px){
+ .db-sheet .db-rework-tabs {gap:4px;padding:5px}
+ .db-sheet .db-rework-tab {padding:8px 5px;min-height:59px;align-items:center;text-align:center}
+ .db-sheet .db-rework-tab strong {font-size:12px}
+ .db-sheet .db-rework-tab small {display:none}
+ .db-sheet .db-rework-tab-count {position:static;margin-top:3px;height:17px;min-width:17px;font-size:9px}
+ .db-sheet .db-rework-preview-note {font-size:9px;text-align:center}
+ .db-sheet .db-rework-page-title {padding:13px;gap:8px}
+ .db-sheet .db-rework-page-title h2 {font-size:24px}
+ .db-sheet .db-rework-chapter {min-width:48px;height:48px;font-size:10px;border-width:3px}
+ .db-sheet .db-rework-fields {grid-template-columns:minmax(0,1fr) 75px}
+ .db-sheet .db-rework-magic-fields {grid-template-columns:minmax(0,1fr) 75px}
+ .db-sheet .db-rework-checkbox {grid-column:1/-1}
+ .db-sheet .db-rework-card-heading {row-gap:8px}
+ .db-sheet .db-rework-ability-card {padding:10px}
+}
