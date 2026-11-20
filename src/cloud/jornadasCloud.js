@@ -60,14 +60,31 @@ export async function deleteJourney(campaignId){
 }
 export async function saveJourney(journey,patch){
  await user();
+ if(!journey?.id||!journey?.updated_at)throw new Error('Atualize a campanha antes de salvar.');
  const valid={};
  for(const key of ['name','system','description','notes','board'])if(Object.prototype.hasOwnProperty.call(patch,key))valid[key]=patch[key];
  valid.updated_at=new Date().toISOString();
- return check(await client().from('campaigns').update(valid).eq('id',journey.id).select().single());
+ // Controle de versão: impedir que outra aba sobrescreva um salvamento recente.
+ const saved=check(await client().from('campaigns').update(valid)
+  .eq('id',journey.id).eq('updated_at',journey.updated_at).select().maybeSingle());
+ if(!saved)throw new Error('Esta campanha mudou em outra aba ou dispositivo. Copie suas anotações e atualize a sala antes de tentar novamente.');
+ return saved;
 }
-export async function listJourneyMessages(campaignId){
+export async function listJourneyMessages(campaignId,{before=null,limit=100}={}){
  await user();
- const rows=check(await client().from('campaign_messages').select('id,campaign_id,author_id,kind,body,url,created_at').eq('campaign_id',campaignId).order('created_at',{ascending:true}).limit(250))||[];return Promise.all(rows.map(signedRow));
+ // As mensagens novas vêm primeiro; o resultado é invertido para exibição cronológica.
+ let query=client().from('campaign_messages')
+  .select('id,campaign_id,author_id,kind,body,url,created_at')
+  .eq('campaign_id',campaignId).order('created_at',{ascending:false})
+  .order('id',{ascending:false}).limit(Math.min(100,Math.max(1,Number(limit)||100)));
+ if(before?.created_at){
+  const stamp=String(before.created_at).replace(/"/g,'');
+  const id=String(before.id||'').replace(/[^a-f0-9-]/gi,'');
+  if(id)query=query.or(`created_at.lt.${stamp},and(created_at.eq.${stamp},id.lt.${id})`);
+  else query=query.lt('created_at',stamp);
+ }
+ const rows=check(await query)||[];
+ return Promise.all([...rows].reverse().map(signedRow));
 }
 export async function sendJourneyMessage(campaignId,kind,body='',url=''){
  const actor=await user();
@@ -89,7 +106,16 @@ export async function addJourneyResource(campaignId,title,kind,url,opts={}){
 }
 export async function removeJourneyResource(resourceId){
  await user();
- return check(await client().from('campaign_resources').delete().eq('id',resourceId));
+ const item=check(await client().from('campaign_resources').select('id,url').eq('id',resourceId).maybeSingle());
+ if(!item)throw new Error('Material não encontrado ou sem permissão.');
+ const removed=check(await client().from('campaign_resources').delete().eq('id',resourceId).select('id'))||[];
+ if(!removed.length)throw new Error('Não foi possível remover o material.');
+ // Excluir primeiro a referência: falha do Storage jamais deve impedir a exclusão confirmada.
+ if(item.url?.startsWith('storage:')){
+  const {error}=await client().storage.from(BUCKET).remove([item.url.slice(8)]);
+  if(error)console.warn('A limpeza do arquivo ficou pendente:',error.message);
+ }
+ return removed;
 }
 export async function getMyCloudSheets(){
  const actor=await user();
@@ -217,11 +243,45 @@ export async function getDmMindmap(campaignId){
  if(error)throw error;
  return data||{campaign_id:campaignId,owner_id:actor.id,nodes:[],links:[]};
 }
-export async function saveDmMindmap(campaignId,nodes,links){
+export async function saveDmMindmap(campaignId,nodes,links,expectedRevision=null){
  const actor=await user();
  if(!Array.isArray(nodes)||nodes.length>200||!Array.isArray(links)||links.length>400)
   throw new Error('O mapa mental aceita até 200 cartões e 400 ligações.');
- return check(await client().from('campaign_dm_mindmaps').upsert({
-  campaign_id:campaignId,owner_id:actor.id,nodes,links,updated_at:new Date().toISOString()
- },{onConflict:'campaign_id'}).select('campaign_id,owner_id,nodes,links,updated_at').single());
+ const values={nodes,links,updated_at:new Date().toISOString()};
+ if(!expectedRevision){
+  const {data,error}=await client().from('campaign_dm_mindmaps')
+   .insert({campaign_id:campaignId,owner_id:actor.id,...values})
+   .select('campaign_id,owner_id,nodes,links,updated_at').single();
+  if(error?.code==='23505')throw new Error('O mapa mental foi criado em outra aba. Atualize antes de salvar.');
+  return check({data,error});
+ }
+ const saved=check(await client().from('campaign_dm_mindmaps').update(values)
+  .eq('campaign_id',campaignId).eq('owner_id',actor.id).eq('updated_at',expectedRevision)
+  .select('campaign_id,owner_id,nodes,links,updated_at').maybeSingle());
+ if(!saved)throw new Error('O mapa mental mudou em outra aba. Copie suas anotações e atualize antes de salvar.');
+ return saved;
+}
+
+export async function getDmPrivateNotes(campaignId){
+ const actor=await user();
+ const note=check(await client().from('campaign_dm_notes').select('campaign_id,owner_id,notes,updated_at')
+  .eq('campaign_id',campaignId).maybeSingle());
+ return note||{campaign_id:campaignId,owner_id:actor.id,notes:'',updated_at:null};
+}
+export async function saveDmPrivateNotes(campaignId,notes,expectedRevision=null){
+ const actor=await user();
+ const value=String(notes||'').slice(0,50000);
+ const now=new Date().toISOString();
+ if(!expectedRevision){
+  const {data,error}=await client().from('campaign_dm_notes')
+   .insert({campaign_id:campaignId,owner_id:actor.id,notes:value,updated_at:now})
+   .select('campaign_id,owner_id,notes,updated_at').single();
+  if(error?.code==='23505')throw new Error('As notas privadas foram criadas em outra aba. Atualize antes de salvar.');
+  return check({data,error});
+ }
+ const saved=check(await client().from('campaign_dm_notes').update({notes:value,updated_at:now})
+  .eq('campaign_id',campaignId).eq('owner_id',actor.id).eq('updated_at',expectedRevision)
+  .select('campaign_id,owner_id,notes,updated_at').maybeSingle());
+ if(!saved)throw new Error('Notas privadas alteradas em outra aba. Copie o conteúdo e atualize antes de salvar.');
+ return saved;
 }
