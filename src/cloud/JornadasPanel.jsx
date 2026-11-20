@@ -16,6 +16,11 @@ const cleanBoard=v=>({round:1,initiative:[],encounter:'',...(v&&typeof v==='obje
 const validHttp=value=>{try{return new URL(value).protocol==='https:'}catch{return false}};
 const sheetName=s=>s?.name||s?.payload?.bio?.nome||s?.payload?.nome||'Ficha sem nome';
 const previewField=(p,k)=>p?.status?.[k]??p?.[k]??'';
+const mergeChatMessages=(previous,incoming,campaignId)=>{
+ const byId=new Map();
+ for(const item of [...previous,...incoming])if(item?.campaign_id===campaignId)byId.set(item.id,item);
+ return [...byId.values()].sort((a,b)=>a.created_at.localeCompare(b.created_at)||a.id.localeCompare(b.id));
+};
 const levels={fabula:'Crise = metade do PV máximo; pontos de Fabula/Ultima dependem da criatura.',dragonbane:'Ferocidade indica quantas ações do monstro ocorrem por rodada. Na tabela de ataques, role 1d6.',dnd5e:'A iniciativa determina a ordem dos turnos; cada rodada reúne os turnos de todos os participantes.',ordemParanormal:'Compare Defesa e os testes de ataque; acompanhe PV e condições.',skyfall:'Acompanhe os recursos do personagem e efeitos narrativos da Sombra.',somdas6:'Acompanhe a iniciativa, a munição e as ações do turno.','3det':'Calcule FA e FD de acordo com o sistema; acompanhe PV, PM e PA.'};
 export default function JornadasPanel({account,groups,showToast,onCreateThreat,onRequestGroups,onRefreshGroups}){
  const [journeys,setJourneys]=React.useState([]),[active,setActive]=React.useState(''),[tab,setTab]=React.useState('fichas');
@@ -29,6 +34,7 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat,o
  const [initiativeName,setInitiativeName]=React.useState(''),[initiativeScore,setInitiativeScore]=React.useState(''),[status,setStatus]=React.useState('');
  const [tableTitle,setTableTitle]=React.useState(''),[tableEntries,setTableEntries]=React.useState(''),[rollResult,setRollResult]=React.useState('');
  const [activeResource,setActiveResource]=React.useState('');
+ const [hasOlderMessages,setHasOlderMessages]=React.useState(false);
  const [deleteTarget,setDeleteTarget]=React.useState(null),[deleteName,setDeleteName]=React.useState('');
  const current=journeys.find(c=>c.id===active);
  const group=groups.find(g=>g.id===current?.group_id);
@@ -45,7 +51,7 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat,o
  const notify=text=>{setStatus(text);showToast?.(text)};
  const load=React.useCallback(async()=>{try{setJourneys(await listJourneys())}catch(error){console.error('Jornadas: listar',error);setStatus('Não foi possível carregar as campanhas.')}},[account?.id]);
  React.useEffect(()=>{if(account?.id)load();else setJourneys([])},[account?.id,load]);
- React.useEffect(()=>{setPreviewSheet(null);setEditSheet(null);if(!current){setDraft(null);return;}setDraft({...current,board:cleanBoard(current.board)});setTab('fichas');},[current?.id]);
+ React.useEffect(()=>{setPreviewSheet(null);setEditSheet(null);setMessages([]);setHasOlderMessages(false);if(!current){setDraft(null);return;}setDraft({...current,board:cleanBoard(current.board)});setTab('fichas');},[current?.id]);
  const refresh=async()=>{if(!current)return;
   // Chat ou PDF indisponível não pode impedir a lista de fichas de carregar.
   const results=await Promise.allSettled([
@@ -53,10 +59,15 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat,o
    listJourneySheets(current.id),getMyCloudSheets(),
    isDm?listJourneyDmSheets(current.id):Promise.resolve([])
   ]);
-  const setters=[setMessages,setResources,setLinks,setMySheets,setDmLinks];
+  const setters=[null,setResources,setLinks,setMySheets,setDmLinks];
   results.forEach((result,index)=>{
-   if(result.status==='fulfilled')setters[index](result.value||[]);
-   else console.error('Jornadas: carregar '+['chat','biblioteca','personagens','minhas fichas','NPCs/ameaças'][index],result.reason);
+   if(result.status==='fulfilled'){
+    if(index===0){
+     const recent=result.value||[];
+     setMessages(prev=>mergeChatMessages(prev,recent,current.id));
+     if(!messages.length)setHasOlderMessages(recent.length>=100);
+    }else setters[index](result.value||[]);
+   }else console.error('Jornadas: carregar '+['chat','biblioteca','personagens','minhas fichas','NPCs/ameaças'][index],result.reason);
   });
   const problems=[];
   if(results[2].status==='rejected')problems.push('fichas vinculadas: '+(results[2].reason?.message||'falha ao consultar'));
@@ -65,15 +76,23 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat,o
   setSheetError(problems.length?'Erro ao carregar '+problems.join(' / '):'');
   return results;
  };
- const refreshRoom=()=>run(async()=>{await Promise.all([refresh(),onRefreshGroups?.()])},'Jogadores e fichas atualizados.');
+ const refreshRoom=()=>run(async()=>{
+  const [results]=await Promise.all([refresh(),onRefreshGroups?.()]);
+  const failed=results.map((r,index)=>r.status==='rejected'?['chat','biblioteca','fichas vinculadas','minhas fichas','NPCs/ameaças'][index]:null).filter(Boolean);
+  if(failed.length)throw new Error('Atualização parcial: falha em '+failed.join(', ')+'. Tente novamente.');
+ },'Campanha e fichas atualizadas.');
  React.useEffect(()=>{if(current){setSheetError('');setLinks([]);setDmLinks([]);setMySheets([]);refresh().catch(error=>setSheetError(error?.message||'Falha de conexão com a nuvem.'));}},[current?.id]);
  React.useEffect(()=>{
   if(!current)return;
   const timer=setInterval(()=>{
-   if(tab==='chat')listJourneyMessages(current.id).then(setMessages).catch(()=>{});
-   if(tab==='combate'&&!isDm)listJourneys().then(rows=>{
+   if(tab==='chat')listJourneyMessages(current.id).then(rows=>{
+    setMessages(prev=>mergeChatMessages(prev,rows,current.id));
+   }).catch(()=>{});
+   // Qualquer mudança da campanha deve chegar aos jogadores, não apenas combate.
+   if(!isDm)listJourneys().then(rows=>{
     const latest=rows.find(c=>c.id===current.id);
-    if(latest)setDraft({...latest,board:cleanBoard(latest.board)});
+    if(latest){setDraft({...latest,board:cleanBoard(latest.board)});
+     setJourneys(prev=>prev.map(entry=>entry.id===latest.id?latest:entry));}
    }).catch(()=>{});
   },12000);
   return()=>clearInterval(timer);
@@ -112,6 +131,12 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat,o
  };
  const setBoard=patch=>setDraft(x=>({...x,board:{...cleanBoard(x.board),...patch}}));
  const addInitiative=()=>{const name=initiativeName.trim();if(!name)return;setBoard({initiative:[...(draft.board.initiative||[]),{id:Date.now().toString(36),name,score:Number(initiativeScore)||0}].sort((a,b)=>b.score-a.score)});setInitiativeName('');setInitiativeScore('')};
+ const loadOlderMessages=()=>run(async()=>{
+  if(!current||!messages.length)return;
+  const older=await listJourneyMessages(current.id,{before:messages[0],limit:100});
+  setMessages(prev=>mergeChatMessages(prev,older,current.id));
+  setHasOlderMessages(older.length===100);
+ },'Histórico anterior carregado.');
  const post=()=>run(async()=>{
   const media=chatFile?await uploadJourneyMedia(current.id,chatFile):'';
   const kind=chatFile?(chatFile.type.startsWith('image/')?'image':chatFile.type.startsWith('video/')?'video':'link'):messageKind;
@@ -208,10 +233,10 @@ export default function JornadasPanel({account,groups,showToast,onCreateThreat,o
    {tab==='mapamental'&&isDm&&<CampaignMindmap campaignId={current.id} isDm={isDm}/>}
    {tab==='investigacao'&&<CampaignRecords mode="investigacao" draft={draft} setDraft={setDraft} isDm={isDm} onSave={save} busy={busy}/>}
    {tab==='relatorios'&&<CampaignRecords mode="relatorios" draft={draft} setDraft={setDraft} isDm={isDm} onSave={save} busy={busy}/>}
-   {tab==='anotacoes'&&<CampaignNotes draft={draft} setDraft={setDraft} isDm={isDm} onSave={save} busy={busy}/>}
+   {tab==='anotacoes'&&<CampaignNotes campaignId={current.id} draft={draft} setDraft={setDraft} isDm={isDm} onSave={save} busy={busy}/>}
    {tab==='escudo'&&isDm&&<CampaignSectionBoundary resetKey={current.id+':'+tab} onTab={setTab}><CampaignShield draft={draft} links={links} dmLinks={dmLinks} isDm={isDm} onTab={setTab} onOpenSheet={openSheet}/></CampaignSectionBoundary>}
    {tab==='combate'&&<section className="pjlite-jornadas-box"><h4>⚔ Iniciativa e combate</h4><div className="pjlite-jornadas-fields"><label>Rodada<input type="number" min={1} disabled={!isDm} value={draft.board.round||1} onChange={e=>setBoard({round:Math.max(1,Number(e.target.value)||1)})}/></label>{isDm&&<button type="button" className="secondary" onClick={()=>setBoard({round:Number(draft.board.round||1)+1})}>Próxima rodada →</button>}</div><label>Cena e encontro<textarea rows={4} value={draft.board.encounter||''} disabled={!isDm} onChange={e=>setBoard({encounter:e.target.value})}/></label>{isDm&&<div className="pjlite-jornadas-fields"><input placeholder="Personagem ou inimigo" value={initiativeName} onChange={e=>setInitiativeName(e.target.value)}/><input type="number" aria-label="Iniciativa" placeholder="Resultado" value={initiativeScore} onChange={e=>setInitiativeScore(e.target.value)}/><button type="button" onClick={addInitiative}>+ Iniciativa</button></div>}<ol className="pjlite-jornadas-initiative">{(draft.board.initiative||[]).map(row=><li key={row.id}><strong>{row.score}</strong> {row.name} {isDm&&<button type="button" onClick={()=>setBoard({initiative:draft.board.initiative.filter(x=>x.id!==row.id)})}>×</button>}</li>)}</ol>{isDm&&<button className="pjlite-jornadas-primary" disabled={busy} onClick={save}>Salvar combate</button>}</section>}
-   {tab==='chat'&&<section className="pjlite-jornadas-box"><h4>💬 Chat da mesa</h4><p>Converse com seu grupo e envie fotos, vídeos curtos ou links de músicas. Arquivos privados ficam no armazenamento protegido da campanha (até 25 MB).</p><div className="pjlite-jornadas-chat">{messages.map(m=><article key={m.id}><small>{m.author_id===account.id?'Você':'Membro'} • {new Date(m.created_at).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})}</small>{m.body&&<p>{m.body}</p>}{validHttp(m.displayUrl)&&<>{m.kind==='image'&&<img src={m.displayUrl} alt={m.body||'Imagem enviada'} className="pjlite-jornadas-chat-media" loading="lazy"/>}{m.kind==='video'&&m.url?.startsWith('storage:')&&<video className="pjlite-jornadas-chat-media" controls preload="metadata" src={m.displayUrl}/>}<a href={m.displayUrl} target="_blank" rel="noopener noreferrer">{m.kind==='youtube'?'▶ Abrir música no YouTube':m.kind==='image'?'🖼 Abrir imagem':m.kind==='video'?'🎞 Abrir vídeo':'Abrir link ↗'}</a></>}</article>)}</div><textarea rows={3} placeholder="Mensagem para o grupo..." value={message} onChange={e=>setMessage(e.target.value)}/><div className="pjlite-jornadas-fields"><label className="pjlite-jornadas-file-label">📎 Foto, vídeo ou PDF<input type="file" accept="image/png,image/jpeg,image/webp,image/gif,video/mp4,video/webm,application/pdf" onChange={e=>setChatFile(e.target.files?.[0]||null)}/></label>{chatFile&&<small>{chatFile.name}</small>}<select value={messageKind} aria-label="Tipo de mensagem" onChange={e=>setMessageKind(e.target.value)}><option value="text">Mensagem</option><option value="image">Imagem (link)</option><option value="video">Vídeo (link)</option><option value="youtube">YouTube (link)</option><option value="link">Outro link</option></select>{messageKind!=='text'&&<input placeholder="https://..." value={messageUrl} onChange={e=>setMessageUrl(e.target.value)}/>}<button disabled={busy||(!message.trim()&&!messageUrl.trim()&&!chatFile)} className="pjlite-jornadas-primary" onClick={post}>Enviar</button></div></section>}
+   {tab==='chat'&&<section className="pjlite-jornadas-box"><h4>💬 Chat da mesa</h4><p>Converse com seu grupo e envie fotos, vídeos curtos ou links de músicas. Arquivos privados ficam no armazenamento protegido da campanha (até 25 MB).</p><div className="pjlite-jornadas-chat">{hasOlderMessages&&<button type="button" className="secondary" disabled={busy} onClick={loadOlderMessages}>↑ Carregar mensagens anteriores</button>}{messages.map(m=><article key={m.id}><small>{m.author_id===account.id?'Você':'Membro'} • {new Date(m.created_at).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})}</small>{m.body&&<p>{m.body}</p>}{validHttp(m.displayUrl)&&<>{m.kind==='image'&&<img src={m.displayUrl} alt={m.body||'Imagem enviada'} className="pjlite-jornadas-chat-media" loading="lazy"/>}{m.kind==='video'&&m.url?.startsWith('storage:')&&<video className="pjlite-jornadas-chat-media" controls preload="metadata" src={m.displayUrl}/>}<a href={m.displayUrl} target="_blank" rel="noopener noreferrer">{m.kind==='youtube'?'▶ Abrir música no YouTube':m.kind==='image'?'🖼 Abrir imagem':m.kind==='video'?'🎞 Abrir vídeo':'Abrir link ↗'}</a></>}</article>)}</div><textarea rows={3} placeholder="Mensagem para o grupo..." value={message} onChange={e=>setMessage(e.target.value)}/><div className="pjlite-jornadas-fields"><label className="pjlite-jornadas-file-label">📎 Foto, vídeo ou PDF<input type="file" accept="image/png,image/jpeg,image/webp,image/gif,video/mp4,video/webm,application/pdf" onChange={e=>setChatFile(e.target.files?.[0]||null)}/></label>{chatFile&&<small>{chatFile.name}</small>}<select value={messageKind} aria-label="Tipo de mensagem" onChange={e=>setMessageKind(e.target.value)}><option value="text">Mensagem</option><option value="image">Imagem (link)</option><option value="video">Vídeo (link)</option><option value="youtube">YouTube (link)</option><option value="link">Outro link</option></select>{messageKind!=='text'&&<input placeholder="https://..." value={messageUrl} onChange={e=>setMessageUrl(e.target.value)}/>}<button disabled={busy||(!message.trim()&&!messageUrl.trim()&&!chatFile)} className="pjlite-jornadas-primary" onClick={post}>Enviar</button></div></section>}
    {tab==='materiais'&&<section className="pjlite-jornadas-box"><h4>🗺 Mapas, tabelas e documentos</h4><p>O mestre organiza mapas, tabelas, fotos, vídeos e PDFs autorizados. Os uploads privados ficam restritos ao grupo (até 25 MB); links HTTPS também são aceitos.</p>{isDm&&<div className="pjlite-jornadas-fields"><input placeholder="Título do recurso" maxLength={160} value={resourceTitle} onChange={e=>setResourceTitle(e.target.value)}/><select value={resourceKind} onChange={e=>setResourceKind(e.target.value)}><option value="map">Mapa</option><option value="image">Imagem</option><option value="pdf">PDF (link)</option><option value="table">Tabela</option><option value="youtube">YouTube</option><option value="video">Vídeo</option><option value="link">Link</option></select><input placeholder="https://..." value={resourceUrl} onChange={e=>setResourceUrl(e.target.value)}/><label className="pjlite-jornadas-file-label">📎 Enviar arquivo<input type="file" accept="image/png,image/jpeg,image/webp,image/gif,video/mp4,video/webm,application/pdf" onChange={e=>setResourceFile(e.target.files?.[0]||null)}/></label>{resourceFile&&<small>{resourceFile.name}</small>}<button disabled={busy||(!resourceFile&&!resourceUrl.trim())} className="pjlite-jornadas-primary" onClick={addResource}>Adicionar</button></div>}<div className="pjlite-jornadas-resources">{resources.map(r=><article key={r.id}><span>{({map:'🗺️',image:'🖼️',pdf:'📄',table:'🎲',youtube:'♫',video:'🎞️'})[r.kind]||'🔗'}</span><a href={validHttp(r.displayUrl)?r.displayUrl:'#'} target="_blank" rel="noopener noreferrer">{r.title}</a>{['image','map'].includes(r.kind)&&validHttp(r.displayUrl)&&<button type="button" className="pjlite-jornadas-resource-preview-button" onClick={()=>setActiveResource(activeResource===r.id?'':r.id)}><img src={r.displayUrl} alt={r.title} className="pjlite-jornadas-resource-thumb" loading="lazy"/></button>}{isDm&&<button type="button" title="Remover material" onClick={()=>run(async()=>{await removeJourneyResource(r.id);await refresh()},'Material removido.')}>×</button>}</article>)}</div>{resources.filter(r=>r.id===activeResource&&validHttp(r.displayUrl)).map(r=><div key={r.id} className="pjlite-jornadas-expanded-map"><strong>{r.title}</strong><img src={r.displayUrl} alt={r.title} loading="lazy"/></div>)}</section>}
    {tab==='tabelas'&&<section className="pjlite-jornadas-box"><h4>🎲 Tabelas da Jornada</h4><p>Crie tabelas de encontros, acontecimentos e tesouros. Um resultado é sorteado entre as linhas preenchidas.</p>{isDm&&<div className="pjlite-jornadas-fields"><input placeholder="Título da tabela" value={tableTitle} onChange={e=>setTableTitle(e.target.value)}/><textarea rows={5} value={tableEntries} onChange={e=>setTableEntries(e.target.value)} placeholder={'Um evento por linha\nExemplo: Nevoeiro\nRuídos no corredor\nCriatura curiosa'}/><button type="button" onClick={()=>{const values=tableEntries.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);if(!values.length||!tableTitle.trim())return;setBoard({tables:[...(draft.board.tables||[]),{id:Date.now().toString(36),name:tableTitle.trim(),entries:values}]});setTableTitle('');setTableEntries('')}}>+ Criar tabela</button></div>}{(draft.board.tables||[]).map(table=><article className="pjlite-jornadas-table" key={table.id}><strong>{table.name}</strong><small>{table.entries?.length||0} resultados possíveis</small><div className="pjlite-jornadas-fields"><button type="button" onClick={()=>{const list=table.entries||[];if(list.length)setRollResult(table.name+' → '+list[Math.floor(Math.random()*list.length)])}}>🎲 Rolar na tabela</button>{isDm&&<button type="button" onClick={()=>setBoard({tables:(draft.board.tables||[]).filter(t=>t.id!==table.id)})}>Remover</button>}</div></article>)}{rollResult&&<div className="pjlite-jornadas-roll" role="status">{rollResult}</div>}{isDm&&<button className="pjlite-jornadas-primary" disabled={busy} onClick={save}>Salvar tabelas</button>}</section>}
    {tab==='jogadores'&&<section className="pjlite-jornadas-box journeys-compact-panel">
