@@ -7,8 +7,8 @@ import {initial3DetPcData} from '../src/systems/3det/data.js';
 const entries=SYSTEM_LIBRARIES['3det'].entries;
 assert.equal(Object.keys(TRESDET_EXPLANATIONS).length,127,'All 127 entries should have unique explanations');
 assert.equal(TRESDET_SKILL_ENTRIES.length,12,'All original skills present');
-assert.equal(entries.length,139,'Old references plus 12 skills');
-for(const [kind,count] of Object.entries({vantagem:48,desvantagem:23,arquetipo:24,tecnica:32,pericia:12}))
+assert.equal(entries.length,159,'Original references, 20 complementos e 12 skills');
+for(const [kind,count] of Object.entries({vantagem:59,desvantagem:32,arquetipo:24,tecnica:32,pericia:12}))
  assert.equal(entries.filter(x=>x.tipo===kind).length,count,'Missing '+kind);
 for(const entry of entries){
  assert.ok(entry.desc.length>34,'Missing useful explanation: '+entry.nome);
