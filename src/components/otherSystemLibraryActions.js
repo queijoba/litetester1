@@ -79,6 +79,11 @@ export function applyOtherSystemLibrarySelection(current,entry,kind){
   const base={nome:entry.nome,desc:entry.desc||'',mecanica:entry.mecanica||'',ativacao:entry.ativacao||'',fonte:entry.fonte,pagina:entry.pagina,referenciaId:entry.id};
   if(kind==='desvantagem')base.valor=entry.valor||'';
   else base.custo=entry.custo||'';
+  if(kind==='tecnica'){
+   base.requisitos=entry.requisitos||'';
+   base.alcance=entry.alcance||'';
+   base.uso=entry.uso||'';
+  }
   data[field].push(base);
   return {data,changed:true,message:entry.nome+' registrado(a)'+page+'. Os pontos e recursos continuam sob controle do jogador.'};
  }
