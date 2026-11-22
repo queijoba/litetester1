@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { TRESDET_RARITIES, TRESDET_SKILLS } from '../data.js';
+import { getTresDetMechanicalInfo } from '../../../components/tresdetVictoryMechanics.js';
+import { TRESDET_TECH_USAGE } from '../../../components/tresdetVictoryExplanations.js';
 
 const { useEffect, useState } = React;
 
@@ -41,6 +43,29 @@ const Section = ({ title, icon, hint, action, children, className = '' }) => (
     <div className="p-4">{children}</div>
   </section>
 );
+
+const BookRuleReference = ({ entry, kind }) => {
+  const rule = getTresDetMechanicalInfo(entry?.nome);
+  const tech = kind === 'tecnica' ? TRESDET_TECH_USAGE[entry?.nome] : null;
+  const effect = entry?.mecanica || rule?.mecanica || '';
+  const activation = entry?.ativacao || rule?.ativacao || entry?.uso || tech?.uso || '';
+  const page = rule?.pagina || entry?.pagina || '';
+  if (!effect && !activation && !page && !tech) return null;
+  return (
+    <details className="mt-3 rounded-lg border border-amber-300 bg-amber-50/70 text-xs">
+      <summary className="cursor-pointer px-3 py-2 font-black text-amber-950">
+        📖 Consultar regra {page ? '• Manual 3DeT, p. ' + page : 'do livro'}
+      </summary>
+      <div className="space-y-2 border-t border-amber-200 px-3 py-3 text-zinc-800">
+        {effect && <p><strong>Efeito:</strong> {effect}</p>}
+        {activation && <p><strong>{kind === 'desvantagem' ? 'Quando se aplica' : 'Ativação / PM'}:</strong> {activation}</p>}
+        {tech?.requisitos && <p><strong>Requisitos:</strong> {entry?.requisitos || tech.requisitos}</p>}
+        {tech?.alcance && <p><strong>Alcance:</strong> {entry?.alcance || tech.alcance}</p>}
+        <p className="text-[11px] text-zinc-500">Resumo original para consulta. Confirme exceções e variações no Manual 3DeT Victory.</p>
+      </div>
+    </details>
+  );
+};
 
 const ListEditor = ({ title, icon, hint, items, onChange, kind = 'vantagem' }) => {
   const config = kind === 'desvantagem'
@@ -90,6 +115,7 @@ const ListEditor = ({ title, icon, hint, items, onChange, kind = 'vantagem' }) =
                 <Field label={config.valueLabel}><Input value={entry[config.valueKey] || ''} onChange={(e) => patch(index, config.valueKey, e.target.value)} placeholder="Opcional" /></Field>
                 <Field label="Resumo / lembrete"><Textarea rows="2" value={entry.desc || ''} onChange={(e) => patch(index, 'desc', e.target.value)} placeholder="Descrição curta para consulta em mesa..." /></Field>
               </div>
+              <BookRuleReference entry={entry} kind={kind} />
             </div>
           ))}
         </div>
