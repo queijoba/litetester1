@@ -76,7 +76,7 @@ export function applyOtherSystemLibrarySelection(current,entry,kind){
   if(!field)throw Error('Categoria incompatível com 3DeT.');
   data[field]=Array.isArray(data[field])?data[field]:[];
   if(data[field].some(x=>normal(x?.nome)===normal(entry.nome)))return {data:current,changed:false,message:'Esta opção já foi adicionada à ficha.'};
-  const base={nome:entry.nome,desc:entry.desc||'',fonte:entry.fonte,pagina:entry.pagina,referenciaId:entry.id};
+  const base={nome:entry.nome,desc:entry.desc||'',mecanica:entry.mecanica||'',ativacao:entry.ativacao||'',fonte:entry.fonte,pagina:entry.pagina,referenciaId:entry.id};
   if(kind==='desvantagem')base.valor=entry.valor||'';
   else base.custo=entry.custo||'';
   data[field].push(base);
