@@ -1,5 +1,6 @@
 import {TRESDET_EXPLANATIONS,TRESDET_SKILL_ENTRIES,TRESDET_TECH_USAGE} from './tresdetVictoryExplanations.js';
 import {TRESDET_ARCHETYPE_PACKAGES} from './tresdetVictoryArchetypes.js';
+import {TRESDET_MECHANICS,TRESDET_LIBRARY_EXTRAS} from './tresdetVictoryMechanics.js';
 // Índice editorial de consulta: nomes e referências dos livros disponibilizados no Drive.
 // Som das Seis: regras em CC BY-SA 4.0; resumos novos do PJLite, sem transcrição integral.
 // 3DeT Victory: referência por nome, seção e página; consulte o livro para os efeitos.
@@ -1493,12 +1494,14 @@ export const TRESDET_LIBRARY=[
     "categoria": "Lendária",
     "custo": "20 XP"
   }
-].map(entry=>{
+].concat(TRESDET_LIBRARY_EXTRAS).map(entry=>{
  const pacote=entry.tipo==='arquetipo'?TRESDET_ARCHETYPE_PACKAGES[entry.nome]:null;
+ const rules=TRESDET_MECHANICS[entry.nome];
  return {
   ...entry,
   desc:pacote?'Inclui '+pacote.vantagens.map(x=>x.nome).join(', ')+'. Limitações: '+pacote.desvantagens.map(x=>x.nome).join(', ')+'.':(TRESDET_EXPLANATIONS[entry.nome]||entry.desc),
   ...(entry.tipo==='tecnica'?(TRESDET_TECH_USAGE[entry.nome]||{}):{}),
+  ...(rules?{pagina:rules.pagina,mecanica:rules.mecanica||'',ativacao:rules.ativacao||''}:{}),
   ...(pacote?{pagina:pacote.pagina,vantagensArquetipo:pacote.vantagens,desvantagensArquetipo:pacote.desvantagens,observacaoArquetipo:pacote.observacao}:{}),
  };
 }).concat(TRESDET_SKILL_ENTRIES);

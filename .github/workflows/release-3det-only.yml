@@ -1,0 +1,44 @@
+name: PJLite - Release isolada 3DeT Victory
+on:
+  push:
+    branches: [ release/3det-definitivo-20261123 ]
+permissions:
+  contents: write
+jobs:
+  validate-and-snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código isolado
+        uses: actions/checkout@v4
+      - name: Configurar Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Instalar dependências
+        run: npm install
+      - name: Validar regras, compatibilidade e compilar
+        run: npm run check
+      - name: Empacotar build para auditoria
+        uses: actions/upload-artifact@v4
+        with:
+          name: pjlite-3det-only-dist
+          path: dist/
+          if-no-files-found: error
+          retention-days: 3
+      - name: Publicar snapshot isolado
+        if: github.ref == 'refs/heads/release/3det-definitivo-20261123'
+        run: |
+          set -e
+          mkdir -p /tmp/pjlite-3det-dist
+          cp -a dist/. /tmp/pjlite-3det-dist/
+          git config user.name "PJLite CI"
+          git config user.email "actions@users.noreply.github.com"
+          git checkout --orphan release-3det-dist-20261123
+          git rm -rf . || true
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -a /tmp/pjlite-3det-dist/. .
+          printf "PJ Lite 1.1.3v Alpha\nSource: %s\nScope: 3DeT Victory mechanics only\n" "$GITHUB_SHA" > .pjlite-release
+          git add -A
+          git commit -m "Build 3DeT Victory isolado ($GITHUB_SHA)"
+          git push --force origin HEAD:refs/heads/release-3det-dist-20261123

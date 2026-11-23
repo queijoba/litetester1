@@ -12,7 +12,7 @@ export default function OtherSystemLibraryModal({open=false,system,data,onChoose
  const [feedback,setFeedback]=useState('');
  useEffect(()=>{if(open&&config){setTab(config.tabs[0][0]);setQuery('');setSelected('');setCategory('Todas');setFeedback('');}},[open,system]);
  useEffect(()=>{if(!open)return;const close=e=>{if(e.key==='Escape')onClose();};window.addEventListener('keydown',close);return()=>window.removeEventListener('keydown',close);},[open,onClose]);
- const rows=useMemo(()=>config?config.entries.filter(x=>x.tipo===tab).filter(x=>category==='Todas'||x.categoria===category).filter(x=>!query.trim()||norm([x.nome,x.fonte,x.pagina,x.desc,x.custo,x.valor,x.categoria].join(' ')).includes(norm(query))):[],[config,tab,query,category]);
+ const rows=useMemo(()=>config?config.entries.filter(x=>x.tipo===tab).filter(x=>category==='Todas'||x.categoria===category).filter(x=>!query.trim()||norm([x.nome,x.fonte,x.pagina,x.desc,x.mecanica,x.ativacao,x.requisitos,x.uso,x.custo,x.valor,x.categoria].join(' ')).includes(norm(query))):[],[config,tab,query,category]);
  if(!open||!config||typeof document==='undefined')return null;
  // Não aplicar o primeiro resultado automaticamente: o usuário deve escolher.
  const current=rows.find(x=>x.id===selected)||null;
@@ -52,8 +52,17 @@ export default function OtherSystemLibraryModal({open=false,system,data,onChoose
    <nav className="lite-other-lib-tabs">{config.tabs.map(([id,label])=><button key={id} type="button" aria-pressed={tab===id} onClick={()=>{setTab(id);setSelected('');setCategory('Todas');setFeedback('');}}>{label}</button>)}</nav>
    <div className="lite-other-lib-search"><input type="search" value={query} onChange={e=>{setQuery(e.target.value);setSelected('');setFeedback('');}} placeholder="Pesquisar nome, custo, página ou efeito..." aria-label="Pesquisar biblioteca"/>{filterGroups.length>1&&<select aria-label="Filtrar nível da técnica" value={category} onChange={e=>{setCategory(e.target.value);setSelected('');setFeedback('');}}>{filterGroups.map(x=><option key={x}>{x}</option>)}</select>}</div>
    <div className={'lite-other-lib-content'+(selected?' has-choice':'')}>
-    <div className="lite-other-lib-results"><small>{rows.length} resultados • {config.entries.length} referências · selecione para ver a explicação</small>{rows.map(x=><button type="button" key={x.id} aria-pressed={current?.id===x.id} className={current?.id===x.id?'active':''} onClick={()=>{setSelected(x.id);setFeedback('')}}><strong>{x.nome}</strong><span>{x.categoria?x.categoria+' • ':''}{x.custo||x.valor||'p. '+x.pagina}</span>{system==='3det'&&<small className="lite-other-lib-result-desc">{x.desc}</small>}</button>)}{!rows.length&&<p>Sem resultados. Ajuste os filtros ou a pesquisa.</p>}</div>
+    <div className="lite-other-lib-results"><small>{rows.length} resultados • {config.entries.length} referências · selecione para ver a explicação</small>{rows.map(x=><button type="button" key={x.id} aria-pressed={current?.id===x.id} className={current?.id===x.id?'active':''} onClick={()=>{setSelected(x.id);setFeedback('')}}><strong>{x.nome}</strong><span>{x.categoria?x.categoria+' • ':''}{x.custo||x.valor||'Regra'} • p. {x.pagina}</span>{system==='3det'&&<small className="lite-other-lib-result-desc">{x.desc}</small>}</button>)}{!rows.length&&<p>Sem resultados. Ajuste os filtros ou a pesquisa.</p>}</div>
     <div className="lite-other-lib-detail">{current?<><button type="button" className="lite-other-lib-back" onClick={()=>{setSelected('');setFeedback('')}}>← Voltar aos resultados</button><small>REFERÊNCIA DO LIVRO • p. {current.pagina}</small><h3>{current.nome}</h3><div className="lite-other-lib-tags">{[current.fonte,current.categoria,current.custo&&(current.tipo==='tecnica'?'Para aprender: ':'Custo: ')+current.custo,current.valor&&'Valor: '+current.valor].filter(Boolean).map((x,i)=><span key={i}>{x}</span>)}</div><div className="lite-other-lib-explainer"><strong>O que significa na ficha?</strong><p>{current.desc}</p></div>
+    {system==='3det'&&(current.tipo==='vantagem'||current.tipo==='desvantagem')&&<div className="lite-other-lib-use">
+      <strong>Regras rápidas para usar em mesa</strong>
+      <dl>
+       <div><dt>Efeito mecânico</dt><dd>{current.mecanica||current.desc}</dd></div>
+       <div><dt>Ativação ou condição</dt><dd>{current.ativacao||'Conforme o efeito escolhido.'}</dd></div>
+       <div><dt>Referência</dt><dd>Manual 3DeT Victory, p. {current.pagina}</dd></div>
+      </dl>
+      <p className="lite-other-lib-note">Ações, testes, limites e variações especiais devem ser conferidos no livro. Custos de criação não são gastos de PM.</p>
+     </div>}
     {system==='3det'&&current.tipo==='tecnica'&&<div className="lite-other-lib-use"><strong>Regras de uso no livro</strong><dl><div><dt>Requisitos</dt><dd>{current.requisitos||'Confira o manual'}</dd></div><div><dt>Alcance</dt><dd>{current.alcance||'Confira o manual'}</dd></div><div><dt>Gasto para usar</dt><dd>{current.uso||'Confira o manual'}</dd></div><div><dt>Para aprender</dt><dd>{current.custo||'Consulte o manual'}</dd></div></dl></div>}
     {system==='3det'&&current.tipo==='arquetipo'&&<div className="lite-other-lib-archetype">
       <section className="lite-other-lib-archetype__benefits"><h4>★ Benefícios e vantagens do arquétipo</h4>
