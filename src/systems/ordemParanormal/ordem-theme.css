@@ -799,3 +799,113 @@ body.theme-ordem .ordem-sheet .ordem-card,body.theme-dark .ordem-sheet .ordem-ca
   .ordem-sheet .ordem-agent-panel .ordem-agent-grid{grid-template-columns:minmax(0,1fr)!important}
  }
 }
+
+
+/* Ordem Paranormal · dossiê de ameaças, mesmo papel de arquivo do agente. */
+.ordem-sheet.ordem-threat-dossier .ordem-threat-hero{border-left-color:#803133!important}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-hero h2{letter-spacing:.09em}
+.ordem-sheet.ordem-threat-dossier .ordem-tabs{overflow-x:auto}
+.ordem-sheet.ordem-threat-dossier .ordem-agent-panel .ordem-agent-grid{
+ grid-template-columns:minmax(192px,218px) minmax(0,1fr)!important;
+ align-items:start!important;gap:14px!important;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-panel-title{display:flex;flex-wrap:wrap;align-items:baseline;gap:5px 12px}
+.ordem-sheet.ordem-threat-dossier .ordem-panel-title small{font-size:9px;font-weight:700}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-stat-grid{
+ display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:10px;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-skill-grid{
+ display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-action-grid{
+ display:grid;grid-template-columns:minmax(120px,1.4fr) repeat(4,minmax(65px,1fr));gap:7px;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-text-grid{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-entry-list{
+ display:grid;gap:9px;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-remove{
+ border:1px solid #854343;background:#3b2a28;color:#f5e8d7;padding:6px 12px;
+ font-size:10px;font-weight:900;cursor:pointer;justify-self:end;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-remove:hover,
+.ordem-sheet.ordem-threat-dossier .ordem-threat-remove:focus-visible{
+ background:#8b2c31;outline:2px solid #cbb08d;outline-offset:2px;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-empty{
+ border:1px dashed #9c8772;padding:12px;font-size:11px;opacity:.76;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-stat-panel>label{display:block}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-stat-panel>label input{width:100%}
+.ordem-sheet.ordem-threat-dossier .ordem-panel :is(input,select,textarea){min-width:0}
+.ordem-sheet.ordem-threat-dossier .ordem-panel textarea{width:100%;resize:vertical}
+.ordem-sheet.ordem-threat-dossier .ordem-panel :is(label>span){
+ display:block;font-size:9px;font-weight:900;margin:0 0 4px;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-panel :is(input,textarea,select){
+ font-size:12px;max-width:100%;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-action-grid label{min-width:0}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-action-grid label input{width:100%}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-hero .ordem-nex input{
+ width:66px!important;font-size:21px!important;text-align:center!important;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-agent-panel .ordem-dossier-headline{
+ min-width:0;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-dossier-identity .ordem-identity-grid{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-identity-grid .wide{grid-column:1/-1}
+.ordem-sheet.ordem-threat-dossier .ordem-attrs--portrait{flex:none}
+.ordem-sheet.ordem-paper-sheet.ordem-threat-dossier .ordem-panel:not(.ordem-agent-panel){
+ background:#efe3c8!important;color:#251f1a!important;border:1px solid #7d6c57!important;
+ box-shadow:inset 0 0 0 2px #e0d2b8!important;
+}
+.ordem-sheet.ordem-paper-sheet.ordem-threat-dossier .ordem-entry{
+ background:#f4ead5!important;border:1px solid #9e8970!important;color:#251f1a!important;
+}
+.ordem-sheet.ordem-paper-sheet.ordem-threat-dossier .ordem-panel :is(input,select,textarea){
+ background:#fbf3df!important;color:#251b15!important;border:1px solid #ac987d!important;
+ border-bottom:2px solid #867257!important;border-radius:0!important;
+ padding:6px!important;
+}
+.ordem-sheet.ordem-paper-sheet.ordem-threat-dossier .ordem-attrs--portrait .ordem-attr input{
+ border:0!important;background:transparent!important;padding:0!important;
+}
+.ordem-sheet.ordem-paper-sheet.ordem-threat-dossier .ordem-panel label>span{
+ color:#46362a!important;font-family:'Courier New',monospace;font-weight:900;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-dossier-footer{
+ margin-top:12px;
+}
+/* A consulta segue a largura interna para manter foto e campos lado a lado. */
+@container (max-width: 525px){
+ .ordem-sheet.ordem-threat-dossier .ordem-agent-panel .ordem-agent-grid{
+  grid-template-columns:minmax(0,1fr)!important;
+ }
+}
+@media(max-width:800px){
+ .ordem-sheet.ordem-threat-dossier .ordem-threat-skill-grid{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+ }
+ .ordem-sheet.ordem-threat-dossier .ordem-threat-action-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+ }
+ .ordem-sheet.ordem-threat-dossier .ordem-threat-stat-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+ }
+}
+@media(max-width:560px){
+ .ordem-sheet.ordem-threat-dossier .ordem-threat-skill-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+ }
+ .ordem-sheet.ordem-threat-dossier .ordem-threat-text-grid{
+  grid-template-columns:minmax(0,1fr);
+ }
+ .ordem-sheet.ordem-threat-dossier .ordem-threat-hero h2{
+  font-size:17px!important;
+ }
+}
