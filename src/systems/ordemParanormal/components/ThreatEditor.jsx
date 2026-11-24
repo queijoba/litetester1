@@ -1,14 +1,155 @@
 import '../ordem-theme.css';
 import React,{useState} from 'react';
-import { ORDEM_ATTRIBUTES } from '../data.js';
-const n=v=>Number(v)||0;
+import {ORDEM_ATTRIBUTES} from '../data.js';
+
+const number=value=>{const n=Number(value);return Number.isFinite(n)?n:0;};
+const tabs=[['perfil','Dossiê'],['acoes','Ataques e habilidades'],['paranormal','Paranormal']];
+
+function Field({label,value,onChange,type='text',className='',placeholder='',min}){
+ return <label className={className}><span>{label}</span><input
+  aria-label={label} type={type} min={min} placeholder={placeholder}
+  value={value??''} onChange={e=>onChange(type==='number'?number(e.target.value):e.target.value)}/></label>;
+}
+function NotesField({label,value,onChange,rows=3}){
+ return <label><span>{label}</span><textarea aria-label={label} rows={rows} value={value??''} onChange={e=>onChange(e.target.value)}/></label>;
+}
 export default function OrdemThreatEditor({scope}){
- const {data,updateField,setData}=scope; const [tab,setTab]=useState('perfil'); if(data?.system!=='ordemParanormal'||data?.type==='pc')return null;
- const patch=(f,i,k,v)=>{const d=JSON.parse(JSON.stringify(data));const a=Array.isArray(d[f])?d[f]:[];a[i]={...(a[i]||{}),[k]:v};d[f]=a;setData(d);}; const add=(f,o)=>updateField(f,[...(data[f]||[]),o]);const rm=(f,i)=>updateField(f,(data[f]||[]).filter((_,x)=>x!==i)); const a=data.atributos||{},s=data.status||{};
- return <div className="ordem-sheet p-3 sm:p-5"><div className="ordem-hero ordem-threat-hero"><div><div className="ordem-kicker">Ordem Paranormal RPG v1.3 • Modo Mestre</div><h2>Ameaça / Criatura</h2><p>VD • Elemento • Enigma de Medo</p></div><div className="ordem-nex"><span>VD</span><div><input type="number" min="0" value={data.vd??0} onChange={e=>updateField('vd',n(e.target.value))}/></div></div></div>
- <div className="ordem-tabs">{[['perfil','Perfil'],['acoes','Ações'],['paranormal','Paranormal']].map(([id,x])=><button key={id} className={tab===id?'active':''} onClick={()=>setTab(id)}>{x}</button>)}</div>
- {tab==='perfil'&&<div className="space-y-4"><section className="ordem-card"><div className="grid sm:grid-cols-2 md:grid-cols-4 gap-3"><label className="sm:col-span-2"><span>Nome</span><input value={data.nome||''} onChange={e=>updateField('nome',e.target.value)}/></label><label><span>Categoria</span><input value={data.categoria||''} onChange={e=>updateField('categoria',e.target.value)}/></label><label><span>Elemento</span><input value={data.elemento||''} onChange={e=>updateField('elemento',e.target.value)}/></label><label><span>Tamanho</span><input value={data.tamanho||''} onChange={e=>updateField('tamanho',e.target.value)}/></label><label className="sm:col-span-2 md:col-span-3"><span>Presença Perturbadora</span><input value={data.presencaPerturbadora||''} onChange={e=>updateField('presencaPerturbadora',e.target.value)}/></label></div></section><section className="ordem-card"><h3>Atributos</h3><div className="grid grid-cols-5 gap-2">{ORDEM_ATTRIBUTES.map(([k,abbr])=><label className="ordem-attr" key={k}><span>{abbr}</span><input type="number" min="0" value={a[k]??1} onChange={e=>updateField(`atributos.${k}`,n(e.target.value))}/></label>)}</div></section><section className="ordem-card"><h3>Status</h3><div className="grid grid-cols-2 md:grid-cols-4 gap-3"><div><span className="ordem-label">PV</span><div className="grid grid-cols-2 gap-1"><input type="number" value={s.pvAtual??0} onChange={e=>updateField('status.pvAtual',n(e.target.value))}/><input type="number" value={s.pvMax??0} onChange={e=>updateField('status.pvMax',n(e.target.value))}/></div></div><label><span>Defesa</span><input type="number" value={s.defesa??10} onChange={e=>updateField('status.defesa',n(e.target.value))}/></label><label><span>Deslocamento</span><input value={s.deslocamento||''} onChange={e=>updateField('status.deslocamento',e.target.value)}/></label><label><span>Sentidos</span><input value={data.sentidos||''} onChange={e=>updateField('sentidos',e.target.value)}/></label></div></section></div>}
- {tab==='acoes'&&<div className="space-y-4"><section className="ordem-card"><div className="flex justify-between"><h3>Ataques</h3><button className="ordem-add" onClick={()=>add('ataques',{nome:'',teste:'',dano:'',critico:'',alcance:'',desc:''})}>+ Ataque</button></div>{(data.ataques||[]).map((x,i)=><div className="ordem-entry" key={i}><div className="ordem-row"><input value={x.nome||''} onChange={e=>patch('ataques',i,'nome',e.target.value)} placeholder="Nome"/><input value={x.teste||''} onChange={e=>patch('ataques',i,'teste',e.target.value)} placeholder="Teste"/><input value={x.dano||''} onChange={e=>patch('ataques',i,'dano',e.target.value)} placeholder="Dano"/><button onClick={()=>rm('ataques',i)}>×</button></div><textarea rows="2" value={x.desc||''} onChange={e=>patch('ataques',i,'desc',e.target.value)} placeholder="Efeito"/></div>)}</section><section className="ordem-card"><div className="flex justify-between"><h3>Habilidades</h3><button className="ordem-add" onClick={()=>add('habilidades',{nome:'',desc:''})}>+ Habilidade</button></div><div className="grid md:grid-cols-2 gap-2">{(data.habilidades||[]).map((x,i)=><div className="ordem-entry" key={i}><div className="flex gap-2"><input className="flex-1 font-bold" value={x.nome||''} onChange={e=>patch('habilidades',i,'nome',e.target.value)}/><button onClick={()=>rm('habilidades',i)}>×</button></div><textarea rows="3" value={x.desc||''} onChange={e=>patch('habilidades',i,'desc',e.target.value)}/></div>)}</div></section></div>}
- {tab==='paranormal'&&<section className="ordem-card"><div className="grid md:grid-cols-2 gap-3"><label><span>Resistências</span><textarea rows="4" value={data.resistencias||''} onChange={e=>updateField('resistencias',e.target.value)}/></label><label><span>Imunidades</span><textarea rows="4" value={data.imunidades||''} onChange={e=>updateField('imunidades',e.target.value)}/></label><label><span>Vulnerabilidades</span><textarea rows="4" value={data.vulnerabilidades||''} onChange={e=>updateField('vulnerabilidades',e.target.value)}/></label><label><span>Enigma de Medo</span><textarea rows="4" value={data.enigmaMedo||''} onChange={e=>updateField('enigmaMedo',e.target.value)}/></label></div><label className="block mt-3"><span>Anotações do Mestre</span><textarea rows="8" value={data.notas||''} onChange={e=>updateField('notas',e.target.value)}/></label></section>}
+ const {data,updateField,setData,optimizeImageFile,showToast}=scope;
+ const [tab,setTab]=useState('perfil');
+ const [paperMode,setPaperMode]=useState(true);
+ if(data?.system!=='ordemParanormal'||data?.type==='pc')return null;
+ const attributes=data.atributos||{},status=data.status||{},skills=data.pericias||{};
+ const threatName=data.nome||'IDENTIDADE NÃO CLASSIFICADA';
+ const patch=(field,index,key,value)=>setData(previous=>{
+  const items=Array.isArray(previous[field])?previous[field]:[];
+  return {...previous,[field]:items.map((item,i)=>i===index?{...item,[key]:value}:item)};
+ });
+ const add=(field,item)=>updateField(field,[...(data[field]||[]),item]);
+ const remove=(field,index)=>updateField(field,(data[field]||[]).filter((_,i)=>i!==index));
+ const photo=async event=>{
+  const file=event.target.files?.[0];event.target.value='';
+  if(!file)return;
+  try{
+   if(!file.type.startsWith('image/'))throw new Error('Arquivo não é imagem');
+   const image=await optimizeImageFile(file,900,.8);
+   updateField('imagem',image);
+   showToast?.('Retrato da ameaça atualizado.');
+  }catch{showToast?.('Não foi possível carregar este retrato.');}
+ };
+ return <div className={paperMode?'ordem-sheet ordem-paper-sheet ordem-threat-dossier p-3 sm:p-5':'ordem-sheet ordem-threat-dossier p-3 sm:p-5'}>
+  <header className="ordem-hero ordem-threat-hero ordem-dossier-hero">
+   <div className="ordem-seal" aria-hidden="true"><span>O</span><small>R</small></div>
+   <div className="ordem-dossier-brand">
+    <div className="ordem-kicker">ORDO REALITAS // ARQUIVO DE CONTENÇÃO</div>
+    <h2>REGISTRO DE AMEAÇA</h2>
+    <p>Relatório confidencial do mestre · Ordem Paranormal RPG</p>
+   </div>
+   <label className="ordem-nex"><span>VD</span><div><input aria-label="Valor de Desafio" type="number" min="0" value={data.vd??0} onChange={e=>updateField('vd',number(e.target.value))}/></div></label>
+  </header>
+  <div className="ordem-file-ribbon">
+   <span>DOCUMENTO SIGILOSO</span><span>AMEAÇA / NPC</span>
+   <span className="ordem-file-agent-name">{threatName}</span>
+   <button className="ordem-view-toggle" type="button" aria-pressed={paperMode}
+    onClick={()=>setPaperMode(v=>!v)} title="Alternar dossiê claro e tema escuro">
+     {paperMode?'◐ Escuro':'▤ Dossiê'}
+   </button>
+  </div>
+  <nav className="ordem-tabs" role="tablist" aria-label="Seções da ameaça">
+   {tabs.map(([id,title])=><button type="button" role="tab" aria-selected={tab===id} key={id}
+    className={tab===id?'active':''} onClick={()=>setTab(id)}>{title}</button>)}
+  </nav>
+
+  {tab==='perfil'&&<div className="space-y-3 ordem-dossier-content">
+   <section className="ordem-panel ordem-agent-panel ordem-threat-profile">
+    <div className="ordem-dossier-headline"><div><span className="ordem-dossier-kicker">FICHA OPERACIONAL · IDENTIFICAÇÃO</span>
+     <h3>Registro de entidade</h3></div><span className="ordem-dossier-stamp">EM OBSERVAÇÃO</span></div>
+    <div className="ordem-agent-grid">
+     <div className="ordem-attrs ordem-attrs--portrait" role="group" aria-label="Atributos da ameaça ao redor do retrato">
+      <div className="ordem-photo ordem-photo--portrait">
+       {data.imagem?<img src={data.imagem} alt="Retrato da ameaça"/>:<div className="ordem-photo-empty">△</div>}
+       <label>Escolher imagem<input type="file" accept="image/*" className="hidden" aria-label="Escolher retrato da ameaça" onChange={photo}/></label>
+       {data.imagem&&<button type="button" onClick={()=>updateField('imagem','')}>Remover</button>}
+      </div>
+      {ORDEM_ATTRIBUTES.map(([key,abbr,name])=><label className="ordem-attr" data-ordem-attribute={key} key={key}>
+       <span className="ordem-attr-name">{name}</span>
+       <input aria-label={'Atributo '+name} type="number" min="0" value={attributes[key]??1}
+        onChange={e=>updateField('atributos.'+key,number(e.target.value))}/>
+       <strong>{abbr}</strong></label>)}
+     </div>
+     <div className="ordem-dossier-identity">
+      <div className="ordem-dossier-miniheading">CLASSIFICAÇÃO <span>PREENCHIMENTO PELO MESTRE</span></div>
+      <div className="ordem-identity-grid">
+       <Field label="Nome ou identificação" className="wide" value={data.nome} onChange={v=>updateField('nome',v)}/>
+       <Field label="Categoria" value={data.categoria} onChange={v=>updateField('categoria',v)}/>
+       <Field label="Elemento" value={data.elemento} onChange={v=>updateField('elemento',v)}/>
+       <Field label="Tamanho" value={data.tamanho} onChange={v=>updateField('tamanho',v)}/>
+       <Field label="Presença perturbadora" value={data.presencaPerturbadora} onChange={v=>updateField('presencaPerturbadora',v)}/>
+       <Field label="Fonte / livro" value={data.fonte} onChange={v=>updateField('fonte',v)}
+        placeholder="Ex.: Arquivos Secretos #03"/>
+       <Field label="Página da fonte" value={data.pagina} onChange={v=>updateField('pagina',v)} placeholder="Ex.: 68"/>
+      </div>
+     </div>
+    </div>
+    <div className="ordem-dossier-footer"><span>ORDEM PARANORMAL · USO EXCLUSIVO DO MESTRE</span><span>AVALIAÇÃO DE RISCO / CONTENÇÃO</span></div>
+   </section>
+
+   <section className="ordem-panel ordem-threat-stat-panel">
+    <div className="ordem-panel-title"><span>SITUAÇÃO E RECURSOS</span><small>vida, defesa, mobilidade e sentidos</small></div>
+    <div className="ordem-threat-stat-grid">
+     <Field label="PV atual" type="number" value={status.pvAtual??0} onChange={v=>updateField('status.pvAtual',v)}/>
+     <Field label="PV máximo" type="number" value={status.pvMax??0} onChange={v=>updateField('status.pvMax',v)}/>
+     <Field label="Defesa" type="number" value={status.defesa??10} onChange={v=>updateField('status.defesa',v)}/>
+     <Field label="Deslocamento" value={status.deslocamento} onChange={v=>updateField('status.deslocamento',v)}/>
+    </div>
+    <Field label="Sentidos" value={data.sentidos} onChange={v=>updateField('sentidos',v)}/>
+   </section>
+   <section className="ordem-panel">
+    <div className="ordem-panel-title"><span>TESTES E PERÍCIAS</span><small>valores conforme o material da ameaça</small></div>
+    <div className="ordem-threat-skill-grid">
+     {[['percepcao','Percepção'],['iniciativa','Iniciativa'],['fortitude','Fortitude'],['reflexos','Reflexos'],['vontade','Vontade']].map(([key,label])=>
+      <Field key={key} label={label} value={skills[key]} onChange={v=>updateField('pericias.'+key,v)}/>)}
+    </div>
+   </section>
+  </div>}
+
+  {tab==='acoes'&&<div className="space-y-3 ordem-dossier-content">
+   <section className="ordem-panel"><div className="ordem-panel-actions"><div className="ordem-panel-title"><span>ATAQUES</span>
+    <small>teste, dano, crítico, alcance e efeito</small></div><button type="button" className="ordem-add"
+     onClick={()=>add('ataques',{nome:'',teste:'',dano:'',critico:'',alcance:'',desc:''})}>+ Ataque</button></div>
+    <div className="ordem-threat-entry-list">
+     {(data.ataques||[]).map((item,index)=><div className="ordem-entry ordem-threat-action-entry" key={index}>
+      <div className="ordem-threat-action-grid">
+       {[['nome','Ataque'],['teste','Teste'],['dano','Dano'],['critico','Crítico'],['alcance','Alcance']].map(([key,label])=>
+        <Field key={key} label={label} value={item[key]} onChange={v=>patch('ataques',index,key,v)}/>)}
+      </div>
+      <NotesField label="Efeito / condição" value={item.desc} onChange={v=>patch('ataques',index,'desc',v)} rows={2}/>
+      <button type="button" className="ordem-threat-remove" onClick={()=>remove('ataques',index)}>Remover ataque</button>
+     </div>)}
+     {(data.ataques||[]).length===0&&<p className="ordem-threat-empty">Nenhum ataque registrado.</p>}
+    </div>
+   </section>
+   <section className="ordem-panel"><div className="ordem-panel-actions"><div className="ordem-panel-title"><span>HABILIDADES E PODERES</span>
+    <small>ações especiais e traços</small></div><button type="button" className="ordem-add"
+     onClick={()=>add('habilidades',{nome:'',desc:''})}>+ Habilidade</button></div>
+    <div className="ordem-threat-entry-list">
+     {(data.habilidades||[]).map((item,index)=><div className="ordem-entry" key={index}>
+      <Field label={'Nome da habilidade '+(index+1)} value={item.nome} onChange={v=>patch('habilidades',index,'nome',v)}/>
+      <NotesField label="Descrição / efeito" rows={3} value={item.desc} onChange={v=>patch('habilidades',index,'desc',v)}/>
+      <button type="button" className="ordem-threat-remove" onClick={()=>remove('habilidades',index)}>Remover habilidade</button>
+     </div>)}
+     {(data.habilidades||[]).length===0&&<p className="ordem-threat-empty">Nenhuma habilidade registrada.</p>}
+    </div>
+   </section>
+  </div>}
+
+  {tab==='paranormal'&&<div className="space-y-3 ordem-dossier-content">
+   <section className="ordem-panel"><div className="ordem-panel-title"><span>RESISTÊNCIAS E VULNERABILIDADES</span><small>propriedades da ameaça</small></div>
+    <div className="ordem-threat-text-grid">
+     {[['resistencias','Resistências'],['imunidades','Imunidades'],['vulnerabilidades','Vulnerabilidades'],['enigmaMedo','Enigma de Medo']].map(([key,label])=>
+      <NotesField key={key} label={label} value={data[key]} onChange={v=>updateField(key,v)} rows={4}/>)}
+    </div>
+   </section>
+   <section className="ordem-panel"><NotesField label="Anotações confidenciais do mestre" rows={7} value={data.notas} onChange={v=>updateField('notas',v)}/></section>
+  </div>}
  </div>;
 }
