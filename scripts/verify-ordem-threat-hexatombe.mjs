@@ -21,6 +21,9 @@ for(const key of ['percepcao','iniciativa','fortitude','reflexos','vontade'])
 for(const key of ['critico','alcance','enigmaMedo','imunidades','vulnerabilidades'])
  assert.ok(threat.includes(key),'Campo antigo da ameaça perdido: '+key);
 assert.ok(css.includes('ordem-sheet.ordem-threat-dossier')&&css.includes('@container (max-width: 525px)'),'Estilo do dossiê e responsividade');
+assert.ok(threat.includes('ordem-threat-operational-grid')&&threat.includes("updateField('descricao',v)"),'Dados operacionais compactos e descrição editável');
+assert.ok(threat.includes('HEXATOMBE · PARTE 1')&&threat.includes('HEXATOMBE · PARTE 2'),'Avisos de fonte e limites do acervo');
+assert.ok(css.includes('.ordem-threat-operational-grid'),'Recursos e perícias em colunas');
 assert.ok(!threat.includes('Folha 1')&&!threat.includes('Folha 2'),'Não criar páginas duplicadas na ameaça');
 assert.equal(ORDEM_LIBRARY_CATALOG.length,260);
 assert.equal(ORDEM_LIBRARY_COUNTS.ritual,103);
@@ -34,8 +37,9 @@ assert.deepEqual(trail.progressao.map(x=>x.nex),[10,40,65,99]);
 assert.equal(trail.classe,'Geral','Trilha geral oficial admite as 3 classes');
 assert.ok(ORDEM_LIBRARY_CATALOG.some(x=>x.nome==='Conhecimento de Direção Precognitiva'&&x.pagina==='108'));
 assert.ok(modal.includes('archive03Reference')&&modal.includes('Consultar Hexatombe Parte 2'));
-assert.ok(modal.includes('material parcial')&&modal.includes('O suplemento completo de regras do pacote #02 não está nesta pasta'));
-assert.equal(AS03_HEXATOMBE_THREAT_MODELS.length,8,'8 modelos de referência com atributos verificáveis');
+assert.ok(modal.includes('material parcial')&&modal.includes('Não localizei um PDF de regras completo do Arquivos Secretos #02'));
+assert.equal(AS03_HEXATOMBE_THREAT_MODELS.length,18,'Todos os 18 blocos Pessoa do Hexatombe Parte 2');
+assert.equal(new Set(AS03_HEXATOMBE_THREAT_MODELS.map(x=>x.nome)).size,18,'Personagens sem duplicatas');
 for(const m of AS03_HEXATOMBE_THREAT_MODELS){
  assert.ok(m.fonte.includes('Arquivos Secretos #03')&&m.pagina&&m.descricao);
  assert.ok(Number.isFinite(m.vd)&&Number.isFinite(m.status.pvMax)&&Number.isFinite(m.status.defesa));
@@ -45,7 +49,14 @@ const al=AS03_HEXATOMBE_THREAT_MODELS.find(x=>x.nome==='Alê');
 const es=AS03_HEXATOMBE_THREAT_MODELS.find(x=>x.nome==='Escarlata');
 assert.deepEqual([al.vd,al.status.pvMax,al.status.defesa],[80,45,28]);
 assert.deepEqual([es.vd,es.status.pvMax,es.status.defesa],[120,100,28]);
-assert.ok(MODELOS_ORDEM_AMEACAS.length>=11,'Modelos anteriores somados aos 8 de #03');
+assert.ok(MODELOS_ORDEM_AMEACAS.length>=21,'Modelos anteriores somados aos 18 de #03');
+for(const [nome,vd,pv,defesa] of [['Eloy',80,70,16],['Argano',100,120,26],['Chispa',100,90,26],['Torvo',20,30,21],['Harpia',80,100,22],['Suellen',20,30,15]]){
+ const model=AS03_HEXATOMBE_THREAT_MODELS.find(x=>x.nome===nome);
+ assert.ok(model,'Falta modelo '+nome);
+ assert.deepEqual([model.vd,model.status.pvMax,model.status.defesa],[vd,pv,defesa], 'Valores do suplemento: '+nome);
+}
+assert.equal(AS03_HEXATOMBE_THREAT_MODELS.find(x=>x.nome==='Chispa').status.deslocamento,'15 m');
+assert.equal(AS03_HEXATOMBE_THREAT_MODELS.find(x=>x.nome==='Torvo').status.deslocamento,'0 m');
 const legacy=structuredClone(initialOrdemThreatData);
 legacy.nome='Anomalia do usuário';legacy.imagem='data:image/png;base64,preservar';
 legacy.status.pvAtual=6;legacy.atributos.int=0;legacy.notas='Segredo que não pode sumir';
