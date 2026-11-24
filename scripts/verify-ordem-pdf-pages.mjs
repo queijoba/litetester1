@@ -11,12 +11,12 @@ const template=readFileSync('src/systems/ordemParanormal/pdf/export.js','utf8');
 assert.equal(ORDEM_ATTRIBUTES.length,5,'Cinco atributos da ficha');
 assert.equal(ORDEM_SKILLS.length,28,'28 perícias do PDF Sobrevivendo ao Horror');
 assert.equal(new Set(ORDEM_SKILLS.map(x=>x[0])).size,28,'Perícias sem duplicatas');
-assert.ok(editor.includes("['pdf1','Folha 1 · PDF']")&&editor.includes("['pdf2','Folha 2 · PDF']"),'Exibir folhas no início da navegação');
-assert.ok(editor.includes("useState('pdf1')"),'Abrir a ficha em visualização próxima ao PDF');
-assert.ok(editor.includes('<OrdemPdfPages page={tab} data={data}'), 'Montar folhas diretamente do mesmo objeto de personagem');
+assert.ok(!editor.includes("['pdf1','Folha 1 · PDF']")&&!editor.includes("['pdf2','Folha 2 · PDF']"),'Não reintroduzir abas de folhas duplicadas na navegação');
+assert.ok(editor.includes("useState('agente')"),'Abrir diretamente no dossiê de agente');
+assert.ok(editor.includes('ordem-dossier-content')&&editor.includes('ordem-dossier-record'),'Dossiê mostra registro principal e mantém campos narrativos acessíveis');
 assert.ok(editor.includes("['agente','Agente']")&&editor.includes("['pericias','Perícias']")&&editor.includes("['combate','Combate']")&&editor.includes("['poderes','Poderes & Rituais']")&&editor.includes("['inventario','Inventário']"),'Abas originais continuam disponíveis');
 assert.ok(editor.includes('role="tablist"')&&editor.includes('aria-selected={tab===id}'),'Navegação acessível');
-assert.ok(pages.includes('page===\'pdf2\'?<ContinuationPage'),'Folhas em dois componentes');
+assert.ok(pages.includes('page===\'pdf2\'?<ContinuationPage'),'Modelo auxiliar das duas folhas continua preservado em código, sem abas de navegação');
 assert.ok(pages.includes('ordem-pdf-attributes--orbit')&&pages.includes('ordem-pdf-attributes-core'),'Cinco atributos dispostos radialmente como o PDF');
 assert.ok(pages.includes('data-ordem-attribute={id}')&&pages.includes('aria-label="Cinco atributos do agente'),'Campos radiais continuam identificados e acessíveis');
 for(const key of ['agi','for','int','pre','vig']){

@@ -606,3 +606,196 @@ body.theme-ordem .ordem-sheet .ordem-card,body.theme-dark .ordem-sheet .ordem-ca
  }
  .ordem-sheet .ordem-skill-head,.ordem-sheet .ordem-skill{min-width:520px!important}
 }
+
+
+/* PJ Lite · arquivo de agente, 24/11/2026: identificação em colunas e papel
+   de investigação. Referência de atmosfera, não reprodução da arte do livro. */
+.ordem-sheet.ordem-paper-sheet{
+ background:#e9dfc9!important;
+ background-image:repeating-linear-gradient(0deg,transparent 0 23px,rgba(78,54,39,.024) 23px 24px),
+ linear-gradient(125deg,#eadcc0 0%,#f5ead6 48%,#e2d3b8 100%)!important;
+ color:#221c17!important;border:1px solid #74604c;
+}
+.ordem-sheet .ordem-dossier-hero{min-width:0;gap:14px}
+.ordem-sheet.ordem-paper-sheet .ordem-dossier-hero{
+ background:linear-gradient(112deg,#e4d4b4,#f4e8ce 64%,#e7d7bb)!important;
+ border:2px solid #27211b!important;border-left:7px solid #8e3232!important;
+ box-shadow:inset 0 0 0 3px #e3d7c3,0 3px 8px #3b241b30!important;
+ color:#201b16!important;
+}
+.ordem-sheet.ordem-paper-sheet .ordem-dossier-hero h2{
+ color:#201913!important;font-family:Georgia,'Times New Roman',serif;
+ font-size:clamp(18px,2.8vw,27px);line-height:1.12;letter-spacing:.12em;
+}
+.ordem-sheet.ordem-paper-sheet .ordem-dossier-hero .ordem-kicker{
+ color:#6b342f!important;font-size:9px;letter-spacing:.16em;
+}
+.ordem-sheet.ordem-paper-sheet .ordem-dossier-hero p{color:#55483d!important;font-size:10px;max-width:580px}
+.ordem-sheet.ordem-paper-sheet .ordem-dossier-hero .ordem-seal{
+ color:#211c18!important;border:3px double #271e17!important;outline-color:#5a483b!important;
+}
+.ordem-sheet.ordem-paper-sheet .ordem-dossier-hero .ordem-nex{
+ border:2px solid #27201c!important;background:#eadfc9!important;
+}
+.ordem-sheet.ordem-paper-sheet .ordem-dossier-hero .ordem-nex :is(input,b,span){
+ color:#281c19!important;
+}
+.ordem-sheet .ordem-dossier-brand{flex:1;min-width:0}
+.ordem-sheet.ordem-paper-sheet .ordem-file-ribbon{
+ background:#d9c8a8!important;color:#251e18!important;
+ border:1px solid #756653;border-left:5px solid #8d3031;
+ box-shadow:inset 0 -1px 0 #ad9b7d;
+}
+.ordem-sheet.ordem-paper-sheet .ordem-tabs{
+ border-bottom:2px solid #352d26;padding:9px 0 8px;
+}
+.ordem-sheet.ordem-paper-sheet .ordem-tabs button{
+ background:#e8dbc3!important;border:1px solid #9c8d74!important;
+ color:#2a2520!important;font-size:10px;letter-spacing:.06em;
+}
+.ordem-sheet.ordem-paper-sheet .ordem-tabs button.active{
+ background:#352820!important;color:#f8ebd5!important;
+ border-color:#30231e!important;box-shadow:inset 0 -3px 0 #a63c36!important;
+}
+/* A largura é determinada pelo painel disponível, não apenas pelo viewport. */
+.ordem-sheet .ordem-agent-panel{container-type:inline-size}
+.ordem-sheet .ordem-agent-panel .ordem-agent-grid{
+ display:grid!important;grid-template-columns:minmax(192px,218px) minmax(0,1fr)!important;
+ gap:14px!important;align-items:start!important;
+}
+.ordem-sheet .ordem-dossier-headline{
+ display:flex;align-items:center;justify-content:space-between;gap:8px;
+ border-bottom:2px solid currentColor;padding-bottom:8px;margin-bottom:9px;
+}
+.ordem-sheet .ordem-dossier-headline h3{
+ margin:1px 0 0;font:900 clamp(15px,2.6vw,22px)/1.1 Georgia,serif;
+ letter-spacing:.065em;text-transform:uppercase;
+}
+.ordem-sheet .ordem-dossier-kicker{
+ display:block;font:800 9px/1.3 'Courier New',monospace;letter-spacing:.08em;
+}
+.ordem-sheet .ordem-dossier-stamp{
+ border:2px solid #872c2a;color:#872c2a;
+ padding:5px 8px;font:900 9px/1.2 'Courier New',monospace;
+ text-transform:uppercase;transform:rotate(-3deg);text-align:center;
+}
+.ordem-sheet .ordem-dossier-miniheading{
+ display:flex;justify-content:space-between;flex-wrap:wrap;gap:5px;
+ border-bottom:1px dashed #96866d;margin-bottom:10px;padding-bottom:5px;
+ font:900 9px 'Courier New',monospace;letter-spacing:.06em;
+}
+.ordem-sheet .ordem-dossier-miniheading span{font-size:8px;opacity:.72;font-weight:700}
+.ordem-sheet .ordem-dossier-identity{min-width:0}
+.ordem-sheet .ordem-dossier-identity .ordem-identity-grid{gap:7px 10px!important}
+.ordem-sheet .ordem-dossier-footer{
+ display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px 12px;
+ margin-top:11px;padding-top:7px;border-top:2px dashed #85755e;
+ font:800 8px/1.35 'Courier New',monospace;letter-spacing:.055em;
+}
+.ordem-sheet.ordem-paper-sheet .ordem-agent-panel{
+ background:linear-gradient(145deg,#f2e5cc,#e9dbbf 52%,#f7e9cf)!important;
+ border:1px solid #5e4e3c!important;box-shadow:inset 0 0 0 4px #dfd1b9,0 3px 8px #46302120!important;
+ color:#272019!important;padding:14px!important;
+}
+.ordem-sheet.ordem-paper-sheet .ordem-agent-panel .ordem-dossier-headline{
+ color:#251e18;
+}
+.ordem-sheet.ordem-paper-sheet .ordem-dossier-identity label>span,
+.ordem-sheet.ordem-paper-sheet .ordem-dossier-record label>span{
+ color:#403529!important;font:900 9px 'Courier New',monospace!important;
+ letter-spacing:.04em;text-transform:uppercase;
+}
+.ordem-sheet.ordem-paper-sheet .ordem-dossier-identity :is(input,select){
+ background:rgba(255,251,237,.74)!important;color:#211d18!important;
+ border:1px solid #a59679!important;border-bottom:2px solid #776953!important;
+ border-radius:0!important;font:600 12px system-ui,sans-serif!important;
+ padding:6px 7px!important;min-height:32px;
+}
+.ordem-sheet .ordem-attrs.ordem-attrs--portrait{
+ position:relative!important;display:block!important;
+ width:215px!important;max-width:100%!important;height:229px!important;
+ margin:0 auto!important;padding:0!important;
+ overflow:visible!important;
+}
+/* Redes de linhas como marca gráfica abstrata de investigação. */
+.ordem-sheet .ordem-attrs--portrait::before{
+ inset:37px 38px 34px!important;border:1px dashed #746651!important;
+ background:
+ linear-gradient(30deg,transparent 49.5%,#8f7b604d 50%,transparent 50.5%),
+ linear-gradient(150deg,transparent 49.5%,#8f7b604d 50%,transparent 50.5%),
+ linear-gradient(90deg,transparent 49.5%,#8f7b604d 50%,transparent 50.5%)!important;
+ box-shadow:0 0 0 5px #a58b6224;
+}
+.ordem-sheet .ordem-attrs--portrait .ordem-photo--portrait{
+ width:100px!important;max-width:100px!important;
+ top:54%!important;gap:3px!important;
+}
+.ordem-sheet .ordem-attrs--portrait .ordem-photo--portrait img,
+.ordem-sheet .ordem-attrs--portrait .ordem-photo--portrait .ordem-photo-empty{
+ width:100px!important;height:100px!important;
+ border-radius:2px!important;border:2px solid #2f2720!important;
+ box-shadow:0 0 0 3px #d4c3a3,0 0 0 4px #55473a!important;
+}
+.ordem-sheet .ordem-attrs--portrait .ordem-attr{
+ width:49px!important;height:49px!important;min-width:49px!important;
+ max-width:49px!important;border:2px solid #29231e!important;
+ background:radial-gradient(circle,#f8efd8,#e4d4b7)!important;
+ box-shadow:0 0 0 2px #cdbb9b,inset 0 0 0 2px #f5e8cf!important;
+}
+.ordem-sheet .ordem-attrs--portrait .ordem-attr .ordem-attr-name{
+ color:#332921!important;font:900 7px/1 Georgia,serif!important;
+}
+.ordem-sheet .ordem-attrs--portrait .ordem-attr input{
+ color:#1a1917!important;font:900 18px/1 Georgia,serif!important;
+ width:100%!important;height:21px!important;min-height:0!important;
+ background:transparent!important;padding:0!important;
+}
+.ordem-sheet .ordem-attrs--portrait .ordem-attr strong{
+ color:#85312c!important;font:900 8px/1 Georgia,serif!important;
+}
+.ordem-sheet .ordem-attrs--portrait [data-ordem-attribute="agi"]{left:50%!important;top:13%!important}
+.ordem-sheet .ordem-attrs--portrait [data-ordem-attribute="for"]{left:12%!important;top:41%!important}
+.ordem-sheet .ordem-attrs--portrait [data-ordem-attribute="int"]{left:88%!important;top:41%!important}
+.ordem-sheet .ordem-attrs--portrait [data-ordem-attribute="pre"]{left:21%!important;top:85%!important}
+.ordem-sheet .ordem-attrs--portrait [data-ordem-attribute="vig"]{left:79%!important;top:85%!important}
+.ordem-sheet.ordem-paper-sheet .ordem-dossier-content .ordem-panel:not(.ordem-agent-panel){
+ background:#eee1c9!important;color:#28211c!important;
+ border:1px solid #776451!important;
+}
+.ordem-sheet.ordem-paper-sheet .ordem-dossier-record :is(input,textarea){
+ background:#f6ecd7!important;color:#211d19!important;border:1px solid #96856b!important;
+}
+.ordem-sheet .ordem-dossier-record{padding:11px 13px!important}
+.ordem-sheet .ordem-dossier-record summary{
+ cursor:pointer;display:flex;align-items:center;flex-wrap:wrap;gap:5px 15px;
+ font:900 11px Georgia,serif;letter-spacing:.065em;
+}
+.ordem-sheet .ordem-dossier-record summary::marker{color:#843734}
+.ordem-sheet .ordem-dossier-record summary small{
+ font:700 9px system-ui,sans-serif;letter-spacing:0;opacity:.75;
+}
+.ordem-sheet .ordem-dossier-extra{padding-top:13px;display:grid;gap:9px}
+.ordem-sheet .ordem-dossier-extra-top{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.ordem-sheet .ordem-dossier-narrative{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.ordem-sheet .ordem-dossier-record label{display:block}
+.ordem-sheet .ordem-dossier-record textarea{width:100%;resize:vertical;min-height:70px}
+/* Consultas por tamanho do bloco: funciona mesmo com a barra lateral aberta. */
+@container (max-width: 525px){
+ .ordem-sheet .ordem-agent-panel .ordem-agent-grid{grid-template-columns:minmax(0,1fr)!important}
+ .ordem-sheet .ordem-agent-panel .ordem-attrs--portrait{margin:0 auto 9px!important}
+}
+@media(max-width:560px){
+ .ordem-sheet .ordem-dossier-hero{gap:8px!important;padding:11px!important}
+ .ordem-sheet .ordem-dossier-hero .ordem-seal{width:40px;flex-basis:40px;height:40px}
+ .ordem-sheet .ordem-dossier-stamp{font-size:8px;padding:3px 5px}
+ .ordem-sheet .ordem-dossier-headline h3{font-size:16px}
+ .ordem-sheet .ordem-dossier-narrative,.ordem-sheet .ordem-dossier-extra-top{grid-template-columns:minmax(0,1fr)}
+ .ordem-sheet .ordem-attrs.ordem-attrs--portrait{width:215px!important;height:229px!important}
+ .ordem-sheet .ordem-dossier-hero h2{font-size:17px!important}
+}
+/* Fallback de responsividade onde container queries não forem suportadas. */
+@supports not (container-type:inline-size){
+ @media(max-width:670px){
+  .ordem-sheet .ordem-agent-panel .ordem-agent-grid{grid-template-columns:minmax(0,1fr)!important}
+ }
+}

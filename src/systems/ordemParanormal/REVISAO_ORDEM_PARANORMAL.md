@@ -1,3 +1,12 @@
+## Ficha de agente como dossiê sem abas de Folha — 24/11/2026
+
+- Removidas **Folha 1 · PDF** e **Folha 2 · PDF** da navegação e do renderizador ativo; a ficha agora abre diretamente na aba **Agente**, sem uma página duplicada com grande área vazia.
+- A identidade de **arquivo restrito da Ordo Realitas** usa papel bege, bordas de tinta, tipografia de dossiê e carimbo vermelho discreto. O visual foi inspirado na referência gráfica do usuário, sem copiar diretamente a arte do material original.
+- O retrato com atributos AGI/FOR/INT/PRE/VIG foi mantido como controle editável compacto **à esquerda**, enquanto os dados cadastrais aparecem **à direita** no mesmo painel. O layout responde à largura real do painel por consulta CSS do container, inclusive quando o mestre abre uma barra lateral; telas menores empilham o retrato e os campos sem corte.
+- Proteção/RD, Resistências e os campos narrativos Aparência, Personalidade, Histórico e Objetivo, que antes só apareciam nas Folhas, ficam em **Registro pessoal e proteções** (recolhível) na aba Agente. Inventário, DT dos rituais, ataques, perícias, anotações e evolução seguem nas abas existentes. O exportador PDF continua preservado e independente da navegação.
+- Nenhum registro, chave ou migração de banco de dados foi alterado. Regressões cobrem visual, acessibilidade das informações e fichas legadas.
+- Publicar inicialmente apenas no LiteTester; definitivo inalterado até aprovação.
+
 ## Atributos compactos no retrato e ajustes de perícias — 24/11/2026
 
 - **Folha 1 · PDF:** a foto do personagem passa a ser o centro do conjunto de atributos AGI/FOR/INT/PRE/VIG, com anéis menores e edição direta; removida a seção separada que consumia altura. A imagem continua editável no próprio retrato.
