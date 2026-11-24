@@ -77,7 +77,7 @@ const rea=[
 const a=c=>c?Object.fromEntries(['agi','for','int','pre','vig'].map((key,i)=>[key,Number(c[i])||0])):undefined;
 const make=(name,elemento,vd,pagina,pv,defesa,attrs,deslocamento,categoria)=>({
  nome:name,vd,elemento,categoria:['Diabo','Deus da Morte','Máscara do Desespero','Anfitrião'].includes(name)?'Relíquia':categoria,fonte:'Livro Básico v1.3',pagina:String(pagina),
- ...(attrs?{atributos:a(attrs)}:{}),
+ atributos:attrs?a(attrs):{agi:'',for:'',int:'',pre:'',vig:''},
  status:{pvAtual:pv,pvMax:pv,...(defesa==null?{defesa:''}:{defesa}),...(deslocamento?{deslocamento}:{})},
  descricao:'Referência de consulta do Livro Básico v1.3, p. '+pagina+'. Os ataques, efeitos especiais e enigmas completos devem ser consultados na fonte.',
  dadosParciais:true, tipo:'ameaca',type:'ameaca'
