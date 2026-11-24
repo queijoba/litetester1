@@ -127,3 +127,838 @@ body.theme-ordem .ordem-sheet .ordem-card,body.theme-dark .ordem-sheet .ordem-ca
 .ordem-view-toggle:hover,.ordem-view-toggle:focus-visible{background:#812c31;outline:2px solid #fff;outline-offset:1px}
 @media print{.ordem-view-toggle{display:none!important}.ordem-sheet.ordem-paper-sheet{background:#fff!important;border:0!important;box-shadow:none!important}}
 @media(max-width:640px){.ordem-view-toggle{font-size:10px}.ordem-file-agent-name{flex-basis:auto!important;min-width:90px}}
+
+/* ORDEM 2026.11 - Visualização editável por duas folhas baseada na hierarquia da
+   ficha SaH (sem reproduzir arquivos ou ilustrações do material original).
+   Todas as regras de impressão e cores ficam isoladas em .ordem-pdf-*. */
+.ordem-sheet .ordem-pdf-sheet {
+ --op-paper:#fffefa;--op-ink:#211f1e;--op-muted:#655f58;--op-line:#b4ada6;--op-red:#9e3438;
+ max-width:1190px;margin:8px auto 20px;padding:24px 27px;
+ background:var(--op-paper)!important;color:var(--op-ink)!important;
+ border:1px solid #928b86;box-shadow:0 8px 26px #29212125,inset 0 0 0 6px #f5f1e9;
+ font:400 12px/1.4 system-ui,'Segoe UI',sans-serif;overflow:visible;
+}
+.ordem-sheet .ordem-pdf-sheet *, .ordem-sheet .ordem-pdf-sheet *::before,
+.ordem-sheet .ordem-pdf-sheet *::after {box-sizing:border-box;min-width:0;}
+.ordem-sheet .ordem-pdf-heading {
+ display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;
+ padding:6px 5px 17px;border-bottom:4px solid #262222;margin-bottom:13px;
+}
+.ordem-sheet .ordem-pdf-wordmark{display:flex;align-items:center;gap:13px}
+.ordem-sheet .ordem-pdf-emblem{
+ display:grid;place-items:center;width:58px;height:58px;flex:0 0 58px;border:4px double #222;
+ border-radius:50%;font:900 41px Georgia,serif;color:#2d2828;background:linear-gradient(135deg,#f5f2ec,#e9e4d9);
+}
+.ordem-sheet .ordem-pdf-wordmark p{
+ margin:0 0 3px;color:#942d35;font-weight:1000;font-size:9px;letter-spacing:.16em;text-transform:uppercase;
+}
+.ordem-sheet .ordem-pdf-wordmark h2{
+ margin:0;color:#191919;font:900 clamp(19px,2.7vw,29px)/1.1 Georgia,'Times New Roman',serif;letter-spacing:.045em;
+}
+.ordem-sheet .ordem-pdf-wordmark small{color:#605a54;font-size:10px;line-height:1.2;display:block;margin-top:5px}
+.ordem-sheet .ordem-pdf-page-number{
+ padding:7px 11px;background:#292525;color:#f6f0e7;white-space:nowrap;
+ font-size:9px;font-weight:900;letter-spacing:.08em;display:flex;align-items:center;gap:7px;
+}
+.ordem-sheet .ordem-pdf-page-number strong{font:900 20px Georgia,serif;color:#ffd1d1}
+.ordem-sheet .ordem-pdf-page1-layout,
+.ordem-sheet .ordem-pdf-page2-layout{
+ display:grid;grid-template-columns:minmax(0,1.17fr) minmax(0,1fr);gap:13px;align-items:start;
+}
+.ordem-sheet .ordem-pdf-page2-layout{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.ordem-sheet .ordem-pdf-primary-column,.ordem-sheet .ordem-pdf-skills-column,
+.ordem-sheet .ordem-pdf-secondary-column{display:grid;gap:12px;min-width:0;align-content:start}
+.ordem-sheet .ordem-pdf-section{
+ border:1px solid #bcb4aa;box-shadow:inset 0 0 0 1px #f4efe8;background:#fffefa;
+ padding:10px;min-width:0;overflow:hidden;
+}
+.ordem-sheet .ordem-pdf-section-head{
+ display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;
+ gap:7px;border-bottom:2px solid #33302d;padding:0 0 5px;margin:0 0 9px;
+}
+.ordem-sheet .ordem-pdf-section-head h3{
+ margin:0;text-transform:uppercase;color:#1c1b1a;font:900 14px Georgia,serif;letter-spacing:.07em;
+}
+.ordem-sheet .ordem-pdf-section-head small{display:block;color:#70665e;margin-top:2px;font-size:9px;line-height:1.2}
+.ordem-sheet .ordem-pdf-action{
+ padding:6px 8px;border:1px solid #7e2b30;background:#842b30!important;color:#fff!important;
+ border-radius:2px;font-size:10px;font-weight:900;cursor:pointer;white-space:nowrap;
+}
+.ordem-sheet .ordem-pdf-action:hover{background:#ad3b41!important}
+.ordem-sheet .ordem-pdf-delete{
+ color:#93363d;background:#fff1ef!important;border:1px solid #d8b8b8;border-radius:2px;
+ min-width:24px;min-height:28px;padding:2px 6px;font-weight:900;font-size:17px;line-height:1;cursor:pointer;
+}
+.ordem-sheet .ordem-pdf-delete:hover{background:#ffd8d6!important}
+.ordem-sheet .ordem-pdf-text-link{
+ display:inline-block;background:transparent!important;border:none!important;border-bottom:1px dotted #983038!important;
+ padding:5px 0 2px;color:#963239!important;font-size:10px;font-weight:900;text-align:left;
+ text-decoration:none;margin-top:7px;cursor:pointer;
+}
+.ordem-sheet .ordem-pdf-text-link:hover{text-decoration:underline}
+.ordem-sheet .ordem-pdf-sheet :is(button,input,select,textarea):focus-visible{
+ outline:2px solid #9a2b36!important;outline-offset:1px!important;
+}
+.ordem-sheet .ordem-pdf-field{display:flex;flex-direction:column;gap:3px;font-size:10px;color:#5d5650;min-width:0}
+.ordem-sheet .ordem-pdf-field>span{display:block;text-transform:uppercase;font-weight:900;font-size:9px!important;letter-spacing:.06em;color:#56504c!important}
+.ordem-sheet .ordem-pdf-sheet input,.ordem-sheet .ordem-pdf-sheet select,
+.ordem-sheet .ordem-pdf-sheet textarea{
+ min-width:0;width:100%;background:#fff!important;color:#211e1b!important;
+ border:1px solid #c7beb4!important;border-bottom:2px solid #68605a!important;
+ border-radius:1px!important;padding:6px 7px;font:500 12px/1.3 system-ui,sans-serif;
+}
+.ordem-sheet .ordem-pdf-sheet input[readonly]{
+ background:#eeeae3!important;font-weight:900;color:#413b37!important;
+}
+.ordem-sheet .ordem-pdf-field small{font-size:8px;color:#756d66}
+.ordem-sheet .ordem-pdf-identity-content{
+ display:grid;grid-template-columns:87px minmax(0,1fr);gap:11px;align-items:start;
+}
+.ordem-sheet .ordem-pdf-mini-photo{
+ height:112px;max-height:112px;display:flex;flex-direction:column;justify-content:space-between;
+ border:1px solid #444;background:#ece6dc;position:relative;overflow:hidden;cursor:pointer;
+ text-align:center;
+}
+.ordem-sheet .ordem-pdf-mini-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ordem-sheet .ordem-pdf-mini-photo>span{font-size:9px;letter-spacing:.1em;margin:auto;color:#74675f;font-weight:900}
+.ordem-sheet .ordem-pdf-mini-photo input{
+ position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;
+ left:0;bottom:0;cursor:pointer;
+}
+.ordem-sheet .ordem-pdf-mini-photo small{
+ position:relative;z-index:1;background:#242021d9;color:#fff;padding:4px;font-size:9px;font-weight:800;margin-top:auto;
+}
+.ordem-sheet .ordem-pdf-mini-photo:focus-within{outline:2px solid #a52d37;outline-offset:1px}
+.ordem-sheet .ordem-pdf-identity-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.ordem-sheet .ordem-pdf-identity-fields .wide{grid-column:1/-1}
+.ordem-sheet .ordem-pdf-attributes{
+ display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:end;gap:3px;text-align:center;
+}
+.ordem-sheet .ordem-pdf-attribute{display:flex;flex-direction:column;align-items:center;gap:4px}
+.ordem-sheet .ordem-pdf-attribute>span{
+ color:#69615c!important;font-size:9px!important;font-weight:800;line-height:1.1;text-transform:uppercase;
+}
+.ordem-sheet .ordem-pdf-attribute-ring{
+ width:min(100%,60px);aspect-ratio:1;border-radius:50%;
+ border:4px double #272323;background:radial-gradient(circle,#fff,#eee7dc);
+ display:grid;place-items:center;box-shadow:inset 0 0 0 2px #ddd2c7;
+}
+.ordem-sheet .ordem-pdf-attribute-ring input{
+ width:calc(100% - 10px)!important;min-width:0!important;height:41px;
+ text-align:center;font:900 24px Georgia,serif!important;border:0!important;
+ border-bottom:0!important;background:transparent!important;padding:0!important;
+ appearance:textfield;
+}
+.ordem-sheet .ordem-pdf-attribute b{font:900 10px system-ui;color:#9d2831;letter-spacing:.1em}
+.ordem-sheet .ordem-pdf-resources{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.ordem-sheet .ordem-pdf-resource{
+ border:2px solid #333;min-height:74px;background:#f4eeec;display:flex;flex-direction:column;
+}
+.ordem-sheet .ordem-pdf-resource>span{
+ display:block;background:#a72e37;color:white;padding:4px 7px;text-align:center;
+ font-size:10px;font-weight:1000;letter-spacing:.12em;
+}
+.ordem-sheet .ordem-pdf-resource-esforco>span{background:#313438}
+.ordem-sheet .ordem-pdf-resource-sanidade>span{background:#57415a}
+.ordem-sheet .ordem-pdf-resource-determinacao>span{background:#293b3a}
+.ordem-sheet .ordem-pdf-resource-nums{display:flex;align-items:center;justify-content:center;gap:3px;padding:5px}
+.ordem-sheet .ordem-pdf-resource-nums>label{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px}
+.ordem-sheet .ordem-pdf-resource-nums small{font-size:8px;color:#6a625e;font-weight:800}
+.ordem-sheet .ordem-pdf-resource-nums b{font:900 17px Georgia,serif;color:#35302d;margin-top:9px}
+.ordem-sheet .ordem-pdf-resource-nums input{max-width:75px;text-align:center;font-weight:900!important;font-size:16px!important;padding:3px 1px!important}
+.ordem-sheet .ordem-pdf-defense{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.ordem-sheet .ordem-pdf-defense-footer{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}
+.ordem-sheet .ordem-pdf-footnote{font-size:9px;line-height:1.4;color:#6e6660;margin:9px 0 0}
+.ordem-sheet .ordem-pdf-table-scroll,.ordem-sheet .ordem-pdf-skill-scroll{
+ max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;
+ scrollbar-width:thin;padding-bottom:3px;
+}
+.ordem-sheet .ordem-pdf-sheet table{width:100%;border-collapse:collapse;text-align:left;font-variant-numeric:tabular-nums}
+.ordem-sheet .ordem-pdf-sheet th,.ordem-sheet .ordem-pdf-sheet td{border-bottom:1px solid #ddd5ce;padding:3px 4px}
+.ordem-sheet .ordem-pdf-sheet thead th{
+ background:#2e2929!important;color:#fff!important;font-size:9px;text-transform:uppercase;
+ font-weight:900;letter-spacing:.03em;white-space:nowrap;padding:7px 4px;
+}
+.ordem-sheet .ordem-pdf-skills-table{min-width:470px}
+.ordem-sheet .ordem-pdf-skills-table tbody tr:nth-child(even),
+.ordem-sheet .ordem-pdf-attack-table tbody tr:nth-child(even){background:#f5f1ec}
+.ordem-sheet .ordem-pdf-skills-table tbody th{
+ font-size:10px;line-height:1.1;white-space:nowrap;color:#2b2726;font-weight:800;
+}
+.ordem-sheet .ordem-pdf-skills-table tbody td{padding:2px}
+.ordem-sheet .ordem-pdf-skills-table input,.ordem-sheet .ordem-pdf-skills-table select{
+ border:1px solid #c2bbb5!important;border-radius:1px!important;padding:3px 2px!important;
+ font-size:10px!important;height:25px!important;text-align:center!important;max-width:100%;min-width:0!important;
+}
+.ordem-sheet .ordem-pdf-skills-table .ordem-pdf-dice{text-align:center;font-size:10px;font-weight:800;color:#633036;white-space:nowrap}
+.ordem-sheet .ordem-pdf-skills-table .ordem-pdf-skill-total{
+ background:#f1e5e1;color:#842833;font-size:11px;font-weight:1000;text-align:center;
+}
+.ordem-sheet .ordem-pdf-attack-table{min-width:480px;table-layout:fixed}
+.ordem-sheet .ordem-pdf-attack-table th:nth-child(1){width:22%}
+.ordem-sheet .ordem-pdf-attack-table th:nth-child(2){width:13%}
+.ordem-sheet .ordem-pdf-attack-table th:nth-child(3){width:14%}
+.ordem-sheet .ordem-pdf-attack-table th:nth-child(4){width:12%}
+.ordem-sheet .ordem-pdf-attack-table th:nth-child(5){width:13%}
+.ordem-sheet .ordem-pdf-attack-table th:nth-child(6){width:20%}
+.ordem-sheet .ordem-pdf-attack-table th:nth-child(7){width:32px}
+.ordem-sheet .ordem-pdf-attack-table input{font-size:10px!important;padding:5px 3px!important}
+.ordem-sheet .ordem-pdf-blank-row{padding:12px!important;font-size:10px;color:#716961;text-align:center}
+.ordem-sheet .ordem-pdf-management{
+ display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;
+}
+.ordem-sheet .ordem-pdf-inventory-table{min-width:320px;table-layout:fixed}
+.ordem-sheet .ordem-pdf-inventory-table th:first-child{width:51%}
+.ordem-sheet .ordem-pdf-inventory-table th:nth-child(2){width:16%}
+.ordem-sheet .ordem-pdf-inventory-table th:nth-child(3){width:13%}
+.ordem-sheet .ordem-pdf-inventory-table th:nth-child(4){width:13%}
+.ordem-sheet .ordem-pdf-inventory-table input{font-size:11px!important;padding:5px 3px!important}
+.ordem-sheet .ordem-pdf-ability-list,.ordem-sheet .ordem-pdf-ritual-list{display:grid;gap:8px}
+.ordem-sheet .ordem-pdf-ability-row{
+ display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,.85fr) minmax(0,.6fr) minmax(0,.5fr) 26px;
+ gap:5px;padding:7px;background:#f8f5f0;border:1px solid #c3bbb0;align-items:center;
+}
+.ordem-sheet .ordem-pdf-ability-row input{font-size:10px!important;padding:5px!important}
+.ordem-sheet .ordem-pdf-ability-row .ordem-pdf-ability-name{font-weight:800!important}
+.ordem-sheet .ordem-pdf-ability-row textarea{grid-column:1/-1;resize:vertical}
+.ordem-sheet .ordem-pdf-ritual{border:1px solid #c3b4b0;background:#fbf8f2;padding:9px}
+.ordem-sheet .ordem-pdf-ritual-head{
+ display:grid;grid-template-columns:minmax(0,1fr) 80px 28px;align-items:end;gap:5px;
+ margin-bottom:7px;
+}
+.ordem-sheet .ordem-pdf-ritual-head>input{font-weight:900!important}
+.ordem-sheet .ordem-pdf-ritual-fields{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.ordem-sheet .ordem-pdf-ritual-fields input{font-size:10px!important;padding:5px 3px!important}
+.ordem-sheet .ordem-pdf-effect{margin-top:8px}
+.ordem-sheet .ordem-pdf-effect textarea,.ordem-sheet .ordem-pdf-notes{resize:vertical;min-height:62px}
+.ordem-sheet .ordem-pdf-dt{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.ordem-sheet .ordem-pdf-evolution{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ordem-sheet .ordem-pdf-footer{
+ display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px;
+ margin-top:15px;padding:8px 4px 0;border-top:3px double #77716b;
+ color:#776d67;font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.09em;
+}
+.ordem-sheet .ordem-tabs button[aria-selected="true"]{box-shadow:inset 0 -3px 0 #a62b35!important}
+@media(max-width:1120px){
+ .ordem-sheet .ordem-pdf-page1-layout{grid-template-columns:minmax(0,1fr)}
+ .ordem-sheet .ordem-pdf-page2-layout{grid-template-columns:minmax(0,1fr)}
+ .ordem-sheet .ordem-pdf-skills-column{grid-row:auto}
+ .ordem-sheet .ordem-pdf-skills-table{min-width:490px}
+}
+@media(max-width:650px){
+ .ordem-sheet .ordem-pdf-sheet{padding:11px 8px;margin:6px 0 15px;box-shadow:inset 0 0 0 2px #f4eee3}
+ .ordem-sheet .ordem-pdf-heading{gap:9px;padding-bottom:11px}
+ .ordem-sheet .ordem-pdf-emblem{height:40px;width:40px;flex-basis:40px;font-size:26px;border-width:3px}
+ .ordem-sheet .ordem-pdf-wordmark{gap:8px;flex:1}
+ .ordem-sheet .ordem-pdf-wordmark p{font-size:7px;letter-spacing:.04em}
+ .ordem-sheet .ordem-pdf-wordmark h2{font-size:18px;letter-spacing:0}
+ .ordem-sheet .ordem-pdf-wordmark small{font-size:8px}
+ .ordem-sheet .ordem-pdf-page-number{padding:4px 7px;font-size:8px}
+ .ordem-sheet .ordem-pdf-page-number strong{font-size:15px}
+ .ordem-sheet .ordem-pdf-section{padding:7px}
+ .ordem-sheet .ordem-pdf-section-head h3{font-size:12px}
+ .ordem-sheet .ordem-pdf-identity-content{grid-template-columns:65px 1fr;gap:7px}
+ .ordem-sheet .ordem-pdf-mini-photo{height:91px}
+ .ordem-sheet .ordem-pdf-field>span{font-size:8px!important}
+ .ordem-sheet .ordem-pdf-sheet :is(input,select,textarea){font-size:12px;padding:5px!important}
+ .ordem-sheet .ordem-pdf-attributes{gap:2px}
+ .ordem-sheet .ordem-pdf-attribute>span{font-size:7px!important;white-space:nowrap;letter-spacing:-.02em}
+ .ordem-sheet .ordem-pdf-attribute-ring{max-width:53px;border-width:3px}
+ .ordem-sheet .ordem-pdf-attribute-ring input{font-size:20px!important;height:34px}
+ .ordem-sheet .ordem-pdf-resources{gap:4px}
+ .ordem-sheet .ordem-pdf-resource>span{font-size:9px;padding:3px}
+ .ordem-sheet .ordem-pdf-resource-nums{gap:1px;padding:3px}
+ .ordem-sheet .ordem-pdf-resource-nums input{font-size:14px!important}
+ .ordem-sheet .ordem-pdf-management{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ .ordem-sheet .ordem-pdf-ritual-fields{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .ordem-sheet .ordem-pdf-dt{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .ordem-sheet .ordem-pdf-ability-row{grid-template-columns:minmax(0,1fr) minmax(0,.8fr) 25px}
+ .ordem-sheet .ordem-pdf-ability-row .ordem-pdf-ability-name{grid-column:1/3}
+ .ordem-sheet .ordem-pdf-ability-row input:nth-child(3){grid-column:1}
+ .ordem-sheet .ordem-pdf-ability-row textarea{grid-column:1/-1}
+ .ordem-sheet .ordem-pdf-ability-row button{grid-column:3;grid-row:1}
+ .ordem-sheet .ordem-pdf-footer{font-size:7px}
+}
+@media print{
+ .ordem-sheet .ordem-pdf-sheet{max-width:none!important;box-shadow:none!important;border:none!important;padding:0!important;margin:0!important;break-after:page}
+ .ordem-sheet .ordem-pdf-delete,.ordem-sheet .ordem-pdf-action,.ordem-sheet .ordem-pdf-text-link{display:none!important}
+ .ordem-sheet .ordem-pdf-section{break-inside:avoid}
+}
+
+
+/* Revisão SaH: diagrama original dos cinco atributos em torno de um núcleo.
+   Os campos permanecem inputs verdadeiros, ligados ao mesmo estado das abas clássicas. */
+.ordem-sheet .ordem-pdf-attributes.ordem-pdf-attributes--orbit{
+ display:block!important;position:relative;width:min(100%,348px);height:302px;
+ margin:5px auto 10px;isolation:isolate;text-align:center;
+}
+.ordem-sheet .ordem-pdf-attributes--orbit::before{
+ content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+ width:63%;aspect-ratio:1;border-radius:50%;z-index:0;
+ border:7px double rgba(35,31,32,.58);box-shadow:0 0 0 2px #e4dacf,inset 0 0 0 3px #ece7de;
+ background:radial-gradient(circle,transparent 38%,rgba(62,55,51,.035) 39%,transparent 70%);
+}
+.ordem-sheet .ordem-pdf-attributes--orbit .ordem-pdf-attributes-core{
+ position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+ width:43%;aspect-ratio:1;display:grid;place-items:center;
+ border-radius:50%;border:5px solid #201e20;outline:2px solid #b5aaa2;
+ background:radial-gradient(circle at 33% 30%,#4a4241 0%,#222022 62%,#141315 100%);
+ color:#fff;z-index:1;box-shadow:inset 0 0 0 3px #67605c,0 2px 0 #cec2b4;
+}
+.ordem-sheet .ordem-pdf-attributes--orbit .ordem-pdf-attributes-core span{
+ font:900 clamp(11px,2.5vw,16px)/1.15 Georgia,serif;letter-spacing:.07em;
+ text-shadow:0 1px 1px #000;
+}
+.ordem-sheet .ordem-pdf-attributes--orbit .ordem-pdf-attribute{
+ position:absolute!important;transform:translate(-50%,-50%);z-index:2;
+ width:clamp(68px,25%,90px);display:flex;flex-direction:column;align-items:center;
+ justify-content:center;gap:2px;padding:0;margin:0;min-width:0;
+}
+.ordem-sheet .ordem-pdf-attributes--orbit [data-ordem-attribute="agi"]{left:50%;top:19%}
+.ordem-sheet .ordem-pdf-attributes--orbit [data-ordem-attribute="for"]{left:18%;top:48%}
+.ordem-sheet .ordem-pdf-attributes--orbit [data-ordem-attribute="int"]{left:82%;top:48%}
+.ordem-sheet .ordem-pdf-attributes--orbit [data-ordem-attribute="pre"]{left:31%;top:81%}
+.ordem-sheet .ordem-pdf-attributes--orbit [data-ordem-attribute="vig"]{left:69%;top:81%}
+.ordem-sheet .ordem-pdf-attributes--orbit .ordem-pdf-attribute>span{
+ display:block;color:#38312e!important;font:900 9px/1.05 Georgia,serif!important;
+ text-transform:uppercase;letter-spacing:.01em;white-space:nowrap;
+}
+.ordem-sheet .ordem-pdf-attributes--orbit .ordem-pdf-attribute b{
+ display:block;font:900 10px/1 Georgia,serif;color:#8d2731;letter-spacing:.09em;
+}
+.ordem-sheet .ordem-pdf-attributes--orbit .ordem-pdf-attribute-ring{
+ width:72px;max-width:100%!important;height:72px;aspect-ratio:1;
+ flex:0 0 auto;border:4px solid #252124!important;border-radius:50%;
+ outline:2px dashed #92827a;outline-offset:4px;
+ box-shadow:0 0 0 4px #fbf8f2,inset 0 0 0 2px #d8cfc2;
+ background:radial-gradient(circle at 35% 30%,#fff,#eee7db);
+}
+.ordem-sheet .ordem-pdf-attributes--orbit .ordem-pdf-attribute-ring input{
+ width:100%!important;height:100%!important;text-align:center;
+ font:900 28px Georgia,serif!important;padding:0!important;
+ border:0!important;outline-offset:5px;box-shadow:none!important;
+}
+.ordem-sheet .ordem-pdf-attributes--orbit .ordem-pdf-attribute-ring:focus-within{
+ outline-color:#9c3039;box-shadow:0 0 0 4px #fff3eb,inset 0 0 0 2px #d8cfc2;
+}
+.ordem-sheet .ordem-pdf-description-section{margin-top:12px}
+.ordem-sheet .ordem-pdf-description-grid{
+ display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;
+}
+.ordem-sheet .ordem-pdf-description-field{display:flex;flex-direction:column;min-width:0;gap:5px}
+.ordem-sheet .ordem-pdf-description-field span{
+ font:900 10px Georgia,serif;color:#3b3331;text-align:center;letter-spacing:.05em;
+}
+.ordem-sheet .ordem-pdf-description-field textarea{min-height:96px;resize:vertical}
+@media(max-width:1120px){
+ .ordem-sheet .ordem-pdf-description-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:650px){
+ .ordem-sheet .ordem-pdf-attributes.ordem-pdf-attributes--orbit{width:min(100%,302px);height:273px}
+ .ordem-sheet .ordem-pdf-attributes--orbit .ordem-pdf-attribute{width:clamp(62px,27%,78px)}
+ .ordem-sheet .ordem-pdf-attributes--orbit .ordem-pdf-attribute-ring{
+  width:62px;max-width:100%!important;height:62px;border-width:3px!important;outline-offset:3px
+ }
+ .ordem-sheet .ordem-pdf-attributes--orbit .ordem-pdf-attribute-ring input{height:100%!important;font-size:24px!important}
+ .ordem-sheet .ordem-pdf-attributes--orbit .ordem-pdf-attribute>span{font-size:8px!important}
+ .ordem-sheet .ordem-pdf-attributes--orbit .ordem-pdf-attributes-core{width:43%;border-width:4px}
+ .ordem-sheet .ordem-pdf-attributes--orbit .ordem-pdf-attributes-core span{font-size:11px}
+ .ordem-sheet .ordem-pdf-description-grid{grid-template-columns:minmax(0,1fr)}
+ .ordem-sheet .ordem-pdf-description-field textarea{min-height:76px}
+}
+@media print{
+ .ordem-sheet .ordem-pdf-attributes--orbit .ordem-pdf-attributes-core{
+  -webkit-print-color-adjust:exact;print-color-adjust:exact
+ }
+}
+
+
+/* Ordem Paranormal — retrato e atributos compactos, 24/11/2026.
+   O mesmo campo é editado nas folhas SaH e na ficha detalhada.
+   Apenas layout: não modifica ficha salva, chaves, PWA ou exportação. */
+.ordem-sheet .ordem-agent-grid{
+ display:grid;grid-template-columns:minmax(250px,270px) minmax(0,1fr);
+ gap:15px;align-items:start;
+}
+.ordem-sheet .ordem-attrs.ordem-attrs--portrait{
+ position:relative;display:block;overflow:visible;
+ width:min(100%,258px);height:248px;
+ margin:0 auto;isolation:isolate;
+}
+.ordem-sheet .ordem-attrs--portrait::before{
+ content:"";position:absolute;inset:41px 50px 38px;
+ border:1px dashed rgba(145,76,76,.52);border-radius:50%;
+ background:radial-gradient(circle,#601a1a0b,transparent 72%);
+ pointer-events:none;
+}
+.ordem-sheet .ordem-attrs--portrait .ordem-photo--portrait{
+ position:absolute;left:50%;top:54%;transform:translate(-50%,-50%);
+ width:104px;max-width:104px;margin:0;gap:3px;
+ z-index:1;text-align:center;
+}
+.ordem-sheet .ordem-attrs--portrait .ordem-photo--portrait img,
+.ordem-sheet .ordem-attrs--portrait .ordem-photo--portrait .ordem-photo-empty{
+ width:104px;height:104px;aspect-ratio:1;
+ border:2px solid #9a333b;border-radius:6px;
+ object-fit:cover;
+}
+.ordem-sheet .ordem-attrs--portrait .ordem-photo--portrait label,
+.ordem-sheet .ordem-attrs--portrait .ordem-photo--portrait button{
+ font-size:9px;padding:4px 3px;line-height:1.15;
+}
+.ordem-sheet .ordem-attrs--portrait .ordem-attr{
+ position:absolute!important;z-index:2;transform:translate(-50%,-50%);
+ display:flex!important;flex-direction:column;align-items:center;justify-content:center;
+ width:56px!important;height:56px!important;min-width:56px!important;max-width:56px!important;
+ aspect-ratio:1;margin:0!important;padding:2px!important;
+ border:2px solid #999!important;box-shadow:0 0 0 2px #161316,inset 0 0 0 2px #282325;
+}
+.ordem-sheet .ordem-attrs--portrait .ordem-attr-name{
+ font-size:7px!important;line-height:1!important;letter-spacing:0!important;
+ white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;
+}
+.ordem-sheet .ordem-attrs--portrait .ordem-attr input{
+ width:100%!important;height:25px!important;margin:0!important;
+ font-size:21px!important;line-height:1!important;
+ padding:0!important;appearance:textfield;
+}
+.ordem-sheet .ordem-attrs--portrait .ordem-attr strong{
+ font-size:8px!important;line-height:1!important;
+}
+.ordem-sheet .ordem-attrs--portrait [data-ordem-attribute="agi"]{left:50%;top:13%}
+.ordem-sheet .ordem-attrs--portrait [data-ordem-attribute="for"]{left:14%;top:42%}
+.ordem-sheet .ordem-attrs--portrait [data-ordem-attribute="int"]{left:86%;top:42%}
+.ordem-sheet .ordem-attrs--portrait [data-ordem-attribute="pre"]{left:20%;top:84%}
+.ordem-sheet .ordem-attrs--portrait [data-ordem-attribute="vig"]{left:80%;top:84%}
+.ordem-sheet .ordem-attrs--portrait .ordem-attr:focus-within{
+ border-color:#dd777a!important;outline:2px solid #c94c54;outline-offset:3px;
+}
+/* Folha 1: anéis menores em torno da imagem de perfil, sem seção vazia. */
+.ordem-sheet .ordem-pdf-identity-content{
+ grid-template-columns:minmax(0,265px) minmax(0,1fr);align-items:center;
+ gap:12px;
+}
+.ordem-sheet .ordem-pdf-attributes.ordem-pdf-attributes--orbit.ordem-pdf-portrait-orbit{
+ width:min(100%,255px)!important;height:239px!important;
+ margin:0 auto!important;
+}
+.ordem-sheet .ordem-pdf-portrait-orbit::before{
+ width:60%;border-width:3px;border-style:dotted;
+ box-shadow:none;background:transparent;
+}
+.ordem-sheet .ordem-pdf-portrait-orbit .ordem-pdf-mini-photo.ordem-pdf-attributes-core{
+ position:absolute;left:50%;top:53%;transform:translate(-50%,-50%);
+ width:101px!important;height:126px!important;max-height:none!important;
+ aspect-ratio:auto;border:3px solid #2e2827!important;
+ outline:2px solid #a39b91;border-radius:8px;
+ display:flex;justify-content:flex-end;align-items:center;
+ background:#ddd5c9!important;overflow:hidden;
+ box-shadow:0 2px 5px #332c2840;
+ cursor:pointer;
+}
+.ordem-sheet .ordem-pdf-portrait-orbit .ordem-pdf-mini-photo>span{
+ font:900 10px Georgia,serif!important;color:#554c44!important;
+}
+.ordem-sheet .ordem-pdf-portrait-orbit .ordem-pdf-mini-photo small{
+ width:100%;text-align:center;font:800 8px/1.1 system-ui,sans-serif;
+ padding:4px 2px!important;
+}
+.ordem-sheet .ordem-pdf-portrait-orbit .ordem-pdf-attribute{
+ width:56px!important;gap:1px!important;
+}
+.ordem-sheet .ordem-pdf-portrait-orbit .ordem-pdf-attribute-ring{
+ width:43px!important;height:43px!important;
+ border-width:3px!important;outline-width:1px!important;outline-offset:2px!important;
+}
+.ordem-sheet .ordem-pdf-portrait-orbit .ordem-pdf-attribute-ring input{
+ font-size:19px!important;height:100%!important;
+}
+.ordem-sheet .ordem-pdf-portrait-orbit .ordem-pdf-attribute>span{
+ font-size:7px!important;line-height:1.05!important;letter-spacing:0!important;
+}
+.ordem-sheet .ordem-pdf-portrait-orbit .ordem-pdf-attribute b{font-size:8px!important}
+.ordem-sheet .ordem-pdf-portrait-orbit [data-ordem-attribute="agi"]{left:50%;top:14%}
+.ordem-sheet .ordem-pdf-portrait-orbit [data-ordem-attribute="for"]{left:14%;top:42%}
+.ordem-sheet .ordem-pdf-portrait-orbit [data-ordem-attribute="int"]{left:86%;top:42%}
+.ordem-sheet .ordem-pdf-portrait-orbit [data-ordem-attribute="pre"]{left:20%;top:84%}
+.ordem-sheet .ordem-pdf-portrait-orbit [data-ordem-attribute="vig"]{left:80%;top:84%}
+/* Seis colunas coerentes: perícia, atributo, dados, bônus, treino e outros.
+   A rolagem fica na tabela, sem cortar os controles em telas estreitas. */
+.ordem-sheet .ordem-skills-wrap{max-width:100%;overflow-x:auto;overscroll-behavior-x:contain}
+.ordem-sheet .ordem-skill-head,.ordem-sheet .ordem-skill{
+ grid-template-columns:minmax(132px,1fr) 63px 69px 57px 74px 62px!important;
+ gap:5px!important;min-width:520px!important;
+}
+.ordem-sheet .ordem-skill-dice{white-space:nowrap;text-align:center}
+@media(max-width:850px){
+ .ordem-sheet .ordem-agent-grid{grid-template-columns:minmax(0,1fr)}
+ .ordem-sheet .ordem-attrs--portrait{margin:0 auto 6px}
+ .ordem-sheet .ordem-pdf-identity-content{grid-template-columns:minmax(0,1fr)}
+ .ordem-sheet .ordem-pdf-identity-fields{width:100%}
+}
+@media(max-width:650px){
+ .ordem-sheet .ordem-attrs.ordem-attrs--portrait{width:min(100%,248px);height:242px}
+ .ordem-sheet .ordem-pdf-attributes.ordem-pdf-attributes--orbit.ordem-pdf-portrait-orbit{
+  width:min(100%,248px)!important;height:232px!important;
+ }
+ .ordem-sheet .ordem-pdf-portrait-orbit .ordem-pdf-mini-photo.ordem-pdf-attributes-core{
+  width:98px!important;height:121px!important;
+ }
+ .ordem-sheet .ordem-skill-head,.ordem-sheet .ordem-skill{min-width:520px!important}
+}
+
+
+/* PJ Lite · arquivo de agente, 24/11/2026: identificação em colunas e papel
+   de investigação. Referência de atmosfera, não reprodução da arte do livro. */
+.ordem-sheet.ordem-paper-sheet{
+ background:#e9dfc9!important;
+ background-image:repeating-linear-gradient(0deg,transparent 0 23px,rgba(78,54,39,.024) 23px 24px),
+ linear-gradient(125deg,#eadcc0 0%,#f5ead6 48%,#e2d3b8 100%)!important;
+ color:#221c17!important;border:1px solid #74604c;
+}
+.ordem-sheet .ordem-dossier-hero{min-width:0;gap:14px}
+.ordem-sheet.ordem-paper-sheet .ordem-dossier-hero{
+ background:linear-gradient(112deg,#e4d4b4,#f4e8ce 64%,#e7d7bb)!important;
+ border:2px solid #27211b!important;border-left:7px solid #8e3232!important;
+ box-shadow:inset 0 0 0 3px #e3d7c3,0 3px 8px #3b241b30!important;
+ color:#201b16!important;
+}
+.ordem-sheet.ordem-paper-sheet .ordem-dossier-hero h2{
+ color:#201913!important;font-family:Georgia,'Times New Roman',serif;
+ font-size:clamp(18px,2.8vw,27px);line-height:1.12;letter-spacing:.12em;
+}
+.ordem-sheet.ordem-paper-sheet .ordem-dossier-hero .ordem-kicker{
+ color:#6b342f!important;font-size:9px;letter-spacing:.16em;
+}
+.ordem-sheet.ordem-paper-sheet .ordem-dossier-hero p{color:#55483d!important;font-size:10px;max-width:580px}
+.ordem-sheet.ordem-paper-sheet .ordem-dossier-hero .ordem-seal{
+ color:#211c18!important;border:3px double #271e17!important;outline-color:#5a483b!important;
+}
+.ordem-sheet.ordem-paper-sheet .ordem-dossier-hero .ordem-nex{
+ border:2px solid #27201c!important;background:#eadfc9!important;
+}
+.ordem-sheet.ordem-paper-sheet .ordem-dossier-hero .ordem-nex :is(input,b,span){
+ color:#281c19!important;
+}
+.ordem-sheet .ordem-dossier-brand{flex:1;min-width:0}
+.ordem-sheet.ordem-paper-sheet .ordem-file-ribbon{
+ background:#d9c8a8!important;color:#251e18!important;
+ border:1px solid #756653;border-left:5px solid #8d3031;
+ box-shadow:inset 0 -1px 0 #ad9b7d;
+}
+.ordem-sheet.ordem-paper-sheet .ordem-tabs{
+ border-bottom:2px solid #352d26;padding:9px 0 8px;
+}
+.ordem-sheet.ordem-paper-sheet .ordem-tabs button{
+ background:#e8dbc3!important;border:1px solid #9c8d74!important;
+ color:#2a2520!important;font-size:10px;letter-spacing:.06em;
+}
+.ordem-sheet.ordem-paper-sheet .ordem-tabs button.active{
+ background:#352820!important;color:#f8ebd5!important;
+ border-color:#30231e!important;box-shadow:inset 0 -3px 0 #a63c36!important;
+}
+/* A largura é determinada pelo painel disponível, não apenas pelo viewport. */
+.ordem-sheet .ordem-agent-panel{container-type:inline-size}
+.ordem-sheet .ordem-agent-panel .ordem-agent-grid{
+ display:grid!important;grid-template-columns:minmax(192px,218px) minmax(0,1fr)!important;
+ gap:14px!important;align-items:start!important;
+}
+.ordem-sheet .ordem-dossier-headline{
+ display:flex;align-items:center;justify-content:space-between;gap:8px;
+ border-bottom:2px solid currentColor;padding-bottom:8px;margin-bottom:9px;
+}
+.ordem-sheet .ordem-dossier-headline h3{
+ margin:1px 0 0;font:900 clamp(15px,2.6vw,22px)/1.1 Georgia,serif;
+ letter-spacing:.065em;text-transform:uppercase;
+}
+.ordem-sheet .ordem-dossier-kicker{
+ display:block;font:800 9px/1.3 'Courier New',monospace;letter-spacing:.08em;
+}
+.ordem-sheet .ordem-dossier-stamp{
+ border:2px solid #872c2a;color:#872c2a;
+ padding:5px 8px;font:900 9px/1.2 'Courier New',monospace;
+ text-transform:uppercase;transform:rotate(-3deg);text-align:center;
+}
+.ordem-sheet .ordem-dossier-miniheading{
+ display:flex;justify-content:space-between;flex-wrap:wrap;gap:5px;
+ border-bottom:1px dashed #96866d;margin-bottom:10px;padding-bottom:5px;
+ font:900 9px 'Courier New',monospace;letter-spacing:.06em;
+}
+.ordem-sheet .ordem-dossier-miniheading span{font-size:8px;opacity:.72;font-weight:700}
+.ordem-sheet .ordem-dossier-identity{min-width:0}
+.ordem-sheet .ordem-dossier-identity .ordem-identity-grid{gap:7px 10px!important}
+.ordem-sheet .ordem-dossier-footer{
+ display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px 12px;
+ margin-top:11px;padding-top:7px;border-top:2px dashed #85755e;
+ font:800 8px/1.35 'Courier New',monospace;letter-spacing:.055em;
+}
+.ordem-sheet.ordem-paper-sheet .ordem-agent-panel{
+ background:linear-gradient(145deg,#f2e5cc,#e9dbbf 52%,#f7e9cf)!important;
+ border:1px solid #5e4e3c!important;box-shadow:inset 0 0 0 4px #dfd1b9,0 3px 8px #46302120!important;
+ color:#272019!important;padding:14px!important;
+}
+.ordem-sheet.ordem-paper-sheet .ordem-agent-panel .ordem-dossier-headline{
+ color:#251e18;
+}
+.ordem-sheet.ordem-paper-sheet .ordem-dossier-identity label>span,
+.ordem-sheet.ordem-paper-sheet .ordem-dossier-record label>span{
+ color:#403529!important;font:900 9px 'Courier New',monospace!important;
+ letter-spacing:.04em;text-transform:uppercase;
+}
+.ordem-sheet.ordem-paper-sheet .ordem-dossier-identity :is(input,select){
+ background:rgba(255,251,237,.74)!important;color:#211d18!important;
+ border:1px solid #a59679!important;border-bottom:2px solid #776953!important;
+ border-radius:0!important;font:600 12px system-ui,sans-serif!important;
+ padding:6px 7px!important;min-height:32px;
+}
+.ordem-sheet .ordem-attrs.ordem-attrs--portrait{
+ position:relative!important;display:block!important;
+ width:215px!important;max-width:100%!important;height:229px!important;
+ margin:0 auto!important;padding:0!important;
+ overflow:visible!important;
+}
+/* Redes de linhas como marca gráfica abstrata de investigação. */
+.ordem-sheet .ordem-attrs--portrait::before{
+ inset:37px 38px 34px!important;border:1px dashed #746651!important;
+ background:
+ linear-gradient(30deg,transparent 49.5%,#8f7b604d 50%,transparent 50.5%),
+ linear-gradient(150deg,transparent 49.5%,#8f7b604d 50%,transparent 50.5%),
+ linear-gradient(90deg,transparent 49.5%,#8f7b604d 50%,transparent 50.5%)!important;
+ box-shadow:0 0 0 5px #a58b6224;
+}
+.ordem-sheet .ordem-attrs--portrait .ordem-photo--portrait{
+ width:100px!important;max-width:100px!important;
+ top:54%!important;gap:3px!important;
+}
+.ordem-sheet .ordem-attrs--portrait .ordem-photo--portrait img,
+.ordem-sheet .ordem-attrs--portrait .ordem-photo--portrait .ordem-photo-empty{
+ width:100px!important;height:100px!important;
+ border-radius:2px!important;border:2px solid #2f2720!important;
+ box-shadow:0 0 0 3px #d4c3a3,0 0 0 4px #55473a!important;
+}
+.ordem-sheet .ordem-attrs--portrait .ordem-attr{
+ width:49px!important;height:49px!important;min-width:49px!important;
+ max-width:49px!important;border:2px solid #29231e!important;
+ background:radial-gradient(circle,#f8efd8,#e4d4b7)!important;
+ box-shadow:0 0 0 2px #cdbb9b,inset 0 0 0 2px #f5e8cf!important;
+}
+.ordem-sheet .ordem-attrs--portrait .ordem-attr .ordem-attr-name{
+ color:#332921!important;font:900 7px/1 Georgia,serif!important;
+}
+.ordem-sheet .ordem-attrs--portrait .ordem-attr input{
+ color:#1a1917!important;font:900 18px/1 Georgia,serif!important;
+ width:100%!important;height:21px!important;min-height:0!important;
+ background:transparent!important;padding:0!important;
+}
+.ordem-sheet .ordem-attrs--portrait .ordem-attr strong{
+ color:#85312c!important;font:900 8px/1 Georgia,serif!important;
+}
+.ordem-sheet .ordem-attrs--portrait [data-ordem-attribute="agi"]{left:50%!important;top:13%!important}
+.ordem-sheet .ordem-attrs--portrait [data-ordem-attribute="for"]{left:12%!important;top:41%!important}
+.ordem-sheet .ordem-attrs--portrait [data-ordem-attribute="int"]{left:88%!important;top:41%!important}
+.ordem-sheet .ordem-attrs--portrait [data-ordem-attribute="pre"]{left:21%!important;top:85%!important}
+.ordem-sheet .ordem-attrs--portrait [data-ordem-attribute="vig"]{left:79%!important;top:85%!important}
+.ordem-sheet.ordem-paper-sheet .ordem-dossier-content .ordem-panel:not(.ordem-agent-panel){
+ background:#eee1c9!important;color:#28211c!important;
+ border:1px solid #776451!important;
+}
+.ordem-sheet.ordem-paper-sheet .ordem-dossier-record :is(input,textarea){
+ background:#f6ecd7!important;color:#211d19!important;border:1px solid #96856b!important;
+}
+.ordem-sheet .ordem-dossier-record{padding:11px 13px!important}
+.ordem-sheet .ordem-dossier-record summary{
+ cursor:pointer;display:flex;align-items:center;flex-wrap:wrap;gap:5px 15px;
+ font:900 11px Georgia,serif;letter-spacing:.065em;
+}
+.ordem-sheet .ordem-dossier-record summary::marker{color:#843734}
+.ordem-sheet .ordem-dossier-record summary small{
+ font:700 9px system-ui,sans-serif;letter-spacing:0;opacity:.75;
+}
+.ordem-sheet .ordem-dossier-extra{padding-top:13px;display:grid;gap:9px}
+.ordem-sheet .ordem-dossier-extra-top{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.ordem-sheet .ordem-dossier-narrative{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.ordem-sheet .ordem-dossier-record label{display:block}
+.ordem-sheet .ordem-dossier-record textarea{width:100%;resize:vertical;min-height:70px}
+/* Consultas por tamanho do bloco: funciona mesmo com a barra lateral aberta. */
+@container (max-width: 525px){
+ .ordem-sheet .ordem-agent-panel .ordem-agent-grid{grid-template-columns:minmax(0,1fr)!important}
+ .ordem-sheet .ordem-agent-panel .ordem-attrs--portrait{margin:0 auto 9px!important}
+}
+@media(max-width:560px){
+ .ordem-sheet .ordem-dossier-hero{gap:8px!important;padding:11px!important}
+ .ordem-sheet .ordem-dossier-hero .ordem-seal{width:40px;flex-basis:40px;height:40px}
+ .ordem-sheet .ordem-dossier-stamp{font-size:8px;padding:3px 5px}
+ .ordem-sheet .ordem-dossier-headline h3{font-size:16px}
+ .ordem-sheet .ordem-dossier-narrative,.ordem-sheet .ordem-dossier-extra-top{grid-template-columns:minmax(0,1fr)}
+ .ordem-sheet .ordem-attrs.ordem-attrs--portrait{width:215px!important;height:229px!important}
+ .ordem-sheet .ordem-dossier-hero h2{font-size:17px!important}
+}
+/* Fallback de responsividade onde container queries não forem suportadas. */
+@supports not (container-type:inline-size){
+ @media(max-width:670px){
+  .ordem-sheet .ordem-agent-panel .ordem-agent-grid{grid-template-columns:minmax(0,1fr)!important}
+ }
+}
+
+
+/* Ordem Paranormal · dossiê de ameaças, mesmo papel de arquivo do agente. */
+.ordem-sheet.ordem-threat-dossier .ordem-threat-hero{border-left-color:#803133!important}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-hero h2{letter-spacing:.09em}
+.ordem-sheet.ordem-threat-dossier .ordem-tabs{overflow-x:auto}
+.ordem-sheet.ordem-threat-dossier .ordem-agent-panel .ordem-agent-grid{
+ grid-template-columns:minmax(192px,218px) minmax(0,1fr)!important;
+ align-items:start!important;gap:14px!important;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-panel-title{display:flex;flex-wrap:wrap;align-items:baseline;gap:5px 12px}
+.ordem-sheet.ordem-threat-dossier .ordem-panel-title small{font-size:9px;font-weight:700}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-stat-grid{
+ display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:10px;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-skill-grid{
+ display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-action-grid{
+ display:grid;grid-template-columns:minmax(120px,1.4fr) repeat(4,minmax(65px,1fr));gap:7px;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-text-grid{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-entry-list{
+ display:grid;gap:9px;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-remove{
+ border:1px solid #854343;background:#3b2a28;color:#f5e8d7;padding:6px 12px;
+ font-size:10px;font-weight:900;cursor:pointer;justify-self:end;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-remove:hover,
+.ordem-sheet.ordem-threat-dossier .ordem-threat-remove:focus-visible{
+ background:#8b2c31;outline:2px solid #cbb08d;outline-offset:2px;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-empty{
+ border:1px dashed #9c8772;padding:12px;font-size:11px;opacity:.76;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-stat-panel>label{display:block}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-stat-panel>label input{width:100%}
+.ordem-sheet.ordem-threat-dossier .ordem-panel :is(input,select,textarea){min-width:0}
+.ordem-sheet.ordem-threat-dossier .ordem-panel textarea{width:100%;resize:vertical}
+.ordem-sheet.ordem-threat-dossier .ordem-panel :is(label>span){
+ display:block;font-size:9px;font-weight:900;margin:0 0 4px;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-panel :is(input,textarea,select){
+ font-size:12px;max-width:100%;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-action-grid label{min-width:0}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-action-grid label input{width:100%}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-hero .ordem-nex input{
+ width:66px!important;font-size:21px!important;text-align:center!important;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-agent-panel .ordem-dossier-headline{
+ min-width:0;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-dossier-identity .ordem-identity-grid{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-identity-grid .wide{grid-column:1/-1}
+.ordem-sheet.ordem-threat-dossier .ordem-attrs--portrait{flex:none}
+.ordem-sheet.ordem-paper-sheet.ordem-threat-dossier .ordem-panel:not(.ordem-agent-panel){
+ background:#efe3c8!important;color:#251f1a!important;border:1px solid #7d6c57!important;
+ box-shadow:inset 0 0 0 2px #e0d2b8!important;
+}
+.ordem-sheet.ordem-paper-sheet.ordem-threat-dossier .ordem-entry{
+ background:#f4ead5!important;border:1px solid #9e8970!important;color:#251f1a!important;
+}
+.ordem-sheet.ordem-paper-sheet.ordem-threat-dossier .ordem-panel :is(input,select,textarea){
+ background:#fbf3df!important;color:#251b15!important;border:1px solid #ac987d!important;
+ border-bottom:2px solid #867257!important;border-radius:0!important;
+ padding:6px!important;
+}
+.ordem-sheet.ordem-paper-sheet.ordem-threat-dossier .ordem-attrs--portrait .ordem-attr input{
+ border:0!important;background:transparent!important;padding:0!important;
+}
+.ordem-sheet.ordem-paper-sheet.ordem-threat-dossier .ordem-panel label>span{
+ color:#46362a!important;font-family:'Courier New',monospace;font-weight:900;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-dossier-footer{
+ margin-top:12px;
+}
+/* A consulta segue a largura interna para manter foto e campos lado a lado. */
+@container (max-width: 525px){
+ .ordem-sheet.ordem-threat-dossier .ordem-agent-panel .ordem-agent-grid{
+  grid-template-columns:minmax(0,1fr)!important;
+ }
+}
+@media(max-width:800px){
+ .ordem-sheet.ordem-threat-dossier .ordem-threat-skill-grid{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+ }
+ .ordem-sheet.ordem-threat-dossier .ordem-threat-action-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+ }
+ .ordem-sheet.ordem-threat-dossier .ordem-threat-stat-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+ }
+}
+@media(max-width:560px){
+ .ordem-sheet.ordem-threat-dossier .ordem-threat-skill-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+ }
+ .ordem-sheet.ordem-threat-dossier .ordem-threat-text-grid{
+  grid-template-columns:minmax(0,1fr);
+ }
+ .ordem-sheet.ordem-threat-dossier .ordem-threat-hero h2{
+  font-size:17px!important;
+ }
+}
+
+
+/* Ameaças: perfil compacto, dados operacionais lado a lado e fonte auditável.
+   Mantém o mesmo papel de dossiê das fichas de agente. */
+.ordem-sheet.ordem-threat-dossier .ordem-threat-operational-grid{
+ display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:11px;align-items:start;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-operational-grid>.ordem-panel{
+ margin:0;min-height:100%;min-width:0;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-operational-grid .ordem-threat-stat-grid{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-operational-grid .ordem-threat-skill-grid{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-description-wide{
+ grid-column:1/-1;min-width:0;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-description-wide label{display:block}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-description-wide textarea{
+ min-height:44px;width:100%;resize:vertical;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-source-notice{
+ margin:10px 0 0;padding:8px 10px;
+ border:1px solid #9f7d62;border-left:4px solid #813a37;
+ font:600 10px/1.5 system-ui,sans-serif;
+ background:#e6d6b9;color:#30231d;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-source-notice strong{
+ display:inline-block;margin-right:7px;
+ font:900 9px/1.5 'Courier New',monospace;
+ letter-spacing:.08em;color:#813432;
+}
+.ordem-sheet.ordem-threat-dossier:not(.ordem-paper-sheet) .ordem-threat-source-notice{
+ color:#f1e9db;background:#2b2120;border-color:#794543;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-operational-grid .ordem-panel-title{
+ margin-bottom:8px!important;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-operational-grid label input{
+ display:block;width:100%;min-width:0;
+}
+@media(max-width:820px){
+ .ordem-sheet.ordem-threat-dossier .ordem-threat-operational-grid{
+  grid-template-columns:minmax(0,1fr);
+ }
+}
+@media(max-width:450px){
+ .ordem-sheet.ordem-threat-dossier .ordem-threat-operational-grid .ordem-threat-skill-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ }
+}

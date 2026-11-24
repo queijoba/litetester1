@@ -14,7 +14,7 @@ export const ORDEM_SKILLS=[
 const skills=()=>Object.fromEntries(ORDEM_SKILLS.map(([id,,attr])=>[id,{grau:0,outros:0,atributoBase:attr}]));
 export const initialOrdemPcData={
  id:'',system:'ordemParanormal',type:'pc',
- bio:{nome:'',jogador:'',origem:'',classe:'',trilha:'',nex:5,nivelExperiencia:1,estagio:1,patente:'Recruta',idade:'',profissao:'',imagem:''},
+ bio:{nome:'',jogador:'',origem:'',classe:'',trilha:'',nex:5,nivelExperiencia:1,estagio:1,patente:'Recruta',idade:'',profissao:'',imagem:'',aparencia:'',personalidade:'',historico:'',objetivo:''},
  atributos:{agi:1,for:1,int:1,pre:1,vig:1},
  status:{pvAtual:10,pvMax:10,peAtual:5,peMax:5,pdAtual:0,pdMax:0,sanAtual:10,sanMax:10,recursoMental:'sanidade',defesaEquip:0,defesaOutros:0,defesa:10,bloqueio:0,esquiva:10,peRodada:1,limitePePd:1,deslocamento:'9 m'},
  dtRituais:{1:'',2:'',3:'',4:''},opcionais:{evolucaoPatentes:false,nivelExperiencia:false},evolucao:[],protecao:'',pericias:skills(), ataques:[], habilidades:[], poderesParanormais:[], rituais:[], inventario:[], gestao:{prestigio:0,limiteItens:'',limiteCredito:'',cargaMax:''}, resistencias:'', proficiencias:'', afinidade:'', notas:''
@@ -31,7 +31,7 @@ export function normalizeOrdemPcData(item){
  const habilidadesOriginais=list(s.habilidades);const migrados=habilidadesOriginais.filter(x=>/paranormal/i.test(String(x?.tipo||'')));
  s.habilidades=habilidadesOriginais.filter(x=>!/paranormal/i.test(String(x?.tipo||''))).map(x=>({nome:'',tipo:'Poder',custo:'',pagina:'',desc:'',...(x||{})}));
  s.poderesParanormais=[...list(s.poderesParanormais),...migrados].map(x=>({nome:'',elemento:'',requisito:'',custo:'',pagina:'',desc:'',...(x||{})}));
- s.rituais=list(s.rituais).map(x=>({nome:'',circulo:1,elemento:'',execucao:'',alcance:'',duracao:'',resistencia:'',custo:'',pagina:'',desc:'',...(x||{})}));
+ s.rituais=list(s.rituais).map(x=>({nome:'',circulo:1,elemento:'',execucao:'',alcance:'',area:'',duracao:'',resistencia:'',custo:'',pagina:'',desc:'',...(x||{})}));
  s.inventario=list(s.inventario).map(x=>({nome:'',categoria:'0',espacos:1,quantidade:1,desc:'',...(x||{})}));
  s.resistencias=String(s.resistencias||'');s.proficiencias=String(s.proficiencias||'');s.afinidade=String(s.afinidade||'');s.notas=String(s.notas||'');
  return {...c(initialOrdemPcData),...s};
