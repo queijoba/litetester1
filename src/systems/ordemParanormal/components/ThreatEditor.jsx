@@ -91,8 +91,8 @@ export default function OrdemThreatEditor({scope}){
       </div>
      </div>
     </div>
-    {String(data.fonte||'').includes('Arquivos Secretos #03')&&<p className="ordem-threat-source-notice"><strong>HEXATOMBE · PARTE 2</strong> Referência parcial da v1.1. Máscaras, rituais e outras modificações temporárias não são aplicados automaticamente; confira as páginas indicadas.</p>}
-    {String(data.fonte||'').includes('Arquivos Secretos #02')&&<p className="ordem-threat-source-notice"><strong>HEXATOMBE · PARTE 1</strong> Apenas HQ e extras identificados no Drive. Confirme a ficha no suplemento de regras antes de usar valores não documentados.</p>}
+    {String(data.fonte||'').includes('Arquivos Secretos #03')&&<p className="ordem-threat-source-notice"><strong>HEXATOMBE · PARTE 2</strong> Referência parcial da v1.1. Máscaras, rituais e outras modificações temporárias não são aplicados automaticamente; confira as páginas indicadas. <a href="https://drive.google.com/file/d/1MiiIGyZRjlr4lI_MCoNZbbJvDjOvNxD0/view" target="_blank" rel="noopener noreferrer">Consultar suplemento #03</a></p>}
+    {String(data.fonte||'').includes('Arquivos Secretos #02')&&<p className="ordem-threat-source-notice"><strong>HEXATOMBE · PARTE 1</strong> Apenas HQ e extras identificados no Drive. Confirme a ficha no suplemento de regras antes de usar valores não documentados. <a href="https://drive.google.com/file/d/1gamNmCjCg0sGnW3Fjv28D_MWUH4xLsQF/view" target="_blank" rel="noopener noreferrer">Consultar HQ Kemi</a></p>}
     <div className="ordem-dossier-footer"><span>ORDEM PARANORMAL · USO EXCLUSIVO DO MESTRE</span><span>AVALIAÇÃO DE RISCO / CONTENÇÃO</span></div>
    </section>
 
