@@ -1,3 +1,12 @@
+## Refinamento do diagrama de atributos e descrição — 24/11/2026
+
+- A **Folha 1 · PDF** recebeu atributos em **arranjo radial de cinco círculos**, alinhados à estrutura do modelo editável do Drive: Agilidade no topo, Força à esquerda, Intelecto à direita, Presença embaixo à esquerda e Vigor embaixo à direita. O núcleo central é decorativo, com a identificação ATRIBUTOS.
+- Cada valor é um input real que edita a propriedade de atributo compartilhada pela aba Agente, perícias, Defesa e exportação. Nenhuma imagem estática substitui os campos; teclado e leitores de tela continuam utilizáveis.
+- Os anéis foram redesenhados em CSS (sem copiar as ilustrações oficiais) e adaptados para telas estreitas sem cortar os valores. A apresentação padrão do restante do PJLite não muda.
+- A **Folha 2 · PDF** agora inclui o bloco **Descrição**, com Aparência, Personalidade, Histórico e Objetivo, todos editáveis. Campos novos são opcionais, guardados em `bio`, e não apagam `notas` nem alteram fichas existentes.
+- Testes automatizados conferem disposição, responsividade, vínculos, persistência de descrições e compatibilidade com dados antigos.
+- Publicar primeiro no LiteTester, após os testes; o definitivo só será atualizado com avaliação do usuário.
+
 ## Prévia visual da ficha — 24/11/2026 (LiteTester)
 
 Referência visual principal conferida no Google Drive: **Ficha de Personagem Editável — Sobrevivendo ao Horror** (2 páginas; versão de Kyuu), preservando o papel da edição original. **Esta revisão altera a interface do PJLite, não substitui nem redesenha o PDF distribuído pelo proprietário.**
