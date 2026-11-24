@@ -1,3 +1,13 @@
+## Bestiário completo por fonte, elemento e VD — 24/11/2026
+
+- **Livro Básico v1.3 (capítulo 7, pp. 182–289)**: acrescentadas **67** referências — 49 criaturas/reliquias paranormais e 18 oponentes da Realidade (pessoas e animais). Para cada uma, foram conferidos nome, elemento(s), VD, página, PV máximo e Defesa; os cinco atributos e deslocamento são preenchidos quando verificados. Exceção oficial: Anomalia não apresenta Defesa numérica; o campo fica vazio.
+- **Sobrevivendo ao Horror (2024, pp. 127–167 e 217)**: acrescentadas **30** fichas de referência para 12 novas criaturas, 9 pessoas, 8 animais e a criatura O Terminal da aventura O Terminal do Fim. Fonte e página ficam registradas em cada modelo.
+- **Hexatombe Parte 2 (Arquivos Secretos #03)**: preservadas as 18 referências previamente conferidas, sem duplicar o bestiário do Livro Básico. Três exemplos fictícios antigos do PJLite continuam no grupo de modelos opcionais, explicitamente rotulados.
+- **Interface:** catálogo classificado por elemento primário (Sangue, Morte, Conhecimento, Energia, Medo e Realidade), ordenação crescente por VD e filtros combináveis por livro/suplemento, elemento, VD mínimo/máximo, nome e ordem crescente/decrescente. Ameaças de múltiplos elementos aparecem em uma única seção, mas são encontradas pelo filtro de qualquer um dos seus elementos.
+- **Segurança e direitos editoriais:** os novos modelos são **referências rápidas**, não cópias integrais das fichas. Preenchem a estatística de identificação e recursos principais para ajudar o mestre; as ações completas, condições, resistências, enigmas de medo e outros detalhes são consultados no PDF do livro, com link e página no editor. Nenhum dado desconhecido é apresentado como regra confirmada.
+- **Persistência:** seleção só abre um modelo editável; não o salva nem insere na conta automaticamente. Mantidos esquema do banco, sincronização de ficha, exportador de cards, campanha e catálogo dos outros sistemas.
+- **Testes:** cobertura de 97 novas referências, identificação de VD especiais, fontes, contagem sem duplicatas e preservação do catálogo Hexatombe.
+
 ## Revisão de ameaças e Hexatombe — 24/11/2026
 
 **Fontes efetivamente consultadas no Drive:** `Arquivos-Secretos-3-v1-1.pdf` (pacote #03, março/2026, Hexatombe Parte 2), `Arquivos-Secretos-02-HQ-Kemi.pdf` (arquivo encontrado sem extração textual utilizável), e listagens das pastas `2e - Hexatombex part-1`, `3e Hexatombe part-2` e `Arquivos secretos`.
