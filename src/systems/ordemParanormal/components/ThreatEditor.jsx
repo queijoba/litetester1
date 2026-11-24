@@ -77,7 +77,7 @@ export default function OrdemThreatEditor({scope}){
        <strong>{abbr}</strong></label>)}
      </div>
      <div className="ordem-dossier-identity">
-      <div className="ordem-dossier-miniheading">CLASSIFICAÇÃO <span>PREENCHIMENTO PELO MESTRE</span></div>
+      <div className="ordem-dossier-miniheading">CLASSIFICAÇÃO E PROTOCOLO <span>IDENTIFICAÇÃO RESTRITA</span></div>
       <div className="ordem-identity-grid">
        <Field label="Nome ou identificação" className="wide" value={data.nome} onChange={v=>updateField('nome',v)}/>
        <Field label="Categoria" value={data.categoria} onChange={v=>updateField('categoria',v)}/>
@@ -87,12 +87,16 @@ export default function OrdemThreatEditor({scope}){
        <Field label="Fonte / livro" value={data.fonte} onChange={v=>updateField('fonte',v)}
         placeholder="Ex.: Arquivos Secretos #03"/>
        <Field label="Página da fonte" value={data.pagina} onChange={v=>updateField('pagina',v)} placeholder="Ex.: 68"/>
+       <div className="ordem-threat-description-wide"><NotesField label="Descrição / comportamento" value={data.descricao} onChange={v=>updateField('descricao',v)} rows={2}/></div>
       </div>
      </div>
     </div>
+    {String(data.fonte||'').includes('Arquivos Secretos #03')&&<p className="ordem-threat-source-notice"><strong>HEXATOMBE · PARTE 2</strong> Referência parcial da v1.1. Máscaras, rituais e outras modificações temporárias não são aplicados automaticamente; confira as páginas indicadas. <a href="https://drive.google.com/file/d/1MiiIGyZRjlr4lI_MCoNZbbJvDjOvNxD0/view" target="_blank" rel="noopener noreferrer">Consultar suplemento #03</a></p>}
+    {String(data.fonte||'').includes('Arquivos Secretos #02')&&<p className="ordem-threat-source-notice"><strong>HEXATOMBE · PARTE 1</strong> Apenas HQ e extras identificados no Drive. Confirme a ficha no suplemento de regras antes de usar valores não documentados. <a href="https://drive.google.com/file/d/1gamNmCjCg0sGnW3Fjv28D_MWUH4xLsQF/view" target="_blank" rel="noopener noreferrer">Consultar HQ Kemi</a></p>}
     <div className="ordem-dossier-footer"><span>ORDEM PARANORMAL · USO EXCLUSIVO DO MESTRE</span><span>AVALIAÇÃO DE RISCO / CONTENÇÃO</span></div>
    </section>
 
+   <div className="ordem-threat-operational-grid">
    <section className="ordem-panel ordem-threat-stat-panel">
     <div className="ordem-panel-title"><span>SITUAÇÃO E RECURSOS</span><small>vida, defesa, mobilidade e sentidos</small></div>
     <div className="ordem-threat-stat-grid">
@@ -110,6 +114,7 @@ export default function OrdemThreatEditor({scope}){
       <Field key={key} label={label} value={skills[key]} onChange={v=>updateField('pericias.'+key,v)}/>)}
     </div>
    </section>
+   </div>
   </div>}
 
   {tab==='acoes'&&<div className="space-y-3 ordem-dossier-content">
