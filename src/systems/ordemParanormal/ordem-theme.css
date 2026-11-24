@@ -384,3 +384,90 @@ body.theme-ordem .ordem-sheet .ordem-card,body.theme-dark .ordem-sheet .ordem-ca
  .ordem-sheet .ordem-pdf-delete,.ordem-sheet .ordem-pdf-action,.ordem-sheet .ordem-pdf-text-link{display:none!important}
  .ordem-sheet .ordem-pdf-section{break-inside:avoid}
 }
+
+
+/* Revisão SaH: diagrama original dos cinco atributos em torno de um núcleo.
+   Os campos permanecem inputs verdadeiros, ligados ao mesmo estado das abas clássicas. */
+.ordem-sheet .ordem-pdf-attributes.ordem-pdf-attributes--orbit{
+ display:block!important;position:relative;width:min(100%,348px);height:302px;
+ margin:5px auto 10px;isolation:isolate;text-align:center;
+}
+.ordem-sheet .ordem-pdf-attributes--orbit::before{
+ content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+ width:63%;aspect-ratio:1;border-radius:50%;z-index:0;
+ border:7px double rgba(35,31,32,.58);box-shadow:0 0 0 2px #e4dacf,inset 0 0 0 3px #ece7de;
+ background:radial-gradient(circle,transparent 38%,rgba(62,55,51,.035) 39%,transparent 70%);
+}
+.ordem-sheet .ordem-pdf-attributes--orbit .ordem-pdf-attributes-core{
+ position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+ width:43%;aspect-ratio:1;display:grid;place-items:center;
+ border-radius:50%;border:5px solid #201e20;outline:2px solid #b5aaa2;
+ background:radial-gradient(circle at 33% 30%,#4a4241 0%,#222022 62%,#141315 100%);
+ color:#fff;z-index:1;box-shadow:inset 0 0 0 3px #67605c,0 2px 0 #cec2b4;
+}
+.ordem-sheet .ordem-pdf-attributes--orbit .ordem-pdf-attributes-core span{
+ font:900 clamp(11px,2.5vw,16px)/1.15 Georgia,serif;letter-spacing:.07em;
+ text-shadow:0 1px 1px #000;
+}
+.ordem-sheet .ordem-pdf-attributes--orbit .ordem-pdf-attribute{
+ position:absolute!important;transform:translate(-50%,-50%);z-index:2;
+ width:clamp(68px,25%,90px);display:flex;flex-direction:column;align-items:center;
+ justify-content:center;gap:2px;padding:0;margin:0;min-width:0;
+}
+.ordem-sheet .ordem-pdf-attributes--orbit [data-ordem-attribute="agi"]{left:50%;top:19%}
+.ordem-sheet .ordem-pdf-attributes--orbit [data-ordem-attribute="for"]{left:18%;top:48%}
+.ordem-sheet .ordem-pdf-attributes--orbit [data-ordem-attribute="int"]{left:82%;top:48%}
+.ordem-sheet .ordem-pdf-attributes--orbit [data-ordem-attribute="pre"]{left:31%;top:81%}
+.ordem-sheet .ordem-pdf-attributes--orbit [data-ordem-attribute="vig"]{left:69%;top:81%}
+.ordem-sheet .ordem-pdf-attributes--orbit .ordem-pdf-attribute>span{
+ display:block;color:#38312e!important;font:900 9px/1.05 Georgia,serif!important;
+ text-transform:uppercase;letter-spacing:.01em;white-space:nowrap;
+}
+.ordem-sheet .ordem-pdf-attributes--orbit .ordem-pdf-attribute b{
+ display:block;font:900 10px/1 Georgia,serif;color:#8d2731;letter-spacing:.09em;
+}
+.ordem-sheet .ordem-pdf-attributes--orbit .ordem-pdf-attribute-ring{
+ width:72px;max-width:100%!important;height:72px;aspect-ratio:1;
+ flex:0 0 auto;border:4px solid #252124!important;border-radius:50%;
+ outline:2px dashed #92827a;outline-offset:4px;
+ box-shadow:0 0 0 4px #fbf8f2,inset 0 0 0 2px #d8cfc2;
+ background:radial-gradient(circle at 35% 30%,#fff,#eee7db);
+}
+.ordem-sheet .ordem-pdf-attributes--orbit .ordem-pdf-attribute-ring input{
+ width:100%!important;height:100%!important;text-align:center;
+ font:900 28px Georgia,serif!important;padding:0!important;
+ border:0!important;outline-offset:5px;box-shadow:none!important;
+}
+.ordem-sheet .ordem-pdf-attributes--orbit .ordem-pdf-attribute-ring:focus-within{
+ outline-color:#9c3039;box-shadow:0 0 0 4px #fff3eb,inset 0 0 0 2px #d8cfc2;
+}
+.ordem-sheet .ordem-pdf-description-section{margin-top:12px}
+.ordem-sheet .ordem-pdf-description-grid{
+ display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;
+}
+.ordem-sheet .ordem-pdf-description-field{display:flex;flex-direction:column;min-width:0;gap:5px}
+.ordem-sheet .ordem-pdf-description-field span{
+ font:900 10px Georgia,serif;color:#3b3331;text-align:center;letter-spacing:.05em;
+}
+.ordem-sheet .ordem-pdf-description-field textarea{min-height:96px;resize:vertical}
+@media(max-width:1120px){
+ .ordem-sheet .ordem-pdf-description-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:650px){
+ .ordem-sheet .ordem-pdf-attributes.ordem-pdf-attributes--orbit{width:min(100%,302px);height:273px}
+ .ordem-sheet .ordem-pdf-attributes--orbit .ordem-pdf-attribute{width:clamp(62px,27%,78px)}
+ .ordem-sheet .ordem-pdf-attributes--orbit .ordem-pdf-attribute-ring{
+  width:62px;max-width:100%!important;height:62px;border-width:3px!important;outline-offset:3px
+ }
+ .ordem-sheet .ordem-pdf-attributes--orbit .ordem-pdf-attribute-ring input{height:100%!important;font-size:24px!important}
+ .ordem-sheet .ordem-pdf-attributes--orbit .ordem-pdf-attribute>span{font-size:8px!important}
+ .ordem-sheet .ordem-pdf-attributes--orbit .ordem-pdf-attributes-core{width:43%;border-width:4px}
+ .ordem-sheet .ordem-pdf-attributes--orbit .ordem-pdf-attributes-core span{font-size:11px}
+ .ordem-sheet .ordem-pdf-description-grid{grid-template-columns:minmax(0,1fr)}
+ .ordem-sheet .ordem-pdf-description-field textarea{min-height:76px}
+}
+@media print{
+ .ordem-sheet .ordem-pdf-attributes--orbit .ordem-pdf-attributes-core{
+  -webkit-print-color-adjust:exact;print-color-adjust:exact
+ }
+}
