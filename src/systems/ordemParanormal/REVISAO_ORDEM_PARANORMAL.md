@@ -1,3 +1,11 @@
+## Atributos compactos no retrato e ajustes de perícias — 24/11/2026
+
+- **Folha 1 · PDF:** a foto do personagem passa a ser o centro do conjunto de atributos AGI/FOR/INT/PRE/VIG, com anéis menores e edição direta; removida a seção separada que consumia altura. A imagem continua editável no próprio retrato.
+- **Aba Agente:** os cinco atributos compactos ficam ao redor da foto de perfil, ao lado da identificação; no celular, o conjunto se centraliza sobre os campos de identidade. Não altera qualquer valor, registro ou formato persistido.
+- **Perícias:** atributo 0 passa a aparecer corretamente como **2d20 ↓** (dois d20 e menor resultado), em vez de 0d20. Atributos-base inválidos em fichas antigas usam o atributo oficial da perícia como reserva. O cabeçalho e linhas de seis colunas foram alinhados e o deslocamento horizontal fica restrito à tabela.
+- **Verificação:** acrescentado teste de sincronismo lógico dos campos nas duas apresentações, cinco posições, responsividade, cálculos e preservação de retratos, perícias e anotações já salvos.
+- **Distribuição:** alterações apenas no LiteTester para revisão; sem atualização do PJLite definitivo até autorização.
+
 ## Refinamento do diagrama de atributos e descrição — 24/11/2026
 
 - A **Folha 1 · PDF** recebeu atributos em **arranjo radial de cinco círculos**, alinhados à estrutura do modelo editável do Drive: Agilidade no topo, Força à esquerda, Intelecto à direita, Presença embaixo à esquerda e Vigor embaixo à direita. O núcleo central é decorativo, com a identificação ATRIBUTOS.
