@@ -1,3 +1,15 @@
+## Revisão de ameaças e Hexatombe — 24/11/2026
+
+**Fontes efetivamente consultadas no Drive:** `Arquivos-Secretos-3-v1-1.pdf` (pacote #03, março/2026, Hexatombe Parte 2), `Arquivos-Secretos-02-HQ-Kemi.pdf` (arquivo encontrado sem extração textual utilizável), e listagens das pastas `2e - Hexatombex part-1`, `3e Hexatombe part-2` e `Arquivos secretos`.
+
+- **Dossiê de ameaça:** preservados retrato com cinco atributos, VD, categoria, elemento, tamanho, status, resistências, ataques, habilidades e enigma de medo. Agora exibe também o campo de descrição/comportamento editável; recursos e perícias ficam lado a lado no desktop, com empilhamento em telas estreitas; o mesmo estilo de papel confidencial da ficha de agente é mantido.
+- **Hexatombe Parte 2 — Arquivos Secretos #03:** conferidos **18** blocos de estatísticas de **PESSOA** nas pp. 10–105: Alê, Caio, Eloy, Franco, Cindy, Caíto, Ana, Argano, Chispa, Torvo, Escarlata, Miasma, Coruja, Corvo, Papagaio, Pomba, Harpia e Suellen. Catalogados VD, PV, Defesa, cinco atributos e ataques principais; as habilidades foram resumidas para consulta, com páginas. Os modelos representam o **estado inicial**, sem aplicar automaticamente máscaras, magias e outras mudanças temporárias. Efeitos e ações completas continuam no PDF.
+- **Hexatombe Parte 2 — opções de personagens:** mantidas as sete entradas editoriais de revisão presentes em `as03RevisionIndex.js` (uma opção geral e seis opções especiais dos sacrifícios), além das revisões de trilha, poderes e requisitos já confirmadas nas pp. 106–110 e 118–119. Os poderes específicos dos sacrifícios não são oferecidos como habilidades comuns de agentes.
+- **Hexatombe Parte 1 — Arquivos Secretos #02:** pasta verificada contém HQ Kemi e pacote ZIP de extras. **Não foi localizado um PDF integral de regras do pacote #02**. A HQ não oferece texto mecânico verificável pelo extrator utilizado. O índice mantém o rótulo de **material parcial**; não foram inventados rituais, habilidades, custos ou estatísticas para preencher lacunas. Para uma revisão mecânica integral do #02 será necessário obter o suplemento completo.
+- **Outros Arquivos Secretos:** o catálogo anterior permanece sem exclusões, inclusive as referências de #01, #04, #05, #06, #07 e #09. Não misturar o playtest de Ordem RPG 2 com o sistema usado no PJLite.
+- **Compatibilidade:** nenhuma mudança no schema do banco, sincronização, contas, campanha ou exportador de cards. Continuam editáveis os modelos e ameaças já criados. Validações conferem 18 modelos sem nomes repetidos, estatísticas fundamentais, links de fonte, interface e dados legados.
+- **Publicação solicitada:** validar no LiteTester, gerar build isolado de Ordem Paranormal e publicar no PJLite definitivo sem incluir a prévia não aprovada da ficha Dragonbane.
+
 ## Revisão de ameaças e Arquivos Secretos / Hexatombe — 24/11/2026
 
 ### Dossiê de ameaça
