@@ -31,7 +31,7 @@ export function normalizeOrdemPcData(item){
  const habilidadesOriginais=list(s.habilidades);const migrados=habilidadesOriginais.filter(x=>/paranormal/i.test(String(x?.tipo||'')));
  s.habilidades=habilidadesOriginais.filter(x=>!/paranormal/i.test(String(x?.tipo||''))).map(x=>({nome:'',tipo:'Poder',custo:'',pagina:'',desc:'',...(x||{})}));
  s.poderesParanormais=[...list(s.poderesParanormais),...migrados].map(x=>({nome:'',elemento:'',requisito:'',custo:'',pagina:'',desc:'',...(x||{})}));
- s.rituais=list(s.rituais).map(x=>({nome:'',circulo:1,elemento:'',execucao:'',alcance:'',duracao:'',resistencia:'',custo:'',pagina:'',desc:'',...(x||{})}));
+ s.rituais=list(s.rituais).map(x=>({nome:'',circulo:1,elemento:'',execucao:'',alcance:'',area:'',duracao:'',resistencia:'',custo:'',pagina:'',desc:'',...(x||{})}));
  s.inventario=list(s.inventario).map(x=>({nome:'',categoria:'0',espacos:1,quantidade:1,desc:'',...(x||{})}));
  s.resistencias=String(s.resistencias||'');s.proficiencias=String(s.proficiencias||'');s.afinidade=String(s.afinidade||'');s.notas=String(s.notas||'');
  return {...c(initialOrdemPcData),...s};

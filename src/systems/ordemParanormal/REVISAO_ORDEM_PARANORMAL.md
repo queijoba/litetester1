@@ -1,3 +1,17 @@
+## Prévia visual da ficha — 24/11/2026 (LiteTester)
+
+Referência visual principal conferida no Google Drive: **Ficha de Personagem Editável — Sobrevivendo ao Horror** (2 páginas; versão de Kyuu), preservando o papel da edição original. **Esta revisão altera a interface do PJLite, não substitui nem redesenha o PDF distribuído pelo proprietário.**
+
+- Incluídas duas abas iniciais **Folha 1 · PDF** e **Folha 2 · PDF**, mantendo as abas detalhadas existentes: Agente, Perícias, Combate, Poderes & Rituais, Inventário e Evolução (opcional).
+- **Folha 1**: identificação e retrato, atributos AGI/FOR/INT/PRE/VIG em círculos, PV/PE/SAN (ou PD, quando o modo opcional estiver ativo), cálculo da Defesa, Bloqueio, Esquiva, Deslocamento, Resistências, Proteção, Ataques e todas as 28 perícias. Treinamento, bônus, atributos, armas e recursos são editáveis diretamente nessa visualização.
+- **Folha 2**: patente, NEX, prestígio, limite de itens e crédito, carga calculada, inventário, habilidades, poderes paranormais, DTs, rituais, anotações e acesso à progressão. Todos ligados aos mesmos dados da ficha e da biblioteca.
+- Corrigido **Área** dos rituais: disponível na edição detalhada e na folha 2; persistido na normalização e incluído nos dados enviados ao exportador PDF. Arquivos legados sem esse campo continuam abrindo com valor vazio.
+- Tela estreita: páginas empilhadas e tabelas com rolagem própria, evitando corte de colunas. Visual com papel claro, bordas e cabeçalhos da ficha, mantendo todos os temas da conta ao redor.
+- Salvamento e nuvem: nenhuma tabela, endpoint ou chave de ficha alterada. Nenhuma atualização automática dos valores de PV/PE/SAN e habilidades, preservando regras opcionais e decisões do jogador.
+- O botão antigo para exportar **PDF editável do modelo SaH** foi preservado. A nova visualização é uma referência de trabalho, não uma promessa de exportação pixel a pixel. O script `verify-ordem-pdf-pages.mjs` verifica estrutura, campos, compatibilidade, persistência e exportação.
+
+**Status:** versão de teste no LiteTester; não liberar ao PJLite definitivo antes da avaliação do usuário.
+
 # Ordem Paranormal — revisão de fontes e ficha PJLite
 
 ## Escopo confirmado (21/10/2026)
