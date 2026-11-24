@@ -12,8 +12,8 @@ if(!src.includes(inputArea)){
  await writeFile(path,src,'utf8');
  console.log('✓ Ordem: campo Área restaurado após o preparo do editor legado.');
 }
-if(!src.includes("const BASE_TABS=[['pdf1'")||!src.includes('<OrdemPdfPages'))
- throw new Error('Ordem: páginas PDF não sobreviveram ao preparo.');
+if(!src.includes("const BASE_TABS=[['agente'")||!src.includes('ordem-dossier-content'))
+ throw new Error('Ordem: dossiê de agente não sobreviveu ao preparo.');
 const dataPath='src/systems/ordemParanormal/data.js';
 const oldArea="elemento:'',execucao:'',alcance:'',duracao:'',resistencia:'',custo:''";
 let data=await readFile(dataPath,'utf8');
