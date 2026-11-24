@@ -20,6 +20,10 @@ export default function OrdemThreatEditor({scope}){
  if(data?.system!=='ordemParanormal'||data?.type==='pc')return null;
  const attributes=data.atributos||{},status=data.status||{},skills=data.pericias||{};
  const threatName=data.nome||'IDENTIDADE NÃO CLASSIFICADA';
+ const sourceUrl=data.fonte==='Livro Básico v1.3'
+  ?'https://drive.google.com/file/d/1v_V0j04dBXP0HvLRV5DfPh_hbvRDOIQC/view'
+  :data.fonte==='Sobrevivendo ao Horror'
+   ?'https://drive.google.com/file/d/1CXTBOfII8buhmQ84HOZQr8nN9VrU-AT9/view':null;
  const patch=(field,index,key,value)=>setData(previous=>{
   const items=Array.isArray(previous[field])?previous[field]:[];
   return {...previous,[field]:items.map((item,i)=>i===index?{...item,[key]:value}:item)};
@@ -91,6 +95,7 @@ export default function OrdemThreatEditor({scope}){
       </div>
      </div>
     </div>
+    {data.dadosParciais&&<p className="ordem-threat-source-notice"><strong>FICHA RESUMIDA · FONTE VERIFICADA</strong> VD, PV, Defesa e atributos foram conferidos no livro; ataques, poderes, condições e enigmas devem ser consultados na página indicada antes da sessão. {sourceUrl&&<a href={sourceUrl} target="_blank" rel="noopener noreferrer">Abrir livro no Google Drive</a>}</p>}
     {String(data.fonte||'').includes('Arquivos Secretos #03')&&<p className="ordem-threat-source-notice"><strong>HEXATOMBE · PARTE 2</strong> Referência parcial da v1.1. Máscaras, rituais e outras modificações temporárias não são aplicados automaticamente; confira as páginas indicadas. <a href="https://drive.google.com/file/d/1MiiIGyZRjlr4lI_MCoNZbbJvDjOvNxD0/view" target="_blank" rel="noopener noreferrer">Consultar suplemento #03</a></p>}
     {String(data.fonte||'').includes('Arquivos Secretos #02')&&<p className="ordem-threat-source-notice"><strong>HEXATOMBE · PARTE 1</strong> Apenas HQ e extras identificados no Drive. Confirme a ficha no suplemento de regras antes de usar valores não documentados. <a href="https://drive.google.com/file/d/1gamNmCjCg0sGnW3Fjv28D_MWUH4xLsQF/view" target="_blank" rel="noopener noreferrer">Consultar HQ Kemi</a></p>}
     <div className="ordem-dossier-footer"><span>ORDEM PARANORMAL · USO EXCLUSIVO DO MESTRE</span><span>AVALIAÇÃO DE RISCO / CONTENÇÃO</span></div>
