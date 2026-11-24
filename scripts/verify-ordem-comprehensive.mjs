@@ -14,7 +14,7 @@ assert.equal(sah.length,16);
 assert.equal(ORDEM_LIBRARY_COUNTS.ritual,103);
 assert.equal(ORDEM_LIBRARY_COUNTS.origem,41);
 assert.equal(ORDEM_LIBRARY_COUNTS.trilha,25);
-assert.equal(entries.length,253);
+assert.equal(entries.length,260); // 253 referências anteriores + 7 opções confirmadas de Hexatombe #03
 for(const rit of [...basic,...sah]){
  assert.ok(rit.nome&&rit.desc.length>=45);
  assert.ok(rit.circulo>=1&&rit.circulo<=4,rit.nome+' círculo não reconhecido');
