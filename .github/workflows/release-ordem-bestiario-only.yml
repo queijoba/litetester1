@@ -1,0 +1,43 @@
+name: PJLite - Release isolada Bestiario Ordem Paranormal
+on:
+  push:
+    branches: [ release/ordem-bestiario-definitivo-20261124 ]
+permissions:
+  contents: write
+jobs:
+  validate-and-snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout da fonte isolada
+        uses: actions/checkout@v4
+      - name: Configurar Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Instalar dependencias
+        run: npm install
+      - name: Validar todos os sistemas e gerar compilacao
+        run: npm run check
+      - name: Guardar build para auditoria
+        uses: actions/upload-artifact@v4
+        with:
+          name: pjlite-ordem-bestiario-dist
+          path: dist/
+          if-no-files-found: error
+          retention-days: 3
+      - name: Publicar snapshot isolado do bestiario
+        run: |
+          set -e
+          mkdir -p /tmp/pjlite-ordem-bestiario
+          cp -a dist/. /tmp/pjlite-ordem-bestiario/
+          git config user.name "PJLite CI"
+          git config user.email "actions@users.noreply.github.com"
+          git checkout --orphan release-ordem-bestiario-dist-20261124
+          git rm -rf . || true
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -a /tmp/pjlite-ordem-bestiario/. .
+          printf "PJ Lite 1.1.3v Alpha\nSource: %s\nScope: Ordem Paranormal bestiary Livro Basico e Sobrevivendo ao Horror only\n" "$GITHUB_SHA" > .pjlite-release
+          git add -A
+          git commit -m "Build bestiario Ordem isolado ($GITHUB_SHA)"
+          git push --force origin HEAD:refs/heads/release-ordem-bestiario-dist-20261124
