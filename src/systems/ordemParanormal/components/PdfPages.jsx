@@ -78,7 +78,7 @@ function AttackTable({data,patchArray,addArray,removeArray,onNavigate}) {
  </SheetSection>;
 }
 function AttributeRing({id,name,value,onChange}) {
- return <label className="ordem-pdf-attribute"><span>{name}</span><div className="ordem-pdf-attribute-ring">
+ return <label className="ordem-pdf-attribute" data-ordem-attribute={id}><span>{name}</span><div className="ordem-pdf-attribute-ring">
    <input aria-label={name} type="number" min="0" value={value??1} onChange={e=>onChange(id,num(e.target.value))}/>
   </div><b>{ATTR_LABEL[id]}</b></label>;
 }
@@ -126,7 +126,10 @@ function AgentPage({data,updateField,patchArray,addArray,removeArray,onPhoto,onN
     <div className="ordem-pdf-primary-column">
       <Identity data={data} updateField={updateField} onPhoto={onPhoto} onNavigate={onNavigate}/>
       <SheetSection title="ATRIBUTOS" subtitle="Cinco atributos fundamentais">
-       <div className="ordem-pdf-attributes">{ORDEM_ATTRIBUTES.map(([id,,name])=><AttributeRing key={id} id={id} name={name} value={a[id]} onChange={(k,v)=>updateField('atributos.'+k,v)}/>)}</div>
+       <div className="ordem-pdf-attributes ordem-pdf-attributes--orbit" role="group" aria-label="Cinco atributos do agente, organizados ao redor do núcleo">
+        <div className="ordem-pdf-attributes-core" aria-hidden="true"><span>ATRIBUTOS</span></div>
+        {ORDEM_ATTRIBUTES.map(([id,,name])=><AttributeRing key={id} id={id} name={name} value={a[id]} onChange={(k,v)=>updateField('atributos.'+k,v)}/>)}
+       </div>
       </SheetSection>
       <SheetSection title="PONTOS DO AGENTE" subtitle={pd?'Regra alternativa: Determinação':'Vida, Esforço e Sanidade'}>
        <div className="ordem-pdf-resources">{resource('PV','vida','pvAtual','pvMax')}
@@ -254,6 +257,21 @@ function ContinuationPage({data,updateField,patchArray,addArray,removeArray,onNa
     </SheetSection>
    </div>
   </div>
+  <SheetSection title="DESCRIÇÃO" subtitle="Aparência, personalidade, histórico e objetivo do agente" className="ordem-pdf-description-section">
+   <div className="ordem-pdf-description-grid">
+    {[
+      ['aparencia','APARÊNCIA'],
+      ['personalidade','PERSONALIDADE'],
+      ['historico','HISTÓRICO'],
+      ['objetivo','OBJETIVO']
+    ].map(([key,label])=><label key={key} className="ordem-pdf-description-field">
+      <span>{label}</span>
+      <textarea rows={4} aria-label={label+' do personagem'} value={b[key]||''}
+       onChange={e=>updateField('bio.'+key,e.target.value)}
+       placeholder={'Descreva '+label.toLowerCase()+'...'} />
+    </label>)}
+   </div>
+  </SheetSection>
   <footer className="ordem-pdf-footer"><span>ORDEM PARANORMAL · FICHA DIGITAL PJLITE</span><span>FOLHA 02 — EQUIPAMENTO / HABILIDADES / RITUAIS</span></footer>
  </div>;
 }
