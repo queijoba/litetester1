@@ -67,7 +67,7 @@ export function buildThreatCardData(data){
   common.badge='VD '+val(data?.vd??data?.valorDesafio??data?.nivel);
   common.stats=[stat('PV',val(s.pvAtual??data?.pv)+' / '+val(s.pvMax??data?.pvMax)),stat('Def.',s.defesa??data?.defesa),stat('Desloc.',s.deslocamento??data?.deslocamento)];
   common.attributes=['agi','for','int','pre','vig'].map(k=>stat(k.toUpperCase(),a[k])).filter(x=>x.value!=='—');
-  common.details=[['Perícias',Object.entries(data?.pericias||{}).filter(([,v])=>v!==undefined&&v!==null&&String(v).trim()).map(([k,v])=>k+': '+v).join(' • ')],['Resistências',data?.resistencias],['Imunidades',data?.imunidades],['Vulnerabilidades',data?.vulnerabilidades],['Sentidos',data?.sentidos],['Presença Perturbadora',data?.presencaPerturbadora]].filter(([,v])=>v!==undefined&&v!==null&&v!=='');
+  common.details=[['Fonte',[data?.fonte,data?.pagina?'p. '+data.pagina:''].filter(Boolean).join(' · ')],['Perícias',Object.entries(data?.pericias||{}).filter(([,v])=>v!==undefined&&v!==null&&String(v).trim()).map(([k,v])=>k+': '+v).join(' • ')],['Resistências',data?.resistencias],['Imunidades',data?.imunidades],['Vulnerabilidades',data?.vulnerabilidades],['Sentidos',data?.sentidos],['Presença Perturbadora',data?.presencaPerturbadora]].filter(([,v])=>v!==undefined&&v!==null&&v!=='');
   common.sections=[['Ataques',data?.ataques],['Habilidades',data?.habilidades],['Poderes',data?.poderes],['Ações',data?.acoes],['Rituais',data?.rituais]];
  }else if(sys==='skyfall'){
   common.subtitle=[data?.tipo,data?.hierarquia,data?.arquetipo].filter(Boolean).join(' • ');
