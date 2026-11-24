@@ -1,3 +1,21 @@
+## Revisão de ameaças e Arquivos Secretos / Hexatombe — 24/11/2026
+
+### Dossiê de ameaça
+- Editor de ameaças de Ordem Paranormal remodelado no mesmo papel de dossiê claro da ficha de agentes, com alternância opcional para escuro. Primeira aba agora é **Dossiê**; retrato carregável/removível no centro dos cinco atributos à esquerda e identidade à direita. Não adicionamos abas de Folha 1/2.
+- Campos na mesma ficha: nome, categoria, elemento, tamanho, presença perturbadora, origem/livro, página, PV atual/máximo, defesa, deslocamento, sentidos, perícias-chave, ataques (inclusive crítico e alcance), habilidades, resistências, imunidades, vulnerabilidades, Enigma de Medo e notas. O card de ameaça (inclusive impressão térmica) exibe fonte/página quando preenchidos.
+- Os registros antigos são preservados; imagem, fonte, página e descrição são campos novos opcionais, não uma migração destrutiva.
+
+### Arquivos Secretos — fontes consultadas no Google Drive
+- **Hexatombe Parte 1, Arquivos Secretos #02**: a pasta fornecida contém o **PDF HQ Kemi com 8 páginas ilustradas**, um ZIP de **tokens, mapas e wallpapers** e ZIP de trilha sonora. O suplemento completo de regras do pacote #02 não foi encontrado na pasta. O pacote #03 menciona a regra *As Máscaras* em **AS #02, p. 97**, que não está nas oito páginas da HQ. Consequentemente, o seletor da biblioteca sinaliza acervo parcial e **não afirma que o #02 não tenha mecânicas**. Fonte de HQ: https://drive.google.com/file/d/1gamNmCjCg0sGnW3Fjv28D_MWUH4xLsQF/view
+- **Hexatombe Parte 2, Arquivos Secretos #03 v1.1**: PDF textual completo verificado. Foi revisado o catálogo preexistente de poderes de combatente, ocultista, gerais e paranormais, com páginas/requisitos corrigidos; adicionados **Papinho Sedutor** e **6 poderes de sacrifício**, com avisos explícitos de que são opções especiais do ritual, não poderes de classe gerais. A trilha geral **Combatente Performático** tem progressão completa em NEX 10%, 40%, 65% e 99%, aplicável às três classes conforme regra opcional descrita pelo suplemento (p. 118–119).
+- O mesmo #03 contém fichas oficiais de personagens e antagonistas. Foram cadastrados **8 modelos iniciais com números principais e referência de páginas** (Alê, Caio, Cindy, Caíto, Ana, Escarlata, Coruja e Pomba). Por segurança, estão rotulados como **referências parciais**; outros poderes e ações devem ser consultados no PDF antes de usá-los como ficha completa. Fonte: https://drive.google.com/file/d/1MiiIGyZRjlr4lI_MCoNZbbJvDjOvNxD0/view
+- Outros PDFs vistos para revisão de presença de materiais: **AS #01 v1.2 (Agatha)**, **#04 v1.1 (A Produção)**, **#05 v1.1 (Alheios)**, **#06 v1.1 (Panaceia)**, **#07 v1.0 (Vampiros)** e **#09 v1.0 (Hell Hunters)**. Não adicionar regras não verificadas nesses materiais, e manter o índice anterior. A pasta principal não contém #08 na listagem realizada.
+- O índice do jogador não substitui os livros, não exibe transcrições de regras completas e não incorpora o playtest de Ordem Paranormal RPG 2.
+
+### Validação
+- Novos testes de catalogação, progressão, identificação de acervo parcial, modelos de ameaça e preservação de personagens salvos; alterações integradas ao check do LiteTester.
+- Produção definitiva inalterada até a autorização de publicação.
+
 ## Ficha de agente como dossiê sem abas de Folha — 24/11/2026
 
 - Removidas **Folha 1 · PDF** e **Folha 2 · PDF** da navegação e do renderizador ativo; a ficha agora abre diretamente na aba **Agente**, sem uma página duplicada com grande área vazia.
