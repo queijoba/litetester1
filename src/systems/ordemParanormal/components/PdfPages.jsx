@@ -92,14 +92,17 @@ function ResourceBox({label,current,max,kind,onChange}) {
   </div>;
 }
 function Identity({data,updateField,onPhoto,onNavigate}) {
- const b=data.bio||{};
+ const b=data.bio||{}, a=data.atributos||{};
  return <SheetSection title="PERSONAGEM JOGADOR" className="ordem-pdf-identity-section">
    <div className="ordem-pdf-identity-content">
-    <label className="ordem-pdf-mini-photo" title="Escolher retrato">
-     {b.imagem?<img src={b.imagem} alt="Retrato do personagem"/>:<span>RETRATO</span>}
-     <input type="file" accept="image/*" onChange={onPhoto} aria-label="Carregar retrato"/>
-     <small>Alterar imagem</small>
-    </label>
+    <div className="ordem-pdf-portrait-orbit ordem-pdf-attributes ordem-pdf-attributes--orbit" role="group" aria-label="Cinco atributos do agente ao redor do retrato">
+     <label className="ordem-pdf-mini-photo ordem-pdf-attributes-core" title="Escolher retrato">
+      {b.imagem?<img src={b.imagem} alt="Retrato do personagem"/>:<span>RETRATO</span>}
+      <input type="file" accept="image/*" onChange={onPhoto} aria-label="Carregar retrato"/>
+      <small>Alterar imagem</small>
+     </label>
+     {ORDEM_ATTRIBUTES.map(([id,,name])=><AttributeRing key={id} id={id} name={name} value={a[id]} onChange={(k,v)=>updateField('atributos.'+k,v)}/>)}
+    </div>
     <div className="ordem-pdf-identity-fields">
      <PaperField label="Personagem" value={b.nome} onChange={e=>updateField('bio.nome',e.target.value)} className="wide"/>
      <PaperField label="Jogador(a)" value={b.jogador} onChange={e=>updateField('bio.jogador',e.target.value)}/>
@@ -125,12 +128,6 @@ function AgentPage({data,updateField,patchArray,addArray,removeArray,onPhoto,onN
    <div className="ordem-pdf-page1-layout">
     <div className="ordem-pdf-primary-column">
       <Identity data={data} updateField={updateField} onPhoto={onPhoto} onNavigate={onNavigate}/>
-      <SheetSection title="ATRIBUTOS" subtitle="Cinco atributos fundamentais">
-       <div className="ordem-pdf-attributes ordem-pdf-attributes--orbit" role="group" aria-label="Cinco atributos do agente, organizados ao redor do núcleo">
-        <div className="ordem-pdf-attributes-core" aria-hidden="true"><span>ATRIBUTOS</span></div>
-        {ORDEM_ATTRIBUTES.map(([id,,name])=><AttributeRing key={id} id={id} name={name} value={a[id]} onChange={(k,v)=>updateField('atributos.'+k,v)}/>)}
-       </div>
-      </SheetSection>
       <SheetSection title="PONTOS DO AGENTE" subtitle={pd?'Regra alternativa: Determinação':'Vida, Esforço e Sanidade'}>
        <div className="ordem-pdf-resources">{resource('PV','vida','pvAtual','pvMax')}
         {pd?resource('PD','determinacao','pdAtual','pdMax'):<>{resource('PE','esforco','peAtual','peMax')}{resource('SAN','sanidade','sanAtual','sanMax')}</>}</div>

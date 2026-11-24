@@ -471,3 +471,138 @@ body.theme-ordem .ordem-sheet .ordem-card,body.theme-dark .ordem-sheet .ordem-ca
   -webkit-print-color-adjust:exact;print-color-adjust:exact
  }
 }
+
+
+/* Ordem Paranormal — retrato e atributos compactos, 24/11/2026.
+   O mesmo campo é editado nas folhas SaH e na ficha detalhada.
+   Apenas layout: não modifica ficha salva, chaves, PWA ou exportação. */
+.ordem-sheet .ordem-agent-grid{
+ display:grid;grid-template-columns:minmax(250px,270px) minmax(0,1fr);
+ gap:15px;align-items:start;
+}
+.ordem-sheet .ordem-attrs.ordem-attrs--portrait{
+ position:relative;display:block;overflow:visible;
+ width:min(100%,258px);height:248px;
+ margin:0 auto;isolation:isolate;
+}
+.ordem-sheet .ordem-attrs--portrait::before{
+ content:"";position:absolute;inset:41px 50px 38px;
+ border:1px dashed rgba(145,76,76,.52);border-radius:50%;
+ background:radial-gradient(circle,#601a1a0b,transparent 72%);
+ pointer-events:none;
+}
+.ordem-sheet .ordem-attrs--portrait .ordem-photo--portrait{
+ position:absolute;left:50%;top:54%;transform:translate(-50%,-50%);
+ width:104px;max-width:104px;margin:0;gap:3px;
+ z-index:1;text-align:center;
+}
+.ordem-sheet .ordem-attrs--portrait .ordem-photo--portrait img,
+.ordem-sheet .ordem-attrs--portrait .ordem-photo--portrait .ordem-photo-empty{
+ width:104px;height:104px;aspect-ratio:1;
+ border:2px solid #9a333b;border-radius:6px;
+ object-fit:cover;
+}
+.ordem-sheet .ordem-attrs--portrait .ordem-photo--portrait label,
+.ordem-sheet .ordem-attrs--portrait .ordem-photo--portrait button{
+ font-size:9px;padding:4px 3px;line-height:1.15;
+}
+.ordem-sheet .ordem-attrs--portrait .ordem-attr{
+ position:absolute!important;z-index:2;transform:translate(-50%,-50%);
+ display:flex!important;flex-direction:column;align-items:center;justify-content:center;
+ width:56px!important;height:56px!important;min-width:56px!important;max-width:56px!important;
+ aspect-ratio:1;margin:0!important;padding:2px!important;
+ border:2px solid #999!important;box-shadow:0 0 0 2px #161316,inset 0 0 0 2px #282325;
+}
+.ordem-sheet .ordem-attrs--portrait .ordem-attr-name{
+ font-size:7px!important;line-height:1!important;letter-spacing:0!important;
+ white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;
+}
+.ordem-sheet .ordem-attrs--portrait .ordem-attr input{
+ width:100%!important;height:25px!important;margin:0!important;
+ font-size:21px!important;line-height:1!important;
+ padding:0!important;appearance:textfield;
+}
+.ordem-sheet .ordem-attrs--portrait .ordem-attr strong{
+ font-size:8px!important;line-height:1!important;
+}
+.ordem-sheet .ordem-attrs--portrait [data-ordem-attribute="agi"]{left:50%;top:13%}
+.ordem-sheet .ordem-attrs--portrait [data-ordem-attribute="for"]{left:14%;top:42%}
+.ordem-sheet .ordem-attrs--portrait [data-ordem-attribute="int"]{left:86%;top:42%}
+.ordem-sheet .ordem-attrs--portrait [data-ordem-attribute="pre"]{left:20%;top:84%}
+.ordem-sheet .ordem-attrs--portrait [data-ordem-attribute="vig"]{left:80%;top:84%}
+.ordem-sheet .ordem-attrs--portrait .ordem-attr:focus-within{
+ border-color:#dd777a!important;outline:2px solid #c94c54;outline-offset:3px;
+}
+/* Folha 1: anéis menores em torno da imagem de perfil, sem seção vazia. */
+.ordem-sheet .ordem-pdf-identity-content{
+ grid-template-columns:minmax(0,265px) minmax(0,1fr);align-items:center;
+ gap:12px;
+}
+.ordem-sheet .ordem-pdf-attributes.ordem-pdf-attributes--orbit.ordem-pdf-portrait-orbit{
+ width:min(100%,255px)!important;height:239px!important;
+ margin:0 auto!important;
+}
+.ordem-sheet .ordem-pdf-portrait-orbit::before{
+ width:60%;border-width:3px;border-style:dotted;
+ box-shadow:none;background:transparent;
+}
+.ordem-sheet .ordem-pdf-portrait-orbit .ordem-pdf-mini-photo.ordem-pdf-attributes-core{
+ position:absolute;left:50%;top:53%;transform:translate(-50%,-50%);
+ width:101px!important;height:126px!important;max-height:none!important;
+ aspect-ratio:auto;border:3px solid #2e2827!important;
+ outline:2px solid #a39b91;border-radius:8px;
+ display:flex;justify-content:flex-end;align-items:center;
+ background:#ddd5c9!important;overflow:hidden;
+ box-shadow:0 2px 5px #332c2840;
+ cursor:pointer;
+}
+.ordem-sheet .ordem-pdf-portrait-orbit .ordem-pdf-mini-photo>span{
+ font:900 10px Georgia,serif!important;color:#554c44!important;
+}
+.ordem-sheet .ordem-pdf-portrait-orbit .ordem-pdf-mini-photo small{
+ width:100%;text-align:center;font:800 8px/1.1 system-ui,sans-serif;
+ padding:4px 2px!important;
+}
+.ordem-sheet .ordem-pdf-portrait-orbit .ordem-pdf-attribute{
+ width:56px!important;gap:1px!important;
+}
+.ordem-sheet .ordem-pdf-portrait-orbit .ordem-pdf-attribute-ring{
+ width:43px!important;height:43px!important;
+ border-width:3px!important;outline-width:1px!important;outline-offset:2px!important;
+}
+.ordem-sheet .ordem-pdf-portrait-orbit .ordem-pdf-attribute-ring input{
+ font-size:19px!important;height:100%!important;
+}
+.ordem-sheet .ordem-pdf-portrait-orbit .ordem-pdf-attribute>span{
+ font-size:7px!important;line-height:1.05!important;letter-spacing:0!important;
+}
+.ordem-sheet .ordem-pdf-portrait-orbit .ordem-pdf-attribute b{font-size:8px!important}
+.ordem-sheet .ordem-pdf-portrait-orbit [data-ordem-attribute="agi"]{left:50%;top:14%}
+.ordem-sheet .ordem-pdf-portrait-orbit [data-ordem-attribute="for"]{left:14%;top:42%}
+.ordem-sheet .ordem-pdf-portrait-orbit [data-ordem-attribute="int"]{left:86%;top:42%}
+.ordem-sheet .ordem-pdf-portrait-orbit [data-ordem-attribute="pre"]{left:20%;top:84%}
+.ordem-sheet .ordem-pdf-portrait-orbit [data-ordem-attribute="vig"]{left:80%;top:84%}
+/* Seis colunas coerentes: perícia, atributo, dados, bônus, treino e outros.
+   A rolagem fica na tabela, sem cortar os controles em telas estreitas. */
+.ordem-sheet .ordem-skills-wrap{max-width:100%;overflow-x:auto;overscroll-behavior-x:contain}
+.ordem-sheet .ordem-skill-head,.ordem-sheet .ordem-skill{
+ grid-template-columns:minmax(132px,1fr) 63px 69px 57px 74px 62px!important;
+ gap:5px!important;min-width:520px!important;
+}
+.ordem-sheet .ordem-skill-dice{white-space:nowrap;text-align:center}
+@media(max-width:850px){
+ .ordem-sheet .ordem-agent-grid{grid-template-columns:minmax(0,1fr)}
+ .ordem-sheet .ordem-attrs--portrait{margin:0 auto 6px}
+ .ordem-sheet .ordem-pdf-identity-content{grid-template-columns:minmax(0,1fr)}
+ .ordem-sheet .ordem-pdf-identity-fields{width:100%}
+}
+@media(max-width:650px){
+ .ordem-sheet .ordem-attrs.ordem-attrs--portrait{width:min(100%,248px);height:242px}
+ .ordem-sheet .ordem-pdf-attributes.ordem-pdf-attributes--orbit.ordem-pdf-portrait-orbit{
+  width:min(100%,248px)!important;height:232px!important;
+ }
+ .ordem-sheet .ordem-pdf-portrait-orbit .ordem-pdf-mini-photo.ordem-pdf-attributes-core{
+  width:98px!important;height:121px!important;
+ }
+ .ordem-sheet .ordem-skill-head,.ordem-sheet .ordem-skill{min-width:520px!important}
+}
