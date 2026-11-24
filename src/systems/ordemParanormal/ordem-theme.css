@@ -127,3 +127,260 @@ body.theme-ordem .ordem-sheet .ordem-card,body.theme-dark .ordem-sheet .ordem-ca
 .ordem-view-toggle:hover,.ordem-view-toggle:focus-visible{background:#812c31;outline:2px solid #fff;outline-offset:1px}
 @media print{.ordem-view-toggle{display:none!important}.ordem-sheet.ordem-paper-sheet{background:#fff!important;border:0!important;box-shadow:none!important}}
 @media(max-width:640px){.ordem-view-toggle{font-size:10px}.ordem-file-agent-name{flex-basis:auto!important;min-width:90px}}
+
+/* ORDEM 2026.11 - Visualização editável por duas folhas baseada na hierarquia da
+   ficha SaH (sem reproduzir arquivos ou ilustrações do material original).
+   Todas as regras de impressão e cores ficam isoladas em .ordem-pdf-*. */
+.ordem-sheet .ordem-pdf-sheet {
+ --op-paper:#fffefa;--op-ink:#211f1e;--op-muted:#655f58;--op-line:#b4ada6;--op-red:#9e3438;
+ max-width:1190px;margin:8px auto 20px;padding:24px 27px;
+ background:var(--op-paper)!important;color:var(--op-ink)!important;
+ border:1px solid #928b86;box-shadow:0 8px 26px #29212125,inset 0 0 0 6px #f5f1e9;
+ font:400 12px/1.4 system-ui,'Segoe UI',sans-serif;overflow:visible;
+}
+.ordem-sheet .ordem-pdf-sheet *, .ordem-sheet .ordem-pdf-sheet *::before,
+.ordem-sheet .ordem-pdf-sheet *::after {box-sizing:border-box;min-width:0;}
+.ordem-sheet .ordem-pdf-heading {
+ display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;
+ padding:6px 5px 17px;border-bottom:4px solid #262222;margin-bottom:13px;
+}
+.ordem-sheet .ordem-pdf-wordmark{display:flex;align-items:center;gap:13px}
+.ordem-sheet .ordem-pdf-emblem{
+ display:grid;place-items:center;width:58px;height:58px;flex:0 0 58px;border:4px double #222;
+ border-radius:50%;font:900 41px Georgia,serif;color:#2d2828;background:linear-gradient(135deg,#f5f2ec,#e9e4d9);
+}
+.ordem-sheet .ordem-pdf-wordmark p{
+ margin:0 0 3px;color:#942d35;font-weight:1000;font-size:9px;letter-spacing:.16em;text-transform:uppercase;
+}
+.ordem-sheet .ordem-pdf-wordmark h2{
+ margin:0;color:#191919;font:900 clamp(19px,2.7vw,29px)/1.1 Georgia,'Times New Roman',serif;letter-spacing:.045em;
+}
+.ordem-sheet .ordem-pdf-wordmark small{color:#605a54;font-size:10px;line-height:1.2;display:block;margin-top:5px}
+.ordem-sheet .ordem-pdf-page-number{
+ padding:7px 11px;background:#292525;color:#f6f0e7;white-space:nowrap;
+ font-size:9px;font-weight:900;letter-spacing:.08em;display:flex;align-items:center;gap:7px;
+}
+.ordem-sheet .ordem-pdf-page-number strong{font:900 20px Georgia,serif;color:#ffd1d1}
+.ordem-sheet .ordem-pdf-page1-layout,
+.ordem-sheet .ordem-pdf-page2-layout{
+ display:grid;grid-template-columns:minmax(0,1.17fr) minmax(0,1fr);gap:13px;align-items:start;
+}
+.ordem-sheet .ordem-pdf-page2-layout{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.ordem-sheet .ordem-pdf-primary-column,.ordem-sheet .ordem-pdf-skills-column,
+.ordem-sheet .ordem-pdf-secondary-column{display:grid;gap:12px;min-width:0;align-content:start}
+.ordem-sheet .ordem-pdf-section{
+ border:1px solid #bcb4aa;box-shadow:inset 0 0 0 1px #f4efe8;background:#fffefa;
+ padding:10px;min-width:0;overflow:hidden;
+}
+.ordem-sheet .ordem-pdf-section-head{
+ display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;
+ gap:7px;border-bottom:2px solid #33302d;padding:0 0 5px;margin:0 0 9px;
+}
+.ordem-sheet .ordem-pdf-section-head h3{
+ margin:0;text-transform:uppercase;color:#1c1b1a;font:900 14px Georgia,serif;letter-spacing:.07em;
+}
+.ordem-sheet .ordem-pdf-section-head small{display:block;color:#70665e;margin-top:2px;font-size:9px;line-height:1.2}
+.ordem-sheet .ordem-pdf-action{
+ padding:6px 8px;border:1px solid #7e2b30;background:#842b30!important;color:#fff!important;
+ border-radius:2px;font-size:10px;font-weight:900;cursor:pointer;white-space:nowrap;
+}
+.ordem-sheet .ordem-pdf-action:hover{background:#ad3b41!important}
+.ordem-sheet .ordem-pdf-delete{
+ color:#93363d;background:#fff1ef!important;border:1px solid #d8b8b8;border-radius:2px;
+ min-width:24px;min-height:28px;padding:2px 6px;font-weight:900;font-size:17px;line-height:1;cursor:pointer;
+}
+.ordem-sheet .ordem-pdf-delete:hover{background:#ffd8d6!important}
+.ordem-sheet .ordem-pdf-text-link{
+ display:inline-block;background:transparent!important;border:none!important;border-bottom:1px dotted #983038!important;
+ padding:5px 0 2px;color:#963239!important;font-size:10px;font-weight:900;text-align:left;
+ text-decoration:none;margin-top:7px;cursor:pointer;
+}
+.ordem-sheet .ordem-pdf-text-link:hover{text-decoration:underline}
+.ordem-sheet .ordem-pdf-sheet :is(button,input,select,textarea):focus-visible{
+ outline:2px solid #9a2b36!important;outline-offset:1px!important;
+}
+.ordem-sheet .ordem-pdf-field{display:flex;flex-direction:column;gap:3px;font-size:10px;color:#5d5650;min-width:0}
+.ordem-sheet .ordem-pdf-field>span{display:block;text-transform:uppercase;font-weight:900;font-size:9px!important;letter-spacing:.06em;color:#56504c!important}
+.ordem-sheet .ordem-pdf-sheet input,.ordem-sheet .ordem-pdf-sheet select,
+.ordem-sheet .ordem-pdf-sheet textarea{
+ min-width:0;width:100%;background:#fff!important;color:#211e1b!important;
+ border:1px solid #c7beb4!important;border-bottom:2px solid #68605a!important;
+ border-radius:1px!important;padding:6px 7px;font:500 12px/1.3 system-ui,sans-serif;
+}
+.ordem-sheet .ordem-pdf-sheet input[readonly]{
+ background:#eeeae3!important;font-weight:900;color:#413b37!important;
+}
+.ordem-sheet .ordem-pdf-field small{font-size:8px;color:#756d66}
+.ordem-sheet .ordem-pdf-identity-content{
+ display:grid;grid-template-columns:87px minmax(0,1fr);gap:11px;align-items:start;
+}
+.ordem-sheet .ordem-pdf-mini-photo{
+ height:112px;max-height:112px;display:flex;flex-direction:column;justify-content:space-between;
+ border:1px solid #444;background:#ece6dc;position:relative;overflow:hidden;cursor:pointer;
+ text-align:center;
+}
+.ordem-sheet .ordem-pdf-mini-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ordem-sheet .ordem-pdf-mini-photo>span{font-size:9px;letter-spacing:.1em;margin:auto;color:#74675f;font-weight:900}
+.ordem-sheet .ordem-pdf-mini-photo input{
+ position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;
+ left:0;bottom:0;cursor:pointer;
+}
+.ordem-sheet .ordem-pdf-mini-photo small{
+ position:relative;z-index:1;background:#242021d9;color:#fff;padding:4px;font-size:9px;font-weight:800;margin-top:auto;
+}
+.ordem-sheet .ordem-pdf-mini-photo:focus-within{outline:2px solid #a52d37;outline-offset:1px}
+.ordem-sheet .ordem-pdf-identity-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.ordem-sheet .ordem-pdf-identity-fields .wide{grid-column:1/-1}
+.ordem-sheet .ordem-pdf-attributes{
+ display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:end;gap:3px;text-align:center;
+}
+.ordem-sheet .ordem-pdf-attribute{display:flex;flex-direction:column;align-items:center;gap:4px}
+.ordem-sheet .ordem-pdf-attribute>span{
+ color:#69615c!important;font-size:9px!important;font-weight:800;line-height:1.1;text-transform:uppercase;
+}
+.ordem-sheet .ordem-pdf-attribute-ring{
+ width:min(100%,60px);aspect-ratio:1;border-radius:50%;
+ border:4px double #272323;background:radial-gradient(circle,#fff,#eee7dc);
+ display:grid;place-items:center;box-shadow:inset 0 0 0 2px #ddd2c7;
+}
+.ordem-sheet .ordem-pdf-attribute-ring input{
+ width:calc(100% - 10px)!important;min-width:0!important;height:41px;
+ text-align:center;font:900 24px Georgia,serif!important;border:0!important;
+ border-bottom:0!important;background:transparent!important;padding:0!important;
+ appearance:textfield;
+}
+.ordem-sheet .ordem-pdf-attribute b{font:900 10px system-ui;color:#9d2831;letter-spacing:.1em}
+.ordem-sheet .ordem-pdf-resources{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.ordem-sheet .ordem-pdf-resource{
+ border:2px solid #333;min-height:74px;background:#f4eeec;display:flex;flex-direction:column;
+}
+.ordem-sheet .ordem-pdf-resource>span{
+ display:block;background:#a72e37;color:white;padding:4px 7px;text-align:center;
+ font-size:10px;font-weight:1000;letter-spacing:.12em;
+}
+.ordem-sheet .ordem-pdf-resource-esforco>span{background:#313438}
+.ordem-sheet .ordem-pdf-resource-sanidade>span{background:#57415a}
+.ordem-sheet .ordem-pdf-resource-determinacao>span{background:#293b3a}
+.ordem-sheet .ordem-pdf-resource-nums{display:flex;align-items:center;justify-content:center;gap:3px;padding:5px}
+.ordem-sheet .ordem-pdf-resource-nums>label{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px}
+.ordem-sheet .ordem-pdf-resource-nums small{font-size:8px;color:#6a625e;font-weight:800}
+.ordem-sheet .ordem-pdf-resource-nums b{font:900 17px Georgia,serif;color:#35302d;margin-top:9px}
+.ordem-sheet .ordem-pdf-resource-nums input{max-width:75px;text-align:center;font-weight:900!important;font-size:16px!important;padding:3px 1px!important}
+.ordem-sheet .ordem-pdf-defense{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.ordem-sheet .ordem-pdf-defense-footer{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}
+.ordem-sheet .ordem-pdf-footnote{font-size:9px;line-height:1.4;color:#6e6660;margin:9px 0 0}
+.ordem-sheet .ordem-pdf-table-scroll,.ordem-sheet .ordem-pdf-skill-scroll{
+ max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;
+ scrollbar-width:thin;padding-bottom:3px;
+}
+.ordem-sheet .ordem-pdf-sheet table{width:100%;border-collapse:collapse;text-align:left;font-variant-numeric:tabular-nums}
+.ordem-sheet .ordem-pdf-sheet th,.ordem-sheet .ordem-pdf-sheet td{border-bottom:1px solid #ddd5ce;padding:3px 4px}
+.ordem-sheet .ordem-pdf-sheet thead th{
+ background:#2e2929!important;color:#fff!important;font-size:9px;text-transform:uppercase;
+ font-weight:900;letter-spacing:.03em;white-space:nowrap;padding:7px 4px;
+}
+.ordem-sheet .ordem-pdf-skills-table{min-width:470px}
+.ordem-sheet .ordem-pdf-skills-table tbody tr:nth-child(even),
+.ordem-sheet .ordem-pdf-attack-table tbody tr:nth-child(even){background:#f5f1ec}
+.ordem-sheet .ordem-pdf-skills-table tbody th{
+ font-size:10px;line-height:1.1;white-space:nowrap;color:#2b2726;font-weight:800;
+}
+.ordem-sheet .ordem-pdf-skills-table tbody td{padding:2px}
+.ordem-sheet .ordem-pdf-skills-table input,.ordem-sheet .ordem-pdf-skills-table select{
+ border:1px solid #c2bbb5!important;border-radius:1px!important;padding:3px 2px!important;
+ font-size:10px!important;height:25px!important;text-align:center!important;max-width:100%;min-width:0!important;
+}
+.ordem-sheet .ordem-pdf-skills-table .ordem-pdf-dice{text-align:center;font-size:10px;font-weight:800;color:#633036;white-space:nowrap}
+.ordem-sheet .ordem-pdf-skills-table .ordem-pdf-skill-total{
+ background:#f1e5e1;color:#842833;font-size:11px;font-weight:1000;text-align:center;
+}
+.ordem-sheet .ordem-pdf-attack-table{min-width:480px;table-layout:fixed}
+.ordem-sheet .ordem-pdf-attack-table th:nth-child(1){width:22%}
+.ordem-sheet .ordem-pdf-attack-table th:nth-child(2){width:13%}
+.ordem-sheet .ordem-pdf-attack-table th:nth-child(3){width:14%}
+.ordem-sheet .ordem-pdf-attack-table th:nth-child(4){width:12%}
+.ordem-sheet .ordem-pdf-attack-table th:nth-child(5){width:13%}
+.ordem-sheet .ordem-pdf-attack-table th:nth-child(6){width:20%}
+.ordem-sheet .ordem-pdf-attack-table th:nth-child(7){width:32px}
+.ordem-sheet .ordem-pdf-attack-table input{font-size:10px!important;padding:5px 3px!important}
+.ordem-sheet .ordem-pdf-blank-row{padding:12px!important;font-size:10px;color:#716961;text-align:center}
+.ordem-sheet .ordem-pdf-management{
+ display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;
+}
+.ordem-sheet .ordem-pdf-inventory-table{min-width:320px;table-layout:fixed}
+.ordem-sheet .ordem-pdf-inventory-table th:first-child{width:51%}
+.ordem-sheet .ordem-pdf-inventory-table th:nth-child(2){width:16%}
+.ordem-sheet .ordem-pdf-inventory-table th:nth-child(3){width:13%}
+.ordem-sheet .ordem-pdf-inventory-table th:nth-child(4){width:13%}
+.ordem-sheet .ordem-pdf-inventory-table input{font-size:11px!important;padding:5px 3px!important}
+.ordem-sheet .ordem-pdf-ability-list,.ordem-sheet .ordem-pdf-ritual-list{display:grid;gap:8px}
+.ordem-sheet .ordem-pdf-ability-row{
+ display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,.85fr) minmax(0,.6fr) minmax(0,.5fr) 26px;
+ gap:5px;padding:7px;background:#f8f5f0;border:1px solid #c3bbb0;align-items:center;
+}
+.ordem-sheet .ordem-pdf-ability-row input{font-size:10px!important;padding:5px!important}
+.ordem-sheet .ordem-pdf-ability-row .ordem-pdf-ability-name{font-weight:800!important}
+.ordem-sheet .ordem-pdf-ability-row textarea{grid-column:1/-1;resize:vertical}
+.ordem-sheet .ordem-pdf-ritual{border:1px solid #c3b4b0;background:#fbf8f2;padding:9px}
+.ordem-sheet .ordem-pdf-ritual-head{
+ display:grid;grid-template-columns:minmax(0,1fr) 80px 28px;align-items:end;gap:5px;
+ margin-bottom:7px;
+}
+.ordem-sheet .ordem-pdf-ritual-head>input{font-weight:900!important}
+.ordem-sheet .ordem-pdf-ritual-fields{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.ordem-sheet .ordem-pdf-ritual-fields input{font-size:10px!important;padding:5px 3px!important}
+.ordem-sheet .ordem-pdf-effect{margin-top:8px}
+.ordem-sheet .ordem-pdf-effect textarea,.ordem-sheet .ordem-pdf-notes{resize:vertical;min-height:62px}
+.ordem-sheet .ordem-pdf-dt{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.ordem-sheet .ordem-pdf-evolution{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ordem-sheet .ordem-pdf-footer{
+ display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px;
+ margin-top:15px;padding:8px 4px 0;border-top:3px double #77716b;
+ color:#776d67;font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.09em;
+}
+.ordem-sheet .ordem-tabs button[aria-selected="true"]{box-shadow:inset 0 -3px 0 #a62b35!important}
+@media(max-width:1120px){
+ .ordem-sheet .ordem-pdf-page1-layout{grid-template-columns:minmax(0,1fr)}
+ .ordem-sheet .ordem-pdf-page2-layout{grid-template-columns:minmax(0,1fr)}
+ .ordem-sheet .ordem-pdf-skills-column{grid-row:auto}
+ .ordem-sheet .ordem-pdf-skills-table{min-width:490px}
+}
+@media(max-width:650px){
+ .ordem-sheet .ordem-pdf-sheet{padding:11px 8px;margin:6px 0 15px;box-shadow:inset 0 0 0 2px #f4eee3}
+ .ordem-sheet .ordem-pdf-heading{gap:9px;padding-bottom:11px}
+ .ordem-sheet .ordem-pdf-emblem{height:40px;width:40px;flex-basis:40px;font-size:26px;border-width:3px}
+ .ordem-sheet .ordem-pdf-wordmark{gap:8px;flex:1}
+ .ordem-sheet .ordem-pdf-wordmark p{font-size:7px;letter-spacing:.04em}
+ .ordem-sheet .ordem-pdf-wordmark h2{font-size:18px;letter-spacing:0}
+ .ordem-sheet .ordem-pdf-wordmark small{font-size:8px}
+ .ordem-sheet .ordem-pdf-page-number{padding:4px 7px;font-size:8px}
+ .ordem-sheet .ordem-pdf-page-number strong{font-size:15px}
+ .ordem-sheet .ordem-pdf-section{padding:7px}
+ .ordem-sheet .ordem-pdf-section-head h3{font-size:12px}
+ .ordem-sheet .ordem-pdf-identity-content{grid-template-columns:65px 1fr;gap:7px}
+ .ordem-sheet .ordem-pdf-mini-photo{height:91px}
+ .ordem-sheet .ordem-pdf-field>span{font-size:8px!important}
+ .ordem-sheet .ordem-pdf-sheet :is(input,select,textarea){font-size:12px;padding:5px!important}
+ .ordem-sheet .ordem-pdf-attributes{gap:2px}
+ .ordem-sheet .ordem-pdf-attribute>span{font-size:7px!important;white-space:nowrap;letter-spacing:-.02em}
+ .ordem-sheet .ordem-pdf-attribute-ring{max-width:53px;border-width:3px}
+ .ordem-sheet .ordem-pdf-attribute-ring input{font-size:20px!important;height:34px}
+ .ordem-sheet .ordem-pdf-resources{gap:4px}
+ .ordem-sheet .ordem-pdf-resource>span{font-size:9px;padding:3px}
+ .ordem-sheet .ordem-pdf-resource-nums{gap:1px;padding:3px}
+ .ordem-sheet .ordem-pdf-resource-nums input{font-size:14px!important}
+ .ordem-sheet .ordem-pdf-management{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ .ordem-sheet .ordem-pdf-ritual-fields{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .ordem-sheet .ordem-pdf-dt{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .ordem-sheet .ordem-pdf-ability-row{grid-template-columns:minmax(0,1fr) minmax(0,.8fr) 25px}
+ .ordem-sheet .ordem-pdf-ability-row .ordem-pdf-ability-name{grid-column:1/3}
+ .ordem-sheet .ordem-pdf-ability-row input:nth-child(3){grid-column:1}
+ .ordem-sheet .ordem-pdf-ability-row textarea{grid-column:1/-1}
+ .ordem-sheet .ordem-pdf-ability-row button{grid-column:3;grid-row:1}
+ .ordem-sheet .ordem-pdf-footer{font-size:7px}
+}
+@media print{
+ .ordem-sheet .ordem-pdf-sheet{max-width:none!important;box-shadow:none!important;border:none!important;padding:0!important;margin:0!important;break-after:page}
+ .ordem-sheet .ordem-pdf-delete,.ordem-sheet .ordem-pdf-action,.ordem-sheet .ordem-pdf-text-link{display:none!important}
+ .ordem-sheet .ordem-pdf-section{break-inside:avoid}
+}
