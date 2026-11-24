@@ -909,3 +909,56 @@ body.theme-ordem .ordem-sheet .ordem-card,body.theme-dark .ordem-sheet .ordem-ca
   font-size:17px!important;
  }
 }
+
+
+/* Ameaças: perfil compacto, dados operacionais lado a lado e fonte auditável.
+   Mantém o mesmo papel de dossiê das fichas de agente. */
+.ordem-sheet.ordem-threat-dossier .ordem-threat-operational-grid{
+ display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:11px;align-items:start;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-operational-grid>.ordem-panel{
+ margin:0;min-height:100%;min-width:0;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-operational-grid .ordem-threat-stat-grid{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-operational-grid .ordem-threat-skill-grid{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-description-wide{
+ grid-column:1/-1;min-width:0;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-description-wide label{display:block}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-description-wide textarea{
+ min-height:44px;width:100%;resize:vertical;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-source-notice{
+ margin:10px 0 0;padding:8px 10px;
+ border:1px solid #9f7d62;border-left:4px solid #813a37;
+ font:600 10px/1.5 system-ui,sans-serif;
+ background:#e6d6b9;color:#30231d;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-source-notice strong{
+ display:inline-block;margin-right:7px;
+ font:900 9px/1.5 'Courier New',monospace;
+ letter-spacing:.08em;color:#813432;
+}
+.ordem-sheet.ordem-threat-dossier:not(.ordem-paper-sheet) .ordem-threat-source-notice{
+ color:#f1e9db;background:#2b2120;border-color:#794543;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-operational-grid .ordem-panel-title{
+ margin-bottom:8px!important;
+}
+.ordem-sheet.ordem-threat-dossier .ordem-threat-operational-grid label input{
+ display:block;width:100%;min-width:0;
+}
+@media(max-width:820px){
+ .ordem-sheet.ordem-threat-dossier .ordem-threat-operational-grid{
+  grid-template-columns:minmax(0,1fr);
+ }
+}
+@media(max-width:450px){
+ .ordem-sheet.ordem-threat-dossier .ordem-threat-operational-grid .ordem-threat-skill-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ }
+}
