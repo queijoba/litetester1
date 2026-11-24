@@ -10,7 +10,7 @@ const normalize=normalizeOrdemTerm;
 // Títulos editoriais identificados nas pastas Arquivos Secretos do Drive do projeto.
 const archiveTitles={
  'Arquivos Secretos #01':'Agatha',
- 'Arquivos Secretos #02':'Hexatombe — Parte 1 (HQ Kemi; material parcial)',
+ 'Arquivos Secretos #02':'Hexatombe — Parte 1 (HQ Kemi) · material parcial',
  'Arquivos Secretos #03':'Hexatombe — Parte 2 (PDF v1.1)',
  'Arquivos Secretos #04':'A Produção',
  'Arquivos Secretos #05':'Alheios',
