@@ -17,6 +17,16 @@ assert.ok(editor.includes('<OrdemPdfPages page={tab} data={data}'), 'Montar folh
 assert.ok(editor.includes("['agente','Agente']")&&editor.includes("['pericias','Perícias']")&&editor.includes("['combate','Combate']")&&editor.includes("['poderes','Poderes & Rituais']")&&editor.includes("['inventario','Inventário']"),'Abas originais continuam disponíveis');
 assert.ok(editor.includes('role="tablist"')&&editor.includes('aria-selected={tab===id}'),'Navegação acessível');
 assert.ok(pages.includes('page===\'pdf2\'?<ContinuationPage'),'Folhas em dois componentes');
+assert.ok(pages.includes('ordem-pdf-attributes--orbit')&&pages.includes('ordem-pdf-attributes-core'),'Cinco atributos dispostos radialmente como o PDF');
+assert.ok(pages.includes('data-ordem-attribute={id}')&&pages.includes('aria-label="Cinco atributos do agente'),'Campos radiais continuam identificados e acessíveis');
+for(const key of ['agi','for','int','pre','vig']){
+ assert.ok(css.includes('[data-ordem-attribute="'+key+'"]'),'Posição específica do atributo '+key);
+}
+assert.ok(css.includes('.ordem-pdf-attributes--orbit')&&css.includes('.ordem-pdf-attributes-core'),'Círculo central no CSS');
+assert.ok(css.includes('.ordem-pdf-description-grid'),'Quatro campos narrativos na folha 2');
+assert.ok(pages.includes("['aparencia','APARÊNCIA']")&&pages.includes("['personalidade','PERSONALIDADE']")&&pages.includes("['historico','HISTÓRICO']")&&pages.includes("['objetivo','OBJETIVO']"),'Áreas narrativas conforme o PDF');
+assert.ok(pages.includes("updateField('bio.'+key,e.target.value)"),'Áreas narrativas devem persistir na ficha original');
+
 for(const field of ['bio.nome','bio.origem','bio.classe','bio.trilha','bio.patente','bio.nex','status.defesaEquip','status.defesaOutros','status.bloqueio','status.esquiva','status.deslocamento','gestao.prestigio','gestao.limiteItens','gestao.limiteCredito','gestao.cargaMax','status.limitePePd','notas']){
  assert.ok(pages.includes(field),'Falta vínculo de campo do PDF: '+field);
 }
@@ -52,6 +62,16 @@ assert.equal(normalized.rituais[0].area,'','Campo Área novo e vazio na ficha an
 assert.equal(normalized.rituais[0].desc,'Nota particular');
 assert.equal(normalized.pericias.percepcao.grau,10);
 assert.equal(normalized.notas,'Manter investigação');
+for(const field of ['aparencia','personalidade','historico','objetivo']){
+ assert.equal(normalized.bio[field],'','Ficha antiga recebe descrição vazia sem alterar outros dados: '+field);
+}
+const narrative=normalizeOrdemPcData({...legacy,bio:{...legacy.bio,aparencia:'Capa de chuva cinza',personalidade:'Desconfiado',historico:'Caso do hospital',objetivo:'Encontrar a verdade'}});
+assert.equal(narrative.bio.aparencia,'Capa de chuva cinza');
+assert.equal(narrative.bio.personalidade,'Desconfiado');
+assert.equal(narrative.bio.historico,'Caso do hospital');
+assert.equal(narrative.bio.objetivo,'Encontrar a verdade');
+assert.equal(narrative.notas,'Manter investigação','Novas descrições não substituem anotações existentes');
+
 const edited=normalizeOrdemPcData({...legacy,rituais:[{...legacy.rituais[0],area:'9m de raio'}]});
 assert.equal(edited.rituais[0].area,'9m de raio','Persistir Área sem perda');
 console.log('✓ Ordem Paranormal: 2 folhas editáveis próximas ao PDF SaH; 28 perícias, campos, mobile, legado e exportação preservados.');
