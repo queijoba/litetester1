@@ -25,6 +25,7 @@ const fromCatalog=(a)=>a?.bibliotecaOrigem===ORDEM_INDEX_ORIGIN;
 const tag=(entry,kind)=>({
  nome:entry.nome,tipo:kind==='habilidades'?'Poder':kind==='poderesParanormais'?'Poder paranormal':kind==='trilhas'?'Trilha':'Origem',
  custo:entry.custo||'',desc:entry.desc||'',pagina:entry.pagina||'',fonte:entry.fonte||'Modelo pessoal',
+ requisito:entry.requisito||'',contextoEspecial:entry.contextoEspecial||'',
  classe:entry.classe||'',trilha:entry.trilha||'',elemento:entry.elemento||'',
  bibliotecaOrigem:entry.bibliotecaOrigem||ORDEM_INDEX_ORIGIN,referenciaId:entry.id||''
 });
