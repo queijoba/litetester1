@@ -1,5 +1,6 @@
 import {DRAGONBANE_ATTRIBUTE_ORDER,dragonbaneAttributeValue,dragonbaneAttributeCondition} from '../attributes.js';
-import {dragonbaneAbilityList,dragonbaneMagicTabEnabled} from '../abilities.js';
+import {dragonbaneAbilityList,dragonbaneMagicTabEnabled,insertDragonbaneLibraryEntry} from '../abilities.js';
+import DragonbaneLibrary from './DragonbaneLibrary.jsx';
 import DragonbaneAbilitiesPanel from './AbilitiesPanel.jsx';
 // Extraído automaticamente do antigo PJLiteApp monolítico.
 // Este arquivo agora é a fonte visual do editor deste sistema.
@@ -260,6 +261,13 @@ export default function DragonbaneEditor({ scope }) {
   } = scope;
   // A navegação pertence à interface; os dados permanecem no formato original da ficha.
   const [requestedDragonbanePage,setDragonbanePage]=useState('ficha');
+  const [dragonbaneLibraryFilter,setDragonbaneLibraryFilter]=useState(null);
+  const openDragonbaneLibrary=(filter={})=>setDragonbaneLibraryFilter(filter);
+  const addDragonbaneLibraryEntry=entry=>{
+   setData(prev=>insertDragonbaneLibraryEntry(prev,entry));
+   setDragonbanePage(['magia','truque'].includes(entry.tipo)?'magias':'habilidades');
+   setDragonbaneLibraryFilter(null);
+  };
   const showDragonbaneMagic=dragonbaneMagicTabEnabled(data);
   const dragonbanePage=requestedDragonbanePage==='magias'&&!showDragonbaneMagic?'ficha':requestedDragonbanePage;
   const toggleDragonbaneMagic=()=>{
@@ -311,7 +319,7 @@ export default function DragonbaneEditor({ scope }) {
                                              {Number.isInteger(tab.quantidade)&&<span className="db-rework-tab-count">{tab.quantidade}</span>}
                                             </button>)}
                                           </nav>
-                                          <div className="db-magic-tab-control"><label><input type="checkbox" checked={showDragonbaneMagic} onChange={toggleDragonbaneMagic}/> Mostrar aba de Magias</label>{!showDragonbaneMagic&&dragonbaneSpellCount>0&&<small>{dragonbaneSpellCount} registro(s) de magia ocultos, preservados na ficha.</small>}</div>
+                                          <div className="db-magic-tab-control"><label><input type="checkbox" checked={showDragonbaneMagic} onChange={toggleDragonbaneMagic}/> Mostrar aba de Magias</label><button type="button" className="db-library-launch" onClick={()=>openDragonbaneLibrary(dragonbanePage==='magias'?{kind:'magia'}:dragonbanePage==='habilidades'?{kind:'heroica'}:{})}>▤ Biblioteca de Dragonbane</button>{!showDragonbaneMagic&&dragonbaneSpellCount>0&&<small>{dragonbaneSpellCount} registro(s) de magia ocultos, preservados na ficha.</small>}</div>
                                           <div role="tabpanel" aria-label="Ficha do personagem" className={dragonbanePage==='ficha'?'space-y-4':'hidden'}>
 
                                           {/* Biografia PC */}
@@ -577,12 +585,13 @@ export default function DragonbaneEditor({ scope }) {
                                           </div>}
                                           {dragonbanePage==='habilidades'&&<div role="tabpanel" aria-label="Habilidades do personagem">
                                             <DragonbaneAbilitiesPanel mode="habilidades" data={data} addToArray={addToArray}
-                                              updateArrayField={updateArrayField} removeFromArray={removeFromArray} setData={setData}/>
+                                              updateArrayField={updateArrayField} removeFromArray={removeFromArray} setData={setData} onOpenLibrary={openDragonbaneLibrary}/>
                                           </div>}
                                           {showDragonbaneMagic&&dragonbanePage==='magias'&&<div role="tabpanel" aria-label="Magias e truques">
                                             <DragonbaneAbilitiesPanel mode="magias" data={data} addToArray={addToArray}
-                                              updateArrayField={updateArrayField} removeFromArray={removeFromArray} setData={setData}/>
+                                              updateArrayField={updateArrayField} removeFromArray={removeFromArray} setData={setData} onOpenLibrary={openDragonbaneLibrary}/>
                                           </div>}
+                                          {dragonbaneLibraryFilter!==null&&<DragonbaneLibrary data={data} initialFilter={dragonbaneLibraryFilter} onClose={()=>setDragonbaneLibraryFilter(null)} onAdd={addDragonbaneLibraryEntry}/>}
                                       </div>
                                   </React.Fragment>
                               ) : data.type === 'pnj' ? (
