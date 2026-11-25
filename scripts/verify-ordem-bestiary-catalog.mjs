@@ -45,3 +45,13 @@ for(const label of ['Filtrar livro ou suplemento','Filtrar elemento paranormal',
 assert.ok(catalog.includes("isOrdem=system==='ordemParanormal'"),'Não mudar experiência de outros sistemas');
 assert.ok(editor.includes('data.dadosParciais')&&editor.includes('Abrir livro no Google Drive'),'Avisar sobre resumos e fontes');
 console.log('✓ Ordem: 67 Livro Básico + 30 Sobrevivendo ao Horror + 18 Hexatombe + 3 exemplos; filtros e referências preservados.');
+
+const catalogCss=readFileSync('src/systems/ordemParanormal/ordem-theme.css','utf8');
+assert.ok(modal.includes('ordem-threat-catalog-modal')&&modal.includes('ordem-catalog-modal-header'),'Apenas seleção de ameaças usa o dossiê claro');
+assert.ok(catalog.includes('OrdemGroupIcon')&&catalog.includes('ordemElements(modelo)')&&catalog.includes('kind="type"'),'Ícones no título, nos tipos e em cada elemento');
+for(const key of ['sangue','morte','conhecimento','energia','medo','nenhum','criatura','pessoa','animal','reliquia']){
+ assert.ok(catalog.includes(key+":"),'Pictograma definido: '+key);
+}
+assert.ok(catalogCss.includes('background:#f4ecd9!important;color:#282219!important'),'Modal tem fundo claro e texto escuro explícitos');
+assert.ok(catalogCss.includes('.ordem-threat-catalog>section>div:first-child'),'Cabeçalhos dos grupos contrastantes');
+console.log('✓ Ordem: bestiário claro e pictogramas acessíveis por elemento e tipo.');
