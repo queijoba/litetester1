@@ -14,7 +14,7 @@ assert.equal(sah.length,16);
 assert.equal(ORDEM_LIBRARY_COUNTS.ritual,107);
 assert.equal(ORDEM_LIBRARY_COUNTS.origem,41);
 assert.equal(ORDEM_LIBRARY_COUNTS.trilha,25);
-assert.equal(entries.length,293); // 260 anteriores + 33 referências de Hexatombe #02
+assert.equal(entries.length,295); // 260 anteriores + 35 de Hexatombe #02
 for(const rit of [...basic,...sah]){
  assert.ok(rit.nome&&rit.desc.length>=45);
  assert.ok(rit.circulo>=1&&rit.circulo<=4,rit.nome+' círculo não reconhecido');
@@ -95,13 +95,13 @@ assert.ok(modal.includes('Filtrar círculo')&&modal.includes('Filtrar elemento')
 console.log('✓ Ordem completa: 82 rituais básicos, 16 SaH, 19 AS04, filtros, NEX, origens reversíveis, sem playtest.');
 
 const as02=entries.filter(e=>e.fonte==='Arquivos Secretos #02');
-assert.equal(as02.length,33);
+assert.equal(as02.length,35);
 assert.equal(as02.filter(e=>e.tipo==='ritual').length,4);
 assert.equal(as02.filter(e=>e.elemento==='Intenção'&&e.contextoEspecial&&e.custo==='0 PE').length,5);
 assert.equal(as02.find(e=>e.nome==='Disparo da Morte').custo,'2 PE');
 assert.ok(as02.some(e=>e.nome==='Mapa Sanguíneo'&&e.pagina==='65'&&e.circulo===2));
 const {AS02_REFERENCE_ENTRIES}=await import('../src/systems/ordemParanormal/as02PlayerIndex.js');
-assert.equal(AS02_REFERENCE_ENTRIES.length,39);
+assert.equal(AS02_REFERENCE_ENTRIES.length,41);
 assert.ok(AS02_REFERENCE_ENTRIES.every(e=>e.consultaApenas&&e.pagina));
 assert.ok(modal.includes('referenceTab')&&modal.includes('Consulta apenas'));
 const power=as02.find(e=>e.nome==='Filho da Dor');
@@ -109,3 +109,22 @@ assert.ok(getOrdemLibraryWarnings(power,'poderesParanormais',{classe:'Combatente
 const inserted=applyOrdemLibrarySelection(state,power,'poderesParanormais');
 assert.ok(inserted.changed&&inserted.data.poderesParanormais.at(-1).elemento==='Intenção');
 assert.equal(applyOrdemLibrarySelection(inserted.data,power,'poderesParanormais').changed,false);
+
+const matar=as02.find(e=>e.nome==='Especialista em Matar');
+for(const value of ['2 PE = +5','NEX 40%: 3 PE = +10','NEX 70%: 4 PE = +15','Perito','próximo turno'])assert.ok(matar.desc.includes(value),'Mecânica Especialista em Matar: '+value);
+const savedMatar=applyOrdemLibrarySelection(state,matar,'habilidades');
+assert.equal(savedMatar.data.habilidades.at(-1).desc,matar.desc);
+assert.equal(savedMatar.data.habilidades.at(-1).requisito,matar.requisito);
+assert.equal(savedMatar.data.habilidades.at(-1).pagina,'59');
+for(const spell of as02.filter(e=>e.tipo==='ritual')){
+ assert.ok(spell.desc.includes('Discente (+3 PE)')&&spell.desc.includes('Verdadeiro (+7 PE)'));
+ const result=applyOrdemLibrarySelection(state,spell,'rituais');
+ assert.equal(result.data.rituais.at(-1).desc,spell.desc);
+}
+assert.ok(as02.some(e=>e.nome==='Liturgia de Fortalecimento Ritualístico'&&e.pagina==='93'));
+assert.ok(as02.some(e=>e.nome==='Engolir Sangue'&&e.pagina==='93'));
+assert.ok(AS02_REFERENCE_ENTRIES.some(e=>e.nome==='Faca Predadora'&&e.pagina==='93'));
+assert.ok(AS02_REFERENCE_ENTRIES.some(e=>e.nome==='Juan como aliado'&&e.pagina==='93'));
+assert.ok(AS02_REFERENCE_ENTRIES.filter(e=>e.categoria==='Aliado').every(e=>e.desc.startsWith('Bônus:')));
+assert.ok(readFileSync('src/systems/ordemParanormal/ordem-library.css','utf8').includes('white-space:pre-line'));
+console.log('✓ AS02: efeitos, progressão, aprimoramentos, requisitos, aliados e página 93.');
