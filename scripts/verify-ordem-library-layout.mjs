@@ -4,12 +4,12 @@ import {readFileSync} from 'node:fs';
 const jsx=readFileSync('src/systems/ordemParanormal/OrdemLibraryModal.jsx','utf8');
 const css=readFileSync('src/systems/ordemParanormal/ordem-library.css','utf8');
 const catalog=readFileSync('src/systems/ordemParanormal/libraryCatalog.js','utf8');
-assert.ok(jsx.includes("sourceSet.add('Arquivos Secretos #02')"),'O pacote #02 precisa aparecer no filtro');
-assert.ok(jsx.includes("Hexatombe — Parte 1 (HQ Kemi)"),'Título da pasta #02 no Drive');
-assert.ok(jsx.includes('archive02Reference')&&jsx.includes('Consultar HQ Kemi no Google Drive'),'Indicar que o pacote #02 é HQ de referência e oferecer leitura');
+assert.ok(jsx.includes('Hexatombe — Parte 1 (PDF v1.1)'),'Filtro #02 atualizado');
+assert.ok(jsx.includes('AS02_REFERENCE_ENTRIES'),'Referências de consulta do suplemento');
+assert.ok(jsx.includes('Conferido no PDF v1.1 de Hexatombe Parte 1'),'Fonte de regras confirmada');
 for(const title of ['Agatha','Hexatombe — Parte 2','A Produção','Alheios','Panaceia','Vampiros','Hell Hunters'])
  assert.ok(jsx.includes(title),'Título do Arquivos Secretos não exibido: '+title);
-assert.ok(!catalog.includes("'Arquivos Secretos #02'"),'Não inventar ficha/regras para a HQ Kemi');
+assert.ok(catalog.includes('AS02_PLAYER_ENTRIES'),'Catálogo integra opções de personagem verificadas');
 
 for(const label of ['Origens','Trilhas','Poderes de Classe','Poderes Paranormais','Rituais']){
  assert.ok(jsx.includes("'"+label+"'"),"Categoria ausente: "+label);
