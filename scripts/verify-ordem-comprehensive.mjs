@@ -11,10 +11,10 @@ const basic=entries.filter(x=>x.tipo==='ritual'&&x.fonte==='Livro Básico v1.3')
 const sah=entries.filter(x=>x.tipo==='ritual'&&x.fonte==='Sobrevivendo ao Horror');
 assert.equal(basic.length,82);
 assert.equal(sah.length,16);
-assert.equal(ORDEM_LIBRARY_COUNTS.ritual,103);
+assert.equal(ORDEM_LIBRARY_COUNTS.ritual,107);
 assert.equal(ORDEM_LIBRARY_COUNTS.origem,41);
 assert.equal(ORDEM_LIBRARY_COUNTS.trilha,25);
-assert.equal(entries.length,260); // 253 referências anteriores + 7 opções confirmadas de Hexatombe #03
+assert.equal(entries.length,293); // 260 anteriores + 33 referências de Hexatombe #02
 for(const rit of [...basic,...sah]){
  assert.ok(rit.nome&&rit.desc.length>=45);
  assert.ok(rit.circulo>=1&&rit.circulo<=4,rit.nome+' círculo não reconhecido');
@@ -93,3 +93,19 @@ assert.ok(editor.includes('ordem-paper-sheet')&&editor.includes('ordem-view-togg
 assert.ok(css.includes('.ordem-sheet.ordem-paper-sheet'));
 assert.ok(modal.includes('Filtrar círculo')&&modal.includes('Filtrar elemento')&&modal.includes('getOrdemLibraryWarnings'));
 console.log('✓ Ordem completa: 82 rituais básicos, 16 SaH, 19 AS04, filtros, NEX, origens reversíveis, sem playtest.');
+
+const as02=entries.filter(e=>e.fonte==='Arquivos Secretos #02');
+assert.equal(as02.length,33);
+assert.equal(as02.filter(e=>e.tipo==='ritual').length,4);
+assert.equal(as02.filter(e=>e.elemento==='Intenção'&&e.contextoEspecial&&e.custo==='0 PE').length,5);
+assert.equal(as02.find(e=>e.nome==='Disparo da Morte').custo,'2 PE');
+assert.ok(as02.some(e=>e.nome==='Mapa Sanguíneo'&&e.pagina==='65'&&e.circulo===2));
+const {AS02_REFERENCE_ENTRIES}=await import('../src/systems/ordemParanormal/as02PlayerIndex.js');
+assert.equal(AS02_REFERENCE_ENTRIES.length,39);
+assert.ok(AS02_REFERENCE_ENTRIES.every(e=>e.consultaApenas&&e.pagina));
+assert.ok(modal.includes('referenceTab')&&modal.includes('Consulta apenas'));
+const power=as02.find(e=>e.nome==='Filho da Dor');
+assert.ok(getOrdemLibraryWarnings(power,'poderesParanormais',{classe:'Combatente',nex:50}).length);
+const inserted=applyOrdemLibrarySelection(state,power,'poderesParanormais');
+assert.ok(inserted.changed&&inserted.data.poderesParanormais.at(-1).elemento==='Intenção');
+assert.equal(applyOrdemLibrarySelection(inserted.data,power,'poderesParanormais').changed,false);
