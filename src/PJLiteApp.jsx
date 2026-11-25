@@ -43,7 +43,7 @@ import { MODELOS_3DET_NPCS, MODELOS_3DET_CRIATURAS } from './systems/3det/threat
 import { generate3DetChatText } from './systems/3det/chat.js';
 import { generate3DetThreatChatText } from './systems/3det/threatChat.js';
 import DragonbaneEditor from './systems/dragonbane/components/Editor.jsx';
-import {DRAGONBANE_ABILITY_KINDS,dragonbaneAbilityList,dragonbaneMagicSchool,dragonbaneAbilityKind} from './systems/dragonbane/abilities.js';
+import {DRAGONBANE_ABILITY_KINDS,dragonbaneAbilityList,dragonbaneMagicSchool,dragonbaneAbilityKind,syncDragonbaneInnates,dragonbaneLoad} from './systems/dragonbane/abilities.js';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import JSZip from 'jszip';
@@ -2094,10 +2094,10 @@ const { useState, useEffect, useRef } = React;
                 newData.atributos = orderedDragonbaneAttributes(newData.atributos);
                 newData.atributos[attr].valor = value;
                 if (!newData.status?.manterDerivados) {
-                    if (attr === 'for') { newData.derivados.danoBonusFor = getDanoBonus(value); newData.derivados.limiteSobrecarga = Math.ceil(value / 2); }
+                    if (attr === 'for') { newData.derivados.danoBonusFor = getDanoBonus(value); newData.derivados.limiteSobrecarga = dragonbaneLoad(newData).base; }
                     if (attr === 'agl') { newData.derivados.danoBonusAgl = getDanoBonus(value); newData.derivados.movimento = getMovimento(newData.bio.ancestralidade, value); }
-                    if (attr === 'con') { newData.status.pv.max = value; }
-                    if (attr === 'von') { newData.status.pd.max = value; }
+                    if (attr === 'con') { newData.status.pv.max = Math.max(0,Number(newData.status.pv.max||0)+value-Number(data.atributos?.con?.valor??10)); }
+                    if (attr === 'von') { newData.status.pd.max = Math.max(0,Number(newData.status.pd.max||0)+value-Number(data.atributos?.von?.valor??10)); }
                 }
                 setData(newData);
             };
@@ -2106,7 +2106,7 @@ const { useState, useEffect, useRef } = React;
                 const newData = JSON.parse(JSON.stringify(data));
                 newData.bio.ancestralidade = value;
                 if (!newData.status?.manterDerivados) newData.derivados.movimento = getMovimento(value, newData.atributos.agl.valor);
-                setData(newData);
+                setData(syncDragonbaneInnates(newData,value));
             };
             
             const generatePnjAspect = (field) => {
