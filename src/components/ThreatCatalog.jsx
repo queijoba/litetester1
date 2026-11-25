@@ -41,8 +41,15 @@ export default function ThreatCatalog({groups,onSelect,system='3det'}){
  const [vdMax,setVdMax]=React.useState('');
  const [vdOrder,setVdOrder]=React.useState('asc');
  const isOrdem=system==='ordemParanormal';
+ const isExtended=['dnd5e','fabula','skyfall'].includes(system);
+ const [category,setCategory]=React.useState('Todas');
+ const [rating,setRating]=React.useState('Todos');
+ const categoryOf=x=>String(x.categoria||x.especie||x.tipo||'Outros');
+ const ratingOf=x=>String(system==='fabula'?x.nivel??'':system==='skyfall'?x.nivelDesafio??'':x.desafio?.split(' ')[0]??'');
  const all=groups.flatMap(group=>group.items||[]);
  const count=all.length;
+ const categories=[...new Set(all.map(categoryOf))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+ const ratings=[...new Set(all.map(ratingOf).filter(Boolean))].sort((a,b)=>{const n=x=>x.includes('/')?Number(x.split('/')[0])/Number(x.split('/')[1]):Number(x);return n(a)-n(b);});
  const sources=[...new Set(all.map(x=>String(x.fonte||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR',{numeric:true}));
  const elements=['Sangue','Morte','Conhecimento','Energia','Medo','Nenhum'];
  const filtered=groups.map(group=>{
@@ -50,6 +57,7 @@ export default function ThreatCatalog({groups,onSelect,system='3det'}){
    const isNpc=item.type==='pnj'||item.categoria==='NPC'||item.papel==='Aliado';
    if(type==='ameacas'&&isNpc)return false;
    if(type==='npcs'&&!isNpc)return false;
+   if(isExtended){if(category!=='Todas'&&categoryOf(item)!==category)return false;if(rating!=='Todos'&&ratingOf(item)!==rating)return false;if(source!=='Todas as fontes'&&item.fonte!==source)return false;}
    if(isOrdem){
     if(source!=='Todas as fontes'&&item.fonte!==source)return false;
     const tokens=String(item.elemento||'').split('/').map(v=>fold(v.trim()));
@@ -58,12 +66,12 @@ export default function ThreatCatalog({groups,onSelect,system='3det'}){
     if(vdMin!==''&&(!Number.isFinite(vd)||vd<Number(vdMin)))return false;
     if(vdMax!==''&&(!Number.isFinite(vd)||vd>Number(vdMax)))return false;
    }
-   return !query.trim()||fold([item.nome,item.descricao,item.conceito,item.grupo,item.papel,item.categoria,item.elemento,item.vd,item.fonte,item.codigo,group.title].join(' ')).includes(fold(query.trim()));
+   return !query.trim()||fold([item.nome,item.descricao,item.conceito,item.grupo,item.papel,item.categoria,item.elemento,item.vd,item.fonte,item.codigo,item.nomeOriginal,item.tipo,item.especie,item.nivel,item.nivelDesafio,item.desafio,group.title].join(' ')).includes(fold(query.trim()));
   }).sort((a,b)=>isOrdem?((vdOrder==='asc'?1:-1)*(Number(a.vd||0)-Number(b.vd||0))||String(a.nome).localeCompare(String(b.nome),'pt-BR')):0);
   return {...group,items};
  }).filter(group=>group.items.length);
  const dark=system==='rotaZero';
- return <div className={isOrdem?'space-y-3 ordem-threat-catalog':'space-y-3'}>
+ return <div className={isOrdem?'space-y-3 ordem-threat-catalog':'space-y-3 lite-threat-catalog'}>
   <div className={dark?'rounded-md border border-[#9ca8a0] bg-[#f2f0e9] p-3':'rounded-md border border-amber-200 bg-amber-50 p-3'}>
    <label className="block text-xs font-bold text-zinc-800" htmlFor={'threat-search-'+system}>
     Pesquisar modelos ({count})
@@ -75,6 +83,7 @@ export default function ThreatCatalog({groups,onSelect,system='3det'}){
      <button key={id} type="button" aria-pressed={type===id} onClick={()=>setType(id)}
       className={'rounded px-3 py-1 text-xs font-bold '+(type===id?'bg-zinc-900 text-white':'border border-zinc-400 bg-white text-zinc-800')}>{label}</button>)}
    </div>
+   {isExtended&&<div className="lite-catalog-filters mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2"><label className="text-xs font-bold">Categoria<select value={category} onChange={e=>setCategory(e.target.value)} className="mt-1 block w-full rounded border bg-white p-2"><option>Todas</option>{categories.map(x=><option key={x}>{x}</option>)}</select></label><label className="text-xs font-bold">{system==='fabula'?'Nível':'ND'}<select value={rating} onChange={e=>setRating(e.target.value)} className="mt-1 block w-full rounded border bg-white p-2"><option>Todos</option>{ratings.map(x=><option key={x}>{x}</option>)}</select></label><label className="text-xs font-bold">Fonte<select value={source} onChange={e=>setSource(e.target.value)} className="mt-1 block w-full rounded border bg-white p-2"><option>Todas as fontes</option>{sources.map(x=><option key={x}>{x}</option>)}</select></label><button type="button" className="rounded border bg-white p-2 text-xs font-bold self-end" onClick={()=>{setQuery('');setType('todos');setSource('Todas as fontes');setCategory('Todas');setRating('Todos');}}>Limpar filtros</button><p className="col-span-full text-xs" role="status">{filtered.reduce((n,g)=>n+g.items.length,0)} de {count} modelos</p></div>}
    {isOrdem&&<div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2" aria-label="Filtros do bestiário de Ordem Paranormal">
     <label className="text-xs font-bold text-zinc-800">Livro / suplemento
      <select aria-label="Filtrar livro ou suplemento" value={source} onChange={e=>setSource(e.target.value)} className="mt-1 block w-full rounded border border-zinc-400 bg-white px-2 py-2 text-zinc-900">
@@ -114,7 +123,7 @@ export default function ThreatCatalog({groups,onSelect,system='3det'}){
      {isOrdem?<><div className="ordem-catalog-card-heading"><strong>{modelo.nome}</strong><span className="ordem-catalog-vd">VD <b>{modelo.vd}</b></span></div>
       <div className="ordem-catalog-tags"><OrdemTag kind="type" value={modelo.categoria||'Outros'}/>{(ordemElements(modelo).length?ordemElements(modelo):['Não especificado']).map(element=><OrdemTag key={element} value={element==='Nenhum'?'Nenhum':element}/>)}</div></>:<>
       <strong className="block text-sm font-black text-zinc-950">{modelo.nome}</strong>
-      <span className="text-xs text-zinc-700">{modelo.categoria}{modelo.papel?' · '+modelo.papel:''}{Number.isFinite(modelo.pontos)?' · '+modelo.pontos+' pts':''}</span></>}
+      <span className="text-xs text-zinc-700">{modelo.categoria||modelo.especie||modelo.tipo}{isExtended&&ratingOf(modelo)?' · '+(system==='fabula'?'Nível ':'ND ')+ratingOf(modelo):''}{modelo.patente?' · '+modelo.patente:''}{modelo.hierarquia?' · '+modelo.hierarquia:''}{modelo.papel?' · '+modelo.papel:''}{Number.isFinite(modelo.pontos)?' · '+modelo.pontos+' pts':''}</span></>}
      <p className="mt-1 line-clamp-2 text-xs text-zinc-700">{modelo.descricao||modelo.conceito||'Modelo personalizável para a mesa.'}</p>
      {modelo.fonte&&<small className="mt-1 block text-xs text-zinc-600">{modelo.fonte}{modelo.pagina?' · p. '+modelo.pagina:''}</small>}
      {modelo.grupo&&<small className="block text-xs text-zinc-600">{modelo.grupo}</small>}

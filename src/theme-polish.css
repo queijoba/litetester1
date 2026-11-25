@@ -215,3 +215,14 @@ body.theme-custom select option {
   .pjlite-3det-guide-panel { font-size: 13px; }
   .pjlite-3det-guide-panel .grid { grid-template-columns: minmax(0, 1fr) !important; }
 }
+
+/* 1.1.9: contraste e foco acessível dos catálogos. */
+.lite-threat-catalog .lite-catalog-filters select{min-height:2.5rem;max-width:100%;color:inherit}
+.lite-threat-catalog button{overflow-wrap:anywhere}
+.lite-threat-catalog :is(button,input,select):focus-visible{outline:2px solid currentColor;outline-offset:2px}
+.lite-threat-catalog section>div:last-child{gap:.65rem}
+body.theme-dark .lite-threat-catalog .bg-white{background:#1e293b!important;color:#f1f5f9!important;border-color:#475569!important}
+body.theme-dark .lite-threat-catalog .bg-amber-50{background:#232e3f!important;color:#f1f5f9!important;border-color:#475569!important}
+body.theme-dark .lite-threat-catalog :is(select,input){background:#111827!important;color:#f8fafc!important;border-color:#64748b!important}
+body.theme-dark .lite-threat-catalog :is(.text-zinc-950,.text-zinc-900,.text-zinc-800,.text-zinc-700,.text-zinc-600){color:#e2e8f0!important}
+@media(max-width:640px){.lite-threat-catalog .lite-catalog-filters{grid-template-columns:1fr}.lite-threat-catalog button{min-height:2.5rem}}

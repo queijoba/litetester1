@@ -30,6 +30,7 @@ import {initialRotaZeroThreatData,normalizeRotaZeroThreatData,MODELOS_ROTA_ZERO_
 import {MODELOS_ROTA_ZERO_BESTIARIO,MODELOS_ROTA_ZERO_NPCS} from './systems/rotaZero/bestiaryCatalog.js';
 import {MODELOS_3DET_LIVRO,GRUPOS_3DET_LIVRO} from './systems/3det/bookThreatCatalog.js';
 import ThreatCatalog from './components/ThreatCatalog.jsx';
+import {SRD521_MONSTER_GROUPS} from './systems/dnd5e/srd521-monsters.js';
 import {MODELOS_SOM6_LIVRO_PDJ,MODELOS_SOM6_LIVRO_ANIMAIS} from './systems/somDasSeis/bestiaryCatalog.js';
 import {MODELOS_DRAGONBANE_BESTIARIO,GRUPOS_DRAGONBANE_BESTIARIO,MODELOS_DRAGONBANE_VARIANTES,MODELOS_DRAGONBANE_SOLO} from './systems/dragonbane/bestiaryCatalog.js';
 import {markSheetDeleted,unmarkSheetDeleted} from './cloud/cloudSheetDeletions.js';
@@ -71,6 +72,7 @@ const { useState, useEffect, useRef } = React;
         const SCHEMA_VERSION = 6;
 
         const UPDATE_LOG = [
+            { versao: '1.1.9v Alpha', descricao: 'Dragonbane: ancestralidades com inatas automáticas, carga, grimório e bestiário ampliados. D&D 5.5e: 330 perfis do SRD 5.2.1 com pesquisa, categorias e ND. Fabula Ultima e Skyfall: busca nos modelos editáveis. Temas, guias e tutoriais revisados. Conteúdo comercial não incluído integralmente.' },
             { versao: '1.1.3v Alpha', descricao: 'Escudo do Mestre com referências ampliadas por sistema, acesso aos PDFs no Drive e correção de nomes alternativos de sistema; minifichas de Campanhas corrigidas, mesmo quando campos opcionais estão vazios; cards de ameaças PNG sem cortes e modos térmicos 58/80 mm; ficha Rota Zero aberta a todos sem liberar a conquista secreta; temas sincronizados entre Home e Campanhas, guia e interface revisados; ajuste posterior: Escudo sem contadores/rolagem duplicados, ameaças de Rota Zero com editor e cards PNG, correção de exclusões persistentes na Conta Lite; revisão da sincronização bidirecional de todas as fichas, comparando versões, retomando após renovação de sessão e protegendo exclusões entre dispositivos. Novo catálogo de ameaças: mini-bestiário e NPCs do Rota Zero v0.5, fichas de referência do Manual 3DeT Victory e filtros pesquisáveis, sem ativar Tormenta20. Som das Seis: oito PDJs e doze animais do livro; Dragonbane: 63 criaturas do Bestiário com PNJs e tabelas D6, selecionáveis nos catálogos.' },
             { versao: '1.1.0v Alpha', descricao: 'Jornadas se tornou uma área independente da Home, com retorno visível, criação de campanha e orientação para iniciantes. O chat privado das campanhas ganhou uma aba própria na Conta Lite. A barra clássica de novidades foi preservada, e o Log de Atualizações continua em Sobre o Projeto. Conquistas ON/OFF permanece disponível na Conta Lite.' },
             { versao: '0.9.5v Alpha • Jornadas (prévia)', descricao: 'A Conta Lite organiza grupos com DM, campanhas em Jornadas, fichas vinculadas com permissão opcional de edição pelo mestre, iniciativa, combate, chat por mensagens e links HTTPS de mídia, mapas e PDFs autorizados. Conquistas ON/OFF agora permite mostrar apenas o emblema do evento no canto da tela. Guias revisados com bibliotecas e cards de ameaças em PNG.' },
@@ -2276,12 +2278,12 @@ const { useState, useEffect, useRef } = React;
                                 <div className={`px-4 ${newsCollapsed ? 'py-2' : 'py-3'} flex items-center justify-between gap-3`}>
                                     <div className="min-w-0">
                                         <div className="font-title font-bold text-[#922610] flex items-center gap-2">
-                                            <span>✨ 1.1.3v Alpha — Escudos, cards térmicos e Campanhas</span>
+                                            <span>✨ 1.1.9v Alpha — Bestiários, Dragonbane e temas</span>
                                             {newsCollapsed && <span className="hidden sm:inline text-[10px] font-body font-bold uppercase tracking-widest text-[#922610]/70">minimizado</span>}
                                         </div>
                                         {!newsCollapsed && (
                                             <div className="mt-1 space-y-2">
-                                                <div className="text-xs text-gray-700 space-y-1.5"><p>A <strong>1.1.3v Alpha</strong> facilita o trabalho do Mestre: <strong>escudos por sistema</strong>, consulta dos PDFs originais pelo Drive, melhorias nas fichas compartilhadas e temas iguais aos da Home.</p><p><strong>Cards de ameaças:</strong> PNG com margem completa e opção <strong>Térmica 80 mm ou 58 mm</strong>, em tira vertical. <strong>Rota Zero:</strong> fichas de funcionários e de ameaças/PNJs com card em PNG; as conquistas continuam restritas aos seus donos. <strong>Conta Lite:</strong> sincronização bidirecional de personagens e ameaças: salva, recebe mudanças de outros dispositivos e preserva exclusões entre aparelhos. A verificação é retomada ao voltar ao PJLite, sem apagar fichas remotas durante o login.</p><p><strong>Biblioteca:</strong> PDFs de campanha são compartilhados pelo Drive. Veja as explicações completas em <strong>Guias e Tutoriais</strong> e no Log de Atualizações.</p></div>
+                                                <div className="text-xs text-gray-700 space-y-1.5"><p><strong>1.1.9v Alpha:</strong> Dragonbane ganha ancestralidades, carga automática, grimório e bestiário revisado. D&D 5.5e recebe 330 perfis do SRD 5.2.1, com pesquisa por nome, tipo e ND.</p><p><strong>Fabula Ultima e Skyfall:</strong> catálogos pesquisáveis com modelos editáveis. <strong>Interface:</strong> contraste, espaçamento e guias atualizados. Os bestiários comerciais completos não estão incluídos; consulte os livros originais.</p></div>
                                                 <a href="https://t.me/boost/Baianoviado" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-xs font-bold text-sky-700 hover:text-sky-900 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-full px-3 py-1.5 shadow-sm transition-colors">
                                                     <span>✈</span> Acompanhe anúncios e próximas novidades no Telegram ↗
                                                 </a>
@@ -2289,7 +2291,7 @@ const { useState, useEffect, useRef } = React;
                                         )}
                                     </div>
                                     <div className="flex items-center gap-2 shrink-0">
-                                        {!newsCollapsed && <span className="hidden md:inline bg-[#922610] text-white px-3 py-1 rounded text-[10px] font-bold uppercase tracking-widest">1.1.3v • alpha</span>}
+                                        {!newsCollapsed && <span className="hidden md:inline bg-[#922610] text-white px-3 py-1 rounded text-[10px] font-bold uppercase tracking-widest">1.1.9v • alpha</span>}
                                         <button onClick={() => setNewsCollapsed(v => !v)} className="bg-white/80 hover:bg-white text-[#922610] border border-[#c46b58] rounded px-2.5 py-1 text-xs font-bold shadow-sm" title={newsCollapsed ? 'Expandir novidades' : 'Minimizar novidades'} aria-label={newsCollapsed ? 'Expandir novidades' : 'Minimizar novidades'}>
                                             {newsCollapsed ? '＋' : '−'}
                                         </button>
@@ -2714,7 +2716,7 @@ const { useState, useEffect, useRef } = React;
                                             <div><h3 className="font-title font-bold text-gray-700 border-b-2 border-gray-300 pb-1 mb-3">Ameaça / PNJ em Branco</h3>
                                                 <div onClick={() => loadTemplate(initialFabulaThreatData)} className="bg-white border-2 border-gray-300 hover:border-teal-700 rounded p-4 cursor-pointer flex items-center gap-4"><div className="w-12 h-12 bg-teal-800 text-white rounded flex items-center justify-center text-xl">👹</div><div><h3 className="font-bold text-sm">Novo NPC / Ameaça</h3><p className="text-xs text-gray-500">Crie soldados, elites, campeões ou vilões.</p></div></div>
                                             </div>
-                                            <div><h3 className="font-title font-bold text-gray-700 border-b-2 border-gray-300 pb-1 mb-3">Modelo de Bestiário</h3>{MODELOS_FABULA_AMEACA.map((m,i)=><div key={i} onClick={()=>loadTemplate(m)} className="bg-white border-2 border-teal-200 hover:border-teal-700 rounded p-3 cursor-pointer"><div className="font-bold text-teal-900">{m.nome}</div><div className="text-xs text-gray-500">Nível {m.nivel} • {m.patente} • {m.especie}</div></div>)}</div>
+                                            <div><h3 className="font-title font-bold text-gray-700 border-b-2 border-gray-300 pb-1 mb-3">Bestiário • modelos editáveis</h3><p className="text-xs mb-2">Consulte o bestiário oficial para outros perfis.</p><ThreatCatalog system="fabula" groups={[{title:'Modelos editáveis',items:MODELOS_FABULA_AMEACA}]} onSelect={loadTemplate}/></div>
                                         </>}
                                     </div>
                                 </div>
@@ -2809,14 +2811,10 @@ const { useState, useEffect, useRef } = React;
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <h3 className="font-title font-bold text-gray-700 border-b-2 border-gray-300 pb-1 mb-3">Modelos Prontos (SRD 5.2)</h3>
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                                        {MODELOS_DND_PC.map((modelo, idx) => (
-                                                            <div key={idx} onClick={() => loadTemplate(modelo)} className="border rounded p-3 cursor-pointer hover:shadow-md flex justify-between items-center bg-white border-orange-200">
-                                                                <div className="flex flex-col"><span className="text-[10px] font-bold uppercase text-orange-800">{modelo.bio.linhagem} {modelo.bio.classe}</span><span className="font-bold text-sm">{modelo.bio.nome}</span></div>
-                                                            </div>
-                                                        ))}
-                                                    </div>
+                                                    <h3 className="font-title font-bold text-gray-700 border-b-2 border-gray-300 pb-1 mb-3">Bestiário aberto • SRD 5.2.1</h3>
+                                                    <p className="text-xs mb-3">330 perfis editáveis. Nomes e ações podem estar em inglês. <a href="https://www.dndbeyond.com/srd" target="_blank" rel="noopener noreferrer" className="underline">Fonte oficial e licença CC BY 4.0</a>.</p>
+                                                    <ThreatCatalog system="dnd5e" groups={SRD521_MONSTER_GROUPS} onSelect={loadTemplate}/>
+                                                    <details className="mt-3"><summary className="text-xs font-bold cursor-pointer">Modelos legados (versões anteriores)</summary><ThreatCatalog system="dnd5e" groups={[{title:'Modelos legados',items:MODELOS_DND_AMEACA}]} onSelect={loadTemplate}/></details>
                                                 </div>
                                             </>
                                         ) : (
@@ -2949,7 +2947,7 @@ const { useState, useEffect, useRef } = React;
                             <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] p-4 transition-opacity">
                                 <div className="bg-white rounded-sm shadow-2xl w-full max-w-4xl border-2 border-gray-800 overflow-hidden animate-fade-in-up flex flex-col">
                                     <div className="bg-gray-800 text-white p-3 flex justify-between items-center shrink-0">
-                                        <div><h2 className="font-title font-bold text-lg uppercase">Guias e Tutoriais</h2><div className="text-[9px] text-gray-300 font-bold uppercase tracking-widest">PJ Lite 1.1.3v Alpha</div></div>
+                                        <div><h2 className="font-title font-bold text-lg uppercase">Guias e Tutoriais</h2><div className="text-[9px] text-gray-300 font-bold uppercase tracking-widest">PJ Lite 1.1.9v Alpha</div></div>
                                         <button onClick={() => setShowGuideModal(false)} className="text-gray-400 hover:text-white text-2xl font-bold px-2">&times;</button>
                                     </div>
                                     <div className="flex bg-gray-200 border-b border-gray-300 shrink-0 overflow-x-auto">
@@ -3003,7 +3001,7 @@ const { useState, useEffect, useRef } = React;
                                         {guideTab === 'jornadas' && (
                                             <div className="space-y-4">
                                                 <div className="rounded-lg bg-emerald-50 border border-emerald-300 p-4 text-xs space-y-2">
-                                                    <h3 className="font-bold text-emerald-900">🛡 Novidades do Mestre • 1.1.3v Alpha</h3>
+                                                    <h3 className="font-bold text-emerald-900">🛡 Novidades do Mestre • 1.1.9v Alpha</h3>
                                                     <p><strong>Escudo do Mestre:</strong> crie uma campanha e abra a aba Escudo. O sistema da mesa seleciona as referências do próprio RPG, inclusive quando ele usa um nome alternativo (como T20 ou Fábula Última). Abra as seções para consultar testes, condições, recuperação, combate e exploração; a primeira fica aberta para acesso rápido. O botão <strong>Abrir PDF no Drive</strong> leva ao escudo correspondente. O Escudo foi simplificado: sem quadros de rodada, personagens e dados, que ficam nas próprias abas da campanha. Sem PDF disponível, a tela identifica o resumo de apoio, sem misturar regras de outro RPG. Quando não há PDF do sistema, aparece um resumo de apoio identificado.</p>
                                                     <p><strong>Personagens e ameaças:</strong> sincronize a ficha na Conta Lite e vincule-a à campanha. Clique em sua miniatura para consultar atributos, recursos, habilidades e equipamento. Campos opcionais vazios não devem esconder os dados preenchidos em outra parte da ficha. O mestre só edita fichas de jogador se o dono conceder permissão; NPCs e ameaças ficam na aba exclusiva do mestre.</p>
                                                     <p><strong>Ameaças de Rota Zero:</strong> abra <strong>Criar Ameaça/PNJ → Rota Zero</strong>, selecione uma ficha em branco ou exemplo original e edite identidade, atributos, recursos, ataques, fraquezas e notas privadas. Salve, abra o card e baixe PNG normal ou térmico. O card não inclui notas privadas do mestre.</p>
@@ -3064,12 +3062,12 @@ const { useState, useEffect, useRef } = React;
                                         {guideTab === 'ameacas_db' && (
                                             <div className="space-y-5">
                                                 <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-xs space-y-2">
-                                                    <h3 className="font-bold text-amber-950">🖨 Cards de ameaças em PNG • 1.1.3v Alpha</h3>
+                                                    <h3 className="font-bold text-amber-950">🖨 Cards de ameaças em PNG • 1.1.9v Alpha</h3>
                                                     <p>Abra uma ameaça, clique em <strong>Ampliar card</strong>, escolha <strong>Card normal</strong>, <strong>Térmica 80 mm (576 px)</strong> ou <strong>Térmica 58 mm (384 px)</strong> e clique em <strong>Baixar PNG</strong>. A imagem é capturada fora da janela de prévia para não cortar nomes, estatísticas ou ataques.</p>
                                                     <p>Para impressoras térmicas, o PNG tem fundo branco, letras escuras e formato vertical contínuo. Imprima com largura real correspondente ao rolo, sem margens adicionais; o driver da impressora pode variar. Se a criatura tiver texto demais, divida a ficha para conservar a legibilidade.</p>
                                                 </div>
                                                 <div className="bg-gray-900 text-white rounded p-4">
-                                                    <h3 className="font-title font-bold text-base mb-1">Guia de Ameaças, PNJs e Bestiário</h3>
+                                                    <h3 className="font-title font-bold text-base mb-1">Guia de Ameaças, PNJs e Bestiário</h3><p className="text-xs mt-2">1. Abra Nova Ameaça e escolha o sistema. 2. Pesquise por nome e filtre tipo, nível/ND ou fonte. 3. Selecione um modelo, revise seus dados e salve uma cópia. 4. Abra o card para imprimir em PNG ou formato térmico. D&D: 330 perfis SRD 5.2.1; Fábula e Skyfall: modelos editáveis, não substituem os livros. Dragonbane: escolha ancestralidade na biblioteca para adicionar inatas; revise carga e feitiços preparados.</p>
                                                     <p className="text-xs text-gray-200">Esta aba reúne as ameaças e personagens do Mestre dos sistemas disponíveis. Dragonbane usa PNJs e monstros; D&D 5.5e usa blocos de estatísticas; Fabula Ultima usa Ameaças/PNJs; O Som das Seis usa PDJs. Escolha primeiro o sistema e depois preencha apenas o que realmente será consultado em mesa.</p>
                                                 </div>
 

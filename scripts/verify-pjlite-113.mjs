@@ -8,9 +8,9 @@ const shield=text('src/cloud/CampaignWorkspace.jsx'),component=text('src/cloud/G
 const modal=text('src/components/ThreatCardModal.jsx'),css=text('src/components/threat-card.css');
 const night=text('src/cloud/jornadas-night.css');
 assert.ok(home.includes("versao: '1.1.3v Alpha'"),'Registro de versão atual');
-assert.ok(home.includes('1.1.3v Alpha — Escudos, cards térmicos e Campanhas'),'Novidades do release');
-assert.ok(text('index.html').includes('1.1.3v Alpha'),'Metadados versão');
-assert.ok(text('.github/workflows/ci.yml').includes('PJ Lite 1.1.3v Alpha'),'Snapshot etiquetado 1.1.3');
+assert.ok(home.includes('1.1.9v Alpha — Bestiários, Dragonbane e temas'),'Novidades do release');
+assert.ok(text('index.html').includes('1.1.9v Alpha'),'Metadados versão');
+assert.ok(text('.github/workflows/ci.yml').includes('PJ Lite 1.1.9v Alpha'),'Snapshot etiquetado 1.1.3');
 for(const system of ['dragonbane','dnd5e','tormenta20','ordemParanormal','fabula','3det','rotaZero','skyfall','somdas6']){
  assert.ok(GM_SHIELDS[system],'Escudo faltando para '+system);
  assert.ok(GM_SHIELDS[system].groups.flatMap(g=>g.items).length>=2,'Escudo incompleto: '+system);
