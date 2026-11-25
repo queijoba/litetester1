@@ -2006,3 +2006,26 @@ body { background-color: #e5e7eb; }
 body.theme-dark .db-sheet .db-grimoire-controls{background:#20382d;color:#e6ddc8;border-color:#5e8272}
 body.theme-dark .db-sheet .db-grimoire-controls p{color:#ffd0b6}
 @media(max-width:640px){.db-library-dialog{max-height:95dvh}.db-library-body{grid-template-columns:1fr;grid-template-rows:minmax(110px,0.8fr) minmax(140px,1fr)}.db-library-results{border-right:0;border-bottom:1px solid #b5a684}.db-library-detail{padding:10px}.db-library-filters{padding:8px;gap:6px}.db-library-heading h2{font-size:18px}.db-library-kinds button{padding:5px 6px;font-size:11px}}
+
+/* Dragonbane: indicadores de carga, preparação e fichas bestiário. */
+.db-sheet .db-prepared-progress,.db-sheet .db-load-panel progress{display:block;width:100%;height:9px;accent-color:#28695d;margin:6px 0}
+.db-sheet .db-sync-innate{font-size:10px;padding:3px 7px;margin-top:5px}
+.db-sheet .db-load-panel{display:flex;flex-wrap:wrap;gap:12px;align-items:end;padding:12px;border:1px solid #a89873;background:#f1e8cf;color:#2e4639;border-radius:5px}
+.db-sheet .db-load-panel>div{flex:2 1 200px}.db-sheet .db-load-panel small{display:block;font-size:11px}
+.db-sheet .db-load-panel label,.db-sheet .db-load-item label{font-size:11px;font-weight:bold;display:grid;gap:4px;flex:1 1 100px}
+.db-sheet .db-load-panel input:not([type=checkbox]),.db-sheet .db-load-item input{width:100%;min-width:0;border:1px solid #ae9d7d;background:#fffbef;color:#302a20;padding:6px;border-radius:3px}
+.db-sheet .db-load-head{display:flex;justify-content:space-between;align-items:center;margin:12px 0 6px}
+.db-sheet .db-load-item{display:grid;grid-template-columns:minmax(0,1fr) 70px 85px 28px;align-items:end;gap:7px;padding:6px 0;border-bottom:1px dashed #b6a581}
+.db-sheet .db-load-item button{font-size:20px;color:#9a3d2e}
+.db-sheet .db-load-note{font-size:11px;line-height:1.5;margin:8px 0}
+.db-threat-sheet .db-threat-source{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:11px;color:#285e52;border-bottom:1px solid #ad9e7c;padding:8px 0;text-transform:uppercase;font-weight:800}
+.db-threat-sheet .db-threat-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.db-threat-sheet .db-threat-tabs button{flex:1;padding:9px;border:1px solid #a99b7b;color:#285e52;background:#f2e8cf;font-weight:800;font-size:12px;border-radius:4px 1px}
+.db-threat-sheet .db-threat-tabs button[aria-pressed=true]{background:#285e52;color:#fff9e8}
+.db-threat-sheet .db-threat-header{border-color:#285e52}
+.db-threat-sheet .db-threat-combat .bg-red-900,.db-threat-sheet .db-threat-combat .bg-blue-900{background:#285e52!important;color:#fff9e8!important}
+.db-threat-sheet .db-threat-combat .text-red-900,.db-threat-sheet .db-threat-combat .text-blue-900{color:#285e52}
+.db-threat-sheet .db-threat-combat .bg-white,.db-threat-sheet .db-threat-combat .bg-gray-50,.db-threat-sheet .db-threat-combat .bg-red-50,.db-threat-sheet .db-threat-combat .bg-blue-50{background:#f8f0dc!important}
+.db-threat-sheet .db-threat-notes{display:grid;gap:12px}.db-threat-sheet .db-threat-notes label{display:grid;gap:4px;font-size:12px;font-weight:bold}.db-threat-sheet .db-threat-notes input,.db-threat-sheet .db-threat-notes textarea{background:#fffaf0;color:#302a20;padding:8px;border:1px solid #ad9d7d;border-radius:3px;min-width:0;width:100%}
+body.theme-dark .db-sheet .db-load-panel{background:#20382d;color:#efe4cd;border-color:#5e8272}
+@media(max-width:600px){.db-sheet .db-load-item{grid-template-columns:minmax(0,1fr) 55px 65px 25px;gap:4px}.db-threat-sheet .db-threat-source{font-size:10px}}
