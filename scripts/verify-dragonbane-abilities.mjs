@@ -219,3 +219,9 @@ const duck=syncDragonbaneInnates(cat,'Marreco');assert.equal(duck.habilidadesFei
 assert.equal(syncDragonbaneInnates({...cat,habilidadesFeiticos:[{...cat.habilidadesFeiticos[0],desc:'Personalizada'}]},'Marreco').habilidadesFeiticos.length,3);
 assert.deepEqual(dragonbaneLoad({atributos:{for:{valor:13}},dragonbaneBackpack:true,dragonbaneRations:5,dragonbaneInventory:[{nome:'Corda',peso:2,quantidade:2}],dragonbaneLegacyWeight:1}),{base:9,limit:9,current:7,over:false});
 assert.ok(editor.includes('Feitiços')&&editor.includes('dbPreparedMax')&&editor.includes('db-load-panel')&&editor.includes('db-threat-tabs'));
+
+assert.equal(dragonbaneLoad({atributos:{for:{valor:10}},moedas:{ouro:50,prata:49,cobre:1}}).current,1);
+assert.equal(dragonbaneLoad({atributos:{for:{valor:10}},moedas:{ouro:50,prata:49,cobre:0}}).current,0);
+assert.equal(dragonbaneLoad({atributos:{for:{valor:10}},dragonbaneCarryingPerson:true}).over,true);
+assert.equal(dragonbaneLoad({atributos:{for:{valor:10}},status:{manterDerivados:true},derivados:{limiteSobrecarga:''}}).limit,5);
+assert.ok(editor.includes('onSelectAncestry')&&editor.includes('dragonbaneCarryingPerson'));

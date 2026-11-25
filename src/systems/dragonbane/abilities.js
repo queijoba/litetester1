@@ -155,8 +155,9 @@ export function syncDragonbaneInnates(data,ancestry=data?.bio?.ancestralidade){
 export function dragonbaneLoad(data){
  const base=Math.ceil(Math.max(0,Number(data?.atributos?.for?.valor)||0)/2)+(data?.dragonbaneBackpack?2:0);
  const rows=Array.isArray(data?.dragonbaneInventory)?data.dragonbaneInventory:[];
- const current=rows.reduce((sum,item)=>sum+(item?.nome?.trim()?Math.max(0,Number(item.quantidade)||0)*Math.max(0,Number(item.peso)||0):0),0)+Math.max(0,Number(data?.dragonbaneLegacyWeight)||0)+Math.ceil(Math.max(0,Number(data?.dragonbaneRations)||0)/4);
- const manual=data?.status?.manterDerivados?Number(data?.derivados?.limiteSobrecarga):base;
+ const coinWeight=Math.floor(['ouro','prata','cobre'].reduce((n,k)=>n+Math.max(0,Math.floor(Number(data?.moedas?.[k])||0)),0)/100);
+ const current=coinWeight+rows.reduce((sum,item)=>sum+(item?.nome?.trim()?Math.max(0,Number(item.quantidade)||0)*Math.max(0,Number(item.peso)||0):0),0)+Math.max(0,Number(data?.dragonbaneLegacyWeight)||0)+Math.ceil(Math.max(0,Number(data?.dragonbaneRations)||0)/4);
+ const manual=data?.status?.manterDerivados&&data?.derivados?.limiteSobrecarga!==''&&data?.derivados?.limiteSobrecarga!=null?Number(data.derivados.limiteSobrecarga):base;
  const limit=Number.isFinite(manual)?manual:base;
- return {base,limit,current,over:current>limit};
+ return {base,limit,current,over:current>limit||!!data?.dragonbaneCarryingPerson};
 }

@@ -2029,3 +2029,5 @@ body.theme-dark .db-sheet .db-grimoire-controls p{color:#ffd0b6}
 .db-threat-sheet .db-threat-notes{display:grid;gap:12px}.db-threat-sheet .db-threat-notes label{display:grid;gap:4px;font-size:12px;font-weight:bold}.db-threat-sheet .db-threat-notes input,.db-threat-sheet .db-threat-notes textarea{background:#fffaf0;color:#302a20;padding:8px;border:1px solid #ad9d7d;border-radius:3px;min-width:0;width:100%}
 body.theme-dark .db-sheet .db-load-panel{background:#20382d;color:#efe4cd;border-color:#5e8272}
 @media(max-width:600px){.db-sheet .db-load-item{grid-template-columns:minmax(0,1fr) 55px 65px 25px;gap:4px}.db-threat-sheet .db-threat-source{font-size:10px}}
+
+.db-sheet .db-load-panel>small{flex-basis:100%;font-size:11px;line-height:1.4}.db-sheet .db-sync-innate{margin:4px 4px 0 0}
