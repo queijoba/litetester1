@@ -962,3 +962,41 @@ body.theme-ordem .ordem-sheet .ordem-card,body.theme-dark .ordem-sheet .ordem-ca
   grid-template-columns:repeat(2,minmax(0,1fr))!important;
  }
 }
+
+
+/* Bestiário Ordo Realitas — somente modal de ameaças, inclusive no tema escuro. */
+.ordem-threat-catalog-modal{color-scheme:light;background:#f4ecd9!important;color:#282219!important;border-color:#78664f!important;font-family:system-ui,sans-serif;isolation:isolate}
+.ordem-threat-catalog-modal .ordem-catalog-modal-header{background:#e7d9bd!important;color:#2b211a!important;border-bottom:3px double #927d60!important}
+.ordem-threat-catalog-modal .ordem-catalog-modal-header h2{font-family:Georgia,serif;color:#30231c!important;letter-spacing:.035em}
+.ordem-threat-catalog-modal .ordem-catalog-modal-header p{color:#68433c!important}
+.ordem-threat-catalog-modal .ordem-catalog-modal-header button{color:#392b24!important;background:transparent!important}
+.ordem-threat-catalog-modal .ordem-catalog-blank{background:#fff9eb!important;color:#352820!important;border:1px dashed #9b8062!important}
+.ordem-threat-catalog-modal .ordem-catalog-blank:hover{background:#efe2c8!important;border-color:#873f38!important}
+.ordem-threat-catalog{color:#29231b;min-width:0}
+.ordem-threat-catalog>div:first-child{background:#fffaf0!important;border:1px solid #bca98d!important}
+.ordem-threat-catalog label,.ordem-threat-catalog h3,.ordem-threat-catalog small,.ordem-threat-catalog p{color:#40372b!important}
+.ordem-threat-catalog :is(input,select){background:#fffdf7!important;color:#27221c!important;border:1px solid #a69882!important}
+.ordem-threat-catalog input::placeholder{color:#655d51!important}
+.ordem-threat-catalog>section>div:first-child{background:#e5d8bd!important;border:1px solid #b6a284!important;padding:7px 10px!important;border-left:4px solid #83534a!important}
+.ordem-threat-catalog h3{display:flex;align-items:center;gap:7px;color:#33261e!important;font-family:Georgia,serif;font-size:14px}
+.ordem-threat-catalog>section>div:first-child small{white-space:nowrap;font-size:11px;font-weight:600}
+.ordem-threat-catalog>section button{background:#fffaf0!important;color:#2b241c!important;border:1px solid #baaa90!important;padding:11px!important;min-width:0}
+.ordem-threat-catalog>section button:hover{background:#f7e9d0!important;border-color:#8d4f43!important;box-shadow:0 2px 6px #45302020}
+.ordem-threat-catalog-modal :is(button,input,select):focus-visible{outline:2px solid #893b32!important;outline-offset:2px}
+.ordem-catalog-card-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.ordem-catalog-card-heading strong{font-family:Georgia,serif;font-size:15px;line-height:1.25;overflow-wrap:anywhere;color:#2b211a!important}
+.ordem-catalog-vd{display:inline-flex;align-items:center;gap:4px;padding:3px 7px;border:1px solid #937b5f;background:#e8dbc2;color:#32251b;font-size:10px;font-weight:800;white-space:nowrap}
+.ordem-catalog-vd b{font-size:13px}
+.ordem-catalog-tags{display:flex;gap:4px;flex-wrap:wrap;align-items:center;margin:7px 0}
+.ordem-catalog-icon{display:inline-block;flex:none;vertical-align:middle}
+.ordem-catalog-tag{display:inline-flex;align-items:center;gap:4px;font:700 11px/1.3 system-ui,sans-serif;padding:3px 6px;border:1px solid currentColor;border-radius:3px;background:#f0e7d7;color:#4c4234}
+.ordem-catalog-tag .ordem-catalog-icon{width:15px;height:15px}
+.ordem-tag-sangue,.ordem-icon-sangue{color:#982b35}.ordem-tag-sangue{background:#f8e5e1}
+.ordem-tag-morte,.ordem-icon-morte{color:#343638}.ordem-tag-morte{background:#e7e5df}
+.ordem-tag-conhecimento,.ordem-icon-conhecimento{color:#795600}.ordem-tag-conhecimento{background:#f8ecc9}
+.ordem-tag-energia,.ordem-icon-energia{color:#6b348f}.ordem-tag-energia{background:#f0e5f6}
+.ordem-tag-medo,.ordem-icon-medo{color:#365d68}.ordem-tag-medo{background:#e4eef0}
+.ordem-tag-nenhum,.ordem-tag-outros{background:#eee9dd;color:#51483a}
+.ordem-catalog-tag[data-kind="type"]{background:#ebe1ce;color:#4d4131;border-color:#ad9c80}
+.ordem-threat-catalog>section button>p{font-size:11px;line-height:1.4}
+@media(max-width:520px){.ordem-threat-catalog-modal{max-height:94vh!important}.ordem-catalog-card-heading strong{font-size:14px}.ordem-catalog-tag{font-size:10px}.ordem-threat-catalog>section>div:first-child{padding:6px 8px!important}}

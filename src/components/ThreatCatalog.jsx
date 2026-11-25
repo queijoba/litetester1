@@ -3,6 +3,35 @@ import * as React from 'react';
 // Seleciona modelos sem copiar fichas para a Conta Lite automaticamente.
 // O fluxo "Escolher modelo -> editar -> Salvar" continua sob controle do usuário.
 const fold=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+
+// Pictogramas originais do PJLite: acompanham rótulos, sem depender de cor ou emoji.
+const ORDEM_ICONS={
+ sangue:'M12 2C9 7 5 11 5 15a7 7 0 0 0 14 0c0-4-4-8-7-13Z M8 15c0 2 1 3 3 4',
+ morte:'M20 12a8 8 0 1 0-8 8 6 6 0 1 0-6-6 4 4 0 1 0 4-4 2 2 0 1 0-2 2',
+ conhecimento:'M2 12s4-6 10-6 10 6 10 6-4 6-10 6S2 12 2 12Z M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z',
+ energia:'M13 2 4 13h7l-1 9 10-13h-8l1-7Z',
+ medo:'M12 3 22 20H2L12 3Z M12 9v5 M12 17h.01',
+ nenhum:'M3 3h18v18H3z M8 12h8',
+ criatura:'M3 4l5 5 4-2 4 2 5-5-2 11-7 6-7-6L3 4Z M8 13h.01 M16 13h.01 M10 17h4',
+ pessoa:'M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z M4 21v-3a8 8 0 0 1 16 0v3',
+ animal:'M12 12c-3 0-7 4-7 6s2 3 4 2l3-1 3 1c2 1 4 0 4-2s-4-6-7-6Z M5 6a2 3 0 1 0 0 6 2 3 0 1 0 0-6Z M10 3a2 3 0 1 0 0 6 2 3 0 1 0 0-6Z M16 3a2 3 0 1 0 0 6 2 3 0 1 0 0-6Z M21 6a2 3 0 1 0 0 6 2 3 0 1 0 0-6Z',
+ reliquia:'M12 2 21 12 12 22 3 12 12 2Z M12 7 16 12 12 17 8 12 12 7Z',
+ outros:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z M12 8v5 M12 16h.01'
+};
+const iconKey=value=>{const k=fold(value).trim();return k==='humano'||k==='npc'||k==='pnj'?'pessoa':k.startsWith('animal')?'animal':Object.hasOwn(ORDEM_ICONS,k)?k:'outros';};
+const ordemElements=item=>String(item.elemento||'').split('/').map(x=>x.trim()).filter(Boolean);
+function OrdemIcon({value}){
+ const key=iconKey(value);
+ return <svg className={'ordem-catalog-icon ordem-icon-'+key} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false"><path d={ORDEM_ICONS[key]}/></svg>;
+}
+function OrdemTag({value,kind='element'}){
+ return <span className={'ordem-catalog-tag ordem-tag-'+iconKey(value)} data-kind={kind}><OrdemIcon value={value}/>{value}</span>;
+}
+function OrdemGroupIcon({title}){
+ const key=title.startsWith('Elemento · ')?title.split(' · ')[1]:title.startsWith('Realidade')?'Nenhum':'Outros';
+ return <OrdemIcon value={key}/>;
+}
+
 export default function ThreatCatalog({groups,onSelect,system='3det'}){
  const [query,setQuery]=React.useState('');
  const [type,setType]=React.useState('todos');
@@ -34,7 +63,7 @@ export default function ThreatCatalog({groups,onSelect,system='3det'}){
   return {...group,items};
  }).filter(group=>group.items.length);
  const dark=system==='rotaZero';
- return <div className="space-y-3">
+ return <div className={isOrdem?'space-y-3 ordem-threat-catalog':'space-y-3'}>
   <div className={dark?'rounded-md border border-[#9ca8a0] bg-[#f2f0e9] p-3':'rounded-md border border-amber-200 bg-amber-50 p-3'}>
    <label className="block text-xs font-bold text-zinc-800" htmlFor={'threat-search-'+system}>
     Pesquisar modelos ({count})
@@ -76,14 +105,16 @@ export default function ThreatCatalog({groups,onSelect,system='3det'}){
   </div>
   {filtered.map(group=><section key={group.title}>
    <div className="mb-2 flex items-baseline justify-between gap-2 border-b border-zinc-300 pb-1">
-    <h3 className="text-sm font-black text-zinc-900">{group.title}</h3>
+    <h3 className="text-sm font-black text-zinc-900">{isOrdem&&<OrdemGroupIcon title={group.title}/>}<span>{group.title}</span></h3>
     <small className="text-xs text-zinc-700">{group.items.length} modelo(s)</small>
    </div>
    <div className="grid gap-2 sm:grid-cols-2">{group.items.map((modelo,idx)=>
     <button key={modelo.nome+'-'+idx} type="button" onClick={()=>onSelect(modelo)}
      className={'rounded border-2 bg-white p-3 text-left transition hover:shadow-md '+(dark?'border-[#a5aca5] hover:border-[#42594d]':'border-amber-100 hover:border-amber-500')}>
-     <strong className="block text-sm font-black text-zinc-950">{modelo.nome}</strong>
-     <span className="text-xs text-zinc-700">{modelo.categoria}{modelo.papel?' · '+modelo.papel:''}{Number.isFinite(modelo.pontos)?' · '+modelo.pontos+' pts':''}{isOrdem?' · '+(modelo.elemento||'Não especificado')+' · VD '+modelo.vd:''}</span>
+     {isOrdem?<><div className="ordem-catalog-card-heading"><strong>{modelo.nome}</strong><span className="ordem-catalog-vd">VD <b>{modelo.vd}</b></span></div>
+      <div className="ordem-catalog-tags"><OrdemTag kind="type" value={modelo.categoria||'Outros'}/>{(ordemElements(modelo).length?ordemElements(modelo):['Não especificado']).map(element=><OrdemTag key={element} value={element==='Nenhum'?'Nenhum':element}/>)}</div></>:<>
+      <strong className="block text-sm font-black text-zinc-950">{modelo.nome}</strong>
+      <span className="text-xs text-zinc-700">{modelo.categoria}{modelo.papel?' · '+modelo.papel:''}{Number.isFinite(modelo.pontos)?' · '+modelo.pontos+' pts':''}</span></>}
      <p className="mt-1 line-clamp-2 text-xs text-zinc-700">{modelo.descricao||modelo.conceito||'Modelo personalizável para a mesa.'}</p>
      {modelo.fonte&&<small className="mt-1 block text-xs text-zinc-600">{modelo.fonte}{modelo.pagina?' · p. '+modelo.pagina:''}</small>}
      {modelo.grupo&&<small className="block text-xs text-zinc-600">{modelo.grupo}</small>}
