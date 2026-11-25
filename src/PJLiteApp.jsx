@@ -1,6 +1,8 @@
 import {orderedDragonbaneAttributes} from './systems/dragonbane/attributes.js';
 import DndCharacterEditor from './systems/dnd5e/components/CharacterEditor.jsx';
 import DndLibraryModal from './components/DndLibraryModal.jsx';
+import LiteLibraryHub from './components/LiteLibraryHub.jsx';
+import {insertLibraryItem,updateLibraryItem} from './components/itemLibraryData.js';
 import OrdemLibraryModal from './systems/ordemParanormal/OrdemLibraryModal.jsx';
 import SkyfallLibraryModal from './systems/skyfall/SkyfallLibraryModal.jsx';
 import FabulaLibraryModal from './systems/fabulaUltima/FabulaLibraryModal.jsx';
@@ -73,6 +75,7 @@ const { useState, useEffect, useRef } = React;
         const SCHEMA_VERSION = 6;
 
         const UPDATE_LOG = [
+            { versao: '1.1.10v Alpha • teste', descricao: 'Wiki por sistema, biblioteca de itens, modelos pessoais, melhorias e maldições, cards de itens e habilidades em PNG e térmico. Integração com inventários nativos dos oito sistemas.' },
             { versao: '1.1.9v Alpha', descricao: 'Dragonbane: ancestralidades com inatas automáticas, carga, grimório e bestiário ampliados. D&D 5.5e: 330 perfis do SRD 5.2.1 com pesquisa, categorias e ND. Fabula Ultima e Skyfall: busca e 14 exemplos originais editáveis. Temas, guias e tutoriais revisados. Fichas mecânicas de referência dos três livros, com páginas e importação particular de fichas completas.' },
             { versao: '1.1.3v Alpha', descricao: 'Escudo do Mestre com referências ampliadas por sistema, acesso aos PDFs no Drive e correção de nomes alternativos de sistema; minifichas de Campanhas corrigidas, mesmo quando campos opcionais estão vazios; cards de ameaças PNG sem cortes e modos térmicos 58/80 mm; ficha Rota Zero aberta a todos sem liberar a conquista secreta; temas sincronizados entre Home e Campanhas, guia e interface revisados; ajuste posterior: Escudo sem contadores/rolagem duplicados, ameaças de Rota Zero com editor e cards PNG, correção de exclusões persistentes na Conta Lite; revisão da sincronização bidirecional de todas as fichas, comparando versões, retomando após renovação de sessão e protegendo exclusões entre dispositivos. Novo catálogo de ameaças: mini-bestiário e NPCs do Rota Zero v0.5, fichas de referência do Manual 3DeT Victory e filtros pesquisáveis, sem ativar Tormenta20. Som das Seis: oito PDJs e doze animais do livro; Dragonbane: 63 criaturas do Bestiário com PNJs e tabelas D6, selecionáveis nos catálogos.' },
             { versao: '1.1.0v Alpha', descricao: 'Jornadas se tornou uma área independente da Home, com retorno visível, criação de campanha e orientação para iniciantes. O chat privado das campanhas ganhou uma aba própria na Conta Lite. A barra clássica de novidades foi preservada, e o Log de Atualizações continua em Sobre o Projeto. Conquistas ON/OFF permanece disponível na Conta Lite.' },
@@ -1260,6 +1263,8 @@ const { useState, useEffect, useRef } = React;
             const [savedChars, setSavedChars] = useState(getSavedCharacters());
             const [savedThreats, setSavedThreats] = useState(getSavedThreats());
             const [data, setData] = useState(initialData);
+            const [liteHubOpen,setLiteHubOpen]=useState(false);
+            const applyLiteItem=item=>{const id=globalThis.crypto?.randomUUID?.()||Date.now()+'-'+Math.random().toString(36).slice(2);const next=item.origem==='Ficha'?updateLibraryItem(data,item,id):insertLibraryItem(data,item,id);setData(next);};
             const [cloudEditing,setCloudEditing] = useState(null);
             const [cloudEditorLoading,setCloudEditorLoading] = useState(false);
             const cloudLastSavedRef=useRef('');
@@ -2274,17 +2279,19 @@ const { useState, useEffect, useRef } = React;
                                 {journeysSignedIn&&<a href="/?jornadas=1" target="_blank" rel="noopener noreferrer" className="pjlite-journeys-home-link" title="Abrir suas campanhas — disponível para contas conectadas">
                                     🗂 Campanha
                                 </a>}
+                                <button type="button" onClick={()=>setLiteHubOpen(true)} className="pjlite-journeys-home-link" title="Wiki de itens, habilidades e ameaças">📖 Wiki</button>
+                                <LiteLibraryHub open={liteHubOpen} onClose={()=>setLiteHubOpen(false)}/>
                             </div>
                             <div className="mb-6 rounded border-2 border-[#922610] bg-[#fdf1dc] shadow-sm overflow-hidden">
                                 <div className={`px-4 ${newsCollapsed ? 'py-2' : 'py-3'} flex items-center justify-between gap-3`}>
                                     <div className="min-w-0">
                                         <div className="font-title font-bold text-[#922610] flex items-center gap-2">
-                                            <span>✨ 1.1.9v Alpha — Bestiários, Dragonbane e temas</span>
+                                            <span>✨ 1.1.10v Alpha • Teste — Wiki, equipamentos e cards</span>
                                             {newsCollapsed && <span className="hidden sm:inline text-[10px] font-body font-bold uppercase tracking-widest text-[#922610]/70">minimizado</span>}
                                         </div>
                                         {!newsCollapsed && (
                                             <div className="mt-1 space-y-2">
-                                                <div className="text-xs text-gray-700 space-y-1.5"><p><strong>1.1.9v Alpha:</strong> Dragonbane ganha ancestralidades, carga automática, grimório e bestiário revisado. D&D 5.5e recebe 330 perfis do SRD 5.2.1, com pesquisa por nome, tipo e ND.</p><p><strong>Fabula Ultima e Skyfall:</strong> catálogos pesquisáveis com 14 exemplos originais editáveis. <strong>Interface:</strong> contraste, espaçamento e guias atualizados. Novos modelos mecânicos editáveis dos livros, com referência de página e importação particular. Revise efeitos e edições antes de jogar.</p></div>
+                                                <div className="text-xs text-gray-700 space-y-1.5"><p><strong>1.1.10v Alpha • Teste:</strong> biblioteca de itens nos oito sistemas, modelos pessoais, melhorias e maldições. A Wiki reúne itens, habilidades e ameaças; cards em PNG normal e térmico.</p></div>
                                                 <a href="https://t.me/boost/Baianoviado" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-xs font-bold text-sky-700 hover:text-sky-900 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-full px-3 py-1.5 shadow-sm transition-colors">
                                                     <span>✈</span> Acompanhe anúncios e próximas novidades no Telegram ↗
                                                 </a>
@@ -2292,7 +2299,7 @@ const { useState, useEffect, useRef } = React;
                                         )}
                                     </div>
                                     <div className="flex items-center gap-2 shrink-0">
-                                        {!newsCollapsed && <span className="hidden md:inline bg-[#922610] text-white px-3 py-1 rounded text-[10px] font-bold uppercase tracking-widest">1.1.9v • alpha</span>}
+                                        {!newsCollapsed && <span className="hidden md:inline bg-[#922610] text-white px-3 py-1 rounded text-[10px] font-bold uppercase tracking-widest">1.1.10v • teste</span>}
                                         <button onClick={() => setNewsCollapsed(v => !v)} className="bg-white/80 hover:bg-white text-[#922610] border border-[#c46b58] rounded px-2.5 py-1 text-xs font-bold shadow-sm" title={newsCollapsed ? 'Expandir novidades' : 'Minimizar novidades'} aria-label={newsCollapsed ? 'Expandir novidades' : 'Minimizar novidades'}>
                                             {newsCollapsed ? '＋' : '−'}
                                         </button>
@@ -2983,7 +2990,7 @@ const { useState, useEffect, useRef } = React;
                                                         <div><strong>Novo Personagem:</strong> cria uma nova ficha.</div><div><strong>Temas:</strong> muda somente a aparência do PJ Lite.</div>
                                                         <div><strong>Colar Código:</strong> importa uma ficha compartilhada como texto.</div><div><strong>ZIP/JSON:</strong> importa backups em arquivo.</div>
                                                         <div><strong>★ Favorito:</strong> facilita encontrar fichas importantes.</div><div><strong>⚙ Filtros:</strong> filtra por sistema e muda a ordenação.</div>
-                                                        <div><strong>💬 Ficha Chat:</strong> copia a ficha em um formato legível.</div><div><strong>🃏 Card de ameaça:</strong> prévia e exportação PNG para compartilhar sem PDF.</div><div><strong>🧭 Jornadas:</strong> campanhas, iniciativa, chat e fichas pelo grupo DM.</div><div><strong>🕘 Histórico:</strong> recupera versões salvas anteriormente.</div>
+                                                        <div><strong>📖 Wiki:</strong> consulte itens, habilidades e ameaças sem abrir ficha. Na ficha use 🎒 Itens para inserir modelos, editar melhorias e maldições. Cards exportam PNG normal e térmico (58/80 mm).</div><div><strong>💬 Ficha Chat:</strong> copia a ficha em um formato legível.</div><div><strong>🃏 Card de ameaça:</strong> prévia e exportação PNG para compartilhar sem PDF.</div><div><strong>🧭 Jornadas:</strong> campanhas, iniciativa, chat e fichas pelo grupo DM.</div><div><strong>🕘 Histórico:</strong> recupera versões salvas anteriormente.</div>
                                                     </div>
                                                 </div>
                                                 <div className="bg-sky-50 border border-sky-200 rounded-lg p-4"><strong className="text-sky-900">Dica para iniciantes:</strong><p className="text-xs mt-1">Se surgir um aviso de <strong>Revisão rápida</strong>, ele é apenas um lembrete de campos importantes que talvez tenham ficado vazios. Você ainda pode continuar usando a ficha normalmente.</p></div>
@@ -3637,6 +3644,7 @@ const { useState, useEffect, useRef } = React;
                               </select>}
                               {!data.meta?.campaignId&&<input value={data.meta?.campanha || ''} onChange={e=>updateField('meta.campanha', e.target.value)} placeholder="Campanha" className="w-28 md:w-36 px-2 py-1 rounded text-xs text-gray-900 bg-white/90 border border-white/30" title="Campanha / pasta desta ficha" />}
                             </div>
+                            {data.type==='pc'&&<button type="button" onClick={()=>setLiteHubOpen(true)} className="pjlite-toolbar-library" title="Biblioteca de itens e cards" aria-label="Biblioteca de itens e cards">🎒 Itens</button>}
                             {cloudEditing&&<span className="text-[11px] rounded bg-violet-900 px-2 py-1 text-white font-bold">☁ Editando ficha da campanha</span>}
                             {saveStatus && <span className={`text-[10px] font-bold px-2 py-1 rounded ${saveStatus==='error'?'bg-red-900':saveStatus==='saving'?'bg-amber-700':'bg-black/30'}`}>{saveStatus==='pending'?'Alterado…':saveStatus==='saving'?'Salvando…':saveStatus==='saved'?'✓ Salvo':'Erro ao salvar'}</span>}
                             {['somdas6','3det'].includes(data.system) && data.type === 'pc' && <button type="button" onClick={()=>setOtherLibraryOpen(true)}
@@ -3710,6 +3718,7 @@ const { useState, useEffect, useRef } = React;
                         onClose={()=>setDndLibraryOpen(false)}
                     />}
                     {renderHistoryModal()}
+                    {data.type==='pc'&&<LiteLibraryHub open={liteHubOpen} data={data} onClose={()=>setLiteHubOpen(false)} onApply={applyLiteItem}/>}
                         {chatModal.isOpen && ReactDOM.createPortal(
                             <div className="fixed inset-0 bg-black/60 z-[320] flex items-center justify-center p-4 no-print">
                                 <div className="bg-white text-gray-900 rounded-lg shadow-2xl border-2 border-gray-700 w-full max-w-md overflow-hidden">
