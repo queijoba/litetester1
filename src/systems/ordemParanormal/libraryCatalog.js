@@ -1,3 +1,4 @@
+import {AS02_PLAYER_ENTRIES} from './as02PlayerIndex.js';
 import BASIC_RITUALS from './basicRitualIndex.js';
 import SAH_RITUALS from './sahRitualIndex.js';
 import AS04_PLAYERS from './as04PlayerIndex.js';
@@ -12,7 +13,8 @@ export const ORDEM_LIBRARY_CATALOG=[
  ...SAH_RITUALS,
  ...AS04_PLAYERS,
  ...AS_COMPLEMENTO.map(reviewAS03Entry),
- ...AS03_NEW_LIBRARY_ENTRIES
+ ...AS03_NEW_LIBRARY_ENTRIES,
+ ...AS02_PLAYER_ENTRIES
 ];
 export const ORDEM_LIBRARY_COUNTS=ORDEM_LIBRARY_CATALOG.reduce((counts,entry)=>{
  counts[entry.tipo]=(counts[entry.tipo]||0)+1;

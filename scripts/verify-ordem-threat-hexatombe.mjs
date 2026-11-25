@@ -25,8 +25,8 @@ assert.ok(threat.includes('ordem-threat-operational-grid')&&threat.includes("upd
 assert.ok(threat.includes('HEXATOMBE · PARTE 1')&&threat.includes('HEXATOMBE · PARTE 2'),'Avisos de fonte e limites do acervo');
 assert.ok(css.includes('.ordem-threat-operational-grid'),'Recursos e perícias em colunas');
 assert.ok(!threat.includes('Folha 1')&&!threat.includes('Folha 2'),'Não criar páginas duplicadas na ameaça');
-assert.equal(ORDEM_LIBRARY_CATALOG.length,260);
-assert.equal(ORDEM_LIBRARY_COUNTS.ritual,103);
+assert.equal(ORDEM_LIBRARY_CATALOG.length,293);
+assert.equal(ORDEM_LIBRARY_COUNTS.ritual,107);
 assert.equal(AS03_NEW_LIBRARY_ENTRIES.length,7,'Uma opção geral e seis poderes de sacrifício');
 const idx=new Map(ORDEM_LIBRARY_CATALOG.map(x=>[x.id,x]));
 assert.equal(idx.size,ORDEM_LIBRARY_CATALOG.length,'IDs de biblioteca devem permanecer exclusivos');
@@ -37,7 +37,7 @@ assert.deepEqual(trail.progressao.map(x=>x.nex),[10,40,65,99]);
 assert.equal(trail.classe,'Geral','Trilha geral oficial admite as 3 classes');
 assert.ok(ORDEM_LIBRARY_CATALOG.some(x=>x.nome==='Conhecimento de Direção Precognitiva'&&x.pagina==='108'));
 assert.ok(modal.includes('archive03Reference')&&modal.includes('Consultar Hexatombe Parte 2'));
-assert.ok(modal.includes('material parcial')&&modal.includes('Não localizei um PDF de regras completo do Arquivos Secretos #02'));
+assert.ok(modal.includes('Hexatombe — Parte 1 (PDF v1.1)')&&!modal.includes('Não localizei um PDF de regras completo'));
 assert.equal(AS03_HEXATOMBE_THREAT_MODELS.length,18,'Todos os 18 blocos Pessoa do Hexatombe Parte 2');
 assert.equal(new Set(AS03_HEXATOMBE_THREAT_MODELS.map(x=>x.nome)).size,18,'Personagens sem duplicatas');
 for(const m of AS03_HEXATOMBE_THREAT_MODELS){
@@ -68,4 +68,4 @@ assert.equal(restored.notas,original.notas);
 assert.equal(restored.status.pvAtual,6);
 const info=buildThreatCardData({...restored,fonte:'Arquivos Secretos #03',pagina:'68',nome:'Ameaça de teste'});
 assert.ok(info.details.some(([label,value])=>label==='Fonte'&&value.includes('p. 68')),'Card de impressão também referencia página');
-console.log('✓ Ordem Paranormal: dossiê de ameaças, Hexatombe #02 parcial, suplemento #03, modelos, fichas legadas e impressão.');
+console.log('✓ Ordem Paranormal: dossiê de ameaças, Hexatombe #02 revisado, suplemento #03, modelos, fichas legadas e impressão.');

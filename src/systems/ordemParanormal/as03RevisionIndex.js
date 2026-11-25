@@ -26,7 +26,7 @@ export const AS03_NEW_LIBRARY_ENTRIES=[
   'Poder excepcional do sacrifício do Prazer que altera sensações e instintos de autopreservação de um alvo. Restrito ao ritual Hexatombe.',
   'Ser o sacrifício do Prazer — regra especial de campanha',{classe:'Geral',contextoEspecial:'Sacrifício de Hexatombe'}),
  base('desejo','Fruto da Ambição','habilidade','110',
-  'Poder excepcional do sacrifício do Desejo ligado a uma habilidade ou ritual escolhido. O texto remete a As Máscaras do pacote #02, que não está integralmente disponível nos arquivos de regras deste Drive.',
+  'Poder excepcional do sacrifício do Desejo ligado a uma habilidade ou ritual escolhido. O texto remete a As Máscaras do pacote #02 v1.1, p. 97, agora disponível para consulta.',
   'Ser o sacrifício do Desejo — regra especial de campanha',{classe:'Geral',contextoEspecial:'Sacrifício de Hexatombe'}),
  base('rancor','Ódio Suprimido','habilidade','110',
   'Poder excepcional do sacrifício do Rancor que libera um ataque de fúria em área, com consequências de exaustão. Consulte os testes no livro.',
