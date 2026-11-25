@@ -1,14 +1,14 @@
 import * as React from 'react';
-import {DRAGONBANE_LIBRARY,DRAGONBANE_MAGIC_SCHOOLS,DRAGONBANE_SPELL_GRADES,dragonbaneLibraryHas,dragonbaneAncestryKey} from '../abilities.js';
+import {DRAGONBANE_LIBRARY,DRAGONBANE_MAGIC_SCHOOLS,DRAGONBANE_SPELL_GRADES,dragonbaneLibraryHas,dragonbaneAncestryKey,DRAGONBANE_ANCESTRIES} from '../abilities.js';
 const LABELS={inata:'Inata',heroica:'Heroica',magia:'Feitiço',truque:'Truque'};
-const ANCESTRIES={humano:'Humano',anao:'Anão',elfo:'Elfo',halfling:'Halfling',lupino:'Lupino',marreco:'Marreco'};
+const ANCESTRIES=Object.fromEntries(DRAGONBANE_ANCESTRIES);
 const fold=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 export default function DragonbaneLibrary({data,initialFilter,onClose,onAdd}){
  const [kind,setKind]=React.useState(initialFilter?.kind||'todos');
  const [school,setSchool]=React.useState(initialFilter?.school||'Todas');
  const [grade,setGrade]=React.useState(initialFilter?.grade?String(initialFilter.grade):'todos');
  const [query,setQuery]=React.useState('');
- const [ancestry,setAncestry]=React.useState('Todas');
+ const [ancestry,setAncestry]=React.useState(dragonbaneAncestryKey(data.bio?.ancestralidade)||'Todas');
  const [selected,setSelected]=React.useState('');
  const [hideAdded,setHideAdded]=React.useState(false);
  const searchRef=React.useRef(null);
