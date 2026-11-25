@@ -1,10 +1,11 @@
+import {DRAGONBANE_BOOK,DRAGONBANE_HEROIC_LIBRARY,DRAGONBANE_TRICK_LIBRARY,DRAGONBANE_SPELL_LIBRARY} from './libraryCatalog.js';
 // Dragonbane (Livro de Regras v1.1): organização original do PJLite.
 // Os modelos anteriores permanecem na lista habilidadesFeiticos: não há migração destrutiva.
 export const DRAGONBANE_ABILITY_KINDS=[
  {id:'inata',nome:'Inatas da Ancestralidade',caption:'Habilidades próprias de sua ancestralidade • Livro de Regras, pp. 9–13',short:'Inata'},
  {id:'heroica',nome:'Habilidades Heroicas',caption:'Habilidade inicial da profissão e avanços do personagem • pp. 26, 35–39',short:'Heroica'},
- {id:'magia',nome:'Feitiços',caption:'Escola, grau, nível de poder e preparação • pp. 57–69',short:'Feitiço'},
- {id:'truque',nome:'Truques Mágicos',caption:'Sempre preparados, custam 1 PD e dispensam teste • pp. 57–61',short:'Truque'},
+ {id:'magia',nome:'Feitiços',caption:'Escola, grau, nível de poder e preparação • pp. 57–71',short:'Feitiço'},
+ {id:'truque',nome:'Truques Mágicos',caption:'Sempre preparados, custam 1 PD e dispensam teste • pp. 58, 61–69',short:'Truque'},
  {id:'outro',nome:'Outros / Não Classificados',caption:'Entradas antigas continuam aqui até serem identificadas',short:'Outros'}
 ];
 export const DRAGONBANE_MAGIC_SCHOOLS=['Magia Geral','Animismo','Elementalismo','Mentalismo','Outra'];
@@ -21,14 +22,15 @@ export const DRAGONBANE_INNATE_CATALOG={
 };
 const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
 
-const KNOWN_HEROIC_NAMES=new Set(['Tiro Duplo','Veterano','Apunhalar pelas Costas','Pernas do Mar'].map(norm));
-const KNOWN_ELEMENTAL_SPELLS=new Set(['Bola de Fogo','Pilar','Lufada de Vento'].map(norm));
-const KNOWN_ELEMENTAL_TRICKS=new Set(['Calor/Frio','Nuvem de Fumaça','Ignição'].map(norm));
+const KNOWN_HEROIC_NAMES=new Set(DRAGONBANE_HEROIC_LIBRARY.map(x=>norm(x.nome)));
+const KNOWN_SPELLS=new Set(DRAGONBANE_SPELL_LIBRARY.map(x=>norm(x.nome)));
+const KNOWN_TRICKS=new Set(DRAGONBANE_TRICK_LIBRARY.map(x=>norm(x.nome)));
 const KNOWN_INNATES=new Set(Object.values(DRAGONBANE_INNATE_CATALOG).flat().map(x=>norm(x.nome)));
 export function dragonbaneMagicSchool(item){
  if(item?.escola)return item.escola;
  const name=norm(String(item?.nome||'').split(/\r?\n/)[0]);
- if(KNOWN_ELEMENTAL_SPELLS.has(name)||KNOWN_ELEMENTAL_TRICKS.has(name))return'Elementalismo';
+ const known=[...DRAGONBANE_SPELL_LIBRARY,...DRAGONBANE_TRICK_LIBRARY].find(x=>norm(x.nome)===name);
+ if(known)return known.escola;
  return'Magia Geral';
 }
 
@@ -56,8 +58,8 @@ export function dragonbaneAbilityKind(item){
  const name=norm(String(item?.nome||'').split(/\r?\n/)[0]);
  if(KNOWN_INNATES.has(name))return'inata';
  if(KNOWN_HEROIC_NAMES.has(name))return'heroica';
- if(KNOWN_ELEMENTAL_SPELLS.has(name))return'magia';
- if(KNOWN_ELEMENTAL_TRICKS.has(name))return'truque';
+ if(KNOWN_SPELLS.has(name))return'magia';
+ if(KNOWN_TRICKS.has(name))return'truque';
  return'outro';
 }
 export function dragonbaneAbilityList(data,kind){
@@ -106,4 +108,33 @@ export function dragonbanePdfAbilityName(item){
 export function dragonbaneMagicTabEnabled(data){
  if(typeof data?.dragonbaneShowMagic==='boolean')return data.dragonbaneShowMagic;
  return dragonbaneAbilityList(data,'magia').length>0||dragonbaneAbilityList(data,'truque').length>0||/\bmag[oa]\b/i.test(String(data?.bio?.profissao||''));
+}
+
+export const DRAGONBANE_LIBRARY=[...Object.entries(DRAGONBANE_INNATE_CATALOG).flatMap(([ancestralidade,items])=>items.map(x=>({id:'db-innate-'+norm(x.nome).replace(/\s+/g,'-'),nome:x.nome,tipo:'inata',ancestralidade,requisito:ancestralidade,fv_nvl:x.custo,desc:x.desc,fonte:DRAGONBANE_BOOK,pagina:'9–13'}))),...DRAGONBANE_HEROIC_LIBRARY,...DRAGONBANE_TRICK_LIBRARY,...DRAGONBANE_SPELL_LIBRARY];
+export const DRAGONBANE_SPELL_GRADES=[1,2,3,4,5];
+export function dragonbaneSpellGrade(item){
+ if(dragonbaneAbilityKind(item)!=='magia')return '';
+ if(item?.grau!==undefined&&item.grau!==null&&item.grau!==''){
+  const g=Number(item.grau);return DRAGONBANE_SPELL_GRADES.includes(g)?g:'';
+ }
+ return DRAGONBANE_SPELL_LIBRARY.find(x=>norm(x.nome)===norm(String(item?.nome||'').split('\n')[0]))?.grau||'';
+}
+export function dragonbanePreparedLimit(value){
+ const n=Number(value)||0;return n>=16?7:n>=13?6:n>=9?5:n>=6?4:3;
+}
+export function dragonbaneSpellGroups(data,school='Todas',onlyPrepared=false){
+ const spells=dragonbaneAbilityList(data,'magia').filter(({entry})=>(school==='Todas'||dragonbaneMagicSchool(entry)===school)&&(!onlyPrepared||entry.preparada));
+ const tricks=dragonbaneAbilityList(data,'truque').filter(({entry})=>school==='Todas'||dragonbaneMagicSchool(entry)===school);
+ const sort=(a,b)=>dragonbaneMagicSchool(a.entry).localeCompare(dragonbaneMagicSchool(b.entry),'pt-BR')||String(a.entry.nome||'').localeCompare(String(b.entry.nome||''),'pt-BR');
+ return [{kind:'truque',grade:0,title:'Truques mágicos',items:tricks.sort(sort)},...DRAGONBANE_SPELL_GRADES.map(grade=>({kind:'magia',grade,title:'Grau '+grade,items:spells.filter(x=>dragonbaneSpellGrade(x.entry)===grade).sort(sort)})),{kind:'magia',grade:'',title:'Grau não definido',items:spells.filter(x=>!dragonbaneSpellGrade(x.entry)).sort(sort)}];
+}
+export function dragonbaneLibraryHas(data,entry){
+ if(entry.repeatable)return false;
+ return (Array.isArray(data?.habilidadesFeiticos)?data.habilidadesFeiticos:[]).some(x=>x&&((x.bibliotecaId===entry.id)||(dragonbaneAbilityKind(x)===entry.tipo&&norm(x.nome)===norm(entry.nome))));
+}
+export function insertDragonbaneLibraryEntry(data,entry){
+ if(!entry||!DRAGONBANE_LIBRARY.some(x=>x.id===entry.id)||dragonbaneLibraryHas(data,entry))return data;
+ const {id,repeatable,...fields}=entry;
+ const item=createDragonbaneAbility(entry.tipo,{...fields,bibliotecaId:id});
+ return {...data,habilidadesFeiticos:[...(Array.isArray(data?.habilidadesFeiticos)?data.habilidadesFeiticos:[]),item],...(['magia','truque'].includes(entry.tipo)?{dragonbaneShowMagic:true}:{})};
 }
