@@ -101,3 +101,9 @@ export function dragonbanePdfAbilityName(item){
  const name=String(item?.nome||'').split(/\r?\n/)[0].trim();
  return tag&&name?'['+tag+'] '+name:name;
 }
+
+// A preferência é exclusiva da ficha; ocultar não remove nem altera feitiços.
+export function dragonbaneMagicTabEnabled(data){
+ if(typeof data?.dragonbaneShowMagic==='boolean')return data.dragonbaneShowMagic;
+ return dragonbaneAbilityList(data,'magia').length>0||dragonbaneAbilityList(data,'truque').length>0||/\bmag[oa]\b/i.test(String(data?.bio?.profissao||''));
+}
