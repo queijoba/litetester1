@@ -1,6 +1,7 @@
 import {orderedDragonbaneAttributes} from './systems/dragonbane/attributes.js';
 import DndCharacterEditor from './systems/dnd5e/components/CharacterEditor.jsx';
 import DndLibraryModal from './components/DndLibraryModal.jsx';
+import EquipmentLibrary from './components/EquipmentLibrary.jsx';
 import OrdemLibraryModal from './systems/ordemParanormal/OrdemLibraryModal.jsx';
 import SkyfallLibraryModal from './systems/skyfall/SkyfallLibraryModal.jsx';
 import FabulaLibraryModal from './systems/fabulaUltima/FabulaLibraryModal.jsx';
@@ -1257,6 +1258,8 @@ const { useState, useEffect, useRef } = React;
 
         function App() {
             const [view, setView] = useState('dashboard');
+            const [wikiOpen,setWikiOpen]=useState(false);
+            const [equipmentOpen,setEquipmentOpen]=useState(false);
             const [savedChars, setSavedChars] = useState(getSavedCharacters());
             const [savedThreats, setSavedThreats] = useState(getSavedThreats());
             const [data, setData] = useState(initialData);
@@ -2274,6 +2277,8 @@ const { useState, useEffect, useRef } = React;
                                 {journeysSignedIn&&<a href="/?jornadas=1" target="_blank" rel="noopener noreferrer" className="pjlite-journeys-home-link" title="Abrir suas campanhas — disponível para contas conectadas">
                                     🗂 Campanha
                                 </a>}
+                                <button type="button" className="pjlite-journeys-home-link" onClick={()=>setWikiOpen(true)}>📖 Wiki Lite</button>
+                                {wikiOpen&&<EquipmentLibrary open={wikiOpen} onClose={()=>setWikiOpen(false)}/>}
                             </div>
                             <div className="mb-6 rounded border-2 border-[#922610] bg-[#fdf1dc] shadow-sm overflow-hidden">
                                 <div className={`px-4 ${newsCollapsed ? 'py-2' : 'py-3'} flex items-center justify-between gap-3`}>
@@ -3639,6 +3644,7 @@ const { useState, useEffect, useRef } = React;
                             </div>
                             {cloudEditing&&<span className="text-[11px] rounded bg-violet-900 px-2 py-1 text-white font-bold">☁ Editando ficha da campanha</span>}
                             {saveStatus && <span className={`text-[10px] font-bold px-2 py-1 rounded ${saveStatus==='error'?'bg-red-900':saveStatus==='saving'?'bg-amber-700':'bg-black/30'}`}>{saveStatus==='pending'?'Alterado…':saveStatus==='saving'?'Salvando…':saveStatus==='saved'?'✓ Salvo':'Erro ao salvar'}</span>}
+                            {data.type==='pc'&&<button type="button" className="pjlite-toolbar-library" title="Biblioteca de itens e cards de habilidades" aria-label="Biblioteca de itens" onClick={()=>setEquipmentOpen(true)}>🎒</button>}
                             {['somdas6','3det'].includes(data.system) && data.type === 'pc' && <button type="button" onClick={()=>setOtherLibraryOpen(true)}
                                 className="pjlite-toolbar-library" title={data.system==='3det'?'Biblioteca 3DeT Victory: vantagens, desvantagens e técnicas':'Biblioteca O Som das Seis: habilidades e antecedentes'}
                                 aria-label={'Biblioteca '+(data.system==='3det'?'3DeT Victory':'O Som das Seis')}>📚</button>}
@@ -3680,6 +3686,7 @@ const { useState, useEffect, useRef } = React;
                             {toastMsg}
                         </div>
                     )}
+                    {data.type==='pc'&&equipmentOpen&&<EquipmentLibrary open={equipmentOpen} data={data} onAdd={setData} onClose={()=>setEquipmentOpen(false)}/>}
                     {['somdas6','3det'].includes(data.system) && data.type === 'pc' && <OtherSystemLibraryModal
                         open={otherLibraryOpen} system={data.system} data={data}
                         onChoose={addFromOtherLibrary}
