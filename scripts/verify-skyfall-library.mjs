@@ -80,3 +80,7 @@ assert.ok(abilityGenerator.includes("savePreset('habilidades',x)"),'Habilidades 
 assert.ok(spellGenerator.includes("savePreset('magias',m)"),'Magias geradas mantêm salvar modelo');
 
 console.log('✓ Skyfall: 161 referências, camadas, categorias, restauração não destrutiva, biblioteca na barra e responsividade.');
+
+assert.equal(catalog.filter(e=>e.camada==='Truque'&&e.mecanicaRevisada&&e.custo==='0 PE'&&e.execucao&&e.alcance&&e.duracao).length,18);
+const orient=catalog.find(e=>e.nome==='Orientação');assert.equal(orient.pagina,'275');assert.ok(orient.desc.includes('1d4'));
+assert.equal(applySkyfallLibrarySelection(original,orient,'magia').data.magias.at(-1).custo,'0 PE');
