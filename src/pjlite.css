@@ -1962,3 +1962,47 @@ body { background-color: #e5e7eb; }
 @media(min-width:768px){.db-sheet .db-layout-v2 .db-status-column{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;grid-column:1/-1;align-items:stretch}.db-sheet .db-status-column>*{margin-top:0!important}.db-sheet .db-skills-pair{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(min-width:1024px){.db-sheet .db-layout-v2{grid-template-columns:repeat(12,minmax(0,1fr))}.db-sheet .db-skills-column{grid-column:span 8/span 8}.db-sheet .db-combat-column{grid-column:span 4/span 4}}
 @media(max-width:767px){.db-sheet .db-rework-tabs-v2{grid-template-columns:repeat(2,minmax(0,1fr))}.db-sheet .db-magic-tab-control{justify-content:flex-start}.db-sheet .db-inventory-page{padding:10px}}
+
+/* Biblioteca Dragonbane: pergaminho, verde da ficha, adaptação móvel e tema escuro. */
+.db-sheet .db-library-launch,.db-library-insert{background:#28695d;color:#fff9e8;border:1px solid #1c5146;border-radius:6px 2px;padding:8px 12px;font-weight:800;font-size:12px;cursor:pointer}
+.db-library-overlay{position:fixed;inset:0;z-index:10000;background:#151f1bbd;display:flex;align-items:center;justify-content:center;padding:12px;color-scheme:light}
+.db-library-dialog{width:min(980px,100%);max-height:92dvh;display:flex;flex-direction:column;overflow:hidden;background:#f5eedb;color:#342c20;border:2px solid #28695d;border-radius:12px 3px;box-shadow:0 18px 55px #0007;font-family:system-ui,sans-serif}
+.db-library-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#28695d;color:#fff9e8;padding:12px 16px}
+.db-library-heading h2{font:900 22px Georgia,serif;color:inherit!important}
+.db-library-heading small{font-size:10px;opacity:.85}
+.db-library-heading button{font-size:27px;background:none;border:0;color:#fff9e8;padding:0 8px}
+.db-library-filters{display:flex;flex-wrap:wrap;align-items:end;gap:8px;padding:12px;border-bottom:1px solid #b5a684}
+.db-library-kinds{display:flex;gap:5px;flex-wrap:wrap;width:100%}
+.db-library-kinds button{padding:6px 9px;border:1px solid #a69c81;background:#e8dec5;color:#28594d;border-radius:4px;font-weight:700;font-size:12px}
+.db-library-kinds button[aria-pressed=true]{background:#28695d;color:white;border-color:#28695d}
+.db-library-filters label,.db-grimoire-controls label{display:grid;gap:4px;font-size:11px;font-weight:bold;flex:1 1 140px}
+.db-library-filters input:not([type=checkbox]),.db-library-filters select,.db-grimoire-controls select,.db-power-row select{background:#fffaf0!important;color:#2b342c!important;border:1px solid #a99b7f!important;border-radius:3px;padding:7px;min-width:0;width:100%}
+.db-library-filters .db-library-check,.db-grimoire-controls .db-grimoire-check{display:flex;align-items:center;gap:6px;flex:0 1 auto}
+.db-library-filters small{font-size:11px;color:#4c5847}
+.db-library-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);overflow:hidden;min-height:0;flex:1}
+.db-library-results{overflow:auto;padding:10px;min-height:0;border-right:1px solid #b5a684}
+.db-library-results button{display:grid;gap:4px;text-align:left;width:100%;background:#fff8e7;color:#302b22;border:1px solid #c4b696;border-radius:5px 2px;padding:9px;margin-bottom:5px;overflow-wrap:anywhere}
+.db-library-results button[aria-pressed=true]{border:2px solid #28695d;background:#e4ebd8;padding:8px}
+.db-library-results button small{font-size:11px;color:#53634f}
+.db-library-detail{padding:16px;overflow:auto;min-height:0;background:#fff9ec;color:#342c20}
+.db-library-detail h3{font:900 23px Georgia,serif;color:#28695d;margin:5px 0 10px}
+.db-library-detail p{line-height:1.55;font-size:13px;margin:12px 0;white-space:pre-line}
+.db-library-detail dl,.db-library-card-meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.db-library-detail dl>div,.db-library-card-meta>div{border:1px solid #b7aa8e;padding:7px;overflow-wrap:anywhere}
+.db-library-detail dt,.db-library-card-meta dt{font-size:10px;text-transform:uppercase;font-weight:800}
+.db-library-detail dd,.db-library-card-meta dd{font-size:12px;margin:2px 0 0}
+.db-library-detail small{display:block;font-size:11px;margin:6px 0}
+.db-library-reference{font-size:11px!important;color:#53634f}
+.db-library-insert{display:block;width:100%;margin-top:14px}
+.db-library-insert:disabled{opacity:.55;cursor:default}
+.db-sheet .db-grimoire-controls{display:flex;align-items:center;flex-wrap:wrap;gap:12px;padding:12px;border:1px solid #b5a684;border-radius:6px 2px;background:#f4ebd3;color:#34483d}
+.db-sheet .db-grimoire-controls>div{flex:2 1 210px}
+.db-sheet .db-grimoire-controls small{display:block;font-size:11px;margin-top:3px}
+.db-sheet .db-grimoire-controls p{font-size:11px;color:#8d392c;font-weight:bold}
+.db-sheet .db-power-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12px}
+.db-sheet .db-power-row label{display:flex;align-items:center;gap:6px;font-weight:bold}
+.db-sheet .db-power-row select{width:58px}
+.db-sheet .db-section-actions{display:flex;flex-wrap:wrap;gap:5px}
+body.theme-dark .db-sheet .db-grimoire-controls{background:#20382d;color:#e6ddc8;border-color:#5e8272}
+body.theme-dark .db-sheet .db-grimoire-controls p{color:#ffd0b6}
+@media(max-width:640px){.db-library-dialog{max-height:95dvh}.db-library-body{grid-template-columns:1fr;grid-template-rows:minmax(110px,0.8fr) minmax(140px,1fr)}.db-library-results{border-right:0;border-bottom:1px solid #b5a684}.db-library-detail{padding:10px}.db-library-filters{padding:8px;gap:6px}.db-library-heading h2{font-size:18px}.db-library-kinds button{padding:5px 6px;font-size:11px}}
