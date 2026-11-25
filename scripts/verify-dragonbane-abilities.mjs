@@ -191,10 +191,10 @@ assert.ok(editor.includes("dragonbanePage==='inventario'"));
 assert.equal(editor.split("updateField('inventario'").length-1,1);
 
 const {DRAGONBANE_LIBRARY,dragonbaneSpellGrade,dragonbaneSpellGroups,dragonbanePreparedLimit,insertDragonbaneLibraryEntry}=await import('../src/systems/dragonbane/abilities.js');
-assert.equal(DRAGONBANE_LIBRARY.filter(x=>x.tipo==='heroica').length,44);
+assert.equal(DRAGONBANE_LIBRARY.filter(x=>x.tipo==='heroica').length,46);
 assert.equal(DRAGONBANE_LIBRARY.filter(x=>x.tipo==='magia').length,49);
 assert.equal(DRAGONBANE_LIBRARY.filter(x=>x.tipo==='truque').length,17);
-assert.equal(DRAGONBANE_LIBRARY.filter(x=>x.tipo==='inata').length,7);
+assert.equal(DRAGONBANE_LIBRARY.filter(x=>x.tipo==='inata').length,16);
 assert.equal(new Set(DRAGONBANE_LIBRARY.map(x=>x.id)).size,DRAGONBANE_LIBRARY.length);
 const permanent=DRAGONBANE_LIBRARY.find(x=>x.nome==='Permanência');
 assert.equal(permanent.grau,5);assert.equal(permanent.pagina,'62');
@@ -209,4 +209,13 @@ assert.equal(dragonbaneSpellGroups(newBook).find(g=>g.grade===5).items.length,1)
 assert.equal(dragonbaneSpellGroups(newBook,'Animismo').find(g=>g.grade===5).items.length,0);
 assert.equal(dragonbaneSpellGroups(newBook,'Todas',true).find(g=>g.grade===5).items.length,0);
 assert.ok(editor.includes('DragonbaneLibrary')&&preview.includes('dragonbaneSpellGroups')&&preview.includes('DRAGONBANE_SPELL_GRADES'));
-console.log('✓ Dragonbane: 117 referências, graus 1–5, níveis 1–3, filtros, preparação e inserção preservada.');
+console.log('✓ Dragonbane: 128 referências, graus 1–5, níveis 1–3, filtros, preparação e inserção preservada.');
+
+const {syncDragonbaneInnates,dragonbaneLoad,DRAGONBANE_ANCESTRIES}=await import('../src/systems/dragonbane/abilities.js');
+assert.equal(DRAGONBANE_ANCESTRIES.length,15);
+const cat=syncDragonbaneInnates({bio:{ancestralidade:'Felídeo'},habilidadesFeiticos:[]});
+assert.equal(cat.habilidadesFeiticos[0].nome,'Sete Vidas');assert.equal(cat.habilidadesFeiticos[0].pagina,'26');assert.equal(syncDragonbaneInnates(cat),cat);
+const duck=syncDragonbaneInnates(cat,'Marreco');assert.equal(duck.habilidadesFeiticos.length,2);assert.ok(duck.habilidadesFeiticos.every(x=>x.autoAncestralidade==='marreco'));
+assert.equal(syncDragonbaneInnates({...cat,habilidadesFeiticos:[{...cat.habilidadesFeiticos[0],desc:'Personalizada'}]},'Marreco').habilidadesFeiticos.length,3);
+assert.deepEqual(dragonbaneLoad({atributos:{for:{valor:13}},dragonbaneBackpack:true,dragonbaneRations:5,dragonbaneInventory:[{nome:'Corda',peso:2,quantidade:2}],dragonbaneLegacyWeight:1}),{base:9,limit:9,current:7,over:false});
+assert.ok(editor.includes('Feitiços')&&editor.includes('dbPreparedMax')&&editor.includes('db-load-panel')&&editor.includes('db-threat-tabs'));
