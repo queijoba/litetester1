@@ -50,7 +50,7 @@ for(const part of ['MODELOS_SOM6_LIVRO_PDJ','MODELOS_SOM6_LIVRO_ANIMAIS','MODELO
 }
 console.log('✓ Som das Seis: 8 PDJs, 12 animais; Dragonbane: 63 fichas (53 monstros / 10 PNJs), cards e editor verificados.');
 
-check(MODELOS_DRAGONBANE_VARIANTES,18,'dragonbane');check(MODELOS_DRAGONBANE_SOLO,9,'dragonbane');
+check(MODELOS_DRAGONBANE_VARIANTES,23,'dragonbane');check(MODELOS_DRAGONBANE_SOLO,9,'dragonbane');
 assert.equal(MODELOS_DRAGONBANE_BESTIARIO.find(x=>x.nome==='Anurídeo').status.pv.max,8);
 assert.ok(MODELOS_DRAGONBANE_VARIANTES.find(x=>x.nome==='Karkion — Mago').feiticos.some(x=>x.nome==='Banimento'));
 assert.equal(MODELOS_DRAGONBANE_SOLO.find(x=>x.nome==='Ingolfr Pedrolho').status.pd.max,14);
