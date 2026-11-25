@@ -20,9 +20,12 @@ export const DRAGONBANE_INNATE_CATALOG={
   {nome:'Pés Palmados',custo:'—',desc:"Passiva: dádiva em todos os testes de Natação; deslocamento integral dentro e debaixo da água."}
  ]
 };
+export const DRAGONBANE_RARE_ANCESTRIES=[["goblin","Goblin",6,"Resiliente","1 PD","Dádiva em CON contra doença ou veneno, ou sucesso automático ao acampar. Pode comer alimento cru sem adoecer, sem custo."],["hobgoblin","Hobgoblin",8,"Destemido","2 PD","Resiste ao medo sem teste de VON; declare antes de rolar."],["ogro","Ogro",10,"Investida Corporal","3 PD","Ataque desarmado com dádiva, 2D6 contundente + bônus; não aparável. Pode correr antes. Humanoide Normal ou menor atingido cai."],["orc","Orc",12,"Resistente","3 PD","A 0 PV, restabelece-se automaticamente sem teste de VON ou Persuasão. Normalmente apenas PJs e PNJs importantes."],["anurideo","Anurídeo",16,"Salto","3 PD","Salta horizontalmente até o movimento ou verticalmente até metade, sem Acrobatismo; pode terminar com ataque corpo a corpo com dádiva."],["felideo","Felídeo",26,"Sete Vidas","Variável","2 PD para dádiva em teste de morte; reduz um D6 de dano de queda por PD, até 3, após Acrobatismo."],["karkion","Karkion",30,"Asas","1 PD/rodada","Voa à mesma velocidade de caminhada, pagando 1 PD por rodada."],["reptideo","Reptídeo",36,"Camuflagem","2 PD","Dádiva em Furtividade."],["satiro","Sátiro",38,"Levantar o Ânimo","3 PD","Ação: remove uma condição escolhida de outra pessoa que possa ouvir a até 10 m; não pode usar em si."]];
+for(const [key,label,pagina,nome,custo,desc] of DRAGONBANE_RARE_ANCESTRIES)DRAGONBANE_INNATE_CATALOG[key]=[{nome,custo,desc,fonte:'Dragonbane — Bestiário v1.1',pagina:String(pagina)}];
+export const DRAGONBANE_ANCESTRIES=[['humano','Humano'],['anao','Anão'],['elfo','Elfo'],['halfling','Halfling'],['lupino','Lupino'],['marreco','Marreco'],...DRAGONBANE_RARE_ANCESTRIES.map(([key,label])=>[key,label])];
 const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
 
-const KNOWN_HEROIC_NAMES=new Set(DRAGONBANE_HEROIC_LIBRARY.map(x=>norm(x.nome)));
+const KNOWN_HEROIC_NAMES=new Set([...DRAGONBANE_HEROIC_LIBRARY.map(x=>norm(x.nome)),norm('Exército de Um Só'),norm('Único Sobrevivente')]);
 const KNOWN_SPELLS=new Set(DRAGONBANE_SPELL_LIBRARY.map(x=>norm(x.nome)));
 const KNOWN_TRICKS=new Set(DRAGONBANE_TRICK_LIBRARY.map(x=>norm(x.nome)));
 const KNOWN_INNATES=new Set(Object.values(DRAGONBANE_INNATE_CATALOG).flat().map(x=>norm(x.nome)));
@@ -36,6 +39,7 @@ export function dragonbaneMagicSchool(item){
 
 export function dragonbaneAncestryKey(name){
  const n=norm(name);
+ const exact=DRAGONBANE_ANCESTRIES.find(([key,label])=>n===key||n===norm(label));if(exact)return exact[0];
  if(n.includes('humano'))return'humano';
  if(n.includes('ana')&&/\ban[ao]\b/.test(n))return'anao';
  if(n==='anao'||n.includes('anão'))return'anao';
@@ -56,8 +60,8 @@ export function dragonbaneAbilityKind(item){
  // Migração virtual: apenas nomes inequívocos já presentes nos modelos antigos.
  // Os demais continuam editáveis em Outros, sem alterar o save original.
  const name=norm(String(item?.nome||'').split(/\r?\n/)[0]);
- if(KNOWN_INNATES.has(name))return'inata';
  if(KNOWN_HEROIC_NAMES.has(name))return'heroica';
+ if(KNOWN_INNATES.has(name))return'inata';
  if(KNOWN_SPELLS.has(name))return'magia';
  if(KNOWN_TRICKS.has(name))return'truque';
  return'outro';
@@ -110,7 +114,7 @@ export function dragonbaneMagicTabEnabled(data){
  return dragonbaneAbilityList(data,'magia').length>0||dragonbaneAbilityList(data,'truque').length>0||/\bmag[oa]\b/i.test(String(data?.bio?.profissao||''));
 }
 
-export const DRAGONBANE_LIBRARY=[...Object.entries(DRAGONBANE_INNATE_CATALOG).flatMap(([ancestralidade,items])=>items.map(x=>({id:'db-innate-'+norm(x.nome).replace(/\s+/g,'-'),nome:x.nome,tipo:'inata',ancestralidade,requisito:ancestralidade,fv_nvl:x.custo,desc:x.desc,fonte:DRAGONBANE_BOOK,pagina:'9–13'}))),...DRAGONBANE_HEROIC_LIBRARY,...DRAGONBANE_TRICK_LIBRARY,...DRAGONBANE_SPELL_LIBRARY];
+export const DRAGONBANE_LIBRARY=[...Object.entries(DRAGONBANE_INNATE_CATALOG).flatMap(([ancestralidade,items])=>items.map(x=>({id:'db-innate-'+norm(x.nome).replace(/\s+/g,'-'),nome:x.nome,tipo:'inata',ancestralidade,requisito:ancestralidade,fv_nvl:x.custo,desc:x.desc,fonte:x.fonte||DRAGONBANE_BOOK,pagina:x.pagina||'9–13'}))),...DRAGONBANE_HEROIC_LIBRARY,...[['Exército de Um Só','—','Ao lutar sozinho, compra duas cartas de iniciativa, mantém ambas e atua duas vezes na rodada.'],['Único Sobrevivente','3 PD','Ao se aventurar sozinho, força um teste sem receber uma condição.']].map(([nome,fv_nvl,desc],i)=>({id:'db-solo-hero-'+i,nome,fv_nvl,desc,tipo:'heroica',requisito:'Aventura solo',fonte:'Sozinho em Fenda de Quedafunda v1.1',pagina:'1'})),...DRAGONBANE_TRICK_LIBRARY,...DRAGONBANE_SPELL_LIBRARY];
 export const DRAGONBANE_SPELL_GRADES=[1,2,3,4,5];
 export function dragonbaneSpellGrade(item){
  if(dragonbaneAbilityKind(item)!=='magia')return '';
@@ -137,4 +141,22 @@ export function insertDragonbaneLibraryEntry(data,entry){
  const {id,repeatable,...fields}=entry;
  const item=createDragonbaneAbility(entry.tipo,{...fields,bibliotecaId:id});
  return {...data,habilidadesFeiticos:[...(Array.isArray(data?.habilidadesFeiticos)?data.habilidadesFeiticos:[]),item],...(['magia','truque'].includes(entry.tipo)?{dragonbaneShowMagic:true}:{})};
+}
+
+export function syncDragonbaneInnates(data,ancestry=data?.bio?.ancestralidade){
+ const key=dragonbaneAncestryKey(ancestry);if(!key)return data;
+ const entries=Array.isArray(data?.habilidadesFeiticos)?data.habilidadesFeiticos:[];
+ // Only remove entries generated automatically and still identical to their original reference.
+ const retained=entries.filter(item=>{if(!item?.autoAncestralidade||item.autoAncestralidade===key)return true;const original=DRAGONBANE_LIBRARY.find(e=>e.id===item.bibliotecaId);return !original||item.nome!==original.nome||item.desc!==original.desc||item.fv_nvl!==original.fv_nvl;});
+ for(const ref of DRAGONBANE_LIBRARY.filter(x=>x.tipo==='inata'&&x.ancestralidade===key))if(!retained.some(x=>x&&norm(x.nome)===norm(ref.nome)&&dragonbaneAbilityKind(x)==='inata')){const {id,...fields}=ref;retained.push(createDragonbaneAbility('inata',{...fields,bibliotecaId:id,autoAncestralidade:key}));}
+ if(retained.length===entries.length&&retained.every((x,i)=>x===entries[i]))return data;
+ return {...data,habilidadesFeiticos:retained};
+}
+export function dragonbaneLoad(data){
+ const base=Math.ceil(Math.max(0,Number(data?.atributos?.for?.valor)||0)/2)+(data?.dragonbaneBackpack?2:0);
+ const rows=Array.isArray(data?.dragonbaneInventory)?data.dragonbaneInventory:[];
+ const current=rows.reduce((sum,item)=>sum+(item?.nome?.trim()?Math.max(0,Number(item.quantidade)||0)*Math.max(0,Number(item.peso)||0):0),0)+Math.max(0,Number(data?.dragonbaneLegacyWeight)||0)+Math.ceil(Math.max(0,Number(data?.dragonbaneRations)||0)/4);
+ const manual=data?.status?.manterDerivados?Number(data?.derivados?.limiteSobrecarga):base;
+ const limit=Number.isFinite(manual)?manual:base;
+ return {base,limit,current,over:current>limit};
 }
