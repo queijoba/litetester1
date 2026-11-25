@@ -38,6 +38,8 @@ function OrdemGroupIcon({title}){
 
 export default function ThreatCatalog({groups,onSelect,system='3det',showReferences=true}){
  const [query,setQuery]=React.useState('');
+ const searchId=React.useId();
+ const [visibleCount,setVisibleCount]=React.useState(48);
  const [type,setType]=React.useState('todos');
  const [source,setSource]=React.useState('Todas as fontes');
  const [element,setElement]=React.useState('Todos os elementos');
@@ -49,8 +51,9 @@ export default function ThreatCatalog({groups,onSelect,system='3det',showReferen
  const [category,setCategory]=React.useState('Todas');
  const [rating,setRating]=React.useState('Todos');
  const categoryOf=x=>String(x.categoria||x.especie||x.tipo||'Outros');
- const ratingOf=x=>String(system==='fabula'?x.nivel??'':system==='skyfall'?x.nivelDesafio??'':x.desafio?.split(' ')[0]??'');
+ const ratingOf=x=>String(system==='fabula'?x.nivel??'':system==='skyfall'?x.nivelDesafio??'':String(x.desafio??'').trim().split(/\s+/)[0]);
  const [privateItems,setPrivateItems]=React.useState(()=>readPrivateThreats(system));
+ React.useEffect(()=>{setVisibleCount(48);},[system,query,type,source,category,rating]);
  const bookItems=isExtended&&showReferences?(BOOK_THREAT_MODELS[system]||[]):[];
  const catalogGroups=[...groups,...(bookItems.length?[{title:'Livro • fichas mecânicas de referência',items:bookItems}]:[]),...(isExtended&&showReferences&&privateItems.length?[{title:'Meu bestiário particular',items:privateItems}]:[])];
  const all=catalogGroups.flatMap(group=>group.items||[]);
@@ -77,13 +80,16 @@ export default function ThreatCatalog({groups,onSelect,system='3det',showReferen
   }).sort((a,b)=>isOrdem?((vdOrder==='asc'?1:-1)*(Number(a.vd||0)-Number(b.vd||0))||String(a.nome).localeCompare(String(b.nome),'pt-BR')):0);
   return {...group,items};
  }).filter(group=>group.items.length);
+ const matchCount=filtered.reduce((n,g)=>n+g.items.length,0);
+ let remaining=system==='dnd5e'?visibleCount:Infinity;
+ const visibleGroups=filtered.map(group=>{const items=group.items.slice(0,remaining);remaining-=items.length;return {...group,items};}).filter(group=>group.items.length);
  const dark=system==='rotaZero';
  return <div className={isOrdem?'space-y-3 ordem-threat-catalog':'space-y-3 lite-threat-catalog'}>
   <div className={dark?'rounded-md border border-[#9ca8a0] bg-[#f2f0e9] p-3':'rounded-md border border-amber-200 bg-amber-50 p-3'}>
-   <label className="block text-xs font-bold text-zinc-800" htmlFor={'threat-search-'+system}>
+   <label className="block text-xs font-bold text-zinc-800" htmlFor={searchId}>
     Pesquisar modelos ({count})
    </label>
-   <input id={'threat-search-'+system} type="search" value={query} onChange={e=>setQuery(e.target.value)}
+   <input id={searchId} type="search" value={query} onChange={e=>setQuery(e.target.value)}
     placeholder="Nome, livro, categoria ou grupo..." className="mt-2 w-full rounded border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900"/>
    <div className="mt-2 flex gap-2">
     {[['todos','Todos'],['ameacas','Ameaças'],['npcs','NPCs']].map(([id,label])=>
@@ -120,7 +126,7 @@ export default function ThreatCatalog({groups,onSelect,system='3det',showReferen
    </div>}
   </div>
   {isExtended&&showReferences&&<><PrivateThreatImport system={system} items={privateItems} onChange={setPrivateItems}/><BookThreatReference system={system}/></>}
-  {filtered.map(group=><section key={group.title}>
+  {visibleGroups.map(group=><section key={group.title}>
    <div className="mb-2 flex items-baseline justify-between gap-2 border-b border-zinc-300 pb-1">
     <h3 className="text-sm font-black text-zinc-900">{isOrdem&&<OrdemGroupIcon title={group.title}/>}<span>{group.title}</span></h3>
     <small className="text-xs text-zinc-700">{group.items.length} modelo(s)</small>
@@ -138,6 +144,7 @@ export default function ThreatCatalog({groups,onSelect,system='3det',showReferen
      {modelo.grupo&&<small className="block text-xs text-zinc-600">{modelo.grupo}</small>}
     </button>)}</div>
   </section>)}
+  {system==='dnd5e'&&matchCount>visibleCount&&<button type="button" className="w-full rounded border border-zinc-400 bg-white p-3 text-sm font-bold text-zinc-900" onClick={()=>setVisibleCount(n=>n+48)}>Mostrar mais modelos ({Math.min(visibleCount,matchCount)} de {matchCount})</button>}
   {!filtered.length&&<p role="status" className="rounded border border-zinc-300 bg-white p-4 text-sm text-zinc-800">Nenhum modelo corresponde à busca. Tente outro nome ou categoria.</p>}
  </div>;
 }

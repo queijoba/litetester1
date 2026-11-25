@@ -258,10 +258,11 @@ export default function DndThreatEditor({ scope }) {
   return (
     <>
       {isDnd && data.type === 'ameaca' && (
-                              <div className="p-4 md:p-8 flex flex-col lg:flex-row gap-8 bg-gray-100 font-dnd">
+                              <div className="p-4 md:p-8 flex flex-col lg:flex-row gap-8 bg-gray-100 font-dnd dnd-threat-editor">
                                   {/* Lado Esquerdo: Formulário */}
-                                  <div className="w-full lg:w-1/2 bg-white p-6 rounded shadow border space-y-4 max-h-[75vh] overflow-y-auto">
-                                      <h3 className="font-title font-bold text-base text-[#922610] border-b pb-1">Configuração do Stat Block</h3>
+                                  <div className="w-full lg:w-1/2 bg-white p-6 rounded shadow border space-y-4 lg:max-h-[75vh] lg:overflow-y-auto">
+                                      <h3 className="font-title font-bold text-base text-[#922610] border-b pb-1">Configuração da ameaça</h3>
+                                      {data.fonte&&<p className="text-xs text-gray-700">Fonte: {data.fonte}{data.pagina?' · p. '+data.pagina:''}{data.dadosParciais?' · Dados de referência: confira os efeitos no livro.':''}</p>}
                                       <div>
                                           <label className="block text-[10px] font-bold uppercase text-gray-500">Nome da Criatura</label>
                                           <input type="text" value={data.nome} onChange={e => updateField('nome', e.target.value)} className="w-full border-b-2 p-1 font-title font-bold text-lg outline-none" />
@@ -283,7 +284,7 @@ export default function DndThreatEditor({ scope }) {
                                               {['for','des','con','int','sab','car'].map(attr => (
                                                   <div key={attr}>
                                                       <span className="text-[10px] font-bold uppercase">{attr}</span>
-                                                      <input type="number" value={data.atributos[attr]} onChange={e => updateField(`atributos.${attr}`, parseInt(e.target.value)||10)} className="w-full border bg-white text-center text-xs font-bold p-1 outline-none" />
+                                                      <input type="number" value={(data.atributos?.[attr]??10)} onChange={e => updateField(`atributos.${attr}`, parseInt(e.target.value)||10)} className="w-full border bg-white text-center text-xs font-bold p-1 outline-none" />
                                                   </div>
                                               ))}
                                           </div>
@@ -300,9 +301,10 @@ export default function DndThreatEditor({ scope }) {
                                           <div className="flex items-center gap-2"><label className="text-[10px] font-bold text-gray-500 uppercase w-20">Idiomas</label><input type="text" value={data.idiomas} onChange={e => updateField('idiomas', e.target.value)} className="flex-1 border-b p-1 text-xs outline-none" /></div>
                                       </div>
       
-                                      <div className="grid grid-cols-2 gap-2">
-                                          <div><label className="block text-[10px] font-bold text-gray-500 uppercase">Desafio (CR e XP)</label><input type="text" value={data.desafio} onChange={e => updateField('desafio', e.target.value)} className="w-full border-b p-1 text-xs outline-none" /></div>
-                                          <div><label className="block text-[10px] font-bold text-gray-500 uppercase">Bônus de Proficiência</label><input type="text" value={data.proficienciaBonus} onChange={e => updateField('proficienciaBonus', e.target.value)} className="w-full border-b p-1 text-xs outline-none" /></div>
+                                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                          <div><label className="block text-[10px] font-bold text-gray-500 uppercase">Iniciativa</label><input type="text" value={data.iniciativa??''} onChange={e => updateField('iniciativa',e.target.value)} className="w-full border-b p-1 text-xs outline-none" /></div>
+                                          <div><label className="block text-[10px] font-bold text-gray-500 uppercase">Desafio (ND e XP)</label><input type="text" value={data.desafio} onChange={e => updateField('desafio', e.target.value)} className="w-full border-b p-1 text-xs outline-none" /></div>
+                                          <div><label className="block text-[10px] font-bold text-gray-500 uppercase">Bônus de Proficiência</label><input type="text" value={data.proficienciaBonus??''} onChange={e => updateField('proficienciaBonus', e.target.value)} className="w-full border-b p-1 text-xs outline-none" /></div>
                                       </div>
       
                                       {/* Sessões Dinâmicas (Ações, Tracos, etc) */}
@@ -313,7 +315,7 @@ export default function DndThreatEditor({ scope }) {
                                                   <div className="flex justify-between items-center bg-gray-200 p-1.5 rounded text-xs font-bold text-gray-700 mb-2">
                                                       {titleMap[sec]} <button onClick={() => addToArray(sec, { nome: '', desc: '' })} className="text-[#922610] hover:text-red-900">+ Adic.</button>
                                                   </div>
-                                                  {(data[sec] || []).map((item, idx) => (
+                                                  {(Array.isArray(data[sec]) ? data[sec] : []).map((item, idx) => (
                                                       <div key={idx} className="border bg-white p-2 mb-2 flex flex-col gap-1 relative">
                                                           <input type="text" value={item.nome} onChange={e => updateArrayField(sec, idx, 'nome', e.target.value)} className="font-bold border-b text-xs outline-none" placeholder="Nome (Ex: Ataque Furtivo)" />
                                                           <textarea rows="2" value={item.desc} onChange={e => updateArrayField(sec, idx, 'desc', e.target.value)} className="text-xs outline-none resize-y w-full" placeholder="Descrição do efeito..."></textarea>
@@ -326,7 +328,7 @@ export default function DndThreatEditor({ scope }) {
                                   </div>
       
                                   {/* Lado Direito: Preview (Stat Block) */}
-                                  <div className="w-full lg:w-1/2 bg-[#fdf1dc] p-6 rounded shadow-lg border-2 border-[#922610] max-h-[75vh] overflow-y-auto" style={{boxShadow: '4px 4px 10px rgba(0,0,0,0.1)'}}>
+                                  <div className="w-full lg:w-1/2 bg-[#fdf1dc] p-6 rounded shadow-lg border-2 border-[#922610] lg:max-h-[75vh] lg:overflow-y-auto" style={{boxShadow: '4px 4px 10px rgba(0,0,0,0.1)'}}>
                                       <h1 className="text-3xl font-title text-[#922610] font-bold">{data.nome || 'Criatura Sem Nome'}</h1>
                                       <p className="italic text-xs text-black mb-1">{data.tamanho} {data.tipo}, {data.alinhamento}</p>
                                       
@@ -336,6 +338,7 @@ export default function DndThreatEditor({ scope }) {
                                           <p><strong className="text-[#922610]">Classe de Armadura</strong> {data.ca}</p>
                                           <p><strong className="text-[#922610]">Pontos de Vida</strong> {data.pv}</p>
                                           <p><strong className="text-[#922610]">Deslocamento</strong> {data.deslocamento}</p>
+                                          {data.iniciativa&&<p><strong className="text-[#922610]">Iniciativa</strong> {data.iniciativa}</p>}
                                       </div>
                                       
                                       <div className="dnd-stat-block-line"></div>
@@ -344,7 +347,7 @@ export default function DndThreatEditor({ scope }) {
                                           {['for','des','con','int','sab','car'].map(attr => (
                                               <div key={attr} className="flex flex-col">
                                                   <span className="font-bold uppercase">{attr}</span>
-                                                  <span>{data.atributos[attr]} ({formatDndMod(getDndAbilityMod(data.atributos[attr]))})</span>
+                                                  <span>{(data.atributos?.[attr]??10)} ({formatDndMod(getDndAbilityMod((data.atributos?.[attr]??10)))})</span>
                                               </div>
                                           ))}
                                       </div>

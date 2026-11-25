@@ -15,3 +15,8 @@ const p119=parsePrivatePack(JSON.stringify([fake]),'dnd5e');assert.equal(p119.it
 
 import {BOOK_THREAT_MODELS} from '../src/components/bookThreatModels.js';
 for(const [system,count] of Object.entries({dnd5e:332,fabula:56,skyfall:44})){const ms=BOOK_THREAT_MODELS[system];assert.equal(ms.length,count);assert.ok(ms.every(x=>x.system===system&&x.nome&&x.pagina&&x.dadosParciais&&Object.values(x.atributos).length===(system==='fabula'?4:6)));assert.equal(new Set(ms.map(x=>x.nome)).size,count);assert.equal(parsePrivatePack(JSON.stringify(ms),system).items.length,count);}
+
+const dndCatalog119=readFileSync('src/components/ThreatCatalog.jsx','utf8');
+assert.ok(dndCatalog119.includes('React.useId()')&&dndCatalog119.includes('visibleGroups.map')&&dndCatalog119.includes('setVisibleCount(n=>n+48)'));
+const dndEditor119=readFileSync('src/systems/dnd5e/components/ThreatEditor.jsx','utf8');
+assert.ok(dndEditor119.includes("updateField('iniciativa'")&&dndEditor119.includes('data.dadosParciais')&&dndEditor119.includes('lg:overflow-y-auto'));
