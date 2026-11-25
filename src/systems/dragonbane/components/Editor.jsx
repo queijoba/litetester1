@@ -315,7 +315,7 @@ export default function DragonbaneEditor({ scope }) {
                                               {id:'ficha',titulo:'Ficha',detalhe:'Perfil, perícias e combate'},
                                               {id:'habilidades',titulo:'Habilidades',detalhe:'Inatas e heroicas',quantidade:dragonbaneAbilityCount},
                                               {id:'inventario',titulo:'Inventário',detalhe:'Equipamento e moedas'},
-                                              ...(showDragonbaneMagic?[{id:'magias',titulo:'Magias',detalhe:'Preparados '+dbPrepared+'/'+dbPreparedMax,quantidade:dragonbaneSpellCount}]:[])
+                                              ...(showDragonbaneMagic?[{id:'magias',titulo:'Magias',detalhe:'Feitiços e truques · '+dbPrepared+'/'+dbPreparedMax+' preparados',quantidade:dragonbaneSpellCount}]:[])
                                             ].map(tab=><button key={tab.id} type="button" role="tab" aria-selected={dragonbanePage===tab.id}
                                              onClick={()=>setDragonbanePage(tab.id)}
                                              className={'db-rework-tab '+(dragonbanePage===tab.id?'db-rework-tab-active':'')}>
