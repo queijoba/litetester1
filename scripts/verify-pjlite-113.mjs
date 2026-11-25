@@ -7,7 +7,7 @@ const home=text('src/PJLiteApp.jsx'),hub=text('src/cloud/JornadasHub.jsx');
 const shield=text('src/cloud/CampaignWorkspace.jsx'),component=text('src/cloud/GmShieldReference.jsx');
 const modal=text('src/components/ThreatCardModal.jsx'),css=text('src/components/threat-card.css');
 const night=text('src/cloud/jornadas-night.css');
-assert.ok(home.includes("versao: '1.1.3v Alpha'"),'Registro de versão atual');
+assert.ok(home.includes("versao: '1.1.9v Alpha'"),'Registro de versão atual');
 assert.ok(home.includes('1.1.9v Alpha — Bestiários, Dragonbane e temas'),'Novidades do release');
 assert.ok(text('index.html').includes('1.1.9v Alpha'),'Metadados versão');
 assert.ok(text('.github/workflows/ci.yml').includes('PJ Lite 1.1.9v Alpha'),'Snapshot etiquetado 1.1.3');
