@@ -1,8 +1,15 @@
 # LiteTester1 — PJ Lite React Preview
 
-**Versão atual da prévia:** 0.8.0v Alpha
+**Versão atual da prévia:** 1.1.9v Alpha
 
 Ambiente isolado para evoluir e validar o PJ Lite antes de qualquer migração do `pjlite.vercel.app` definitivo.
+
+## Novidades da 1.1.9v Alpha
+
+- D&D: 330 perfis do SRD 5.2.1, categorias, pesquisa e ND; conteúdo comercial fora do SRD não incluído.
+- Fábula Ultima e Skyfall: exemplos originais editáveis e catálogo com filtros; não são bestiários oficiais completos.
+- Dragonbane: ancestralidades/inatas, carga, grimório e bestiário da atualização anterior preservados.
+- Guias, log e contraste do catálogo atualizados. Apenas LiteTester.
 
 ## Estado atual
 
@@ -12,7 +19,7 @@ A prévia React/Vite está funcional e modularizada por sistema:
 - JSZip e LZ-String são dependências NPM.
 - O CSS legado continua em `src/pjlite.css`; `src/theme-polish.css` funciona como camada final de revisão de contraste e consistência entre os temas.
 - Dragonbane, D&D 5.5e, Fabula Ultima, O Som das Seis e 3DeT Victory possuem módulos próprios em `src/systems/`.
-- Skyfall, Tormenta20, Ordem Paranormal e Guerra dos Tronos continuam reservados no registro para implementação futura.
+- Skyfall e Ordem Paranormal têm módulos próprios; consulte o registro para o estado de Tormenta20 e Guerra dos Tronos.
 - Dragonbane exporta usando o template real em `public/pdfs/dragonbane-template.pdf`.
 - D&D 5.5e possui ficha responsiva, abas de Ficha & Combate, Recursos, Magias e painel dinâmico da classe/subclasse.
 - 3DeT Victory entra na 0.8.0 com ficha de personagem modular: retrato opcional, Arquétipo, Kit opcional, Conceito, Escala, Pontos/XP, P/H/R, PA/PM/PV, 12 Perícias padrão clicáveis, Perícias personalizadas, Especializações separadas, FA/FD, Vantagens, Desvantagens, Técnicas, Inventário por raridade e Anotações.
