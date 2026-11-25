@@ -31,7 +31,7 @@ import {MODELOS_ROTA_ZERO_BESTIARIO,MODELOS_ROTA_ZERO_NPCS} from './systems/rota
 import {MODELOS_3DET_LIVRO,GRUPOS_3DET_LIVRO} from './systems/3det/bookThreatCatalog.js';
 import ThreatCatalog from './components/ThreatCatalog.jsx';
 import {MODELOS_SOM6_LIVRO_PDJ,MODELOS_SOM6_LIVRO_ANIMAIS} from './systems/somDasSeis/bestiaryCatalog.js';
-import {MODELOS_DRAGONBANE_BESTIARIO,GRUPOS_DRAGONBANE_BESTIARIO} from './systems/dragonbane/bestiaryCatalog.js';
+import {MODELOS_DRAGONBANE_BESTIARIO,GRUPOS_DRAGONBANE_BESTIARIO,MODELOS_DRAGONBANE_VARIANTES,MODELOS_DRAGONBANE_SOLO} from './systems/dragonbane/bestiaryCatalog.js';
 import {markSheetDeleted,unmarkSheetDeleted} from './cloud/cloudSheetDeletions.js';
 import { initialRotaZeroPcData, normalizeRotaZeroPcData } from './systems/rotaZero/data.js';
 import { MODELOS_ROTA_ZERO_PC } from './systems/rotaZero/models.js';
@@ -2783,7 +2783,7 @@ const { useState, useEffect, useRef } = React;
                                             <p className="text-xs text-zinc-600">Livro de referência e 63 criaturas do Bestiário, incluindo modelos de PNJ e monstros com seis ataques. Selecione um modelo para editar os campos.</p>
                                             <ThreatCatalog system="dragonbane" groups={[
                                               {title:'Modelos rápidos anteriores',items:MODELOS_AMEACAS_GENERICOS},
-                                              ...GRUPOS_DRAGONBANE_BESTIARIO.map(grupo=>({title:'Bestiário Dragonbane • '+grupo,items:MODELOS_DRAGONBANE_BESTIARIO.filter(x=>x.grupo===grupo)}))
+                                              ...GRUPOS_DRAGONBANE_BESTIARIO.map(grupo=>({title:'Bestiário Dragonbane • '+grupo,items:MODELOS_DRAGONBANE_BESTIARIO.filter(x=>x.grupo===grupo)})),{title:'Bestiário Dragonbane • Variantes de PNJ',items:MODELOS_DRAGONBANE_VARIANTES},{title:'Sozinho em Fenda de Quedafunda',items:MODELOS_DRAGONBANE_SOLO}
                                             ]} onSelect={loadTemplate}/>
                                         </div>
                                     </div>
