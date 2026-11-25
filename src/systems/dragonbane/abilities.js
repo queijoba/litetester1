@@ -1,7 +1,7 @@
 // Dragonbane (Livro de Regras v1.1): organização original do PJLite.
 // Os modelos anteriores permanecem na lista habilidadesFeiticos: não há migração destrutiva.
 export const DRAGONBANE_ABILITY_KINDS=[
- {id:'inata',nome:'Inatas da Ancestralidade',caption:'Habilidades próprias de sua ancestralidade • Livro de Regras, pp. 9–12',short:'Inata'},
+ {id:'inata',nome:'Inatas da Ancestralidade',caption:'Habilidades próprias de sua ancestralidade • Livro de Regras, pp. 9–13',short:'Inata'},
  {id:'heroica',nome:'Habilidades Heroicas',caption:'Habilidade inicial da profissão e avanços do personagem • pp. 26, 35–39',short:'Heroica'},
  {id:'magia',nome:'Feitiços',caption:'Escola, grau, nível de poder e preparação • pp. 57–69',short:'Feitiço'},
  {id:'truque',nome:'Truques Mágicos',caption:'Sempre preparados, custam 1 PD e dispensam teste • pp. 57–61',short:'Truque'},
@@ -9,14 +9,14 @@ export const DRAGONBANE_ABILITY_KINDS=[
 ];
 export const DRAGONBANE_MAGIC_SCHOOLS=['Magia Geral','Animismo','Elementalismo','Mentalismo','Outra'];
 export const DRAGONBANE_INNATE_CATALOG={
- humano:[{nome:'Adaptativo',custo:'3 PD',desc:'Permite justificar o uso de outra perícia em um teste, sujeito à avaliação do mestre.'}],
- anao:[{nome:'Implacável',custo:'3 PD',desc:'Favorece um ataque contra alguém que já tenha ferido você anteriormente.'}],
- elfo:[{nome:'Paz Interior',custo:'—',desc:'Meditação durante descanso de entretempo, com recuperação adicional de PV/PD e condição.'}],
- halfling:[{nome:'Difícil de Pegar',custo:'3 PD',desc:'Concede uma dádiva ao se esquivar de um ataque.'}],
- lupino:[{nome:'Instintos de Caça',custo:'3 PD',desc:'Permite rastrear uma presa designada pelo cheiro e obter vantagem ao atacá-la com custo adicional.'}],
+ humano:[{nome:'Adaptativo',custo:'3 PD',desc:"3 PD: substitua a perícia normal do teste por outra, justificando como a utiliza. O mestre aprova a substituição."}],
+ anao:[{nome:'Implacável',custo:'3 PD',desc:"3 PD: obtenha uma dádiva ao atacar alguém que já causou pelo menos 1 ponto de dano em você, independentemente de quando."}],
+ elfo:[{nome:'Paz Interior',custo:'—',desc:"Meditação durante descanso de entretempo: recupera D6 PV e D6 PD adicionais e mais uma condição. Durante a meditação, não responde a estímulos nem pode ser despertado."}],
+ halfling:[{nome:'Difícil de Pegar',custo:'3 PD',desc:"3 PD: ao esquivar-se de um ataque, recebe uma dádiva no teste de Evasão."}],
+ lupino:[{nome:'Instintos de Caça',custo:'3 PD',desc:"3 PD: escolha uma presa visível ou cujo cheiro perceba (uma ação em combate). Rastreia seu cheiro por um dia. Por 1 PD adicional, sem ação, recebe uma dádiva em um ataque contra ela."}],
  marreco:[
-  {nome:'Mal-Humorado',custo:'3 PD',desc:'Favorece testes físicos ou sociais, mas pode deixar o marreco Enraivecido.'},
-  {nome:'Pés Palmados',custo:'—',desc:'Facilita testes de Natação e permite deslocamento completo na água.'}
+  {nome:'Mal-Humorado',custo:'3 PD',desc:"3 PD, sem gastar ação: dádiva em teste de perícia e fica Enraivecido, se ainda não estiver. Não pode usar em testes de INT nem perícias baseadas em INT."},
+  {nome:'Pés Palmados',custo:'—',desc:"Passiva: dádiva em todos os testes de Natação; deslocamento integral dentro e debaixo da água."}
  ]
 };
 const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();

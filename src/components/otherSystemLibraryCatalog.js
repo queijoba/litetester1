@@ -9,313 +9,351 @@ export const SOM6_LIBRARY=[
     "id": "som6-habilidade-1",
     "tipo": "habilidade",
     "nome": "LIGHT MY FIRE",
-    "pagina": "22–27",
+    "pagina": "23",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Habilidade de faroeste. Consulte o efeito e as condições especiais nesta seção do Livro Básico. O registro adicionado à ficha é editável."
+    "desc": "Revólver: +1 no teste de ataque e dano adicional igual à Agilidade.",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-habilidade-2",
     "tipo": "habilidade",
     "nome": "LET’S DANCE",
-    "pagina": "22–27",
+    "pagina": "23",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Habilidade de faroeste. Consulte o efeito e as condições especiais nesta seção do Livro Básico. O registro adicionado à ficha é editável."
+    "desc": "Dois disparos por ação, com −1 no teste de Combate.",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-habilidade-3",
     "tipo": "habilidade",
     "nome": "FORTUNATE SON",
-    "pagina": "22–27",
+    "pagina": "23",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Habilidade de faroeste. Consulte o efeito e as condições especiais nesta seção do Livro Básico. O registro adicionado à ficha é editável."
+    "desc": "Ao cair a 0 PV pela primeira vez no combate, recupera 3 PV e levanta no turno seguinte; não funciona novamente no mesmo combate.",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-habilidade-4",
     "tipo": "habilidade",
     "nome": "DON’T STOP BELIEVING",
-    "pagina": "22–27",
+    "pagina": "23",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Habilidade de faroeste. Consulte o efeito e as condições especiais nesta seção do Livro Básico. O registro adicionado à ficha é editável."
+    "desc": "Arma de longa distância: +1 no ataque e dano adicional igual à Inteligência.",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-habilidade-5",
     "tipo": "habilidade",
     "nome": "IMMIGRANT SONG",
-    "pagina": "22–27",
+    "pagina": "23",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Habilidade de faroeste. Consulte o efeito e as condições especiais nesta seção do Livro Básico. O registro adicionado à ficha é editável."
+    "desc": "Dano desarmado de 1d6 + Físico, em vez de 1d3.",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-habilidade-6",
     "tipo": "habilidade",
     "nome": "GIMME SHELTER",
-    "pagina": "22–27",
+    "pagina": "23",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Habilidade de faroeste. Consulte o efeito e as condições especiais nesta seção do Livro Básico. O registro adicionado à ficha é editável."
+    "desc": "Ataque surpresa com faca/navalha: +1d6 no nível 1, +2d6 no 2, +3d6 no 4, +4d6 no 6.",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-habilidade-7",
     "tipo": "habilidade",
     "nome": "ANOTHER ONE BITES THE DUST",
-    "pagina": "22–27",
+    "pagina": "24",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Habilidade de faroeste. Consulte o efeito e as condições especiais nesta seção do Livro Básico. O registro adicionado à ficha é editável."
+    "desc": "Escolha uma manobra por aquisição: rasteira (teste oposto; alvo cai e gasta ação para levantar), suplex (teste oposto, 2d6), briga de bar (objetos pequenos 1d6+1, médios 1d6+2, grandes 1d6+3), tapa (alvo gasta ação para se recuperar) ou kung-fu (3 golpes em uma ação, −1 no teste). Pode adquirir outras manobras; registre a escolha na ficha.",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-habilidade-8",
     "tipo": "habilidade",
     "nome": "RIDERS ON THE STORM",
-    "pagina": "22–27",
+    "pagina": "24",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Habilidade de faroeste. Consulte o efeito e as condições especiais nesta seção do Livro Básico. O registro adicionado à ficha é editável."
+    "desc": "Uma vez por combate, cada 3 PV sacrificados acrescenta 1d6 por nível ao dano corpo a corpo.",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-habilidade-9",
     "tipo": "habilidade",
     "nome": "BORN TO BE WILD",
-    "pagina": "22–27",
+    "pagina": "24",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Habilidade de faroeste. Consulte o efeito e as condições especiais nesta seção do Livro Básico. O registro adicionado à ficha é editável."
+    "desc": "+1 em testes de Antecedente de furtividade ou percepção.",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-habilidade-10",
     "tipo": "habilidade",
     "nome": "SMOKE ON THE WATER",
-    "pagina": "22–27",
+    "pagina": "24",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Habilidade de faroeste. Consulte o efeito e as condições especiais nesta seção do Livro Básico. O registro adicionado à ficha é editável."
+    "desc": "Armas rústicas: +1 no ataque e dano adicional igual ao Físico.",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-habilidade-11",
     "tipo": "habilidade",
     "nome": "UNDER PRESSURE",
-    "pagina": "22–27",
+    "pagina": "24",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Habilidade de faroeste. Consulte o efeito e as condições especiais nesta seção do Livro Básico. O registro adicionado à ficha é editável."
+    "desc": "+1 no Físico para resistir a fatores adversos. No descanso, some Físico aos PV recuperados.",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-habilidade-12",
     "tipo": "habilidade",
     "nome": "HEARTBREAKER",
-    "pagina": "22–27",
+    "pagina": "25",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Habilidade de faroeste. Consulte o efeito e as condições especiais nesta seção do Livro Básico. O registro adicionado à ficha é editável."
+    "desc": "Uma vez por sessão, escolha um alvo por nível: −1 nas ações ofensivas dele contra você. Pode transferir o benefício para outro aliado.",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-habilidade-13",
     "tipo": "habilidade",
     "nome": "BARRACUDA",
-    "pagina": "22–27",
+    "pagina": "25",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Habilidade de faroeste. Consulte o efeito e as condições especiais nesta seção do Livro Básico. O registro adicionado à ficha é editável."
+    "desc": "+1 por nível (máx. +5) em testes para obter informações.",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-habilidade-14",
     "tipo": "habilidade",
     "nome": "SWEET EMOTION",
-    "pagina": "22–27",
+    "pagina": "25",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Habilidade de faroeste. Consulte o efeito e as condições especiais nesta seção do Livro Básico. O registro adicionado à ficha é editável."
+    "desc": "Inspira aliados. Nível 1: ação extra em combate; 2: 1d6 PV temporários; 3: +1 em ataques; 4: +2 em ataques; 5: 2d6 PV temporários; 6: +1 jogada em teste de morte. Benefícios anteriores ficam disponíveis; consulte a tabela de usos por sessão da p. 25.",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-habilidade-15",
     "tipo": "habilidade",
     "nome": "CRAZY TRAIN",
-    "pagina": "22–27",
+    "pagina": "25",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Habilidade de faroeste. Consulte o efeito e as condições especiais nesta seção do Livro Básico. O registro adicionado à ficha é editável."
+    "desc": "Com peças, aumenta dano de uma arma de fogo em até 1d6, uma vez por nível. Após um combate a arma fica inutilizável.",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-habilidade-16",
     "tipo": "habilidade",
     "nome": "CARRY ON MY WAYWARD SON",
-    "pagina": "22–27",
+    "pagina": "25",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Habilidade de faroeste. Consulte o efeito e as condições especiais nesta seção do Livro Básico. O registro adicionado à ficha é editável."
+    "desc": "Repetições de testes falhos por sessão iguais ao nível; pode cedê-las a outros personagens.",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-habilidade-17",
     "tipo": "habilidade",
     "nome": "WAR PIGS",
-    "pagina": "22–27",
+    "pagina": "25",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Habilidade de faroeste. Consulte o efeito e as condições especiais nesta seção do Livro Básico. O registro adicionado à ficha é editável."
+    "desc": "+1 em teste de Antecedente ao usar explosivos; dano adicional igual ao Intelecto.",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-habilidade-18",
     "tipo": "habilidade",
     "nome": "ACE OF SPADES",
-    "pagina": "22–27",
+    "pagina": "25",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Habilidade de faroeste. Consulte o efeito e as condições especiais nesta seção do Livro Básico. O registro adicionado à ficha é editável."
+    "desc": "+1 em Roubo para trapacear ou perceber trapaça em jogos.",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-habilidade-19",
     "tipo": "habilidade",
     "nome": "A HORSE WITH NO NAME",
-    "pagina": "22–27",
+    "pagina": "26",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Habilidade de faroeste. Consulte o efeito e as condições especiais nesta seção do Livro Básico. O registro adicionado à ficha é editável."
+    "desc": "+1 em cavalgar, saltar e controlar a própria montaria.",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-habilidade-20",
     "tipo": "habilidade",
     "nome": "I WANT TO HOLD YOUR HAND",
-    "pagina": "22–27",
+    "pagina": "26",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Habilidade de faroeste. Consulte o efeito e as condições especiais nesta seção do Livro Básico. O registro adicionado à ficha é editável."
+    "desc": "Ao tratar a si ou outro personagem, acrescenta 1d6 PV recuperados por nível.",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-habilidade-21",
     "tipo": "habilidade",
     "nome": "PARANOID",
-    "pagina": "22–27",
+    "pagina": "26",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Habilidade de faroeste. Consulte o efeito e as condições especiais nesta seção do Livro Básico. O registro adicionado à ficha é editável."
+    "desc": "+1 Iniciativa; nunca é pego desprevenido.",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-habilidade-22",
     "tipo": "habilidade",
     "nome": "RAMBLE ON",
-    "pagina": "22–27",
+    "pagina": "26",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Habilidade de faroeste. Consulte o efeito e as condições especiais nesta seção do Livro Básico. O registro adicionado à ficha é editável."
+    "desc": "Dois movimentos por ação; +1 em testes de fuga.",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-habilidade-23",
     "tipo": "habilidade",
     "nome": "AQUALUNG",
-    "pagina": "22–27",
+    "pagina": "27",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Habilidade de faroeste. Consulte o efeito e as condições especiais nesta seção do Livro Básico. O registro adicionado à ficha é editável."
+    "desc": "+1 em testes atléticos (nadar, escalar, saltar).",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-habilidade-24",
     "tipo": "habilidade",
     "nome": "MORE THAN A FEELING",
-    "pagina": "22–27",
+    "pagina": "27",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Habilidade de faroeste. Consulte o efeito e as condições especiais nesta seção do Livro Básico. O registro adicionado à ficha é editável."
+    "desc": "Uma vez por sessão, teste Negócios se desconfiar de alguém; sucesso permite duas perguntas à Juíza.",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-antecedente-25",
     "tipo": "antecedente",
     "nome": "Combate",
-    "pagina": "18–21",
+    "pagina": "19",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Área de experiência da personagem. O valor representa pontos de Antecedente; revise a distribuição conforme sua criação e evolução.",
-    "key": "combate"
+    "desc": "Ataques armados/desarmados e estratégia. Na criação, distribua 4 pontos no total, até 2 por Antecedente.",
+    "key": "combate",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-antecedente-26",
     "tipo": "antecedente",
     "nome": "Negócios",
-    "pagina": "18–21",
+    "pagina": "19",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Área de experiência da personagem. O valor representa pontos de Antecedente; revise a distribuição conforme sua criação e evolução.",
-    "key": "negocios"
+    "desc": "Negociação, persuasão e percepção de mentiras. Na criação, distribua 4 pontos no total, até 2 por Antecedente.",
+    "key": "negocios",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-antecedente-27",
     "tipo": "antecedente",
     "nome": "Montaria",
-    "pagina": "18–21",
+    "pagina": "20",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Área de experiência da personagem. O valor representa pontos de Antecedente; revise a distribuição conforme sua criação e evolução.",
-    "key": "montaria"
+    "desc": "Controle e manobras de montaria, avaliação de cavalos e pecuária. Na criação, distribua 4 pontos no total, até 2 por Antecedente.",
+    "key": "montaria",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-antecedente-28",
     "tipo": "antecedente",
     "nome": "Tradição",
-    "pagina": "18–21",
+    "pagina": "19",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Área de experiência da personagem. O valor representa pontos de Antecedente; revise a distribuição conforme sua criação e evolução.",
-    "key": "tradicao"
+    "desc": "Cultura, fauna, flora, remédios e rastros. Na criação, distribua 4 pontos no total, até 2 por Antecedente.",
+    "key": "tradicao",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-antecedente-29",
     "tipo": "antecedente",
     "nome": "Labuta",
-    "pagina": "18–21",
+    "pagina": "19",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Área de experiência da personagem. O valor representa pontos de Antecedente; revise a distribuição conforme sua criação e evolução.",
-    "key": "labuta"
+    "desc": "Ofícios, reparos, construção e esforço físico. Na criação, distribua 4 pontos no total, até 2 por Antecedente.",
+    "key": "labuta",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-antecedente-30",
     "tipo": "antecedente",
     "nome": "Exploração",
-    "pagina": "18–21",
+    "pagina": "20",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Área de experiência da personagem. O valor representa pontos de Antecedente; revise a distribuição conforme sua criação e evolução.",
-    "key": "exploracao"
+    "desc": "Sobrevivência, perceber ameaças, rastrear e ocultar rastros. Na criação, distribua 4 pontos no total, até 2 por Antecedente.",
+    "key": "exploracao",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-antecedente-31",
     "tipo": "antecedente",
     "nome": "Roubo",
-    "pagina": "18–21",
+    "pagina": "20",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Área de experiência da personagem. O valor representa pontos de Antecedente; revise a distribuição conforme sua criação e evolução.",
-    "key": "roubo"
+    "desc": "Furtividade, trapaça, destreza manual e furtos. Na criação, distribua 4 pontos no total, até 2 por Antecedente.",
+    "key": "roubo",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-antecedente-32",
     "tipo": "antecedente",
     "nome": "Medicina",
-    "pagina": "18–21",
+    "pagina": "20",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Área de experiência da personagem. O valor representa pontos de Antecedente; revise a distribuição conforme sua criação e evolução.",
-    "key": "medicina"
+    "desc": "Cura no descanso, anatomia, doenças e remédios. Na criação, distribua 4 pontos no total, até 2 por Antecedente.",
+    "key": "medicina",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-tormento-33",
     "tipo": "tormento",
     "nome": "Vingança",
-    "pagina": "28–30",
+    "pagina": "28–29",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Tormento narrativo de personagem. Escolha um detalhe ou escreva seu próprio conflito na ficha."
+    "desc": "Conflito pessoal ligado a vingança. Quando o Tormento enriquecer a cena, a Juíza pode conceder Carta de Sina: refazer um teste ou reduzir dano em 1d6; também pode ser usada em duelo.",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-tormento-34",
     "tipo": "tormento",
     "nome": "Vício",
-    "pagina": "28–30",
+    "pagina": "28–29",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Tormento narrativo de personagem. Escolha um detalhe ou escreva seu próprio conflito na ficha."
+    "desc": "Conflito pessoal ligado a vício. Quando o Tormento enriquecer a cena, a Juíza pode conceder Carta de Sina: refazer um teste ou reduzir dano em 1d6; também pode ser usada em duelo.",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-tormento-35",
     "tipo": "tormento",
     "nome": "Doença",
-    "pagina": "28–30",
+    "pagina": "28–29",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Tormento narrativo de personagem. Escolha um detalhe ou escreva seu próprio conflito na ficha."
+    "desc": "Conflito pessoal ligado a doença. Quando o Tormento enriquecer a cena, a Juíza pode conceder Carta de Sina: refazer um teste ou reduzir dano em 1d6; também pode ser usada em duelo.",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-tormento-36",
     "tipo": "tormento",
     "nome": "Fugindo",
-    "pagina": "28–30",
+    "pagina": "28–29",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Tormento narrativo de personagem. Escolha um detalhe ou escreva seu próprio conflito na ficha."
+    "desc": "Conflito pessoal ligado a fugindo. Quando o Tormento enriquecer a cena, a Juíza pode conceder Carta de Sina: refazer um teste ou reduzir dano em 1d6; também pode ser usada em duelo.",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-tormento-37",
     "tipo": "tormento",
     "nome": "Segredo",
-    "pagina": "28–30",
+    "pagina": "28–29",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Tormento narrativo de personagem. Escolha um detalhe ou escreva seu próprio conflito na ficha."
+    "desc": "Conflito pessoal ligado a segredo. Quando o Tormento enriquecer a cena, a Juíza pode conceder Carta de Sina: refazer um teste ou reduzir dano em 1d6; também pode ser usada em duelo.",
+    "mecanicaRevisada": true
   },
   {
     "id": "som6-tormento-38",
     "tipo": "tormento",
     "nome": "Dever",
-    "pagina": "28–30",
+    "pagina": "28–29",
     "fonte": "O Som das Seis — Livro Básico",
-    "desc": "Tormento narrativo de personagem. Escolha um detalhe ou escreva seu próprio conflito na ficha."
+    "desc": "Conflito pessoal ligado a dever. Quando o Tormento enriquecer a cena, a Juíza pode conceder Carta de Sina: refazer um teste ou reduzir dano em 1d6; também pode ser usada em duelo.",
+    "mecanicaRevisada": true
   }
 ];
 export const TRESDET_LIBRARY=[

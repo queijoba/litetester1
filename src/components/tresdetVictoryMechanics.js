@@ -5,7 +5,7 @@ export const TRESDET_MECHANICS={
   "Aceleração": {
     "tipo": "vantagem",
     "ativacao": "1 PM por movimento ou Ganho",
-    "mecanica": "Move novamente ou recebe Ganho na iniciativa e em perseguições.",
+    "mecanica": "Gaste 1 PM para um movimento extra no seu turno, ou 1 PM antes de rolar para Ganho em iniciativa ou testes de Habilidade para correr, fugir ou perseguir.",
     "pagina": "43"
   },
   "+Ação": {
@@ -17,19 +17,19 @@ export const TRESDET_MECHANICS={
   "Acumulador": {
     "tipo": "vantagem",
     "ativacao": "2 PM por acerto",
-    "mecanica": "Depois de causar dano, +1 P no ataque seguinte; acumula até +5 e zera ao errar.",
+    "mecanica": "Após causar dano, pague 2 PM para +1 P no próximo ataque; repita após cada acerto para acumular até +5 P. Pode trocar de alvo. Perde o bônus se errar ou deixar de atacar (não causar dano).",
     "pagina": "43"
   },
   "Ágil": {
     "tipo": "vantagem",
     "ativacao": "2 PM para crítico 5–6",
-    "mecanica": "+2 H em iniciativa, equilíbrio e coordenação; incompatível com Atrapalhado.",
+    "mecanica": "+2 H em testes de agilidade física, coordenação, equilíbrio e iniciativa; inclui o bônus em críticos. Antes de um desses testes, 2 PM permitem crítico com 5 ou 6. Incompatível com Atrapalhado.",
     "pagina": "45"
   },
   "Ajudante": {
     "tipo": "vantagem",
     "ativacao": "2 PM por ajuda (alguns 1 PM)",
-    "mecanica": "Uma ajuda por rodada: cura, Ganho, montaria ou efeito da função comprada.",
+    "mecanica": "Uma ajuda por rodada. Curandeiro (2 PM): cura 2D PV em você ou aliado Perto, ou repete teste de R falho contra efeito negativo. Especialista (2 PM): Ganho em teste da perícia escolhida, exceto ataque/defesa. Familiar (1 PM): metade do custo em PM de outra vantagem na rodada. Lutador (2 PM): Ganho no ataque ou nas defesas por uma rodada. Montaria (1 PM): movimento extra ou Ganho em iniciativa, corrida ou perseguição. Pode comprar outras funções, mas só uma ajuda por rodada.",
     "pagina": "45"
   },
   "Alcance": {

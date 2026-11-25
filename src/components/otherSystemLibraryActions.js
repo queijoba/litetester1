@@ -10,9 +10,9 @@ export function applyOtherSystemLibrarySelection(current,entry,kind){
   if(kind==='antecedente'){
    const key=entry.key;if(!key||!(key in (data.antecedentes||{})))throw Error('Antecedente sem campo na ficha.');
    if(Number(data.antecedentes[key]||0)>0)return {data:current,changed:false,message:'Este antecedente já possui pontos na ficha.'};
-   // Primeiro nível: respeitar o limite inicial de distribuição de cinco pontos.
+   // Primeiro nível: respeitar o limite inicial de distribuição de quatro pontos.
    const total=Object.values(data.antecedentes).reduce((n,v)=>n+(Number(v)||0),0);
-   if(Number(data.nivel||1)===1&&total>=5)return {data:current,changed:false,message:'Os cinco pontos de Antecedente iniciais já foram distribuídos. Reorganize-os manualmente.'};
+   if(Number(data.nivel||1)===1&&total>=4)return {data:current,changed:false,message:'Os quatro pontos de Antecedente iniciais já foram distribuídos. Reorganize-os manualmente.'};
    data.antecedentes[key]=1;
    return {data,changed:true,message:'Antecedente '+entry.nome+' marcado com 1 ponto; confira a distribuição final.'};
   }

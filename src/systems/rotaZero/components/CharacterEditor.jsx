@@ -184,11 +184,11 @@ export default function RotaZeroCharacterEditor({scope}){
       </Panel>
 
       <Panel title="VANTAGENS // 1 OU 2 CRÉDITOS">
-        <div className="rz-table-wrap"><table className="rz-table rz-table-compact"><thead><tr><th>Sel.</th><th>Vantagem</th><th>Tipo / efeito</th><th>CR</th></tr></thead><tbody>{RZ_ADVANTAGES.map(v=><tr key={v.id}><td><input type="checkbox" checked={(data.vantagens||[]).includes(v.id)} onChange={e=>toggleList('vantagens',v.id,e.target.checked)}/></td><td><b>{v.nome}</b></td><td>{v.tipo} — {v.efeito}</td><td>{v.custo}</td></tr>)}</tbody></table></div>
+        <div className="rz-table-wrap"><table className="rz-table rz-table-compact"><thead><tr><th>Sel.</th><th>Vantagem</th><th>Tipo / efeito</th><th>CR</th></tr></thead><tbody>{RZ_ADVANTAGES.map(v=><tr key={v.id}><td><input type="checkbox" checked={(data.vantagens||[]).includes(v.id)} onChange={e=>toggleList('vantagens',v.id,e.target.checked)}/></td><td><b>{v.nome}</b></td><td>{v.tipo} — {v.efeito}<small className="block">Rota Zero v0.5 · p. 11</small></td><td>{v.custo}</td></tr>)}</tbody></table></div>
       </Panel>
 
       <Panel title="DEFEITOS // +1 CRÉDITO, MÁXIMO 2">
-        <div className="rz-table-wrap"><table className="rz-table rz-table-compact"><thead><tr><th>Sel.</th><th>Defeito</th><th>Efeito</th><th>Ganho</th></tr></thead><tbody>{RZ_DEFECTS.map(v=><tr key={v.id}><td><input type="checkbox" disabled={!(data.defeitos||[]).includes(v.id)&&(data.defeitos||[]).length>=2} checked={(data.defeitos||[]).includes(v.id)} onChange={e=>toggleList('defeitos',v.id,e.target.checked)}/></td><td><b>{v.nome}</b></td><td>{v.efeito}</td><td>+1</td></tr>)}</tbody></table></div>
+        <div className="rz-table-wrap"><table className="rz-table rz-table-compact"><thead><tr><th>Sel.</th><th>Defeito</th><th>Efeito</th><th>Ganho</th></tr></thead><tbody>{RZ_DEFECTS.map(v=><tr key={v.id}><td><input type="checkbox" disabled={!(data.defeitos||[]).includes(v.id)&&(data.defeitos||[]).length>=2} checked={(data.defeitos||[]).includes(v.id)} onChange={e=>toggleList('defeitos',v.id,e.target.checked)}/></td><td><b>{v.nome}</b></td><td>{v.efeito}<small className="block">Rota Zero v0.5 · p. 13</small></td><td>+1</td></tr>)}</tbody></table></div>
       </Panel>
     </>}
 

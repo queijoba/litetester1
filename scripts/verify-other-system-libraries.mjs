@@ -30,7 +30,7 @@ r=applyOtherSystemLibrarySelection(r.data,SOM6_LIBRARY.find(x=>x.nome==='Segredo
 assert.equal(r.data.tormento.tipo,'Segredo');
 assert.equal(r.data.tormento.desc,'Conteúdo antigo');
 assert.equal(r.data.anotacoes,'Não apagar');
-const full={...som,antecedentes:{combate:2,labuta:2,negocios:1,montaria:0,tradicao:0,exploracao:0,roubo:0,medicina:0}};
+const full={...som,antecedentes:{combate:2,labuta:2,negocios:0,montaria:0,tradicao:0,exploracao:0,roubo:0,medicina:0}};
 assert.equal(applyOtherSystemLibrarySelection(full,SOM6_LIBRARY.find(x=>x.nome==='Medicina'),'antecedente').changed,false);
 
 const det=structuredClone(initial3DetPcData);
@@ -64,3 +64,7 @@ assert.ok(modal.includes('createPortal')&&modal.includes('aria-modal="true"')&&m
 assert.ok(css.includes('@media(max-width:660px)')&&css.includes('--lib-accent:#e5b54c'));
 assert.ok(!app.includes("setDragonbaneLibraryOpen"),'Dragonbane não pode ser modificado');
 console.log('✓ Bibliotecas Som das Seis e 3DeT: 197 referências, campos corretos e histórico preservado.');
+
+assert.ok(SOM6_LIBRARY.every(x=>x.mecanicaRevisada));
+assert.equal(SOM6_LIBRARY.find(x=>x.nome==='LIGHT MY FIRE').pagina,'23');
+assert.ok(SOM6_LIBRARY.find(x=>x.nome==='PARANOID').desc.includes('+1 Iniciativa'));

@@ -95,7 +95,7 @@ export default function DragonbaneAbilitiesPanel({mode,data,addToArray,updateArr
    <div><strong>Habilidades da ancestralidade</strong><p>Adicionar é opcional; nada será inserido automaticamente.</p></div>
    <div className="db-rework-suggestion-buttons">
     {suggestions.map(s=><button key={s.nome} type="button" onClick={()=>addToArray('habilidadesFeiticos',
-     createDragonbaneAbility('inata',{nome:s.nome,desc:s.desc,fv_nvl:s.custo,fonte:'Livro de Regras Dragonbane',pagina:'9–12'}))}
+     createDragonbaneAbility('inata',{nome:s.nome,desc:s.desc,fv_nvl:s.custo,fonte:'Livro de Regras Dragonbane',pagina:'9–13'}))}
      className="db-rework-suggestion">+ {s.nome}</button>)}
    </div>
   </aside>}
