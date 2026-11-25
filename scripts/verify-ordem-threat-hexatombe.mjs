@@ -25,7 +25,7 @@ assert.ok(threat.includes('ordem-threat-operational-grid')&&threat.includes("upd
 assert.ok(threat.includes('HEXATOMBE · PARTE 1')&&threat.includes('HEXATOMBE · PARTE 2'),'Avisos de fonte e limites do acervo');
 assert.ok(css.includes('.ordem-threat-operational-grid'),'Recursos e perícias em colunas');
 assert.ok(!threat.includes('Folha 1')&&!threat.includes('Folha 2'),'Não criar páginas duplicadas na ameaça');
-assert.equal(ORDEM_LIBRARY_CATALOG.length,293);
+assert.equal(ORDEM_LIBRARY_CATALOG.length,295);
 assert.equal(ORDEM_LIBRARY_COUNTS.ritual,107);
 assert.equal(AS03_NEW_LIBRARY_ENTRIES.length,7,'Uma opção geral e seis poderes de sacrifício');
 const idx=new Map(ORDEM_LIBRARY_CATALOG.map(x=>[x.id,x]));
