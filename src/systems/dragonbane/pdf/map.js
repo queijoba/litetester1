@@ -1,5 +1,5 @@
 import {DRAGONBANE_ATTRIBUTE_ORDER,dragonbaneAttributeValue,dragonbaneAttributeCondition} from '../attributes.js';
-import {dragonbaneAbilityKind,dragonbanePdfAbilityOrder,dragonbanePdfAbilityName,dragonbaneMagicSchool} from '../abilities.js';
+import {dragonbaneAbilityKind,dragonbanePdfAbilityOrder,dragonbanePdfAbilityName,dragonbaneMagicSchool,dragonbaneLoad} from '../abilities.js';
 const clean = v => String(v ?? '')
   .replace(/[–—]/g, '-')
   .replace(/[“”]/g, '"')
@@ -78,7 +78,7 @@ export function fillDragonbanePdf(form, item) {
   setText(form, 'bonus_for', der.danoBonusFor);
   setText(form, 'bonus_agl', der.danoBonusAgl);
   setText(form, 'movimento', der.movimento);
-  setText(form, 'sobrecarga', der.limiteSobrecarga);
+  setText(form, 'sobrecarga',item?.dragonbaneBackpack||item?.dragonbaneInventory?.length?dragonbaneLoad(item).limit:der.limiteSobrecarga);
 
   mapSkills(form, item?.periciasBase, 'pericia_');
   mapSkills(form, item?.periciasArmas, 'arma_pericia_');
@@ -118,7 +118,7 @@ export function fillDragonbanePdf(form, item) {
   setCheck(form, 'descanso_rodada', !!status?.descansoRodada);
   setCheck(form, 'descanso_entretempo', !!status?.descansoEntretempo);
 
-  inventoryLines(item?.inventario).forEach((value, index) => {
+  inventoryLines([...(item?.dragonbaneInventory||[]).filter(x=>x.nome).map(x=>x.nome+' ×'+x.quantidade+' (peso '+x.peso+')'),...(item?.dragonbaneBackpack?['Mochila']:[]),...(Number(item?.dragonbaneRations)>0?['Rações ×'+item.dragonbaneRations]:[]),item?.inventario||''].join('\n')).forEach((value, index) => {
     setText(form, `inventario_${String(index + 1).padStart(2, '0')}`, value);
   });
   setText(form, 'memento', bio.memento);
