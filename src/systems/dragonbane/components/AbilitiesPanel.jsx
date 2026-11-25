@@ -2,7 +2,7 @@ import * as React from 'react';
 import {
  DRAGONBANE_ABILITY_KINDS,DRAGONBANE_MAGIC_SCHOOLS,
  createDragonbaneAbility,dragonbaneAbilityList,dragonbaneInnateSuggestions,
- dragonbaneMagicSchool,renameDragonbaneAbility,DRAGONBANE_SPELL_GRADES,dragonbaneSpellGrade,dragonbaneSpellGroups,dragonbanePreparedLimit
+ dragonbaneMagicSchool,renameDragonbaneAbility,syncDragonbaneInnates,DRAGONBANE_SPELL_GRADES,dragonbaneSpellGrade,dragonbaneSpellGroups,dragonbanePreparedLimit
 } from '../abilities.js';
 
 import {dragonbaneAttributeValue} from '../attributes.js';
@@ -97,15 +97,15 @@ export default function DragonbaneAbilitiesPanel({mode,data,addToArray,updateArr
    </div>
    <span className="db-rework-chapter">{mode==='magias'?'CAP. 5':'CAP. 2–3'}</span>
   </div>
-  {isMagic&&<div className="db-grimoire-controls"><div><strong>Preparados: {prepared}/{limit}</strong><small>Limite pela chance base de INT · truques não contam (pp. 57–58).</small>{prepared>limit&&<p role="status">Acima do limite normal; ajuste os preparados conforme as regras da mesa.</p>}</div><label>Escola<select value={school} onChange={e=>setSchool(e.target.value)}><option>Todas</option>{DRAGONBANE_MAGIC_SCHOOLS.map(s=><option key={s}>{s}</option>)}</select></label><label className="db-grimoire-check"><input type="checkbox" checked={onlyPrepared} onChange={e=>setOnlyPrepared(e.target.checked)}/> Só preparados</label></div>}
+  {isMagic&&<div className="db-grimoire-controls"><div><strong>Feitiços preparados: {prepared}/{limit}</strong><progress className="db-prepared-progress" value={Math.min(prepared,limit)} max={limit}/><small>{Math.max(0,limit-prepared)} vagas livres · {dragonbaneAbilityList(data,'magia').length} feitiços conhecidos · {dragonbaneAbilityList(data,'truque').length} truques</small><small>Limite pela chance base de INT · truques não contam (pp. 57–58).</small>{prepared>limit&&<p role="status">Acima do limite normal; ajuste os preparados conforme as regras da mesa.</p>}</div><label>Escola<select value={school} onChange={e=>setSchool(e.target.value)}><option>Todas</option>{DRAGONBANE_MAGIC_SCHOOLS.map(s=><option key={s}>{s}</option>)}</select></label><label className="db-grimoire-check"><input type="checkbox" checked={onlyPrepared} onChange={e=>setOnlyPrepared(e.target.checked)}/> Só preparados</label></div>}
   {pdfCount>24&&<div className="db-rework-pdf-warning" role="alert">
    <strong>Atenção ao PDF editável:</strong> sua ficha tem {pdfCount} cartões, mas o modelo PDF permite 24. Os demais continuam salvos no PJLite; revise a exportação.
   </div>}
   {suggestions.length>0&&<aside className="db-rework-suggestions" aria-label="Sugestões de habilidades inatas">
-   <div><strong>Habilidades da ancestralidade</strong><p>Adicionar é opcional; nada será inserido automaticamente.</p></div>
-   <div className="db-rework-suggestion-buttons">
+   <div><strong>Habilidades da ancestralidade</strong><p>Ao selecionar a ancestralidade, as inatas são vinculadas. Fichas antigas podem sincronizar aqui.</p></div>
+   <div className="db-rework-suggestion-buttons"><button type="button" className="db-rework-suggestion" onClick={()=>setData(prev=>syncDragonbaneInnates(prev))}>Sincronizar inatas</button>
     {suggestions.map(s=><button key={s.nome} type="button" onClick={()=>addToArray('habilidadesFeiticos',
-     createDragonbaneAbility('inata',{nome:s.nome,desc:s.desc,fv_nvl:s.custo,fonte:'Livro de Regras Dragonbane',pagina:'9–13'}))}
+     createDragonbaneAbility('inata',{nome:s.nome,desc:s.desc,fv_nvl:s.custo,fonte:s.fonte||'Livro de Regras Dragonbane',pagina:s.pagina||'9–13'}))}
      className="db-rework-suggestion">+ {s.nome}</button>)}
    </div>
   </aside>}
