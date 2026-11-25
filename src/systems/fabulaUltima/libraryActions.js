@@ -27,7 +27,7 @@ export function applyFabulaLibrarySelection(current,entry,kind){
   data.extras.magia={disciplinas:[],feiticos:[],rituais:[],...(data.extras.magia||{})};
   const spells=data.extras.magia.feiticos=Array.isArray(data.extras.magia.feiticos)?data.extras.magia.feiticos:[];
   if(spells.some(x=>norm(x?.nome)===norm(entry.nome)&&norm(x?.disciplina)===norm(entry.disciplina)))return {data:current,changed:false,message:'Feitiço já registrado.'};
-  spells.push({nome:entry.nome,disciplina:entry.disciplina||'',ofensiva:!!entry.ofensiva,teste:'',pm:entry.pm||'',alvos:'',duracao:'',desc:entry.desc,fonte:entry.fonte,pagina:entry.pagina,referenciaId:entry.id});
+  spells.push({nome:entry.nome,disciplina:entry.disciplina||'',ofensiva:!!entry.ofensiva,teste:entry.teste||'',pm:entry.pm||'',alvos:entry.alvos||'',duracao:entry.duracao||'',desc:entry.desc,fonte:entry.fonte,pagina:entry.pagina,referenciaId:entry.id});
   data.extras.magia.disciplinas=Array.isArray(data.extras.magia.disciplinas)?data.extras.magia.disciplinas:[];
   if(entry.disciplina&&!data.extras.magia.disciplinas.some(x=>norm(x)===norm(entry.disciplina)))data.extras.magia.disciplinas.push(entry.disciplina);
   data.extrasAtivos=Array.isArray(data.extrasAtivos)?data.extrasAtivos:[];
