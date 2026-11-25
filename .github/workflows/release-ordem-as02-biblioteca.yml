@@ -1,0 +1,32 @@
+name: PJLite - Release isolada Biblioteca AS02
+on:
+  push:
+    branches: [ release/ordem-as02-biblioteca-20261125 ]
+permissions:
+  contents: write
+jobs:
+  validate-and-snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm install
+      - run: npm run check
+      - name: Publicar snapshot isolado
+        run: |
+          set -e
+          mkdir -p /tmp/pjlite-as02
+          cp -a dist/. /tmp/pjlite-as02/
+          git config user.name "PJLite CI"
+          git config user.email "actions@users.noreply.github.com"
+          git checkout --orphan release-ordem-as02-biblioteca-dist-20261125
+          git rm -rf . || true
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -a /tmp/pjlite-as02/. .
+          printf "PJ Lite 1.1.3v Alpha\nSource: %s\nScope: Ordem Paranormal AS02 library only\n" "$GITHUB_SHA" > .pjlite-release
+          git add -A
+          git commit -m "Build biblioteca AS02 ($GITHUB_SHA)"
+          git push origin HEAD:refs/heads/release-ordem-as02-biblioteca-dist-20261125
