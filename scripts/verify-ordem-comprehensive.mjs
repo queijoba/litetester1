@@ -128,3 +128,8 @@ assert.ok(AS02_REFERENCE_ENTRIES.some(e=>e.nome==='Juan como aliado'&&e.pagina==
 assert.ok(AS02_REFERENCE_ENTRIES.filter(e=>e.categoria==='Aliado').every(e=>e.desc.startsWith('Bônus:')));
 assert.ok(readFileSync('src/systems/ordemParanormal/ordem-library.css','utf8').includes('white-space:pre-line'));
 console.log('✓ AS02: efeitos, progressão, aprimoramentos, requisitos, aliados e página 93.');
+
+const reviewedBasic=basic.filter(e=>e.mecanicaRevisada);assert.equal(reviewedBasic.length,10);
+assert.ok(reviewedBasic.every(e=>e.custo&&e.execucao&&e.alcance&&e.duracao));
+assert.ok(ritual.desc.includes('+4d6'));assert.equal(ritual.pagina,'124');
+assert.equal(spell.data.rituais.at(-1).custo,'1 PE');
