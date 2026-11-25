@@ -12,3 +12,6 @@ const app119=readFileSync('src/PJLiteApp.jsx','utf8');assert.ok(app119.indexOf('
 import {parsePrivatePack,mergePrivateThreats} from '../src/components/privateThreatPack.js';
 const fake={system:'dnd5e',type:'ameaca',nome:'Teste original',ca:'12',pv:'9',desafio:'1',atributos:{for:10,des:10,con:10,int:10,sab:10,car:10},acoes:[{nome:'Golpe',desc:'1d6'}]};
 const p119=parsePrivatePack(JSON.stringify([fake]),'dnd5e');assert.equal(p119.items[0].acoes[0].desc,'1d6');assert.equal(mergePrivateThreats(p119.items,p119.items).length,1);assert.throws(()=>parsePrivatePack(JSON.stringify([fake]),'fabula'));assert.throws(()=>parsePrivatePack(JSON.stringify([{...fake,atributos:{}}]),'dnd5e'));
+
+import {BOOK_THREAT_MODELS} from '../src/components/bookThreatModels.js';
+for(const [system,count] of Object.entries({dnd5e:332,fabula:56,skyfall:44})){const ms=BOOK_THREAT_MODELS[system];assert.equal(ms.length,count);assert.ok(ms.every(x=>x.system===system&&x.nome&&x.pagina&&x.dadosParciais&&Object.values(x.atributos).length===(system==='fabula'?4:6)));assert.equal(new Set(ms.map(x=>x.nome)).size,count);assert.equal(parsePrivatePack(JSON.stringify(ms),system).items.length,count);}

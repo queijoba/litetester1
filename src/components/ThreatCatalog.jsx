@@ -2,6 +2,7 @@ import * as React from 'react';
 import BookThreatReference from './BookThreatReference.jsx';
 import PrivateThreatImport from './PrivateThreatImport.jsx';
 import {readPrivateThreats} from './privateThreatPack.js';
+import {BOOK_THREAT_MODELS} from './bookThreatModels.js';
 
 // Seleciona modelos sem copiar fichas para a Conta Lite automaticamente.
 // O fluxo "Escolher modelo -> editar -> Salvar" continua sob controle do usuário.
@@ -50,7 +51,8 @@ export default function ThreatCatalog({groups,onSelect,system='3det',showReferen
  const categoryOf=x=>String(x.categoria||x.especie||x.tipo||'Outros');
  const ratingOf=x=>String(system==='fabula'?x.nivel??'':system==='skyfall'?x.nivelDesafio??'':x.desafio?.split(' ')[0]??'');
  const [privateItems,setPrivateItems]=React.useState(()=>readPrivateThreats(system));
- const catalogGroups=isExtended&&showReferences&&privateItems.length?[...groups,{title:'Meu bestiário particular',items:privateItems}]:groups;
+ const bookItems=isExtended&&showReferences?(BOOK_THREAT_MODELS[system]||[]):[];
+ const catalogGroups=[...groups,...(bookItems.length?[{title:'Livro • fichas mecânicas de referência',items:bookItems}]:[]),...(isExtended&&showReferences&&privateItems.length?[{title:'Meu bestiário particular',items:privateItems}]:[])];
  const all=catalogGroups.flatMap(group=>group.items||[]);
  const count=all.length;
  const categories=[...new Set(all.map(categoryOf))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
@@ -131,6 +133,7 @@ export default function ThreatCatalog({groups,onSelect,system='3det',showReferen
       <strong className="block text-sm font-black text-zinc-950">{modelo.nome}</strong>
       <span className="text-xs text-zinc-700">{modelo.categoria||modelo.especie||modelo.tipo}{isExtended&&ratingOf(modelo)?' · '+(system==='fabula'?'Nível ':'ND ')+ratingOf(modelo):''}{modelo.patente?' · '+modelo.patente:''}{modelo.hierarquia?' · '+modelo.hierarquia:''}{modelo.papel?' · '+modelo.papel:''}{Number.isFinite(modelo.pontos)?' · '+modelo.pontos+' pts':''}</span></>}
      <p className="mt-1 line-clamp-2 text-xs text-zinc-700">{modelo.descricao||modelo.conceito||'Modelo personalizável para a mesa.'}</p>
+     {modelo.dadosParciais&&isExtended&&<small className="block text-xs text-zinc-700">Ficha editável • revisar efeitos no livro</small>}
      {modelo.fonte&&<small className="mt-1 block text-xs text-zinc-600">{modelo.fonte}{modelo.pagina?' · p. '+modelo.pagina:''}</small>}
      {modelo.grupo&&<small className="block text-xs text-zinc-600">{modelo.grupo}</small>}
     </button>)}</div>
