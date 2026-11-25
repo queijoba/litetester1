@@ -3,3 +3,8 @@ import {SRD521_MONSTERS,SRD521_MONSTER_GROUPS} from '../src/systems/dnd5e/srd521
 import {FABULA_LITE_EXAMPLES} from '../src/systems/fabulaUltima/liteThreatExamples.js';
 import {MODELOS_SKYFALL_AMEACAS} from '../src/systems/skyfall/threatModels.js';
 assert.equal(SRD521_MONSTERS.length,330);assert.equal(new Set(SRD521_MONSTERS.map(x=>x.nomeOriginal)).size,330);assert.equal(SRD521_MONSTER_GROUPS.flatMap(x=>x.items).length,330);for(const m of SRD521_MONSTERS){assert.ok(m.ca&&m.pv&&m.fonte&&m.desafio);assert.ok(Object.values(m.atributos).every(Number.isFinite));assert.ok(Array.isArray(m.acoes));}assert.equal(FABULA_LITE_EXAMPLES.length,8);assert.equal(MODELOS_SKYFALL_AMEACAS.filter(m=>m.fonte==='PJLite • exemplo original').length,6);console.log('✓ 330 entradas D&D SRD + modelos originais Fábula/Skyfall validados');
+
+import {BOOK_THREAT_REFERENCES} from '../src/components/bookThreatReferences.js';
+import {readFileSync} from 'node:fs';
+for(const [key,count] of Object.entries({dnd5e:434,fabula:56,skyfall:44})){const e=BOOK_THREAT_REFERENCES[key].entries;assert.equal(e.length,count);assert.equal(new Set(e.map(x=>x.name.toLowerCase()+'|'+x.page)).size,count);assert.ok(e.every(x=>x.name&&Number.isInteger(x.page)&&x.page>0));}
+const app119=readFileSync('src/PJLiteApp.jsx','utf8');assert.ok(app119.indexOf('Bestiário aberto • SRD 5.2.1')>app119.indexOf('Stat Block D&D 5.5e (Em Branco)'));assert.ok(readFileSync('src/components/ThreatCatalog.jsx','utf8').includes('<BookThreatReference system={system}/>'));
