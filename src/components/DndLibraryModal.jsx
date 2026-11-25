@@ -162,6 +162,7 @@ export default function DndLibraryModal({open,initialTab='classe',className='',s
           {entry.tempo&&<span>Tempo: {entry.tempo}</span>}
           {entry.alcance&&<span>Alcance: {entry.alcance}</span>}
           {entry.duracao&&<span>Duração: {entry.duracao}</span>}
+          {tab==='magias'&&<><span>Componentes: {[entry.verbal?'V':'',entry.somatico?'S':'',entry.material?'M':''].filter(Boolean).join(', ')||'Não informados'}</span>{entry.materialDetalhe&&<span>Material: {entry.materialDetalhe}</span>}{entry.salvaguarda&&<span>Salvaguarda: {entry.salvaguarda}</span>}{entry.concentracao&&<span>Concentração</span>}{entry.ritual&&<span>Ritual</span>}</>}
           {entry.dano&&<span>Efeito: {entry.dano}</span>}
           {entry.classId&&<span>Classe: {classNameFor(entry.classId)}</span>}
           {entry.subclasse&&<span>Subclasse: {entry.subclasse}</span>}
