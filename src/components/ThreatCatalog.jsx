@@ -1,5 +1,7 @@
 import * as React from 'react';
 import BookThreatReference from './BookThreatReference.jsx';
+import PrivateThreatImport from './PrivateThreatImport.jsx';
+import {readPrivateThreats} from './privateThreatPack.js';
 
 // Seleciona modelos sem copiar fichas para a Conta Lite automaticamente.
 // O fluxo "Escolher modelo -> editar -> Salvar" continua sob controle do usuário.
@@ -47,13 +49,15 @@ export default function ThreatCatalog({groups,onSelect,system='3det',showReferen
  const [rating,setRating]=React.useState('Todos');
  const categoryOf=x=>String(x.categoria||x.especie||x.tipo||'Outros');
  const ratingOf=x=>String(system==='fabula'?x.nivel??'':system==='skyfall'?x.nivelDesafio??'':x.desafio?.split(' ')[0]??'');
- const all=groups.flatMap(group=>group.items||[]);
+ const [privateItems,setPrivateItems]=React.useState(()=>readPrivateThreats(system));
+ const catalogGroups=isExtended&&showReferences&&privateItems.length?[...groups,{title:'Meu bestiário particular',items:privateItems}]:groups;
+ const all=catalogGroups.flatMap(group=>group.items||[]);
  const count=all.length;
  const categories=[...new Set(all.map(categoryOf))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
  const ratings=[...new Set(all.map(ratingOf).filter(Boolean))].sort((a,b)=>{const n=x=>x.includes('/')?Number(x.split('/')[0])/Number(x.split('/')[1]):Number(x);return n(a)-n(b);});
  const sources=[...new Set(all.map(x=>String(x.fonte||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR',{numeric:true}));
  const elements=['Sangue','Morte','Conhecimento','Energia','Medo','Nenhum'];
- const filtered=groups.map(group=>{
+ const filtered=catalogGroups.map(group=>{
   const items=(group.items||[]).filter(item=>{
    const isNpc=item.type==='pnj'||item.categoria==='NPC'||item.papel==='Aliado';
    if(type==='ameacas'&&isNpc)return false;
@@ -113,7 +117,7 @@ export default function ThreatCatalog({groups,onSelect,system='3det',showReferen
     <p role="status" className="col-span-full text-xs font-bold text-zinc-800">{filtered.reduce((n,x)=>n+x.items.length,0)} de {count} modelos encontrados</p>
    </div>}
   </div>
-  {isExtended&&showReferences&&<BookThreatReference system={system}/>}
+  {isExtended&&showReferences&&<><PrivateThreatImport system={system} items={privateItems} onChange={setPrivateItems}/><BookThreatReference system={system}/></>}
   {filtered.map(group=><section key={group.title}>
    <div className="mb-2 flex items-baseline justify-between gap-2 border-b border-zinc-300 pb-1">
     <h3 className="text-sm font-black text-zinc-900">{isOrdem&&<OrdemGroupIcon title={group.title}/>}<span>{group.title}</span></h3>

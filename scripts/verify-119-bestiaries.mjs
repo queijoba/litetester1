@@ -8,3 +8,7 @@ import {BOOK_THREAT_REFERENCES} from '../src/components/bookThreatReferences.js'
 import {readFileSync} from 'node:fs';
 for(const [key,count] of Object.entries({dnd5e:434,fabula:56,skyfall:44})){const e=BOOK_THREAT_REFERENCES[key].entries;assert.equal(e.length,count);assert.equal(new Set(e.map(x=>x.name.toLowerCase()+'|'+x.page)).size,count);assert.ok(e.every(x=>x.name&&Number.isInteger(x.page)&&x.page>0));}
 const app119=readFileSync('src/PJLiteApp.jsx','utf8');assert.ok(app119.indexOf('Bestiário aberto • SRD 5.2.1')>app119.indexOf('Stat Block D&D 5.5e (Em Branco)'));assert.ok(readFileSync('src/components/ThreatCatalog.jsx','utf8').includes('<BookThreatReference system={system}/>'));
+
+import {parsePrivatePack,mergePrivateThreats} from '../src/components/privateThreatPack.js';
+const fake={system:'dnd5e',type:'ameaca',nome:'Teste original',ca:'12',pv:'9',desafio:'1',atributos:{for:10,des:10,con:10,int:10,sab:10,car:10},acoes:[{nome:'Golpe',desc:'1d6'}]};
+const p119=parsePrivatePack(JSON.stringify([fake]),'dnd5e');assert.equal(p119.items[0].acoes[0].desc,'1d6');assert.equal(mergePrivateThreats(p119.items,p119.items).length,1);assert.throws(()=>parsePrivatePack(JSON.stringify([fake]),'fabula'));assert.throws(()=>parsePrivatePack(JSON.stringify([{...fake,atributos:{}}]),'dnd5e'));
