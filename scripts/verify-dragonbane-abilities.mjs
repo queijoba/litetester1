@@ -3,7 +3,7 @@ import {readFileSync} from 'node:fs';
 import {
  DRAGONBANE_ABILITY_KINDS,DRAGONBANE_INNATE_CATALOG,dragonbaneAncestryKey,
  dragonbaneInnateSuggestions,createDragonbaneAbility,dragonbaneAbilityKind,
- dragonbaneAbilityList,dragonbanePdfAbilityOrder,dragonbanePdfAbilityName,dragonbaneMagicSchool,renameDragonbaneAbility
+ dragonbaneAbilityList,dragonbaneMagicTabEnabled,dragonbanePdfAbilityOrder,dragonbanePdfAbilityName,dragonbaneMagicSchool,renameDragonbaneAbility
 } from '../src/systems/dragonbane/abilities.js';
 import {fillDragonbanePdf} from '../src/systems/dragonbane/pdf/map.js';
 import {
@@ -98,9 +98,9 @@ assert.ok(app.includes("h.desc !== undefined ? h.desc : h.descricao"),'Ficha Cha
 // Mantém o formato de dados e os recursos do editor clássico, sem migração destrutiva.
 const preview=readFileSync('src/systems/dragonbane/components/AbilitiesPanel.jsx','utf8');
 assert.ok(editor.includes('db-paper db-sheet')&&editor.includes('db-brand'), 'Preservar pergaminho, identidade e moldura originais');
-assert.ok(editor.includes("dragonbanePage==='ficha'")&&editor.includes("dragonbanePage==='habilidades'")&&editor.includes("dragonbanePage==='magias'"),'Três abas realmente navegáveis');
+assert.ok(editor.includes("dragonbanePage==='ficha'")&&editor.includes("dragonbanePage==='habilidades'")&&editor.includes("dragonbanePage==='magias'"),'Abas navegáveis');
 assert.ok(editor.includes('Perfil, perícias e combate')&&editor.includes('Feitiços e truques'),'Rótulos de navegação claros');
-assert.ok(editor.includes('db-rework-shortcuts')&&editor.includes('db-combat-mobile-slot'), 'Combate e inventário devem continuar acessíveis');
+assert.ok(editor.includes('db-skills-pair')&&editor.includes('db-combat-mobile-slot')&&editor.includes("dragonbanePage==='inventario'"), 'Combate e inventário devem continuar acessíveis');
 assert.ok(editor.includes('updateField(\'inventario\'')&&editor.includes('updateField(\'moedas.ouro\''), 'Inventário da ficha continua editável');
 assert.ok(preview.includes('dragonbaneAbilityList')&&preview.includes('DRAGONBANE_MAGIC_SCHOOLS'),'Habilidades e magias devem ser separadas pelo tipo');
 assert.ok(preview.includes("createDragonbaneAbility('inata'")&&preview.includes('dragonbaneInnateSuggestions'),'Habilidades inatas opcionais mantidas');
@@ -116,7 +116,7 @@ assert.ok(!editor.includes('db-combat-desktop-slot'),'Não duplicar combate/inve
 assert.ok(app.includes('DRAGONBANE_ABILITY_KINDS.forEach'), 'Manter utilitários atuais usados em PDF e chat');
 assert.ok(css.includes('#2e786a')&&css.includes('#f5edd4'), 'Manter paleta e recursos de compatibilidade');
 
-console.log('✓ Dragonbane: prévia em 3 abas, estética clássica, edição, chat e PDF legado preservados.');
+console.log('✓ Dragonbane: prévia com magia opcional, estética clássica, edição, chat e PDF legado preservados.');
 
 
 // Ordem oficial consultada no Livro de Regras v1.1 e na ficha editável PT-BR do Drive.
@@ -176,3 +176,16 @@ assert.ok(fullApp.includes('normalizedData = normalizeDragonbanePcData(normalize
 assert.ok(fullApp.includes('newData.atributos = orderedDragonbaneAttributes(newData.atributos)'),'Campos antigos editáveis');
 assert.ok(fullApp.includes("item?.system === 'dragonbane' && item?.type === 'pc'"),'Outros sistemas/ameaças não podem ser afetados');
 console.log('✓ Dragonbane: FOR, CON, AGL, INT, VON, CAR em fichas novas, salvas, importadas, modelos e PDF (valores/condições preservados).');
+
+assert.equal(dragonbaneMagicTabEnabled({habilidadesFeiticos:[]}),false);
+assert.equal(dragonbaneMagicTabEnabled({bio:{profissao:'Mago'},habilidadesFeiticos:[]}),true);
+assert.equal(dragonbaneMagicTabEnabled(data),true);
+const hiddenMagic={...data,dragonbaneShowMagic:false};
+assert.equal(dragonbaneMagicTabEnabled(hiddenMagic),false);
+assert.deepEqual(hiddenMagic.habilidadesFeiticos,untouched);
+assert.equal(dragonbaneMagicTabEnabled({...hiddenMagic,dragonbaneShowMagic:true}),true);
+assert.ok(editor.includes("updateField('dragonbaneShowMagic',!showDragonbaneMagic)"));
+assert.ok(editor.includes("showDragonbaneMagic&&dragonbanePage==='magias'"));
+assert.ok(editor.includes('db-skills-pair')&&editor.includes('md:grid-cols-2'));
+assert.ok(editor.includes("dragonbanePage==='inventario'"));
+assert.equal(editor.split("updateField('inventario'").length-1,1);

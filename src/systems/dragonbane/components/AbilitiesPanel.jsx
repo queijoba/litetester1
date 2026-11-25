@@ -8,7 +8,7 @@ import {
 const KIND_LABELS={inata:'Inata',heroica:'Heroica',magia:'Feitiço',truque:'Truque',outro:'Outro'};
 const SECTIONS={
  habilidades:[
-  {kind:'inata',title:'Dádivas da ancestralidade',subtitle:'Habilidades inatas — próprias da ancestralidade do personagem',page:'Livro de Regras, pp. 9–12'},
+  {kind:'inata',title:'Dádivas da ancestralidade',subtitle:'Habilidades inatas — próprias da ancestralidade do personagem',page:'Livro de Regras, pp. 9–13'},
   {kind:'heroica',title:'Habilidades heroicas',subtitle:'Talentos adquiridos pela profissão ou durante a jornada',page:'Livro de Regras, pp. 26 e 35–39'},
   {kind:'outro',title:'Outras habilidades',subtitle:'Anotações livres e registros antigos ainda sem classificação',page:'Registros legados preservados'}
  ],
@@ -59,16 +59,16 @@ function AbilityCard({item,index,kind,onChange,onRemove,onRename}){
    </>}
   </div>}
   <label className="db-rework-field">Efeito e observações
-   <textarea rows={2} value={item.desc!==undefined?item.desc:(item.descricao||'')} onChange={e=>set('desc',e.target.value)} className={LINE+' resize-y'} placeholder="Descreva o efeito, duração, custo ou condição..."/>
+   <textarea rows={4} value={item.desc!==undefined?item.desc:(item.descricao||'')} onChange={e=>set('desc',e.target.value)} className={LINE+' resize-y'} placeholder="Descreva o efeito, duração, custo ou condição..."/>
   </label>
-  <div className="db-rework-citation-fields">
+  <details className="db-ability-source"><summary>Fonte e página</summary><div className="db-rework-citation-fields">
    <label className="db-rework-field">Fonte
     <input value={item.fonte||''} onChange={e=>set('fonte',e.target.value)} className={LINE} placeholder="Livro, suplemento ou regra própria"/>
    </label>
    <label className="db-rework-field">Página
     <input value={item.pagina||''} onChange={e=>set('pagina',e.target.value)} className={LINE} placeholder="Ex.: 37"/>
    </label>
-  </div>
+  </div></details>
  </article>;
 }
 
@@ -84,7 +84,7 @@ export default function DragonbaneAbilitiesPanel({mode,data,addToArray,updateArr
    <div>
     <p className="db-rework-eyebrow">{mode==='magias'?'Grimório do aventureiro':'Legado e experiência'}</p>
     <h2>{mode==='magias'?'Magias e Truques':'Habilidades do Personagem'}</h2>
-    <p>{mode==='magias'?'Organize feitiços por escola, grau e preparação. Pontos de Determinação continuam disponíveis na aba Ficha.':'Separe as aptidões da ancestralidade dos feitos heroicos e preserve habilidades antigas sem perda de dados.'}</p>
+    <p>{mode==='magias'?'Feitiços por escola e grau; truques em seção própria.':'Habilidades inatas, heroicas e outros registros.'}</p>
    </div>
    <span className="db-rework-chapter">{mode==='magias'?'CAP. 5':'CAP. 2–3'}</span>
   </div>

@@ -1,5 +1,5 @@
 import {DRAGONBANE_ATTRIBUTE_ORDER,dragonbaneAttributeValue,dragonbaneAttributeCondition} from '../attributes.js';
-import {dragonbaneAbilityList} from '../abilities.js';
+import {dragonbaneAbilityList,dragonbaneMagicTabEnabled} from '../abilities.js';
 import DragonbaneAbilitiesPanel from './AbilitiesPanel.jsx';
 // Extraído automaticamente do antigo PJLiteApp monolítico.
 // Este arquivo agora é a fonte visual do editor deste sistema.
@@ -259,7 +259,13 @@ export default function DragonbaneEditor({ scope }) {
     view
   } = scope;
   // A navegação pertence à interface; os dados permanecem no formato original da ficha.
-  const [dragonbanePage,setDragonbanePage]=useState('ficha');
+  const [requestedDragonbanePage,setDragonbanePage]=useState('ficha');
+  const showDragonbaneMagic=dragonbaneMagicTabEnabled(data);
+  const dragonbanePage=requestedDragonbanePage==='magias'&&!showDragonbaneMagic?'ficha':requestedDragonbanePage;
+  const toggleDragonbaneMagic=()=>{
+   if(showDragonbaneMagic&&dragonbanePage==='magias')setDragonbanePage('ficha');
+   updateField('dragonbaneShowMagic',!showDragonbaneMagic);
+  };
   const dragonbaneAbilityCount=dragonbaneAbilityList(data,'inata').length+
    dragonbaneAbilityList(data,'heroica').length+dragonbaneAbilityList(data,'outro').length;
   const dragonbaneSpellCount=dragonbaneAbilityList(data,'magia').length+dragonbaneAbilityList(data,'truque').length;
@@ -277,7 +283,7 @@ export default function DragonbaneEditor({ scope }) {
                                   <React.Fragment>
                                       {/* Mobile Tabs for PC */}
                                       <div className={dragonbanePage==='ficha'?'md:hidden flex bg-gray-200 border-b border-gray-300':'hidden'}>
-                                          {[ { id: 'status', label: 'Perfil & Status' }, { id: 'pericias', label: 'Perícias' }, { id: 'equipamento', label: 'Combate & Equip' } ].map(tab => (
+                                          {[ { id: 'status', label: 'Perfil & Status' }, { id: 'pericias', label: 'Perícias' }, { id: 'equipamento', label: 'Combate' } ].map(tab => (
                                               <button key={tab.id} onClick={() => setMobileTab(tab.id)} className={`flex-1 py-3 text-xs font-bold uppercase text-center border-b-4 transition-colors ${mobileTab === tab.id ? 'border-red-700 text-red-900 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-300'}`}>{tab.label}</button>
                                           ))}
                                       </div>
@@ -287,15 +293,16 @@ export default function DragonbaneEditor({ scope }) {
                                               <div className="db-brand-line"></div>
                                               <div>
                                                   <div className="db-logo"><span>Dragon</span><span>Bane</span></div>
-                                                  <div className="db-brand-sub">Ficha de Personagem • teste visual PJ Lite</div>
+                                                  <div className="db-brand-sub">Ficha de Personagem • PJ Lite</div>
                                               </div>
                                               <div className="db-brand-line"></div>
                                           </div>
-                                          <nav className="db-rework-tabs" role="tablist" aria-label="Seções da ficha de Dragonbane">
+                                          <nav className="db-rework-tabs db-rework-tabs-v2" role="tablist" aria-label="Seções da ficha de Dragonbane">
                                             {[
-                                              {id:'ficha',titulo:'01 • Ficha',detalhe:'Perfil, perícias e combate'},
-                                              {id:'habilidades',titulo:'02 • Habilidades',detalhe:'Ancestralidade e heroicas',quantidade:dragonbaneAbilityCount},
-                                              {id:'magias',titulo:'03 • Magias',detalhe:'Feitiços e truques',quantidade:dragonbaneSpellCount}
+                                              {id:'ficha',titulo:'Ficha',detalhe:'Perfil, perícias e combate'},
+                                              {id:'habilidades',titulo:'Habilidades',detalhe:'Inatas e heroicas',quantidade:dragonbaneAbilityCount},
+                                              {id:'inventario',titulo:'Inventário',detalhe:'Equipamento e moedas'},
+                                              ...(showDragonbaneMagic?[{id:'magias',titulo:'Magias',detalhe:'Feitiços e truques',quantidade:dragonbaneSpellCount}]:[])
                                             ].map(tab=><button key={tab.id} type="button" role="tab" aria-selected={dragonbanePage===tab.id}
                                              onClick={()=>setDragonbanePage(tab.id)}
                                              className={'db-rework-tab '+(dragonbanePage===tab.id?'db-rework-tab-active':'')}>
@@ -304,7 +311,7 @@ export default function DragonbaneEditor({ scope }) {
                                              {Number.isInteger(tab.quantidade)&&<span className="db-rework-tab-count">{tab.quantidade}</span>}
                                             </button>)}
                                           </nav>
-                                          <div className="db-rework-preview-note" role="note">Prévia visual no LiteTester • A ficha clássica foi preservada e reorganizada em três seções.</div>
+                                          <div className="db-magic-tab-control"><label><input type="checkbox" checked={showDragonbaneMagic} onChange={toggleDragonbaneMagic}/> Mostrar aba de Magias</label>{!showDragonbaneMagic&&dragonbaneSpellCount>0&&<small>{dragonbaneSpellCount} registro(s) de magia ocultos, preservados na ficha.</small>}</div>
                                           <div role="tabpanel" aria-label="Ficha do personagem" className={dragonbanePage==='ficha'?'space-y-4':'hidden'}>
 
                                           {/* Biografia PC */}
@@ -371,8 +378,8 @@ export default function DragonbaneEditor({ scope }) {
                                           </div>
       
                                           {/* Grades e Blocos PC */}
-                                          <div className="db-layout grid grid-cols-1 lg:grid-cols-12">
-                                              <div className={`db-column lg:col-span-4 xl:col-span-3 space-y-4 min-w-0 ${mobileTab === 'status' ? 'block' : 'hidden md:block'}`}>
+                                          <div className="db-layout db-layout-v2 grid grid-cols-1 lg:grid-cols-12">
+                                              <div className={`db-column db-status-column lg:col-span-12 space-y-4 min-w-0 ${mobileTab === 'status' ? 'block' : 'hidden md:block'}`}>
                                                   <div className="hidden">
                                                       <h2 style={getBarStyle()} className="font-title font-bold text-lg bg-dragon-dark text-white text-center py-1 mb-3 rounded-sm">ATRIBUTOS E CONDIÇÕES</h2>
                                                       <div className="grid grid-cols-2 gap-4">
@@ -433,13 +440,13 @@ export default function DragonbaneEditor({ scope }) {
       
                                               </div>
 
-                                              <div className={`db-column lg:col-span-5 xl:col-span-5 flex flex-col min-w-0 ${mobileTab === 'pericias' ? 'flex' : 'hidden md:flex'}`}>
+                                              <div className={`db-column db-skills-column lg:col-span-8 flex flex-col min-w-0 ${mobileTab === 'pericias' ? 'flex' : 'hidden md:flex'}`}>
                                                   <div className="flex justify-end mb-3">
                                                       <button onClick={() => updateField('status.armasPrimeiro', !data.status?.armasPrimeiro)} className="text-[10px] bg-gray-200 hover:bg-gray-300 text-gray-700 px-2 py-1 rounded flex items-center gap-1 shadow-sm font-bold uppercase transition-colors">
                                                           <SVGIcons.Refresh /> Alternar Ordem
                                                       </button>
                                                   </div>
-                                                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-4 xl:gap-5 items-start">
+                                                  <div className="db-skills-pair grid grid-cols-1 md:grid-cols-2 gap-4 xl:gap-5 items-start">
                                                       <div className={`flex flex-col ${data.status?.armasPrimeiro ? 'order-2' : 'order-1'}`}>
                                                           <h2 style={getBarStyle()} className="db-section-title font-title font-bold text-base bg-dragon-dark text-white text-center py-1 mb-2 px-3 flex justify-between"><span>PERÍCIAS</span><span className="text-[10px] font-normal self-center hidden sm:inline">T: Treinar | Av: Avanço</span></h2>
                                                           <div className="space-y-1">
@@ -498,18 +505,8 @@ export default function DragonbaneEditor({ scope }) {
                                                   </div>
                                               </div>
       
-                                              <div className={`db-column lg:col-span-3 xl:col-span-4 space-y-4 min-w-0 ${mobileTab === 'equipamento' ? 'block' : 'hidden md:block'}`}>
-                                                  <div className="db-rework-shortcuts">
-                                                    <div className="db-rework-eyebrow">Recursos do aventureiro</div>
-                                                    <h2>Habilidades e Magias</h2>
-                                                    <p>Os poderes e feitiços têm seu próprio espaço, sem ocupar a área de combate.</p>
-                                                    <div className="db-rework-shortcut-actions">
-                                                      <button type="button" onClick={()=>setDragonbanePage('habilidades')}>Habilidades <b>{dragonbaneAbilityCount}</b></button>
-                                                      <button type="button" onClick={()=>setDragonbanePage('magias')}>Magias <b>{dragonbaneSpellCount}</b></button>
-                                                    </div>
-                                                  </div>
-
-      <div className="db-combat-mobile-slot">
+                                              <div className={`db-column db-combat-column lg:col-span-4 space-y-4 min-w-0 ${mobileTab === 'equipamento' ? 'block' : 'hidden md:block'}`}>
+                                                  <div className="db-combat-mobile-slot">
                                                   <div>
                                                       <h2 style={getBarStyle()} className="db-section-title font-title font-bold text-base bg-dragon-dark text-white text-center py-1 mb-2">COMBATE</h2>
                                                       <div className="space-y-3 mb-4">
@@ -553,7 +550,13 @@ export default function DragonbaneEditor({ scope }) {
                                                           </div>
                                                       </div>
       
-                                                      <h2 style={getBarStyle()} className="db-section-title font-title font-bold text-base bg-dragon-dark text-white text-center py-1 mb-3 mt-5">INVENTÁRIO</h2>
+                                                      
+                                                  </div>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                          </div>
+                                          {dragonbanePage==='inventario'&&<div role="tabpanel" aria-label="Inventário do personagem" className="db-column db-inventory-page"><h2 style={getBarStyle()} className="db-section-title font-title font-bold text-base bg-dragon-dark text-white text-center py-1 mb-3">INVENTÁRIO</h2>
                                                       
                                                       <div className="grid grid-cols-3 gap-2 mb-3">
                                                           <div className="db-money-gold border-2 rounded flex flex-col items-center justify-center p-2 shadow-sm"><label className="text-[10px] font-bold text-yellow-700 uppercase mb-1">Ouro</label><input type="number" value={data.moedas?.ouro} onChange={e => updateField('moedas.ouro', parseInt(e.target.value) || 0)} className="w-full bg-transparent text-center font-title font-bold text-xl outline-none text-yellow-900" /></div>
@@ -562,25 +565,21 @@ export default function DragonbaneEditor({ scope }) {
                                                       </div>
       
                                                       <label className="block text-xs font-bold text-gray-500 uppercase mb-1 mt-2">Equipamento</label>
-                                                      <textarea rows="6" value={data.inventario} onChange={e => updateField('inventario', e.target.value)} className="db-inventory-box w-full border-2 p-2 text-sm outline-none resize-y mb-3"></textarea>
+                                                      <textarea rows="12" value={data.inventario} onChange={e => updateField('inventario', e.target.value)} className="db-inventory-box w-full border-2 p-2 text-sm outline-none resize-y mb-3"></textarea>
                                                       
                                                       <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Itens Miúdos</label>
-                                                      <textarea rows="3" value={data.itensMiudos || ''} onChange={e => updateField('itensMiudos', e.target.value)} className="db-inventory-box w-full border-2 p-2 text-sm outline-none resize-y"></textarea>
+                                                      <textarea rows="6" value={data.itensMiudos || ''} onChange={e => updateField('itensMiudos', e.target.value)} className="db-inventory-box w-full border-2 p-2 text-sm outline-none resize-y"></textarea>
       
-                                                      <div className="mt-4 pb-10 md:pb-0">
+                                                      <div className="mt-4">
                                                           <label className="block text-xs font-bold text-gray-500 uppercase">Memento (Item Especial)</label>
                                                           <input type="text" value={data.bio?.memento} onChange={e => updateField('bio.memento', e.target.value)} className="w-full border-b border-gray-400 outline-none bg-transparent text-sm italic" />
                                                       </div>
-                                                  </div>
-                                                  </div>
-                                              </div>
-                                          </div>
-                                          </div>
+                                          </div>}
                                           {dragonbanePage==='habilidades'&&<div role="tabpanel" aria-label="Habilidades do personagem">
                                             <DragonbaneAbilitiesPanel mode="habilidades" data={data} addToArray={addToArray}
                                               updateArrayField={updateArrayField} removeFromArray={removeFromArray} setData={setData}/>
                                           </div>}
-                                          {dragonbanePage==='magias'&&<div role="tabpanel" aria-label="Magias e truques">
+                                          {showDragonbaneMagic&&dragonbanePage==='magias'&&<div role="tabpanel" aria-label="Magias e truques">
                                             <DragonbaneAbilitiesPanel mode="magias" data={data} addToArray={addToArray}
                                               updateArrayField={updateArrayField} removeFromArray={removeFromArray} setData={setData}/>
                                           </div>}
