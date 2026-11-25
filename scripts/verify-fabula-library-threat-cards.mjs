@@ -3,8 +3,8 @@ import {readFileSync} from 'node:fs';
 import {FABULA_LIBRARY_CATALOG as entries,FABULA_LIBRARY_COUNTS as counts} from '../src/systems/fabulaUltima/libraryCatalog.js';
 import {applyFabulaLibrarySelection} from '../src/systems/fabulaUltima/libraryActions.js';
 import {buildThreatCardData} from '../src/components/threatCardData.js';
-assert.equal(entries.length,298);
-assert.deepEqual(counts,{classe:34,poder:170,heroico:61,feitico:33});
+assert.equal(entries.length,303);
+assert.deepEqual(counts,{classe:34,poder:170,heroico:61,feitico:38});
 assert.equal(new Set(entries.map(x=>x.id)).size,entries.length);
 assert.ok(['basico','high','natural','techno','codex'].every(source=>entries.some(x=>x.source===source)));
 for(const item of entries)assert.ok(item.nome&&item.pagina&&item.fonte&&item.tipo,'Referência incompleta: '+item.id);
@@ -66,3 +66,8 @@ assert.ok(!editor.includes('<ThreatStatCard data={data} compact />'),'A prévia 
 assert.ok(!card.includes('window.print()')&&card.includes('createPortal'),'O modo card dispensa PDF');
 assert.ok(!printCss.includes('@page{size:A5 portrait'),'Sem layout de impressão obrigatório');
 console.log('✓ Fabula Ultima: 303 referências de cinco livros e cards de ameaças de seis sistemas com impressão A5.');
+
+assert.equal(entries.filter(e=>e.tipo==='feitico'&&e.mecanicaRevisada&&e.alvos&&e.duracao).length,38);
+const cure=entries.find(e=>e.nome==='Curar'&&e.tipo==='feitico');
+assert.equal(cure.pagina,'198');assert.ok(cure.desc.includes('40 PV'));
+const cast=applyFabulaLibrarySelection(original,cure,'feitico');assert.equal(cast.data.extras.magia.feiticos.at(-1).alvos,'Até três criaturas');
