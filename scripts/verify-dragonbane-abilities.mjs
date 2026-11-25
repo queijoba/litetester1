@@ -15,7 +15,7 @@ assert.deepEqual(DRAGONBANE_ABILITY_KINDS.map(x=>x.id),['inata','heroica','magia
 for(const [ancestry,key] of Object.entries({
  'Humano':'humano','Anão':'anao','Elfo':'elfo','Halfling':'halfling','Lupino':'lupino','Marreco':'marreco'
 }))assert.equal(dragonbaneAncestryKey(ancestry),key);
-assert.equal(Object.values(DRAGONBANE_INNATE_CATALOG).reduce((n,a)=>n+a.length,0),7);
+assert.equal(Object.values(DRAGONBANE_INNATE_CATALOG).reduce((n,a)=>n+a.length,0),16);
 assert.equal(dragonbaneInnateSuggestions('Marreco',[]).length,2);
 assert.equal(dragonbaneInnateSuggestions('Humano',[{nome:'Adaptativo'}]).length,0);
 assert.equal(dragonbaneInnateSuggestions('Elfo',[{nome:'Paz Interior'}]).length,0);
