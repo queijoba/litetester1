@@ -20,7 +20,7 @@ export function itemCatalog(system){
  const s=canonical(system);
  const entries=s==='dnd5e'?dnd:variants[s]||[];
  const shared=s==='fabula'?common.filter(x=>x[1]!=='Consumíveis'):common;
- return [...entries,...shared].map(([nome,categoria,desc,dano='',tipoDano='',preco=''],i)=>({id:s+'-item-'+i,nome,categoria,desc,dano,tipoDano,preco,quantidade:1,raridade:categoria==='Artefatos'?'Raro':'Comum',espacos:1,modificacoes:[],fonte:s==='dnd5e'&&i<15?'D&D SRD 5.2.1 — CC BY 4.0; resumo PJLite':'Modelo original PJLite • confira as regras'}));
+ return [...entries,...shared].map(([nome,categoria,desc,dano='',tipoDano='',preco=''],i)=>({id:s+'-item-'+i,nome,categoria,desc,dano,tipoDano,preco,quantidade:1,raridade:categoria==='Artefatos'?'Raro':s==='3det'&&['Kit médico','Comunicador','Colete'].includes(nome)?'Incomum':'Comum',espacos:1,modificacoes:[],fonte:s==='dnd5e'&&i<15?'D&D SRD 5.2.1 — CC BY 4.0; resumo PJLite':'Modelo original PJLite • confira as regras'}));
 }
 export const itemNote=x=>[x.desc,x.dano&&('Dano: '+x.dano+' '+(x.tipoDano||'')),x.preco&&('Preço: '+x.preco),x.raridade&&('Raridade: '+x.raridade),...(x.modificacoes||[]).map(m=>m.tipo+': '+m.nome+(m.efeito?' — '+m.efeito:''))].filter(Boolean).join(' | ');
 const append=(a,x)=>[...(Array.isArray(a)?a:[]),x];
@@ -32,14 +32,19 @@ export function addItemToSheet(data,item){
  let next={...data};
  if(s==='dnd5e'){
   const arma=item.categoria==='Armas',syncId=uid();
-  next.itensSincronizados=append(data.itensSincronizados,{...row,syncId,tipo:arma?'Arma':'Equipamento',bonusAtaque:'',dano:item.dano||'',tipoDano:item.tipoDano||'',sincronizarAtaque:arma});
+  next.itensSincronizados=append(data.itensSincronizados,{...row,syncId,tipo:({Armas:'Arma',Armaduras:'Armadura',Escudos:'Escudo',Consumíveis:'Consumível',Ferramentas:'Ferramenta'})[item.categoria]||'Equipamento',bonusAtaque:'',dano:item.dano||'',tipoDano:item.tipoDano||'',sincronizarAtaque:arma});
   if(arma)next.ataques=append(data.ataques,{nome,bonus:'',dano:item.dano||'',tipo:item.tipoDano||'',sourceItemId:syncId});
  }else if(s==='dragonbane'){
-  if(item.categoria==='Armas')next.armas=append(data.armas,{nome,empunhadura:'',alcance:'',dano:item.dano||'',tracos:notas,...extra});
+  if(item.categoria==='Armas')next.armas=[...(Array.isArray(data.armas)?data.armas:[]),...Array.from({length:qty},()=>({nome,empunhadura:'',alcance:'',dano:item.dano||'',tracos:notas,...extra}))];
   else next.inventario=[String(data.inventario||''),...Array.from({length:qty},()=>nome+(notas?' — '+notas:''))].filter(Boolean).join('\n');
  }else if(s==='ordemParanormal')next.inventario=append(data.inventario,{...row,categoria:String(item.categoriaOrdem||'0'),espacos:Math.max(0,Number(item.espacos)||0),desc:notas});
  else if(s==='skyfall')next.equipamentos=append(data.equipamentos,{...row,volume:item.volume||'',fragmentos:item.preco||'',descritores:notas});
- else if(s==='fabula'||s==='somdas6')next.inventario=append(data.inventario,row);
+ else if(s==='fabula'&&item.equipar){
+  if(qty!==1)return {ok:false,message:'Equipe um item por vez; outras unidades podem ir à mochila.'};
+  const slots=Array.isArray(data.equipamentos)?data.equipamentos:[];const index=slots.findIndex(x=>x.slot===item.equipar&&!String(x.nome||'').trim());
+  if(index<0)return {ok:false,message:'Slot ocupado ou indisponível. Escolha a mochila ou um slot vazio.'};
+  next.equipamentos=slots.map((x,i)=>i===index?{...x,nome,descricao:notas,...extra}:x);
+ }else if(s==='fabula'||s==='somdas6')next.inventario=append(data.inventario,row);
  else if(s==='3det')next.inventario=append(data.inventario,{...row,raridade:item.raridade||'Comum'});
  else if(s==='rotaZero'){
   const slots=[...(Array.isArray(data.inventario)?data.inventario:[]),'','','',''].slice(0,4);
