@@ -1,5 +1,5 @@
 import {DRAGONBANE_ATTRIBUTE_ORDER,dragonbaneAttributeValue,dragonbaneAttributeCondition} from '../attributes.js';
-import {dragonbaneAbilityList,dragonbaneMagicTabEnabled,insertDragonbaneLibraryEntry} from '../abilities.js';
+import {dragonbaneAbilityList,dragonbaneMagicTabEnabled,insertDragonbaneLibraryEntry,DRAGONBANE_ANCESTRIES,dragonbaneLoad,dragonbanePreparedLimit,syncDragonbaneInnates} from '../abilities.js';
 import DragonbaneLibrary from './DragonbaneLibrary.jsx';
 import DragonbaneAbilitiesPanel from './AbilitiesPanel.jsx';
 // Extraído automaticamente do antigo PJLiteApp monolítico.
@@ -261,6 +261,7 @@ export default function DragonbaneEditor({ scope }) {
   } = scope;
   // A navegação pertence à interface; os dados permanecem no formato original da ficha.
   const [requestedDragonbanePage,setDragonbanePage]=useState('ficha');
+  const [dbThreatTab,setDbThreatTab]=useState('combate');
   const [dragonbaneLibraryFilter,setDragonbaneLibraryFilter]=useState(null);
   const openDragonbaneLibrary=(filter={})=>setDragonbaneLibraryFilter(filter);
   const addDragonbaneLibraryEntry=entry=>{
@@ -276,6 +277,10 @@ export default function DragonbaneEditor({ scope }) {
   };
   const dragonbaneAbilityCount=dragonbaneAbilityList(data,'inata').length+
    dragonbaneAbilityList(data,'heroica').length+dragonbaneAbilityList(data,'outro').length;
+  const dbLoad=dragonbaneLoad(data);
+  const dbPrepared=dragonbaneAbilityList(data,'magia').filter(({entry})=>entry.preparada).length;
+  const dbPreparedMax=dragonbanePreparedLimit(dragonbaneAttributeValue(data.atributos,'int'));
+  const toggleBackpack=()=>setData(prev=>{const next={...prev,dragonbaneBackpack:!prev.dragonbaneBackpack};return prev.status?.manterDerivados?next:{...next,derivados:{...next.derivados,limiteSobrecarga:dragonbaneLoad(next).base}};});
   const dragonbaneSpellCount=dragonbaneAbilityList(data,'magia').length+dragonbaneAbilityList(data,'truque').length;
   const updateDragonbanePortrait=async e=>{
    const file=e.target.files?.[0]; e.target.value='';
@@ -310,7 +315,7 @@ export default function DragonbaneEditor({ scope }) {
                                               {id:'ficha',titulo:'Ficha',detalhe:'Perfil, perícias e combate'},
                                               {id:'habilidades',titulo:'Habilidades',detalhe:'Inatas e heroicas',quantidade:dragonbaneAbilityCount},
                                               {id:'inventario',titulo:'Inventário',detalhe:'Equipamento e moedas'},
-                                              ...(showDragonbaneMagic?[{id:'magias',titulo:'Magias',detalhe:'Feitiços e truques',quantidade:dragonbaneSpellCount}]:[])
+                                              ...(showDragonbaneMagic?[{id:'magias',titulo:'Magias',detalhe:'Feitiços e truques · '+dbPrepared+'/'+dbPreparedMax+' preparados',quantidade:dragonbaneSpellCount}]:[])
                                             ].map(tab=><button key={tab.id} type="button" role="tab" aria-selected={dragonbanePage===tab.id}
                                              onClick={()=>setDragonbanePage(tab.id)}
                                              className={'db-rework-tab '+(dragonbanePage===tab.id?'db-rework-tab-active':'')}>
@@ -354,7 +359,7 @@ export default function DragonbaneEditor({ scope }) {
                                               <div className="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                                                   <div className="sm:col-span-2"><label className="block text-xs font-bold text-gray-500 uppercase">Nome do Personagem</label><input type="text" value={data.bio?.nome} onChange={e => updateField('bio.nome', e.target.value)} className="w-full text-2xl md:text-3xl font-title font-bold border-b-2 border-gray-400 focus:border-red-600 outline-none bg-transparent" /></div>
                                                   <div className="sm:col-span-2"><label className="block text-xs font-bold text-gray-500 uppercase">Jogador</label><input type="text" value={data.bio?.jogador} onChange={e => updateField('bio.jogador', e.target.value)} className="w-full text-xl md:text-2xl font-title border-b-2 border-gray-400 focus:border-red-600 outline-none bg-transparent" /></div>
-                                                  <div><label className="block text-xs font-bold text-gray-500 uppercase">Ancestralidade</label><input type="text" value={data.bio?.ancestralidade} onChange={e => handleAncestryChange(e.target.value)} className="w-full border-b border-gray-400 outline-none bg-transparent" /></div>
+                                                  <div><label className="block text-xs font-bold text-gray-500 uppercase">Ancestralidade</label><input list="db-ancestry-options" type="text" value={data.bio?.ancestralidade||''} onChange={e => handleAncestryChange(e.target.value)} className="w-full border-b border-gray-400 outline-none bg-transparent" /><datalist id="db-ancestry-options">{DRAGONBANE_ANCESTRIES.map(([key,name])=><option key={key} value={name}/>)}</datalist><button type="button" className="db-library-launch db-sync-innate" onClick={()=>setData(prev=>syncDragonbaneInnates(prev))}>Vincular inatas</button></div>
                                                   <div><label className="block text-xs font-bold text-gray-500 uppercase">Profissão</label><input type="text" value={data.bio?.profissao} onChange={e => updateField('bio.profissao', e.target.value)} className="w-full border-b border-gray-400 outline-none bg-transparent" /></div>
                                                   <div><label className="block text-xs font-bold text-gray-500 uppercase">Idade</label><input type="text" value={data.bio?.idade} onChange={e => updateField('bio.idade', e.target.value)} className="w-full border-b border-gray-400 outline-none bg-transparent" /></div>
                                                   <div><label className="block text-xs font-bold text-gray-500 uppercase">Fraqueza</label><input type="text" value={data.bio?.fraqueza} onChange={e => updateField('bio.fraqueza', e.target.value)} className="w-full border-b border-gray-400 outline-none bg-transparent" /></div>
@@ -381,7 +386,7 @@ export default function DragonbaneEditor({ scope }) {
                                                   <div className="db-derived-box"><span>Dano Bônus FOR</span><input value={data.derivados?.danoBonusFor} onChange={e=>updateField('derivados.danoBonusFor',e.target.value)} /></div>
                                                   <div className="db-derived-box"><span>Dano Bônus AGL</span><input value={data.derivados?.danoBonusAgl} onChange={e=>updateField('derivados.danoBonusAgl',e.target.value)} /></div>
                                                   <div className="db-derived-box"><span>Movimento</span><input value={data.derivados?.movimento} onChange={e=>updateField('derivados.movimento',e.target.value)} /></div>
-                                                  <div className="db-derived-box"><span>Limite de Sobrecarga</span><input value={data.derivados?.limiteSobrecarga} onChange={e=>updateField('derivados.limiteSobrecarga',e.target.value)} /></div>
+                                                  <div className="db-derived-box"><span>Carga / limite</span><strong>{dbLoad.current} / {dbLoad.limit}</strong><small>{dbLoad.over?'Sobrecarregado':'Dentro do limite'}</small></div>
                                               </div>
                                           </div>
       
@@ -572,7 +577,7 @@ export default function DragonbaneEditor({ scope }) {
                                                           <div className="db-money-copper border-2 rounded flex flex-col items-center justify-center p-2 shadow-sm"><label className="text-[10px] font-bold text-orange-800 uppercase mb-1">Cobre</label><input type="number" value={data.moedas?.cobre} onChange={e => updateField('moedas.cobre', parseInt(e.target.value) || 0)} className="w-full bg-transparent text-center font-title font-bold text-xl outline-none text-orange-900" /></div>
                                                       </div>
       
-                                                      <label className="block text-xs font-bold text-gray-500 uppercase mb-1 mt-2">Equipamento</label>
+                                                      <div className="db-load-panel"><div><strong>Carga: {dbLoad.current} / {dbLoad.limit}</strong><progress max={Math.max(1,dbLoad.limit)} value={Math.min(dbLoad.current,Math.max(1,dbLoad.limit))}/><small>{dbLoad.over?'Sobrecarga — confira as penalidades do livro.':'Capacidade disponível: '+Math.max(0,dbLoad.limit-dbLoad.current)} · Livro de Regras p. 28</small></div><label><input type="checkbox" checked={!!data.dragonbaneBackpack} onChange={toggleBackpack}/> Mochila (+2)</label><label>Rações (4 = 1 item)<input type="number" min="0" value={data.dragonbaneRations||0} onChange={e=>updateField('dragonbaneRations',Math.max(0,Number(e.target.value)||0))}/></label><label>Peso das anotações antigas<input type="number" min="0" step="0.5" value={data.dragonbaneLegacyWeight||0} onChange={e=>updateField('dragonbaneLegacyWeight',Math.max(0,Number(e.target.value)||0))}/></label>{data.status?.manterDerivados&&<label>Limite manual<input type="number" min="0" value={data.derivados?.limiteSobrecarga||0} onChange={e=>updateField('derivados.limiteSobrecarga',e.target.value)}/></label>}</div><div className="db-load-items"><div className="db-load-head"><strong>Itens com peso</strong><button type="button" className="db-library-launch" onClick={()=>setData(prev=>({...prev,dragonbaneInventory:[...(prev.dragonbaneInventory||[]),{nome:'',quantidade:1,peso:1}]}))}>+ Item</button></div>{(data.dragonbaneInventory||[]).map((item,i)=><div className="db-load-item" key={i}><label>Item<input value={item.nome||''} onChange={e=>updateArrayField('dragonbaneInventory',i,'nome',e.target.value)}/></label><label>Qtd.<input type="number" min="0" value={item.quantidade??1} onChange={e=>updateArrayField('dragonbaneInventory',i,'quantidade',Math.max(0,Number(e.target.value)||0))}/></label><label>Peso unit.<input type="number" min="0" step="0.5" value={item.peso??1} onChange={e=>updateArrayField('dragonbaneInventory',i,'peso',Math.max(0,Number(e.target.value)||0))}/></label><button type="button" aria-label="Remover item" onClick={()=>removeFromArray('dragonbaneInventory',i)}>×</button></div>)}</div><p className="db-load-note">Armas à mão (até três), armadura/elmo vestidos e itens minúsculos não entram na carga. Use peso 0 para itens isentos. As anotações abaixo não são contadas automaticamente: informe o peso delas acima para evitar duplicação.</p><label className="block text-xs font-bold text-gray-500 uppercase mb-1 mt-2">Equipamento — anotações livres</label>
                                                       <textarea rows="12" value={data.inventario} onChange={e => updateField('inventario', e.target.value)} className="db-inventory-box w-full border-2 p-2 text-sm outline-none resize-y mb-3"></textarea>
                                                       
                                                       <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Itens Miúdos</label>
@@ -595,10 +600,10 @@ export default function DragonbaneEditor({ scope }) {
                                       </div>
                                   </React.Fragment>
                               ) : data.type === 'pnj' ? (
-                                  <div className="p-4 md:p-8 space-y-6 bg-white" >
-                                      <div className="flex flex-col md:flex-row gap-6 pb-4 border-b-2 border-blue-900 items-end">
+                                  <div className="db-threat-sheet db-paper db-sheet p-4 md:p-8 space-y-6" ><div className="db-threat-source"><span>PNJ / Ancestralidade</span><span>{data.grupo||'Personalizada'}{data.fonte?' · '+data.fonte:''}{data.pagina?' · p. '+data.pagina:''}</span></div><nav className="db-threat-tabs" aria-label="Seções da ameaça">{[['combate','Estatísticas e combate'],['descricao','Descrição e notas']].map(([key,label])=><button type="button" key={key} aria-pressed={dbThreatTab===key} onClick={()=>setDbThreatTab(key)}>{label}</button>)}</nav>{dbThreatTab==='descricao'&&<div className="db-threat-notes"><label>Descrição<textarea rows={5} value={data.descricao||''} onChange={e=>updateField('descricao',e.target.value)}/></label><label>Notas / encontro / gancho<textarea rows={5} value={data.notas||''} onChange={e=>updateField('notas',e.target.value)}/></label><label>Grupo<input value={data.grupo||''} onChange={e=>updateField('grupo',e.target.value)}/></label><label>Fonte<input value={data.fonte||''} onChange={e=>updateField('fonte',e.target.value)}/></label><label>Página<input value={data.pagina||''} onChange={e=>updateField('pagina',e.target.value)}/></label></div>}
+                                      <div className={dbThreatTab==='combate'?'db-threat-combat space-y-5':'hidden'}><div className="db-threat-header flex flex-col md:flex-row gap-6 pb-4 border-b-2 items-end">
                                           <div className="flex-1 w-full"><label className="block text-xs font-bold text-blue-900 uppercase tracking-widest mb-1">Nome do PNJ / Ameaça Humanoide</label><input type="text" value={data.nome} onChange={e => updateField('nome', e.target.value)} className="w-full text-3xl font-title font-bold border-b-2 border-gray-400 focus:border-blue-600 outline-none bg-transparent" placeholder="Nome do Personagem" /></div>
-                                          <div className="w-full md:w-64"><label className="block text-xs font-bold text-gray-500 uppercase mb-1">Classificação</label><select value={data.tipoPnj} onChange={e => updateField('tipoPnj', e.target.value)} className="w-full p-2 border-2 border-gray-300 rounded text-sm font-bold text-gray-800 bg-gray-50 focus:border-blue-600 outline-none cursor-pointer"><option value="lacaio">Lacaio (Sem PD, Estatísticas base)</option><option value="chefe">Chefe (Tem PD e Iniciativa própria)</option></select></div>
+                                          <div className="w-full md:w-64"><label className="block text-xs font-bold text-gray-500 uppercase mb-1">Classificação</label><select value={data.tipoPnj} onChange={e => updateField('tipoPnj', e.target.value)} className="w-full p-2 border-2 border-gray-300 rounded text-sm font-bold text-gray-800 bg-gray-50 focus:border-blue-600 outline-none cursor-pointer"><option value="lacaio">Lacaio / PNJ comum</option><option value="chefe">Chefe / PNJ importante</option></select></div>
                                       </div>
       
                                       <div className="bg-gray-100 p-4 border border-gray-300 rounded relative">
@@ -632,8 +637,8 @@ export default function DragonbaneEditor({ scope }) {
                                                   </div>
                                                   <div className={`border-2 rounded p-3 flex flex-col items-center justify-center text-center shadow-sm transition-opacity ${data.tipoPnj === 'lacaio' ? 'border-gray-300 bg-gray-100 opacity-50' : 'border-blue-800 bg-blue-50'}`}>
                                                       <div className={`font-title font-bold text-xs uppercase ${data.tipoPnj === 'lacaio' ? 'text-gray-500' : 'text-blue-900'}`}>PONTOS DE DET.</div>
-                                                      <div className="flex items-center justify-center gap-1 mt-2"><input type="number" disabled={data.tipoPnj === 'lacaio'} value={data.status?.pd.atual} onChange={e => updateField('status.pd.atual', parseInt(e.target.value)||0)} className="w-12 text-center text-2xl font-bold border-b-2 border-blue-300 bg-transparent outline-none disabled:border-transparent" /><span className="text-xl">/</span><input type="number" disabled={data.tipoPnj === 'lacaio'} value={data.status?.pd.max} onChange={e => updateField('status.pd.max', parseInt(e.target.value)||0)} className="w-12 text-center text-2xl font-bold border-b-2 border-blue-300 bg-transparent outline-none disabled:border-transparent" /></div>
-                                                      {data.tipoPnj === 'lacaio' && <span className="text-[9px] mt-1 text-gray-500">Lacaios raramente usam PD</span>}
+                                                      <div className="flex items-center justify-center gap-1 mt-2"><input type="number"  value={data.status?.pd.atual} onChange={e => updateField('status.pd.atual', parseInt(e.target.value)||0)} className="w-12 text-center text-2xl font-bold border-b-2 border-blue-300 bg-transparent outline-none disabled:border-transparent" /><span className="text-xl">/</span><input type="number"  value={data.status?.pd.max} onChange={e => updateField('status.pd.max', parseInt(e.target.value)||0)} className="w-12 text-center text-2xl font-bold border-b-2 border-blue-300 bg-transparent outline-none disabled:border-transparent" /></div>
+                                                      {data.tipoPnj === 'lacaio' && <span className="text-[9px] mt-1 text-gray-500">PNJs simples não usam PD; modelos completos podem possuir PD.</span>}
                                                   </div>
                                               </div>
       
@@ -671,11 +676,11 @@ export default function DragonbaneEditor({ scope }) {
       
                                               <div><label className="block text-xs font-bold text-gray-500 uppercase mb-1 mt-2">Equipamento & Tesouro</label><textarea rows="4" value={data.equipamento} onChange={e => updateField('equipamento', e.target.value)} className="w-full border-2 border-gray-300 rounded p-2 text-sm outline-none bg-gray-50 resize-y mb-3"></textarea></div>
                                           </div>
-                                      </div>
+                                      </div></div>
                                   </div>
                               ) : (
-                                  <div className="p-4 md:p-8 space-y-6 bg-white" >
-                                      <div className="flex flex-col md:flex-row gap-6 pb-4 border-b-4 border-red-900 items-end">
+                                  <div className="db-threat-sheet db-paper db-sheet p-4 md:p-8 space-y-6" ><div className="db-threat-source"><span>Monstro / Bestiário</span><span>{data.grupo||'Personalizada'}{data.fonte?' · '+data.fonte:''}{data.pagina?' · p. '+data.pagina:''}</span></div><nav className="db-threat-tabs" aria-label="Seções da ameaça">{[['combate','Estatísticas e combate'],['descricao','Descrição e notas']].map(([key,label])=><button type="button" key={key} aria-pressed={dbThreatTab===key} onClick={()=>setDbThreatTab(key)}>{label}</button>)}</nav>{dbThreatTab==='descricao'&&<div className="db-threat-notes"><label>Descrição<textarea rows={5} value={data.descricao||''} onChange={e=>updateField('descricao',e.target.value)}/></label><label>Notas / encontro / gancho<textarea rows={5} value={data.notas||''} onChange={e=>updateField('notas',e.target.value)}/></label><label>Grupo<input value={data.grupo||''} onChange={e=>updateField('grupo',e.target.value)}/></label><label>Fonte<input value={data.fonte||''} onChange={e=>updateField('fonte',e.target.value)}/></label><label>Página<input value={data.pagina||''} onChange={e=>updateField('pagina',e.target.value)}/></label></div>}
+                                      <div className={dbThreatTab==='combate'?'db-threat-combat space-y-5':'hidden'}><div className="db-threat-header flex flex-col md:flex-row gap-6 pb-4 border-b-4 items-end">
                                           <div className="flex-1 w-full"><label className="block text-xs font-bold text-red-900 uppercase tracking-widest mb-1">Nome da Ameaça / Monstro</label><input type="text" value={data.nome} onChange={e => updateField('nome', e.target.value)} className="w-full text-3xl font-title font-bold border-b-2 border-gray-400 focus:border-red-600 outline-none bg-transparent" placeholder="Ex: Troll Antigo, Demônio..." /></div>
                                           <div className="w-full md:w-48 text-center bg-red-50 border-2 border-red-900 rounded p-2 shadow-sm"><label className="block text-xs font-bold text-red-900 uppercase mb-1" title="Número de ações/cartas de iniciativa por rodada">Ferocidade (Ações)</label><input type="number" value={data.ferocidade} onChange={e => updateField('ferocidade', parseInt(e.target.value)||1)} className="w-full text-center text-3xl font-black bg-transparent outline-none text-red-900" /></div>
                                       </div>
@@ -717,7 +722,7 @@ export default function DragonbaneEditor({ scope }) {
                                                   })}
                                               </div>
                                           </div>
-                                      </div>
+                                      </div></div>
                                   </div>
                               )
                           )}

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {MODELOS_SOM6_LIVRO_PDJ,MODELOS_SOM6_LIVRO_ANIMAIS} from '../src/systems/somDasSeis/bestiaryCatalog.js';
-import {MODELOS_DRAGONBANE_BESTIARIO,GRUPOS_DRAGONBANE_BESTIARIO} from '../src/systems/dragonbane/bestiaryCatalog.js';
+import {MODELOS_DRAGONBANE_BESTIARIO,GRUPOS_DRAGONBANE_BESTIARIO,MODELOS_DRAGONBANE_VARIANTES,MODELOS_DRAGONBANE_SOLO} from '../src/systems/dragonbane/bestiaryCatalog.js';
 import {buildThreatCardData} from '../src/components/threatCardData.js';
 const check=(rows,number,system)=>{
  assert.equal(rows.length,number,system+' incompleto.');
@@ -49,3 +49,9 @@ for(const part of ['MODELOS_SOM6_LIVRO_PDJ','MODELOS_SOM6_LIVRO_ANIMAIS','MODELO
  assert.ok(app.includes(part),'Integração omitida: '+part);
 }
 console.log('✓ Som das Seis: 8 PDJs, 12 animais; Dragonbane: 63 fichas (53 monstros / 10 PNJs), cards e editor verificados.');
+
+check(MODELOS_DRAGONBANE_VARIANTES,24,'dragonbane');check(MODELOS_DRAGONBANE_SOLO,9,'dragonbane');
+assert.equal(MODELOS_DRAGONBANE_BESTIARIO.find(x=>x.nome==='Anurídeo').status.pv.max,8);
+assert.ok(MODELOS_DRAGONBANE_VARIANTES.find(x=>x.nome==='Karkion — Mago').feiticos.some(x=>x.nome==='Banimento'));
+assert.equal(MODELOS_DRAGONBANE_SOLO.find(x=>x.nome==='Ingolfr Pedrolho').status.pd.max,14);
+assert.ok(app.includes('MODELOS_DRAGONBANE_VARIANTES')&&app.includes('MODELOS_DRAGONBANE_SOLO'));
