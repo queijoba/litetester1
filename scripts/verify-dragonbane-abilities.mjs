@@ -98,8 +98,8 @@ assert.ok(app.includes("h.desc !== undefined ? h.desc : h.descricao"),'Ficha Cha
 // Mantém o formato de dados e os recursos do editor clássico, sem migração destrutiva.
 const preview=readFileSync('src/systems/dragonbane/components/AbilitiesPanel.jsx','utf8');
 assert.ok(editor.includes('db-paper db-sheet')&&editor.includes('db-brand'), 'Preservar pergaminho, identidade e moldura originais');
-assert.ok(editor.includes("dragonbanePage==='ficha'")&&editor.includes("dragonbanePage==='habilidades'")&&editor.includes("dragonbanePage==='magias'"),'Abas navegáveis');
-assert.ok(editor.includes('Perfil, perícias e combate')&&editor.includes('Feitiços e truques'),'Rótulos de navegação claros');
+assert.ok(editor.includes("dragonbanePage==='status'")&&editor.includes("dragonbanePage==='habilidades'")&&editor.includes("dragonbanePage==='magias'"),'Abas navegáveis');
+assert.ok(editor.includes('Status e atributos')&&editor.includes('Feitiços e truques'),'Rótulos de navegação claros');
 assert.ok(editor.includes('db-skills-pair')&&editor.includes('db-combat-mobile-slot')&&editor.includes("dragonbanePage==='inventario'"), 'Combate e inventário devem continuar acessíveis');
 assert.ok(editor.includes('updateField(\'inventario\'')&&editor.includes('updateField(\'moedas.ouro\''), 'Inventário da ficha continua editável');
 assert.ok(preview.includes('dragonbaneAbilityList')&&preview.includes('DRAGONBANE_MAGIC_SCHOOLS'),'Habilidades e magias devem ser separadas pelo tipo');
@@ -111,7 +111,10 @@ assert.ok(preview.includes("includes('\\n')?3:1"), 'Nomes antigos com múltiplas
 assert.ok(preview.includes('preparada')&&preview.includes('grau')&&preview.includes('fonte'),'Manter as propriedades de feitiços');
 assert.ok(preview.includes('pdfCount>24')&&preview.includes('24 cartões'),'Alertar que o PDF editável só tem 24 cartões');
 assert.ok(editor.includes('db-rework-portrait-upload')&&editor.includes('updateDragonbanePortrait'),'Retrato deve ser acessível em dispositivos sem hover');
-assert.ok(editor.includes('mobileTab === tab.id'),'Preservar navegação mobile por perfil, perícias e combate');
+assert.ok(editor.includes('db-unified-tabs')&&!editor.includes('Mobile Tabs for PC')&&!editor.includes('mobileTab === tab.id'),'Uma navegação em PC e celular');
+assert.ok(['status','pericias','equipamento','habilidades','inventario','magias'].every(id=>editor.includes("id:'"+id+"'")),'Todas as seis seções disponíveis');
+assert.ok(app.includes('aria-label="Biblioteca de Dragonbane"')&&app.includes('setDragonbaneLibraryFilter({})')&&!editor.includes('▤ Biblioteca de Dragonbane'),'Biblioteca principal na barra do editor');
+assert.ok(css.includes('.db-sheet .db-unified-inactive{display:none!important}'),'Painéis inativos ocultos inclusive no desktop');
 assert.ok(!editor.includes('db-combat-desktop-slot'),'Não duplicar combate/inventário no DOM');
 assert.ok(app.includes('DRAGONBANE_ABILITY_KINDS.forEach'), 'Manter utilitários atuais usados em PDF e chat');
 assert.ok(css.includes('#2e786a')&&css.includes('#f5edd4'), 'Manter paleta e recursos de compatibilidade');

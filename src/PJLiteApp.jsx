@@ -1283,6 +1283,8 @@ const { useState, useEffect, useRef } = React;
             const [showUrlInput, setShowUrlInput] = useState(false);
             const [tempUrl, setTempUrl] = useState('');
             const [mobileTab, setMobileTab] = useState('status');
+            const [dragonbaneLibraryFilter,setDragonbaneLibraryFilter]=useState(null);
+            useEffect(()=>{setDragonbaneLibraryFilter(null)},[view]);
             const [dndLibraryOpen, setDndLibraryOpen] = useState(false);
             const [dndLibraryTab, setDndLibraryTab] = useState('classe');
             const [ordemLibraryOpen,setOrdemLibraryOpen] = useState(false);
@@ -3483,6 +3485,8 @@ const { useState, useEffect, useRef } = React;
                 loadThreat,
                 LZString,
                 mobileTab,
+                dragonbaneLibraryFilter,
+                setDragonbaneLibraryFilter,
                 MODELOS_AMEACAS_GENERICOS,
                 MODELOS_DND_AMEACA,
                 MODELOS_DND_PC,
@@ -3639,6 +3643,7 @@ const { useState, useEffect, useRef } = React;
                             </div>
                             {cloudEditing&&<span className="text-[11px] rounded bg-violet-900 px-2 py-1 text-white font-bold">☁ Editando ficha da campanha</span>}
                             {saveStatus && <span className={`text-[10px] font-bold px-2 py-1 rounded ${saveStatus==='error'?'bg-red-900':saveStatus==='saving'?'bg-amber-700':'bg-black/30'}`}>{saveStatus==='pending'?'Alterado…':saveStatus==='saving'?'Salvando…':saveStatus==='saved'?'✓ Salvo':'Erro ao salvar'}</span>}
+                            {(data.system||'dragonbane')==='dragonbane'&&data.type==='pc'&&<button type="button" onClick={()=>setDragonbaneLibraryFilter({})} className="pjlite-toolbar-library" title="Biblioteca de Dragonbane: habilidades, magias e ancestralidades" aria-label="Biblioteca de Dragonbane">📚</button>}
                             {['somdas6','3det'].includes(data.system) && data.type === 'pc' && <button type="button" onClick={()=>setOtherLibraryOpen(true)}
                                 className="pjlite-toolbar-library" title={data.system==='3det'?'Biblioteca 3DeT Victory: vantagens, desvantagens e técnicas':'Biblioteca O Som das Seis: habilidades e antecedentes'}
                                 aria-label={'Biblioteca '+(data.system==='3det'?'3DeT Victory':'O Som das Seis')}>📚</button>}

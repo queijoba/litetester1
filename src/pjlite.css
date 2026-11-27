@@ -2031,3 +2031,13 @@ body.theme-dark .db-sheet .db-load-panel{background:#20382d;color:#efe4cd;border
 @media(max-width:600px){.db-sheet .db-load-item{grid-template-columns:minmax(0,1fr) 55px 65px 25px;gap:4px}.db-threat-sheet .db-threat-source{font-size:10px}}
 
 .db-sheet .db-load-panel>small{flex-basis:100%;font-size:11px;line-height:1.4}.db-sheet .db-sync-innate{margin:4px 4px 0 0}
+
+/* Dragonbane: uma única navegação, igual no celular e PC; sem alterar outros sistemas. */
+.db-sheet .db-unified-tabs{grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:6px;padding:6px}
+.db-sheet .db-unified-tabs .db-rework-tab{min-height:58px;padding:8px 10px;justify-content:center;align-items:center;text-align:center}
+.db-sheet .db-unified-tabs .db-rework-tab-count{position:static;margin:2px 0 0}
+.db-sheet .db-unified-inactive{display:none!important}
+.db-sheet .db-layout-v2 .db-skills-column,.db-sheet .db-layout-v2 .db-combat-column{grid-column:1/-1}
+.db-sheet .db-magic-tab-control{justify-content:flex-start;margin:4px 0 8px}
+@media(max-width:767px){.db-sheet .db-unified-tabs{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:4px}.db-sheet .db-unified-tabs .db-rework-tab{min-height:43px;padding:5px 2px;gap:2px}.db-sheet .db-unified-tabs .db-rework-tab strong{font-size:clamp(11px,3.4vw,13px)}.db-sheet .db-unified-tabs .db-rework-tab-count{height:15px;min-width:15px;font-size:9px}.db-sheet .db-unified-tabs .db-rework-tab small{display:none}.db-sheet .db-magic-tab-control{font-size:11px}}
+@media(min-width:768px){.db-sheet .db-layout-v2 .db-status-column.db-unified-inactive{display:none!important}.db-sheet .db-combat-column .db-combat-mobile-slot{width:100%;max-width:none}}
