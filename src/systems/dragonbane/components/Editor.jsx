@@ -1,6 +1,7 @@
 import {DRAGONBANE_ATTRIBUTE_ORDER,dragonbaneAttributeValue,dragonbaneAttributeCondition} from '../attributes.js';
 import {dragonbaneAbilityList,dragonbaneMagicTabEnabled,insertDragonbaneLibraryEntry,DRAGONBANE_ANCESTRIES,dragonbaneLoad,dragonbanePreparedLimit,syncDragonbaneInnates} from '../abilities.js';
 import DragonbaneLibrary from './DragonbaneLibrary.jsx';
+import './unifiedNavigation.css';
 import DragonbaneAbilitiesPanel from './AbilitiesPanel.jsx';
 // Extraído automaticamente do antigo PJLiteApp monolítico.
 // Este arquivo agora é a fonte visual do editor deste sistema.

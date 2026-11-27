@@ -114,7 +114,7 @@ assert.ok(editor.includes('db-rework-portrait-upload')&&editor.includes('updateD
 assert.ok(editor.includes('db-unified-tabs')&&!editor.includes('Mobile Tabs for PC')&&!editor.includes('mobileTab === tab.id'),'Uma navegação em PC e celular');
 assert.ok(['status','pericias','equipamento','habilidades','inventario','magias'].every(id=>editor.includes("id:'"+id+"'")),'Todas as seis seções disponíveis');
 assert.ok(app.includes('aria-label="Biblioteca de Dragonbane"')&&app.includes('setDragonbaneLibraryFilter({})')&&!editor.includes('▤ Biblioteca de Dragonbane'),'Biblioteca principal na barra do editor');
-assert.ok(css.includes('.db-sheet .db-unified-inactive{display:none!important}'),'Painéis inativos ocultos inclusive no desktop');
+assert.ok(readFileSync('src/systems/dragonbane/components/unifiedNavigation.css','utf8').includes('.db-sheet .db-unified-inactive{display:none!important}'),'Painéis inativos ocultos inclusive no desktop');
 assert.ok(!editor.includes('db-combat-desktop-slot'),'Não duplicar combate/inventário no DOM');
 assert.ok(app.includes('DRAGONBANE_ABILITY_KINDS.forEach'), 'Manter utilitários atuais usados em PDF e chat');
 assert.ok(css.includes('#2e786a')&&css.includes('#f5edd4'), 'Manter paleta e recursos de compatibilidade');
