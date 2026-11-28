@@ -2496,9 +2496,9 @@ const { useState, useEffect, useRef } = React;
                                                 Se quiser acessar o código, estudar a implementação, adaptar algo ou colaborar, <strong>basta entrar em contato comigo</strong>. Telegram: <strong>@ralseibaiano</strong> • Discord: <strong>inabakaoru</strong>. Assim eu posso indicar o repositório e o caminho correto da versão atual.
                                             </p>
                                         </div>
-                                        <a href="https://dmliterpg.vercel.app/" target="_blank" rel="noopener noreferrer" className="block bg-dragon-dark hover:bg-black text-white rounded p-4 text-center transition-colors shadow-md border-2 border-red-800 group">
-                                            <h3 className="font-title font-bold text-lg text-red-500 group-hover:text-red-400 transition-colors">Visite a Plataforma DMLite 🐉</h3>
-                                            <p className="text-xs text-gray-300 mt-1">Mais ferramentas e recursos para Mestres de RPG.</p>
+                                        <a href="https://mblite.vercel.app/" target="_blank" rel="noopener noreferrer" className="block bg-dragon-dark hover:bg-black text-white rounded p-4 text-center transition-colors shadow-md border-2 border-red-800 group">
+                                            <h3 className="font-title font-bold text-lg text-red-500 group-hover:text-red-400 transition-colors">Visite a Plataforma MB Lite 📚</h3>
+                                            <p className="text-xs text-gray-300 mt-1">Sua biblioteca digital de RPG: consulte livros e materiais de apoio em um só lugar.</p>
                                         </a>
                                     </div>
                                 </div>
